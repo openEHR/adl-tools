@@ -10,13 +10,15 @@ The second resource that must be configured is the 'profiles' that define where 
 
 === Setting RM Schemas
 
-At installation, the AWB is normally set up to point to a set of reference model schemas copied from the {openehr_reference_models_github}[openEHR reference models Git repository^]. You may want to check which Reference Model schemas are enabled initially. Choose RM Schemas > Configure Schemas to do this. The dialog looks as follows.
+At installation, the AWB is normally set up to point to a set of reference model schemas copied from the {openehr_reference_models_github}[openEHR reference models Git repository^]. You may want to check which Reference Model schemas are enabled initially. Choose `RM Schemas > Configure Schemas` to do this. The dialog looks as follows.
 
 [.text-center]
 .Options dialog
 image::{images_uri}/options_rm_schema_config.png[id=options_rm_schema_config, align="center"]
 
-You can check all RM schemas that apply to archetypes in any repository you might define. The only time you would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a specific one. Several RM schemas are provided with the AWB, which are copies of the controlled versions found in the {openehr_adl_archetypes_github}[adl-archetypes GitHub repository^]. See the <<_tool_configuration, Tool Configuration>> section for details on configuring RM schemas.
+You can check all RM schemas that apply to archetypes in any repository you might define. The only time you would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a specific one. If multiple versions of the same schema are loaded, the most recent one will be chosen for use with archetypes based on the corresponding reference model. 
+
+See the <<_tool_configuration, Tool Configuration>> section for details on configuring RM schemas.
 
 === Setting up archetype repositories
 
@@ -56,7 +58,7 @@ image::{images_uri}/RM_icons_overview.png[link={images_uri}/RM_icons_overview.pn
 
 === Archetype and Template Library
 
-On the left side of the tool are link:{images_uri}/explorers.png[two explorers], making up the 'Library' tool in AWB. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show all classes' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)
+On the left side of the tool are link:{images_uri}/explorers.png[two explorers], making up the _Library tool_ in AWB. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show all classes' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)
 
 The lower explorer is used exclusively for templates and template components, and shows compositional relationships due to slot-filling, rather than specialisation in its hierarchy. The two explorers are linked, so that choosing an artefact node in the lower one automatically chooses the same artefact in the upper one, allowing its lineage to be visible.
 

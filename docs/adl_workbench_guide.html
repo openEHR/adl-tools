@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.6.1">
+<meta name="generator" content="Asciidoctor 2.0.10">
 <meta name="description" content="ADL Workbench User Guide">
 <meta name="keywords" content="ADL Workbench, archetype, template, clinical model, ADL">
 <title>ADL Workbench (AWB) User Guide</title>
 <link rel="stylesheet" href="https://specifications.openehr.org/styles/openehr.css">
-<link rel="stylesheet" href="https://specifications.openehr.org/styles/pygments-default.css">
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
@@ -116,7 +115,7 @@
 <li><a href="#_about_adl_2">7. About ADL 2</a>
 <ul class="sectlevel2">
 <li><a href="#_overview_3">7.1. Overview</a></li>
-<li><a href="#_adl_aom_2_new_features">7.2. ADL/AOM 2 - New features</a>
+<li><a href="#_adlaom_2_new_features">7.2. ADL/AOM 2 - New features</a>
 <ul class="sectlevel3">
 <li><a href="#_meta_data_changes">7.2.1. Meta-data changes</a></li>
 <li><a href="#_new_internal_coding_system">7.2.2. New internal coding system</a></li>
@@ -237,20 +236,20 @@
 <li><a href="#_05_mar_2007_bug_fix_release_git_commit_9b902757ecc66b4ecb1d1fe81f948e86130fb576_was_svn_rev_169">14.15. 05 Mar 2007 bug fix release (Git commit 9b902757ecc66b4ecb1d1fe81f948e86130fb576 (was SVN rev 169)):</a></li>
 <li><a href="#_02_mar_2007_release_git_commit_1a997c27e546635dcd985ff8d64268cc1acf7809_was_svn_rev_166">14.16. 02 Mar 2007 Release (Git commit 1a997c27e546635dcd985ff8d64268cc1acf7809 (was SVN rev 166))</a></li>
 <li><a href="#_10_jan_2007_release_git_commit_fbf7675841258413a3275e2ae738ccd65275c19b_was_svn_rev_152">14.17. 10 Jan 2007 Release (Git commit fbf7675841258413a3275e2ae738ccd65275c19b (was SVN rev 152)):</a></li>
-<li><a href="#_interim_release_subversion_89_24_aug_2006_various_small_fixes">14.18. interim release subversion 89 - 24/aug/2006 - various small fixes</a></li>
-<li><a href="#_interim_release_subversion_81_29_jun_2006_iso_8601_date_time_enhancements_fixes">14.19. interim release Subversion 81 - 29/Jun/2006 - ISO 8601 date/time enhancements &amp; fixes</a></li>
-<li><a href="#_interim_release_subversion_63_14_may_2006_adl_1_4_compliance">14.20. interim release Subversion 63 - 14/May/2006 ADL - 1.4 compliance</a></li>
-<li><a href="#_interim_release_subversion_47_02_apr_2006">14.21. interim release Subversion 47 - 02/Apr/2006</a></li>
-<li><a href="#_interim_release_subversion_46_27_mar_2006">14.22. interim release Subversion 46 - 27/Mar/2006</a></li>
+<li><a href="#_interim_release_subversion_89_24aug2006_various_small_fixes">14.18. interim release subversion 89 - 24/aug/2006 - various small fixes</a></li>
+<li><a href="#_interim_release_subversion_81_29jun2006_iso_8601_datetime_enhancements_fixes">14.19. interim release Subversion 81 - 29/Jun/2006 - ISO 8601 date/time enhancements &amp; fixes</a></li>
+<li><a href="#_interim_release_subversion_63_14may2006_adl_1_4_compliance">14.20. interim release Subversion 63 - 14/May/2006 ADL - 1.4 compliance</a></li>
+<li><a href="#_interim_release_subversion_47_02apr2006">14.21. interim release Subversion 47 - 02/Apr/2006</a></li>
+<li><a href="#_interim_release_subversion_46_27mar2006">14.22. interim release Subversion 46 - 27/Mar/2006</a></li>
 <li><a href="#_interim_subversion_release_4_12_oct_2005">14.23. interim subversion release 4 - 12 Oct 2005</a></li>
 <li><a href="#_interim_release_subversion_revision_3_23_july_2005">14.24. interim release Subversion revision 3 - 23 July 2005</a></li>
-<li><a href="#_interim_release_bitkeeper_cset_1_57_23_june_2005">14.25. interim release BitKeeper cset 1.57 23/June/2005</a></li>
-<li><a href="#_release_arch_desc_bitkeeper_cset_1_56_19_june_2005">14.26. release 'arch_desc' BitKeeper cset 1.56 19/June/2005</a></li>
-<li><a href="#_interim_release_bitkeeper_cset_1_50_01_june_2005">14.27. interim release BitKeeper cset 1.50 01/June/2005</a></li>
-<li><a href="#_interim_release_bitkeeper_cset_1_49_30_may_2005">14.28. interim release BitKeeper cset 1.49 30/May/2005</a></li>
-<li><a href="#_interim_release_bitkeeper_cset_1_48_06_may_2005">14.29. interim release BitKeeper cset 1.48 06/May/2005</a></li>
+<li><a href="#_interim_release_bitkeeper_cset_1_57_23june2005">14.25. interim release BitKeeper cset 1.57 23/June/2005</a></li>
+<li><a href="#_release_arch_desc_bitkeeper_cset_1_56_19june2005">14.26. release 'arch_desc' BitKeeper cset 1.56 19/June/2005</a></li>
+<li><a href="#_interim_release_bitkeeper_cset_1_50_01june2005">14.27. interim release BitKeeper cset 1.50 01/June/2005</a></li>
+<li><a href="#_interim_release_bitkeeper_cset_1_49_30may2005">14.28. interim release BitKeeper cset 1.49 30/May/2005</a></li>
+<li><a href="#_interim_release_bitkeeper_cset_1_48_06may2005">14.29. interim release BitKeeper cset 1.48 06/May/2005</a></li>
 <li><a href="#_interim_release_bitkeeper_cset_1_46_05_may_2005">14.30. interim release BitKeeper cset 1.46 - 05 May 2005</a></li>
-<li><a href="#_interim_release_bitkeeper_cset_1_39_25_feb_2005">14.31. interim release BitKeeper cset 1.39 25/Feb/2005</a></li>
+<li><a href="#_interim_release_bitkeeper_cset_1_39_25feb2005">14.31. interim release BitKeeper cset 1.39 25/Feb/2005</a></li>
 <li><a href="#_interim_release_cset_1_38_19_jan_2005">14.32. interim release cset 1.38 - 19 Jan 2005</a></li>
 <li><a href="#_interim_release_bitkeeper_cset_1_32_29_july_2004">14.33. interim release BitKeeper cset 1.32 - 29 July 2004</a></li>
 <li><a href="#_interim_release_bitkeeper_cset_1_27_19_september_2004">14.34. interim release BitKeeper cset 1.27 - 19 September 2004</a></li>
@@ -274,24 +273,24 @@
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="imageblock" style="text-align: center">
+<div class="imageblock text-center">
 <div class="content">
 <img src="https://specifications.openehr.org/images/openEHR_logo_RGB.svg" alt="openEHR logo">
 </div>
 </div>
 </div>
 </div>
-<h1 id="_adl_workbench_awb_user_guide" class="sect0">ADL Workbench (AWB) User Guide</h1>
+<h1 id="_adl_workbench_awb_user_guide" class="sect0"><a class="anchor" href="#_adl_workbench_awb_user_guide"></a>ADL Workbench (AWB) User Guide</h1>
 <div class="openblock partintro">
 <div class="content">
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 20%;">
 <col style="width: 80%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-center valign-top" colspan="2">&#169; 2019 The openEHR Foundation</th>
+<th class="tableblock halign-center valign-top" colspan="2">&#169; 2020 The openEHR Foundation</th>
 </tr>
 </thead>
 <tbody>
@@ -319,9 +318,9 @@
 </div>
 </div>
 <div class="sect1">
-<h2 id="_amendment_record">Amendment Record</h2>
+<h2 id="_amendment_record"><a class="anchor" href="#_amendment_record"></a>Amendment Record</h2>
 <div class="sectionbody">
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 9.0909%;">
 <col style="width: 54.5454%;">
@@ -354,10 +353,10 @@
 </div>
 </div>
 <div class="sect1">
-<h2 id="_acknowledgements">Acknowledgements</h2>
+<h2 id="_acknowledgements"><a class="anchor" href="#_acknowledgements"></a>Acknowledgements</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_primary_author">Primary Author</h3>
+<h3 id="_primary_author"><a class="anchor" href="#_primary_author"></a>Primary Author</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -367,13 +366,13 @@
 </div>
 </div>
 <div class="sect2">
-<h3 id="_contributors">Contributors</h3>
+<h3 id="_contributors"><a class="anchor" href="#_contributors"></a>Contributors</h3>
 <div class="paragraph">
 <p>This guide has benefited from formal and informal input from the openEHR and wider health informatics community.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_trademarks">Trademarks</h3>
+<h3 id="_trademarks"><a class="anchor" href="#_trademarks"></a>Trademarks</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -481,7 +480,7 @@
 </div>
 <div class="sect2">
 <h3 id="_download"><a class="anchor" href="#_download"></a>1.5. Download</h3>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 22.2222%;">
 <col style="width: 11.1111%;">
@@ -504,7 +503,7 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">2.0.6.3034</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">28-03-2019</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.openehr.org/download_files/adl_workbench/adl_workbench_2.0.6.3034-windows_64bit.exe" target="_blank" rel="noopener">.exe installer</a></p></td>
-<td class="tableblock halign-left valign-top"><div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"></div></td>
 </tr>
 </tbody>
 </table>
@@ -555,9 +554,9 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash"><span class="tok-nv">$ </span>mkdir awb 						<span class="tok-c1"># create a directory if never done before</span>
-<span class="tok-nv">$ </span><span class="tok-nb">cd </span>awb
-<span class="tok-nv">$ </span>tar xvjf ../archive_file_name		<span class="tok-c1"># extract the files</span></code></pre>
+<pre class="pygments highlight"><code data-lang="bash"><span></span>$ mkdir awb 						<span class="tok-c1"># create a directory if never done before</span>
+$ <span class="tok-nb">cd</span> awb
+$ tar xvjf ../archive_file_name		<span class="tok-c1"># extract the files</span></code></pre>
 </div>
 </div>
 </div>
@@ -580,16 +579,19 @@
 <div class="sect3">
 <h4 id="_setting_rm_schemas"><a class="anchor" href="#_setting_rm_schemas"></a>3.2.1. Setting RM Schemas</h4>
 <div class="paragraph">
-<p>At installation, the AWB is normally set up to point to a set of reference model schemas copied from the <a href="https://github.com/openEHR/reference-models" target="_blank" rel="noopener">openEHR reference models Git repository</a>. You may want to check which Reference Model schemas are enabled initially. Choose RM Schemas &gt; Configure Schemas to do this. The dialog looks as follows.</p>
+<p>At installation, the AWB is normally set up to point to a set of reference model schemas copied from the <a href="https://github.com/openEHR/reference-models" target="_blank" rel="noopener">openEHR reference models Git repository</a>. You may want to check which Reference Model schemas are enabled initially. Choose <code>RM Schemas &gt; Configure Schemas</code> to do this. The dialog looks as follows.</p>
 </div>
-<div id="options_rm_schema_config" class="imageblock text-center" style="text-align: center">
+<div id="options_rm_schema_config" class="imageblock text-center text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/options_rm_schema_config.png" alt="options rm schema config">
 </div>
 <div class="title">Figure 1. Options dialog</div>
 </div>
 <div class="paragraph">
-<p>You can check all RM schemas that apply to archetypes in any repository you might define. The only time you would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a specific one. Several RM schemas are provided with the AWB, which are copies of the controlled versions found in the <a href="https://github.com/openEHR/adl-archetypes" target="_blank" rel="noopener">adl-archetypes GitHub repository</a>. See the <a href="#_tool_configuration">Tool Configuration</a> section for details on configuring RM schemas.</p>
+<p>You can check all RM schemas that apply to archetypes in any repository you might define. The only time you would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a specific one. If multiple versions of the same schema are loaded, the most recent one will be chosen for use with archetypes based on the corresponding reference model.</p>
+</div>
+<div class="paragraph">
+<p>See the <a href="#_tool_configuration">Tool Configuration</a> section for details on configuring RM schemas.</p>
 </div>
 </div>
 <div class="sect3">
@@ -597,7 +599,7 @@
 <div class="paragraph">
 <p>The first time you start the tool if you are a new user, you will be asked for a repository. The following dialog will appear:</p>
 </div>
-<div class="imageblock text-center" style="text-align: center">
+<div class="imageblock text-center text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/repositories_screen_1.png" alt="repositories screen 1">
 </div>
@@ -624,20 +626,20 @@
 <div class="paragraph">
 <p>The AWB has two facilities, the archetype compiler/viewer and the 'tester'. The main form shows the compiler/viewer, while the tester is normally minimised to the right. The Viewer looks as follows.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/overview.png"><img src="adl_workbench_guide/images/overview.png" alt="overview" width="70%"></a>
 </div>
 <div class="title">Figure 3. Expanded view in explorer</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/RM_icons_overview.png"><img src="adl_workbench_guide/images/RM_icons_overview.png" alt="RM icons overview" width="70%"></a>
 </div>
@@ -650,7 +652,7 @@
 <div class="sect3">
 <h4 id="_archetype_and_template_library"><a class="anchor" href="#_archetype_and_template_library"></a>3.3.3. Archetype and Template Library</h4>
 <div class="paragraph">
-<p>On the left side of the tool are <a href="adl_workbench_guide/images/explorers.png">two explorers</a>, making up the 'Library' tool in AWB. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show all classes' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)</p>
+<p>On the left side of the tool are <a href="adl_workbench_guide/images/explorers.png">two explorers</a>, making up the <em>Library tool</em> in AWB. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show all classes' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)</p>
 </div>
 <div class="paragraph">
 <p>The lower explorer is used exclusively for templates and template components, and shows compositional relationships due to slot-filling, rather than specialisation in its hierarchy. The two explorers are linked, so that choosing an artefact node in the lower one automatically chooses the same artefact in the upper one, allowing its lineage to be visible.</p>
@@ -762,20 +764,20 @@
 <div class="paragraph">
 <p>Since the reference model includes numerous attributes whose static type is either abstract or otherwise has descandants, the <code>Closure</code> view allows the user to choose to display these by right-clicking on a node.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/class_tool.png"><img src="adl_workbench_guide/images/class_tool.png" alt="class tool"></a>
 </div>
 <div class="title">Figure 9. Class properties view</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/class_tool_ancestors.png"><img src="adl_workbench_guide/images/class_tool_ancestors.png" alt="class tool ancestors"></a>
 </div>
@@ -783,13 +785,13 @@
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/class_tool_descendants.png"><img src="adl_workbench_guide/images/class_tool_descendants.png" alt="class tool descendants"></a>
 </div>
 <div class="title">Figure 11. Expanded view in explorer</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/class_tool_closure.png"><img src="adl_workbench_guide/images/class_tool_closure.png" alt="class tool closure"></a>
 </div>
@@ -805,7 +807,7 @@
 <div class="paragraph">
 <p>The ADL Workbench is designed to parse and validate archetypes. Technically speaking, 'archetypes' are any artefact conforming to the <a href="https://specifications.openehr.org/releases/AM/latest/index" target="_blank" rel="noopener">openEHR Archetype  specifications</a>, or the older ISO13606-2 specification, which is a snapshot of the <a href="https://specifications.openehr.org/releases/AM/latest/AOM1.4.html" target="_blank" rel="noopener">openEHR AOM 1.4 specification</a>. The <a href="https://specifications.openehr.org/releases/AM/latest/ADL2.html" target="_blank" rel="noopener">ADL2 specification</a> defines 4 logical kinds of artefact. These include three kinds of archetype, and the 'operational template'. The latter is generated from a template, and is used as the basis for all further downstream transformations. The various artefact types and their file formats are shown below.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 16.6666%;">
 <col style="width: 50%;">
@@ -865,7 +867,7 @@
 <div class="paragraph">
 <p>When a user first installs this new version of the tool, the following screen is seen:</p>
 </div>
-<div id="repositories_screen_1" class="imageblock text-center" style="text-align: center">
+<div id="repositories_screen_1" class="imageblock text-center text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/repositories_screen_1.png" alt="repositories screen 1">
 </div>
@@ -874,7 +876,7 @@
 <div class="paragraph">
 <p>The three rows correspond to 2 openEHR and one CIMI repositories. Any of these repositories can be 'installed' by hitting the install link, which will result in the following dialog:</p>
 </div>
-<div id="repositories_screen_install" class="imageblock text-center" style="text-align: center">
+<div id="repositories_screen_install" class="imageblock text-center text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/repositories_screen_install.png" alt="repositories screen install">
 </div>
@@ -896,7 +898,7 @@
 <div class="paragraph">
 <p>Doing either with the <a href="https://github.com/openEHR/adl-archetypes" target="_blank" rel="noopener"><code>adl-archetypes</code> reference repository</a> enables the archetype libraries to be read in and used. They are shown on the repository dialog as follows:</p>
 </div>
-<div id="repositories_screen_installed" class="imageblock text-center" style="text-align: center">
+<div id="repositories_screen_installed" class="imageblock text-center text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/repositories_screen_installed.png" alt="repositories screen installed">
 </div>
@@ -905,7 +907,7 @@
 <div class="paragraph">
 <p>You can add a completely new repository as well, by using the <code>Browse</code> button at the bottom of the dialog. If you choose a directory that is not already set up as an Archetype repository, the workbench will create the necessary control files for you, and save them. The result of doing this looks as follows:</p>
 </div>
-<div id="repositories_add_new" class="imageblock text-center" style="text-align: center">
+<div id="repositories_add_new" class="imageblock text-center text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/repositories_add_new.png" alt="repositories add new">
 </div>
@@ -914,7 +916,7 @@
 <div class="paragraph">
 <p>Hitting the icon in the 'edit' column results in the text editor being launched, and you can edit the new repository meta-data, e.g.:</p>
 </div>
-<div id="repositories_add_new_edit" class="imageblock text-center" style="text-align: center">
+<div id="repositories_add_new_edit" class="imageblock text-center text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/repositories_add_new_edit.png" alt="repositories add new edit">
 </div>
@@ -923,7 +925,7 @@
 <div class="paragraph">
 <p>When you save and quit the editor, you will see the new repository details updated in the main dialog:</p>
 </div>
-<div id="repositories_add_new_edited" class="imageblock text-center" style="text-align: center">
+<div id="repositories_add_new_edited" class="imageblock text-center text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/repositories_add_new_edited.png" alt="repositories add new edited">
 </div>
@@ -945,7 +947,7 @@
 <div class="paragraph">
 <p>These options are available on right click on the new repository node:</p>
 </div>
-<div id="repositories_add_new_lib" class="imageblock text-center" style="text-align: center">
+<div id="repositories_add_new_lib" class="imageblock text-center text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/repositories_add_new_lib.png" alt="repositories add new lib">
 </div>
@@ -954,14 +956,17 @@
 <div class="paragraph">
 <p>Choosing either of these will result in a library row being added to the repository dialog view:</p>
 </div>
-<div id="repositories_new_lib_added" class="imageblock text-center" style="text-align: center">
+<div id="repositories_new_lib_added" class="imageblock text-center text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/repositories_new_lib_added.png" alt="repositories new lib added">
 </div>
 <div class="title">Figure 20. Repositories add new library (updated)</div>
 </div>
 <div class="paragraph">
-<p>Once repositories and libraries have been set up as desired, the repository dialog can be dismissed, and the library selector can be used as in previous versions to select the desired repository. The effect of the repository setup activities causes just the repository root directories to be recorded in the .cfg file (you can see this via Tools &gt; Options &gt; Edit file).</p>
+<p>The effect of the repository setup activities causes just the repository root directories to be recorded in the <code>.cfg</code> file (you can see this via the menu option <code>Tools &gt; Options &gt; Edit file</code>).</p>
+</div>
+<div class="paragraph">
+<p>You can use the <a href="adl_workbench_guide/images/profile_combo.png">profile combo selector</a> above the archetype explorer to switch between the loaded libraries.</p>
 </div>
 </div>
 </div>
@@ -974,20 +979,20 @@
 <div class="paragraph">
 <p>As soon as you have specified a profile (Repository &gt; Set repository), the left-hand side explorer controls will populate and you will initially see the explorer with the reference model (RM) class hierarchy. If you have selected 'Show entire terminology in explorer?' in the Options dialog, you will see all classes from all loaded RM schemas. This can be useful for understanding the reference models. Normally you will probably not use this option. At any time, you can select a class node in the explorer, and its Reference Model definition will be displayed in flat form, i.e. compressed through inheritance.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/explorer_initial_view.png"><img src="adl_workbench_guide/images/explorer_initial_view.png" alt="explorer initial view" width="70%"></a>
 </div>
 <div class="title">Figure 21. Initial view in explorer</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/explorer_spec.png"><img src="adl_workbench_guide/images/explorer_spec.png" alt="explorer spec" width="70%"></a>
 </div>
@@ -1008,20 +1013,20 @@
 <div class="paragraph">
 <p>The compilation process performs validation on every archetype and reports errors. Errors fall into two categories: syntactic, denoted with codes starting with 'S', and validity errors, denoted with 'V' codes. The errors are shown both in the status tab and the errors tab at the bottom. The status window is shown below.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/compile_1.png"><img src="adl_workbench_guide/images/compile_1.png" alt="compile 1"></a>
 </div>
 <div class="title">Figure 23. Compilation feedback</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/compile_2.png"><img src="adl_workbench_guide/images/compile_2.png" alt="compile 2"></a>
 </div>
@@ -1071,20 +1076,20 @@
 <div class="paragraph">
 <p>All archetypes have a number of header sections containing descriptive meta-data about the archetype. The Description tab shows all of these sections, including author details, translation information, keywords, purpose, use, misuse and so on.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/description_1.png"><img src="adl_workbench_guide/images/description_1.png" alt="description 1"></a>
 </div>
 <div class="title">Figure 28. Description sections</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/description_unicode.png"><img src="adl_workbench_guide/images/description_unicode.png" alt="description unicode"></a>
 </div>
@@ -1108,20 +1113,20 @@
 <div class="paragraph">
 <p>The node map is a way of viewing the definition part of the archetype structurally. The definition section contains the main definitional statements of the archetype, and can be thought of as a visualisation of an AOM structure, that is to say, each node corresponds to an AOM node type. In the differential form, the node map shows only those constraints introduced by the archetype on its own. If it is a non-specialised archetype, these constraints are in addition to constraints implied by the reference model (cardinality, types etc). For a specialised archetype, the constraints are in addition to the 'flat parent', i.e. the notional sum of constraints so far in the specialisation lineage. You will notice in particular that specialised archetypes have constraints whose parent attributes are not just a single attribute name like 'items', but are a path, like <code>/protocol</code>, <code>/data/events[id10]/items[id23]</code> and so on.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/node_map_diff_spec_no_RM.png"><img src="adl_workbench_guide/images/node_map_diff_spec_no_RM.png" alt="node map diff spec no RM"></a>
 </div>
 <div class="title">Figure 30. Differential, specialised, domain view</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/node_map_diff_spec_RM_classes.png"><img src="adl_workbench_guide/images/node_map_diff_spec_RM_classes.png" alt="node map diff spec RM classes"></a>
 </div>
@@ -1129,13 +1134,13 @@
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/node_map_flat_spec_no_RM.png"><img src="adl_workbench_guide/images/node_map_flat_spec_no_RM.png" alt="node map flat spec no RM"></a>
 </div>
 <div class="title">Figure 32. Flat, specialised, technical view</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/node_map_unicode.png"><img src="adl_workbench_guide/images/node_map_unicode.png" alt="node map unicode"></a>
 </div>
@@ -1166,20 +1171,20 @@
 <div class="paragraph">
 <p>The classifications of RM properties are defined in the reference model schemas and can be modified independently of the tool or any particular archetype.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/rm_differential.png"><img src="adl_workbench_guide/images/rm_differential.png" alt="rm differential"></a>
 </div>
 <div class="title">Figure 34. RM properties (differential form)</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/rm_flat.png"><img src="adl_workbench_guide/images/rm_flat.png" alt="rm flat"></a>
 </div>
@@ -1194,20 +1199,20 @@
 <div class="paragraph">
 <p>Archetype definitions are inherently hierarchical structures, and as a consequence various types of 'interface' can be extracted from any archetype. The most obvious is a 'path map', which is the basis for all queries written in AQL or a-path. Every node in an archetype is guaranteed to have a unique path. If you select the path map in the differential and flat forms, you will see the larger number of paths being extracted from the latter. There is also a tab for 'Interface tags', which shows a standard transform from paths to single string tags usable in XSDs and TDO APIs - in any language.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/paths_body_temp_diff_nat_lang.png"><img src="adl_workbench_guide/images/paths_body_temp_diff_nat_lang.png" alt="paths body temp diff nat lang"></a>
 </div>
 <div class="title">Figure 36. Path map, natural language paths</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/paths_body_temp_diff_machine.png"><img src="adl_workbench_guide/images/paths_body_temp_diff_machine.png" alt="paths body temp diff machine"></a>
 </div>
@@ -1215,13 +1220,13 @@
 </div></div></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/paths_diff_heart_rate_machine.png"><img src="adl_workbench_guide/images/paths_diff_heart_rate_machine.png" alt="paths diff heart rate machine"></a>
 </div>
 <div class="title">Figure 38. Path map, parent archetype</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/paths_heart_rate-pulse_flat_machine.png"><img src="adl_workbench_guide/images/paths_heart_rate-pulse_flat_machine.png" alt="paths heart rate pulse flat machine"></a>
 </div>
@@ -1276,20 +1281,20 @@
 <div class="paragraph">
 <p>All archetypes contain an internal terminology, consisting of 'id-codes' (node identifiers), 'at-codes' (identifying coded values) and 'ac-codes' (identifying value sets). They may also include bindings between any of these and external terminologies and other terminology resources. These elements are found in the 'terminology' section of the archetype, such as shown here.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/terminology.png"><img src="adl_workbench_guide/images/terminology.png" alt="terminology"></a>
 </div>
 <div class="title">Figure 41. Terminology - id codes</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <a class="image" href="adl_workbench_guide/images/terminology2.png"><img src="adl_workbench_guide/images/terminology2.png" alt="terminology2"></a>
 </div>
@@ -1358,18 +1363,21 @@
 <div class="sect3">
 <h4 id="_rm_schema_configuration"><a class="anchor" href="#_rm_schema_configuration"></a>6.1.1. RM Schema configuration</h4>
 <div class="paragraph">
-<p>Reference Model (RM) Schemas are used by the ADL Workbench to validate archetypes and templates. Schemas are expressed as ODIN (was 'dADL') files and have a '.bmm' (basic meta-model) extension. These schemas are defined in a nested way, with most files visible here being used as component schemas for a small number of top-level schemas representing the openEHR Reference Model, EN13606 model and so on. The ADL Workbench comes with schemas for various reference models bundled.</p>
+<p>Reference Model (RM) Schemas are used by the ADL Workbench to validate archetypes and templates. Schemas are expressed as <a href="https://specifications.openehr.org/releases/LANG/latest/odin.html" target="_blank" rel="noopener">ODIN files</a> and have a <code>.bmm</code> (<a href="https://specifications.openehr.org/releases/LANG/latest/bmm.html" target="_blank" rel="noopener">BMM, basic meta-model</a>) extension. These schemas are defined in a nested way, with most files visible here being used as component schemas for a small number of top-level schemas representing the openEHR Reference Model, EN13606 model and so on.</p>
 </div>
 <div class="paragraph">
-<p>If you want access to RM schemas not yet bundled with the workbench, they can be found here. Clone this repository in the normal way, and use the RM Schemas dialog to point to this location instead of the bundled schemas location.</p>
-</div>
-<div class="paragraph">
-<p>Whether using the bundled or Github repository schemas, you will need to have all the relevant RM schemas selected within the workbench, for your archetypes to work. This is done as follows:</p>
+<p>The primary location for openEHR schemas is the <a href="https://github.com/openEHR/specifications-ITS-BMM" target="_blank" rel="noopener">specifications-ITS-BMM Github repository</a>. This contains schemas for all openEHR models, in BMM form. To use the repository as a model source for the AWB, clone it into a convenient area. Then use the RM Schemas dialog to use them, as follows:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Select the RM Schemas menu &gt; Configure Schemas&#8230;&#8203;</p>
+<p>Select <code>RM Schemas menu &gt; Configure Schemas&#8230;&#8203;</code> in the menu;</p>
+</li>
+<li>
+<p>Use the <code>RM schema directory</code> field at the bottom to browse for and add the cloned repository - specify the path <code>/components</code>;</p>
+</li>
+<li>
+<p>Click <code>Reload</code>;</p>
 </li>
 <li>
 <p>Ensure that the schemas you require are checked, as shown <a href="adl_workbench_guide/images/options_rm_schema_config.png">here</a>.</p>
@@ -1380,7 +1388,7 @@
 </ul>
 </div>
 <div class="paragraph">
-<p>You can use the <a href="adl_workbench_guide/images/profile_combo.png">profile combo selector</a> above the archetype explorer to switch between the libraries. The remaining sections below describe how to see the ADL/AOM 2 changes using the archetypes you have configured above.</p>
+<p>Several RM schemas are provided with the AWB, which are copies of the controlled versions found in the <a href="https://github.com/openEHR/adl-archetypes" target="_blank" rel="noopener">adl-archetypes GitHub repository</a>. Whether using the bundled or Github repository schemas, you will need to have all the relevant RM schemas selected within the workbench, for your archetypes to work.</p>
 </div>
 </div>
 </div>
@@ -1427,7 +1435,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="odin">	<span class="tok-nc">file_system</span> <span class="tok-o">=</span> <span class="tok-p">&lt;</span>
+<pre class="pygments highlight"><code data-lang="odin"><span></span>	<span class="tok-nc">file_system</span> <span class="tok-o">=</span> <span class="tok-p">&lt;</span>
 		<span class="tok-nc">terminology_directory</span> <span class="tok-o">=</span> <span class="tok-p">&lt;</span><span class="tok-s">&quot;C:</span><span class="tok-se">\\</span><span class="tok-s">dev</span><span class="tok-se">\\</span><span class="tok-s">openEHR</span><span class="tok-se">\\</span><span class="tok-s">terminology</span><span class="tok-se">\\</span><span class="tok-s">openEHR_RM</span><span class="tok-se">\\</span><span class="tok-s">RM</span><span class="tok-se">\\</span><span class="tok-s">Release-1.0.2&quot;</span><span class="tok-p">&gt;</span>
 		<span class="tok-nc">aom_profile_directory</span> <span class="tok-o">=</span> <span class="tok-p">&lt;</span><span class="tok-s">&quot;C:</span><span class="tok-se">\\</span><span class="tok-s">dev</span><span class="tok-se">\\</span><span class="tok-s">openEHR</span><span class="tok-se">\\</span><span class="tok-s">adl-tools</span><span class="tok-se">\\</span><span class="tok-s">apps</span><span class="tok-se">\\</span><span class="tok-s">resources</span><span class="tok-se">\\</span><span class="tok-s">aom_profiles&quot;</span><span class="tok-p">&gt;</span>
 		<span class="tok-nc">export_directory</span> <span class="tok-o">=</span> <span class="tok-p">&lt;</span><span class="tok-s">&quot;C:</span><span class="tok-se">\\</span><span class="tok-s">Users</span><span class="tok-se">\\</span><span class="tok-s">Thomas</span><span class="tok-se">\\</span><span class="tok-s">AppData</span><span class="tok-se">\\</span><span class="tok-s">Local</span><span class="tok-se">\\</span><span class="tok-s">openEHR</span><span class="tok-se">\\</span><span class="tok-s">adl_workbench</span><span class="tok-se">\\</span><span class="tok-s">export&quot;</span><span class="tok-p">&gt;</span>
@@ -1534,7 +1542,7 @@ what has been known as the 'ADL 1.5' formalism has been renamed to 'ADL 2' at th
 </div>
 </div>
 <div class="sect2">
-<h3 id="_adl_aom_2_new_features"><a class="anchor" href="#_adl_aom_2_new_features"></a>7.2. ADL/AOM 2 - New features</h3>
+<h3 id="_adlaom_2_new_features"><a class="anchor" href="#_adlaom_2_new_features"></a>7.2. ADL/AOM 2 - New features</h3>
 <div class="sect3">
 <h4 id="_meta_data_changes"><a class="anchor" href="#_meta_data_changes"></a>7.2.1. Meta-data changes</h4>
 <div class="paragraph">
@@ -1552,20 +1560,20 @@ what has been known as the 'ADL 1.5' formalism has been renamed to 'ADL 2' at th
 <div class="paragraph">
 <p>The coding system used in ADL 1.4 archetypes used at-codes to identify everything, apart from occasional ac-codes to identify external value sets. This has been replaced by a new coding system in which id-codes identify all archetype nodes, at-codes identify terminology values and ac-codes identify terminology value sets, internal and external. The <a href="https://specifications.openehr.org/releases/AM/latest/ADL2.html#_node_identifiers" target="_blank" rel="noopener">ADL2 specification Node identifiers section</a> describes the details.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/adl2_id_codes.png" alt="adl2 id codes">
 </div>
 <div class="title">Figure 48. ADL2 id-codes</div>
 </div></div></td>
-<td class="tableblock halign-left valign-top"><div><div class="imageblock text-center">
+<td class="tableblock halign-left valign-top"><div class="content"><div class="imageblock text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/adl2_at_ac_codes.png" alt="adl2 at ac codes">
 </div>
@@ -1649,7 +1657,7 @@ what has been known as the 'ADL 1.5' formalism has been renamed to 'ADL 2' at th
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="cadl">    <span class="tok-nc">EVALUATION</span><span class="tok-p">[</span><span class="tok-nd">at0000.1</span><span class="tok-p">]</span> <span class="tok-o">matches </span><span class="tok-p">{</span> <span class="tok-c">-- Diagnosis</span>
+<pre class="pygments highlight"><code data-lang="cadl"><span></span>    <span class="tok-nc">EVALUATION</span><span class="tok-p">[</span><span class="tok-nd">at0000.1</span><span class="tok-p">]</span> <span class="tok-o">matches </span><span class="tok-p">{</span> <span class="tok-c">-- Diagnosis</span>
         <span class="tok-p">/</span><span class="tok-nc">data</span><span class="tok-p">/</span><span class="tok-nc">items</span><span class="tok-p">[</span><span class="tok-nd">at0002.1</span><span class="tok-p">]/</span><span class="tok-nc">value</span><span class="tok-p"> </span><span class="tok-o">matches</span>
             <span class="tok-nc">DV_CODED_TEXT</span> <span class="tok-o">matches </span><span class="tok-p">{...}</span>
         <span class="tok-p">}</span>
@@ -1830,7 +1838,7 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="odin"><span class="tok-nc">annotations</span>
+<pre class="pygments highlight"><code data-lang="odin"><span></span><span class="tok-nc">annotations</span>
   <span class="tok-nc">items</span> <span class="tok-o">=</span> <span class="tok-p">&lt;</span>
     <span class="tok-p">[</span><span class="tok-s">&quot;en&quot;</span><span class="tok-p">]</span> <span class="tok-o">=</span> <span class="tok-p">&lt;</span>
       <span class="tok-nc">items</span> <span class="tok-o">=</span> <span class="tok-p">&lt;</span>
@@ -1858,7 +1866,7 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="odin"><span class="tok-nc">annotations</span>
+<pre class="pygments highlight"><code data-lang="odin"><span></span><span class="tok-nc">annotations</span>
   <span class="tok-nc">items</span> <span class="tok-o">=</span> <span class="tok-p">&lt;</span>
     <span class="tok-p">[</span><span class="tok-s">&quot;en&quot;</span><span class="tok-p">]</span> <span class="tok-o">=</span> <span class="tok-p">&lt;</span>
       <span class="tok-nc">items</span> <span class="tok-o">=</span> <span class="tok-p">&lt;</span>
@@ -2195,9 +2203,9 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash">    <span class="tok-nv">$ </span>adlc --help
-    <span class="tok-nv">$ </span>adlc -h
-    <span class="tok-nv">$ </span>adlc -?                    <span class="tok-c1"># windows only</span></code></pre>
+<pre class="pygments highlight"><code data-lang="bash"><span></span>    $ adlc --help
+    $ adlc -h
+    $ adlc -?                    <span class="tok-c1"># windows only</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2205,8 +2213,8 @@ You can also use the 'Source' tab to see the path-based constraints in their sou
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash">    <span class="tok-nv">$ </span>adlc -q --show_config
-    <span class="tok-nv">$ </span>adlc -q -s
+<pre class="pygments highlight"><code data-lang="bash"><span></span>    $ adlc -q --show_config
+    $ adlc -q -s
 
 User .cfg file location: C:<span class="tok-se">\U</span>sers<span class="tok-se">\T</span>homas<span class="tok-se">\A</span>ppData<span class="tok-se">\L</span>ocal<span class="tok-se">\o</span>penEHR<span class="tok-se">\a</span>dl_workbench<span class="tok-se">\a</span>dl_workbench.cfg
 XML rules file location: C:<span class="tok-se">\U</span>sers<span class="tok-se">\T</span>homas<span class="tok-se">\A</span>ppData<span class="tok-se">\L</span>ocal<span class="tok-se">\o</span>penEHR<span class="tok-se">\a</span>dl_workbench<span class="tok-se">\x</span>ml_rules.cfg
@@ -2244,8 +2252,8 @@ Configured repositories:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash">    <span class="tok-nv">$ </span>adlc -q -b openEHR-CKM -l
-    <span class="tok-nv">$ </span>adlc -q --library openEHR-CKM --list
+<pre class="pygments highlight"><code data-lang="bash"><span></span>    $ adlc -q -b openEHR-CKM -l
+    $ adlc -q --library openEHR-CKM --list
 
     openehr-demographic-address.address.v1.0.0
     openehr-demographic-address.address-provider.v1.0.0
@@ -2265,8 +2273,8 @@ Configured repositories:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash">    <span class="tok-nv">$ </span>adlc -q -b openEHR-CKM -d
-    <span class="tok-nv">$ </span>adlc -q --library openEHR-CKM --display
+<pre class="pygments highlight"><code data-lang="bash"><span></span>    $ adlc -q -b openEHR-CKM -d
+    $ adlc -q --library openEHR-CKM --display
 
     ------------ Archetypes in library <span class="tok-s1">&#39;openEHR-CKM&#39;</span> --------------
         +-- ADDRESS
@@ -2304,8 +2312,8 @@ Configured repositories:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash">    <span class="tok-nv">$ </span>adlc -q -b openEHR-CKM -a list .*problem.*
-    <span class="tok-nv">$ </span>adlc -q --library openEHR-CKM --action list .*problem.*
+<pre class="pygments highlight"><code data-lang="bash"><span></span>    $ adlc -q -b openEHR-CKM -a list .*problem.*
+    $ adlc -q --library openEHR-CKM --action list .*problem.*
 
     openEHR-EHR-COMPOSITION.problem_list.v1.0.0
     openEHR-EHR-EVALUATION.problem.v1.0.0
@@ -2318,22 +2326,22 @@ Configured repositories:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash">    <span class="tok-nv">$ </span>adlc -q -b openEHR-CKM -a validate openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0
-    <span class="tok-nv">$ </span>adlc -q --library openEHR-CKM --action validate openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0
-    <span class="tok-nv">$ </span><span class="tok-c1"># no output</span>
-    <span class="tok-nv">$ </span>adlc --library openEHR-CKM --action validate openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0
+<pre class="pygments highlight"><code data-lang="bash"><span></span>    $ adlc -q -b openEHR-CKM -a validate openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0
+    $ adlc -q --library openEHR-CKM --action validate openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0
+    $ <span class="tok-c1"># no output</span>
+    $ adlc --library openEHR-CKM --action validate openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0
 
     ------------- compiling ARCHETYPE ---- openEHR-EHR-EVALUATION.problem.v1.0.0 -------------
-    WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /data<span class="tok-o">[</span>at0001<span class="tok-p">|</span>structure<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0014<span class="tok-p">|</span>Aetiology<span class="tok-p">|</span><span class="tok-o">]</span>/items cardinality 1..* same as in reference model
-    WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /data<span class="tok-o">[</span>at0001<span class="tok-p">|</span>structure<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0018<span class="tok-p">|</span>Occurrences or exacerbations<span class="tok-p">|</span><span class="tok-o">]</span>/items cardinality 1..* same as in referen
+    WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /data<span class="tok-o">[</span>at0001<span class="tok-p">|</span>structure<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0014<span class="tok-p">|</span>Aetiology<span class="tok-p">|</span><span class="tok-o">]</span>/items cardinality <span class="tok-m">1</span>..* same as in reference model
+    WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /data<span class="tok-o">[</span>at0001<span class="tok-p">|</span>structure<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0018<span class="tok-p">|</span>Occurrences or exacerbations<span class="tok-p">|</span><span class="tok-o">]</span>/items cardinality <span class="tok-m">1</span>..* same as in referen
     ce model
     WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /data<span class="tok-o">[</span>at0001<span class="tok-p">|</span>structure<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0018<span class="tok-p">|</span>Occurrences or exacerbations<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0021<span class="tok-p">|</span>Occurrence/exacerbation<span class="tok-p">|</span><span class="tok-o">]</span>/it
-    ems cardinality 1..* same as in reference model
-    WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /data<span class="tok-o">[</span>at0001<span class="tok-p">|</span>structure<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0026<span class="tok-p">|</span>Related problems<span class="tok-p">|</span><span class="tok-o">]</span>/items cardinality 1..* same as in reference model
-    WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /data<span class="tok-o">[</span>at0001<span class="tok-p">|</span>structure<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0026<span class="tok-p">|</span>Related problems<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0027<span class="tok-p">|</span>Related problem<span class="tok-p">|</span><span class="tok-o">]</span>/items cardinality 1..*
+    ems cardinality <span class="tok-m">1</span>..* same as in reference model
+    WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /data<span class="tok-o">[</span>at0001<span class="tok-p">|</span>structure<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0026<span class="tok-p">|</span>Related problems<span class="tok-p">|</span><span class="tok-o">]</span>/items cardinality <span class="tok-m">1</span>..* same as in reference model
+    WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /data<span class="tok-o">[</span>at0001<span class="tok-p">|</span>structure<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0026<span class="tok-p">|</span>Related problems<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0027<span class="tok-p">|</span>Related problem<span class="tok-p">|</span><span class="tok-o">]</span>/items cardinality <span class="tok-m">1</span>..*
      same as in reference model
-    WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /protocol<span class="tok-o">[</span>at0032<span class="tok-p">|</span>Tree<span class="tok-p">|</span><span class="tok-o">]</span>/items cardinality 0..* same as in reference model
-    WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /protocol<span class="tok-o">[</span>at0032<span class="tok-p">|</span>Tree<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0033<span class="tok-p">|</span>References<span class="tok-p">|</span><span class="tok-o">]</span>/items cardinality 1..* same as in reference model
+    WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /protocol<span class="tok-o">[</span>at0032<span class="tok-p">|</span>Tree<span class="tok-p">|</span><span class="tok-o">]</span>/items cardinality <span class="tok-m">0</span>..* same as in reference model
+    WARNING <span class="tok-o">(</span>WCACA<span class="tok-o">)</span> attribute items in object node at /protocol<span class="tok-o">[</span>at0032<span class="tok-p">|</span>Tree<span class="tok-p">|</span><span class="tok-o">]</span>/items<span class="tok-o">[</span>at0033<span class="tok-p">|</span>References<span class="tok-p">|</span><span class="tok-o">]</span>/items cardinality <span class="tok-m">1</span>..* same as in reference model
     ------------- compiling ARCHETYPE ---- openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0 -------------
     WARNING <span class="tok-o">(</span>WOUC<span class="tok-o">)</span> code at0.37 in ontology not used in archetype definition
     WARNING <span class="tok-o">(</span>WOUC<span class="tok-o">)</span> code at0.38 in ontology not used in archetype definition
@@ -2346,8 +2354,8 @@ Configured repositories:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash">    <span class="tok-nv">$ </span>adlc -q -b openEHR-CKM -a serialise -f json openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0
-    <span class="tok-nv">$ </span>adlc -q --library openEHR-CKM --action serialise --format json openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0</code></pre>
+<pre class="pygments highlight"><code data-lang="bash"><span></span>    $ adlc -q -b openEHR-CKM -a serialise -f json openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0
+    $ adlc -q --library openEHR-CKM --action serialise --format json openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2355,7 +2363,7 @@ Configured repositories:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="json">    <span class="tok-p">{</span>
+<pre class="pygments highlight"><code data-lang="json"><span></span>    <span class="tok-p">{</span>
             <span class="tok-nt">&quot;original_language&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;ISO_639-1::en&quot;</span><span class="tok-p">,</span>
             <span class="tok-nt">&quot;translations&quot;</span><span class="tok-p">:</span> <span class="tok-p">[{</span>
                     <span class="tok-nt">&quot;de&quot;</span><span class="tok-p">:</span> <span class="tok-p">{</span>
@@ -2417,8 +2425,8 @@ Configured repositories:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash">    <span class="tok-nv">$ </span>adlc -q -b openEHR-CKM -a serialise --flat openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0
-    <span class="tok-nv">$ </span>adlc -q --library openEHR-CKM --action serialise --flat openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0</code></pre>
+<pre class="pygments highlight"><code data-lang="bash"><span></span>    $ adlc -q -b openEHR-CKM -a serialise --flat openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0
+    $ adlc -q --library openEHR-CKM --action serialise --flat openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2426,7 +2434,7 @@ Configured repositories:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="adl"><span class="tok-gh">archetype</span><span class="tok-p"> (</span><span class="tok-nc">adl_version</span><span class="tok-o">=</span><span class="tok-l">2.0.6</span><span class="tok-p">;</span> <span class="tok-nc">generated</span><span class="tok-p">)</span>
+<pre class="pygments highlight"><code data-lang="adl"><span></span><span class="tok-gh">archetype</span><span class="tok-p"> (</span><span class="tok-nc">adl_version</span><span class="tok-o">=</span><span class="tok-l">2.0.6</span><span class="tok-p">;</span> <span class="tok-nc">generated</span><span class="tok-p">)</span>
 <span class="tok-nd">    openEHR-EHR-EVALUATION.problem-diagnosis.v1.0.0</span>
 
 <span class="tok-gh">specialize</span>
@@ -2597,7 +2605,7 @@ Configured repositories:
 <div class="paragraph">
 <p>An initial schema for ISO 13606-1 has been included in the set of RM schemas used by AWB. This was produced by Christoph Rinner (Medical University of Vienna) and Thomas Beale (Ars Semantica). The definitive copy of this resides in the <a href="https://github.com/openEHR/reference-models">openEHR reference-models GitHub repository</a>. If you are interested in being added to the committers list to work on this schema, please email webmaster at openehr.org.</p>
 </div>
-<div id="rm_schema_en13606" class="imageblock text-center" style="text-align: center">
+<div id="rm_schema_en13606" class="imageblock text-center text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/rm_schema_en13606.png" alt="rm schema en13606">
 </div>
@@ -2609,7 +2617,7 @@ Configured repositories:
 <div class="paragraph">
 <p>The entire ISO 13606 model can be viewed in the AWB RM schema and Class tools, and comparisons can be made with classes in the openEHR reference model.</p>
 </div>
-<div id="rm_schema_tool_duplex_classes" class="imageblock text-center" style="text-align: center">
+<div id="rm_schema_tool_duplex_classes" class="imageblock text-center text-center">
 <div class="content">
 <img src="adl_workbench_guide/images/rm_schema_tool_duplex_classes.png" alt="rm schema tool duplex classes">
 </div>
@@ -3521,7 +3529,7 @@ Configured repositories:
 </div>
 </div>
 <div class="sect2">
-<h3 id="_interim_release_subversion_89_24_aug_2006_various_small_fixes"><a class="anchor" href="#_interim_release_subversion_89_24_aug_2006_various_small_fixes"></a>14.18. interim release subversion 89 - 24/aug/2006 - various small fixes</h3>
+<h3 id="_interim_release_subversion_89_24aug2006_various_small_fixes"><a class="anchor" href="#_interim_release_subversion_89_24aug2006_various_small_fixes"></a>14.18. interim release subversion 89 - 24/aug/2006 - various small fixes</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -3544,7 +3552,7 @@ Configured repositories:
 </div>
 </div>
 <div class="sect2">
-<h3 id="_interim_release_subversion_81_29_jun_2006_iso_8601_date_time_enhancements_fixes"><a class="anchor" href="#_interim_release_subversion_81_29_jun_2006_iso_8601_date_time_enhancements_fixes"></a>14.19. interim release Subversion 81 - 29/Jun/2006 - ISO 8601 date/time enhancements &amp; fixes</h3>
+<h3 id="_interim_release_subversion_81_29jun2006_iso_8601_datetime_enhancements_fixes"><a class="anchor" href="#_interim_release_subversion_81_29jun2006_iso_8601_datetime_enhancements_fixes"></a>14.19. interim release Subversion 81 - 29/Jun/2006 - ISO 8601 date/time enhancements &amp; fixes</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -3598,7 +3606,7 @@ Configured repositories:
 </div>
 </div>
 <div class="sect2">
-<h3 id="_interim_release_subversion_63_14_may_2006_adl_1_4_compliance"><a class="anchor" href="#_interim_release_subversion_63_14_may_2006_adl_1_4_compliance"></a>14.20. interim release Subversion 63 - 14/May/2006 ADL - 1.4 compliance</h3>
+<h3 id="_interim_release_subversion_63_14may2006_adl_1_4_compliance"><a class="anchor" href="#_interim_release_subversion_63_14may2006_adl_1_4_compliance"></a>14.20. interim release Subversion 63 - 14/May/2006 ADL - 1.4 compliance</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -3646,7 +3654,7 @@ Configured repositories:
 </div>
 </div>
 <div class="sect2">
-<h3 id="_interim_release_subversion_47_02_apr_2006"><a class="anchor" href="#_interim_release_subversion_47_02_apr_2006"></a>14.21. interim release Subversion 47 - 02/Apr/2006</h3>
+<h3 id="_interim_release_subversion_47_02apr2006"><a class="anchor" href="#_interim_release_subversion_47_02apr2006"></a>14.21. interim release Subversion 47 - 02/Apr/2006</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -3666,7 +3674,7 @@ Configured repositories:
 </div>
 </div>
 <div class="sect2">
-<h3 id="_interim_release_subversion_46_27_mar_2006"><a class="anchor" href="#_interim_release_subversion_46_27_mar_2006"></a>14.22. interim release Subversion 46 - 27/Mar/2006</h3>
+<h3 id="_interim_release_subversion_46_27mar2006"><a class="anchor" href="#_interim_release_subversion_46_27mar2006"></a>14.22. interim release Subversion 46 - 27/Mar/2006</h3>
 <div class="paragraph">
 <p>All archetypes parse, save and reparse as expected except SOAP Headings.</p>
 </div>
@@ -3754,7 +3762,7 @@ Configured repositories:
 </div>
 </div>
 <div class="sect2">
-<h3 id="_interim_release_bitkeeper_cset_1_57_23_june_2005"><a class="anchor" href="#_interim_release_bitkeeper_cset_1_57_23_june_2005"></a>14.25. interim release BitKeeper cset 1.57 23/June/2005</h3>
+<h3 id="_interim_release_bitkeeper_cset_1_57_23june2005"><a class="anchor" href="#_interim_release_bitkeeper_cset_1_57_23june2005"></a>14.25. interim release BitKeeper cset 1.57 23/June/2005</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -3824,7 +3832,7 @@ create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, h_a_ri
 </div>
 </div>
 <div class="sect2">
-<h3 id="_release_arch_desc_bitkeeper_cset_1_56_19_june_2005"><a class="anchor" href="#_release_arch_desc_bitkeeper_cset_1_56_19_june_2005"></a>14.26. release 'arch_desc' BitKeeper cset 1.56 19/June/2005</h3>
+<h3 id="_release_arch_desc_bitkeeper_cset_1_56_19june2005"><a class="anchor" href="#_release_arch_desc_bitkeeper_cset_1_56_19june2005"></a>14.26. release 'arch_desc' BitKeeper cset 1.56 19/June/2005</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -3841,7 +3849,7 @@ create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, h_a_ri
 </div>
 </div>
 <div class="sect2">
-<h3 id="_interim_release_bitkeeper_cset_1_50_01_june_2005"><a class="anchor" href="#_interim_release_bitkeeper_cset_1_50_01_june_2005"></a>14.27. interim release BitKeeper cset 1.50 01/June/2005</h3>
+<h3 id="_interim_release_bitkeeper_cset_1_50_01june2005"><a class="anchor" href="#_interim_release_bitkeeper_cset_1_50_01june2005"></a>14.27. interim release BitKeeper cset 1.50 01/June/2005</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -3858,7 +3866,7 @@ create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, h_a_ri
 </div>
 </div>
 <div class="sect2">
-<h3 id="_interim_release_bitkeeper_cset_1_49_30_may_2005"><a class="anchor" href="#_interim_release_bitkeeper_cset_1_49_30_may_2005"></a>14.28. interim release BitKeeper cset 1.49 30/May/2005</h3>
+<h3 id="_interim_release_bitkeeper_cset_1_49_30may2005"><a class="anchor" href="#_interim_release_bitkeeper_cset_1_49_30may2005"></a>14.28. interim release BitKeeper cset 1.49 30/May/2005</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -3885,7 +3893,7 @@ create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, h_a_ri
 </div>
 </div>
 <div class="sect2">
-<h3 id="_interim_release_bitkeeper_cset_1_48_06_may_2005"><a class="anchor" href="#_interim_release_bitkeeper_cset_1_48_06_may_2005"></a>14.29. interim release BitKeeper cset 1.48 06/May/2005</h3>
+<h3 id="_interim_release_bitkeeper_cset_1_48_06may2005"><a class="anchor" href="#_interim_release_bitkeeper_cset_1_48_06may2005"></a>14.29. interim release BitKeeper cset 1.48 06/May/2005</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -3919,7 +3927,7 @@ create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, h_a_ri
 </div>
 </div>
 <div class="sect2">
-<h3 id="_interim_release_bitkeeper_cset_1_39_25_feb_2005"><a class="anchor" href="#_interim_release_bitkeeper_cset_1_39_25_feb_2005"></a>14.31. interim release BitKeeper cset 1.39 25/Feb/2005</h3>
+<h3 id="_interim_release_bitkeeper_cset_1_39_25feb2005"><a class="anchor" href="#_interim_release_bitkeeper_cset_1_39_25feb2005"></a>14.31. interim release BitKeeper cset 1.39 25/Feb/2005</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -4360,8 +4368,9 @@ create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, h_a_ri
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-04-03 21:04:59 BST
+Last updated 2020-02-11 08:52:04 UTC
 </div>
 </div>
+<link rel="stylesheet" href="https://specifications.openehr.org/styles/pygments-murphy.css">
 </body>
 </html>

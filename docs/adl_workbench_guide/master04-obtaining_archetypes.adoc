@@ -64,4 +64,7 @@ Choosing either of these will result in a library row being added to the reposit
 .Repositories add new library (updated)
 image::{images_uri}/repositories_new_lib_added.png[id=repositories_new_lib_added, align="center"]
 
-Once repositories and libraries have been set up as desired, the repository dialog can be dismissed, and the library selector can be used as in previous versions to select the desired repository. The effect of the repository setup activities causes just the repository root directories to be recorded in the .cfg file (you can see this via Tools > Options > Edit file).
+The effect of the repository setup activities causes just the repository root directories to be recorded in the `.cfg` file (you can see this via the menu option `Tools > Options > Edit file`).
+
+You can use the link:{images_uri}/profile_combo.png[profile combo selector] above the archetype explorer to switch between the loaded libraries.
+

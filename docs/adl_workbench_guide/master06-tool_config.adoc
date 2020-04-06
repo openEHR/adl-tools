@@ -6,17 +6,17 @@ In order to work with the examples described below, the following configuration 
 
 === RM Schema configuration
 
-Reference Model (RM) Schemas are used by the ADL Workbench to validate archetypes and templates. Schemas are expressed as ODIN (was 'dADL') files and have a '.bmm' (basic meta-model) extension. These schemas are defined in a nested way, with most files visible here being used as component schemas for a small number of top-level schemas representing the openEHR Reference Model, EN13606 model and so on. The ADL Workbench comes with schemas for various reference models bundled.
+Reference Model (RM) Schemas are used by the ADL Workbench to validate archetypes and templates. Schemas are expressed as {openehr_odin}[ODIN files^] and have a `.bmm` ({openehr_bmm}[BMM, basic meta-model^]) extension. These schemas are defined in a nested way, with most files visible here being used as component schemas for a small number of top-level schemas representing the openEHR Reference Model, EN13606 model and so on.
 
-If you want access to RM schemas not yet bundled with the workbench, they can be found here. Clone this repository in the normal way, and use the RM Schemas dialog to point to this location instead of the bundled schemas location.
+The primary location for openEHR schemas is the {openehr_its_bmm}[specifications-ITS-BMM Github repository^]. This contains schemas for all openEHR models, in BMM form. To use the repository as a model source for the AWB, clone it into a convenient area. Then use the RM Schemas dialog to use them, as follows:
 
-Whether using the bundled or Github repository schemas, you will need to have all the relevant RM schemas selected within the workbench, for your archetypes to work. This is done as follows:
-
-* Select the RM Schemas menu > Configure Schemas...
+* Select `RM Schemas menu > Configure Schemas...` in the menu;
+* Use the `RM schema directory` field at the bottom to browse for and add the cloned repository - specify the path `/components`;
+* Click `Reload`;
 * Ensure that the schemas you require are checked, as shown link:{images_uri}/options_rm_schema_config.png[here].
 * Save the configuration.
 
-You can use the link:{images_uri}/profile_combo.png[profile combo selector] above the archetype explorer to switch between the libraries. The remaining sections below describe how to see the ADL/AOM 2 changes using the archetypes you have configured above.
+Several RM schemas are provided with the AWB, which are copies of the controlled versions found in the {openehr_adl_archetypes_github}[adl-archetypes GitHub repository^]. Whether using the bundled or Github repository schemas, you will need to have all the relevant RM schemas selected within the workbench, for your archetypes to work. 
 
 == The .cfg file
 
