@@ -26,7 +26,7 @@ def log_date():
 
 def log_process(args):
 	commandline = subprocess.list2cmdline(args)
-	if log_file != sys.stdout: print '  ' + commandline
+	if log_file != sys.stdout: print('  ' + commandline)
 	log(commandline)
 	log_file.flush()
 	subprocess.call(args, stdout = log_file, stderr = subprocess.STDOUT)
@@ -96,7 +96,7 @@ def ec_action(target, source, env):
 
 	for t in target:
 		if result == 0 and not os.path.exists(str(t)):
-			print log_file_tail()
+			print(log_file_tail())
 			result = 1
 
 	if rc_copied_to_target: os.remove(rc_copied_to_target)
@@ -130,10 +130,14 @@ def ec_emitter(target, source, env):
 	else:
 		ec_target = ""
 
-	if len(source) == 0:
-		print '****** ERROR! No source .ecf file specified: cannot build ' + ec_target
+	"""
 	elif not env.Detect(env['EC']):
-		print '****** ERROR! The Eiffel compiler ' + env['EC'] + ' is missing from your path: cannot build ' + ec_target
+		print('****** ERROR! The Eiffel compiler ' + env['EC'] + ' is missing from your path: cannot build ' + ec_target)
+	"""
+
+	if len(source) == 0:
+		print('****** ')
+		print('! No source .ecf file specified: cannot build ' + ec_target_)
 	else:
 		ecf = str(source[0])
 		ec_path = os.getcwd()
@@ -157,7 +161,7 @@ def ec_emitter(target, source, env):
 		ecf_as_xml = xml.dom.minidom.parse(ecf)
 		ec_target_next = ec_target
 
-		while ec_target_next <> None:
+		while ec_target_next != None:
 			t = ec_target_next
 			ec_target_next = None
 
@@ -241,7 +245,7 @@ def ecf_scanner(node, env, path):
 		ecf_config_path = os.path.dirname(os.path.abspath(str(node)))
 
 		for token in ecf_environment_variable_regex.findall(element.attributes['location'].value):
-			if token[0] <> r'$':
+			if token[0] != r'$':
 				result += token
 			elif token == r'$|':
 				result += element_location(element.parentNode) + '/'
@@ -253,7 +257,7 @@ def ecf_scanner(node, env, path):
 				if s:
 					result += s
 				else:
-					print '****** WARNING!', str(node), 'uses undefined environment variable', token
+					print('****** WARNING!', str(node), 'uses undefined environment variable', token)
 
 		result = result.replace('\\', '/')
 
@@ -307,7 +311,7 @@ def generate(env):
 
 	for v in ['ISE_EIFFEL', 'ISE_PLATFORM', 'ISE_C_COMPILER']:
 		if not environment_variable(env, v):
-			print '****** WARNING! Undefined Eiffel environment variable ' + v + '.'
+			print('****** WARNING! Undefined Eiffel environment variable ' + v + '.')
 
 def exists(env):
 	"""Is the Eiffel compiler available?"""
@@ -323,7 +327,7 @@ def environment_variable(env, var):
 	result = None
 	var = var.lstrip('$').lstrip('(').rstrip(')')
 
-	if env['ENV'].has_key(var):
+	if var in env['ENV']:
 		result = env['ENV'][var]
 	elif var == 'ISE_PLATFORM':
 		if env['PLATFORM'] == 'win32':

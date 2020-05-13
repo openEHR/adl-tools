@@ -107,7 +107,7 @@ if distrib and len(adl_workbench) > 0:
 		Install(distrib + '/adl_parser/dotnet', adl_parser)
 
 		if not env.Detect('makensis'):
-			print 'WARNING! NSIS is missing from your path: cannot build installer for ADL Workbench.'
+			print('WARNING! NSIS is missing from your path: cannot build installer for ADL Workbench.')
 		else:
 			command = [
 				'makensis', '-V1',
@@ -149,7 +149,7 @@ if distrib and len(adl_workbench) > 0:
 		if not os.path.exists(packagemaker): packagemaker = '/Developer/Tools/packagemaker'
 
 		if not os.path.exists(packagemaker):
-			print 'WARNING! ' + packagemaker + ' is missing: cannot build installer for ADL Workbench.'
+			print('WARNING! ' + packagemaker + ' is missing: cannot build installer for ADL Workbench.')
 		else:
 			pkg_tree = distrib + '/' + platform
 			pkg_contents = pkg_tree + '/ADL_Workbench'
@@ -225,12 +225,12 @@ if distrib and len(adl_workbench) > 0:
 #	git tag -m 'Tag for the initial commit.' Revision b900305458cf617ac511c7fdbc5cd183f9bdbd15
 
 if not env.Detect('git'):
-	print 'WARNING! The git command is missing from your path: cannot set the revision part of the version number.'
+	print('WARNING! The git command is missing from your path: cannot set the revision part of the version number.')
 else:
 	match = re.match(r'Revision-(\d+)', os.popen('git describe --match Revision').read())
 
 	if not match:
-		print 'WARNING! The git Revision tag was missing: cannot set the revision part of the version number.'
+		print('WARNING! The git Revision tag was missing: cannot set the revision part of the version number.')
 	else:
 		revision = str(int(match.group(1)) + 1000)
 
