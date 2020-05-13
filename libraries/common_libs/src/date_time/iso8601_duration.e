@@ -61,7 +61,7 @@ feature {NONE} -- Initialisation
 			value_when_zero: is_zero implies value.is_equal (str)
 		end
 
-	make (yr, mo, wk, dy, hr, mi, sec: INTEGER; sec_frac: DOUBLE)
+	make (yr, mo, wk, dy, hr, mi, sec: INTEGER; sec_frac: DOUBLE; is_negative: BOOLEAN)
 			-- Make from parts; any part can be zero.
 		require
 			years_valid: yr >= 0
@@ -82,6 +82,13 @@ feature {NONE} -- Initialisation
 			seconds := sec
 			fractional_seconds := sec_frac
 			has_time := hours > 0 or minutes > 0 or seconds > 0 or fractional_seconds > 0.0
+
+			if is_negative then
+				sign := -1
+			else
+				sign := 1
+			end
+
 			value := as_string
 		end
 
@@ -152,6 +159,10 @@ feature -- Output
 					Result.append ("T0S")
 				end
 			else
+				if sign = -1 then
+					Result.prepend ("-")
+				end
+
 				if years /= 0 then
 					Result.append (years.out + "Y")
 				end

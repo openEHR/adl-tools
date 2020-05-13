@@ -1327,7 +1327,7 @@ duration_pattern: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 				create c_duration.make_from_pattern ($1)
 			else
 				raise_error
-				report_error ("invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]")
+				report_error ("invalid duration constraint pattern; legal pattern: -P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or -P[W|w]")
 				abort
 			end
 		}

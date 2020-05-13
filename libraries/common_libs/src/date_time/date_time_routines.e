@@ -96,7 +96,7 @@ feature -- Status Report
 
 	valid_iso8601_duration_constraint_pattern(s: STRING): BOOLEAN is
 			-- True if string in form
-			-- P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]]
+			-- -P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]]
 			-- (note: allowing 'W' to be mixed in is an openEHR deviation of ISO 8601)
 		require
 			s_attached: s /= Void
@@ -105,6 +105,10 @@ feature -- Status Report
 			str, ymd_part, hms_part: STRING
 		do
 			str := s.as_upper
+
+			if str.starts_with ("-") then
+				str.remove (1)
+			end
 
 			if str.count >= 2 and str.item(1) = Duration_leader then
 				time_leader_pos := str.index_of(Time_leader, 1)

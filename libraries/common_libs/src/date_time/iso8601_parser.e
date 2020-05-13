@@ -19,7 +19,7 @@ inherit
 
 create
 	make
-	
+
 feature -- Definitions
 
 	Date_separator: CHARACTER is '-'
@@ -48,13 +48,13 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make is	
-			-- 
+	make is
+			--
 		do
 			create cached_iso8601_time_string.make(0)
 			create cached_iso8601_date_string.make(0)
 		end
-		
+
 feature -- Status Report
 
 --	valid_iso8601_string(a_str: STRING): BOOLEAN is
@@ -109,7 +109,7 @@ feature -- Status Report
 						tz_str := str.substring(tz_ind_pos, str.count)
 						if tz_str.count = 5 and tz_str.is_integer then
 							hms_part_end := tz_ind_pos - 1
-						else					
+						else
 							tz_ok := False
 						end
 					elseif str.has('-') then
@@ -117,15 +117,15 @@ feature -- Status Report
 						tz_str := str.substring(tz_ind_pos, str.count)
 						if tz_str.count = 5 and tz_str.is_integer then
 							hms_part_end := tz_ind_pos - 1
-						else					
+						else
 							tz_ok := False
 						end
 					else
 						hms_part_end := str.count
 					end
-					
+
 					-- now start processing the main part
-					if tz_ok then					
+					if tz_ok then
 						-- on first h digit
 						h_str := str.substring(csr, csr+1)
 						csr := csr + 2 -- on char after 2nd h digit
@@ -152,7 +152,7 @@ feature -- Status Report
 										end
 									end
 								elseif hms_part_end = csr + 1 then -- should be Thh:mm
-									m_str := str.substring(csr, csr+1)	
+									m_str := str.substring(csr, csr+1)
 									Result := valid_time_strings(h_str, m_str, Void, Void, tz_str, extended_form)
 								end
 							else -- non-extended form
@@ -185,8 +185,8 @@ feature -- Status Report
 					cached_iso8601_time_string := str
 				end
 			end
-		end		
-		
+		end
+
 	valid_iso8601_date(str: STRING): BOOLEAN is
 			-- True if string in one of the forms
 			--	YYYY
@@ -206,10 +206,10 @@ feature -- Status Report
 				Result := True
 			else
 				cached_iso8601_date := Void
-									
+
 				if str.count >= 4 then
 					csr := 1 -- on the first Y digit
-				
+
 					y_str := str.substring(csr, csr+3)
 					csr := csr + 4 -- on char after last Y digit
 					if str.count > csr then
@@ -227,7 +227,7 @@ feature -- Status Report
 									end
 								end
 							elseif str.count = csr + 1 then -- should be YYYY-MM
-								m_str := str.substring(csr, csr+1)	
+								m_str := str.substring(csr, csr+1)
 								Result := valid_date_strings(y_str, m_str, Void, extended_form)
 							end
 						else -- non-extended form
@@ -253,7 +253,7 @@ feature -- Status Report
 				end
 			end
 		end
-		
+
 	valid_iso8601_date_time(str: STRING): BOOLEAN is
 			-- True if string in one of the forms
 			--	YYYYMMDDThh
@@ -285,28 +285,28 @@ feature -- Status Report
 					time_part_ok := valid_iso8601_time(str.substring(time_sep_pos+1, str.count))
 					has_time_part := True
 				end
-					
+
 				date_part_ok := valid_iso8601_date(str.substring(1, end_date_part))
-				
-				if date_part_ok then 
+
+				if date_part_ok then
 					if has_time_part then
 						Result := time_part_ok and not cached_iso8601_date.is_partial
 						if cached_iso8601_time.second_unknown and cached_iso8601_date.is_extended then
 							cached_iso8601_time.set_extended
-						end 
+						end
 						Result := Result and cached_iso8601_time.is_extended = cached_iso8601_date.is_extended
 					else
 						Result := True
 					end
 				end
-				
+
 				if Result then
 					create cached_iso8601_date_time.make_date_time(cached_iso8601_date, cached_iso8601_time)
 					cached_iso8601_date_time_string := str
 				end
 			end
 		end
-		
+
 	valid_iso8601_duration(str: STRING): BOOLEAN is
 			-- True if string in form "PnYnMnWnDTnHnMnS"
 		require
@@ -316,16 +316,23 @@ feature -- Status Report
 			yr, mo, wk, dy, hr, mi, sec: INTEGER
 			yr_str, mo_str, wk_str, dy_str, hr_str, mi_str, sec_str, fsec_str: STRING
 			fsec: DOUBLE
+			is_negative: BOOLEAN
 			left, right, time_sep_pos, dec_pos: INTEGER
 		do
 			if cached_iso8601_duration_string /= Void and str.is_equal(cached_iso8601_duration_string) then
 				Result := True
 			else
 				cached_iso8601_duration := Void
+				left := 1
+				is_negative := str.starts_with ("-")
 
-				if str.item (1) = Duration_leader then
+				if is_negative then
+					left := left + 1
+				end
+
+				if str.count >= left and then str.item (left) = Duration_leader then
 					str1 := convert_to_lower(str)
-					left := 2
+					left := left + 1
 
 					Result := True
 					time_sep_pos := str1.index_of (Time_leader_lower, 1)
@@ -335,14 +342,14 @@ feature -- Status Report
 					else
 						ymd_part := str1
 					end
-						
+
 					-- years
 					right := ymd_part.index_of('y', left)
 					if right > 0 then
 						yr_str := ymd_part.substring(left, right-1)
 						if yr_str.is_integer then
 							yr := yr_str.to_integer
-								left := right + 1						
+								left := right + 1
 						else
 							Result := False
 						end
@@ -359,7 +366,7 @@ feature -- Status Report
 							else
 								Result := False
 							end
-						end	
+						end
 					end
 
 					-- weeks
@@ -373,7 +380,7 @@ feature -- Status Report
 							else
 								Result := False
 							end
-						end	
+						end
 					end
 
 					-- days
@@ -387,13 +394,13 @@ feature -- Status Report
 							else
 								Result := False
 							end
-						end		
+						end
 					end
 
-					if Result then 
+					if Result then
 						if time_sep_pos > 0 then
 							left := 1
-							
+
 							-- hours
 							right := hms_part.index_of('h', left)
 							if right > 0 then
@@ -406,7 +413,7 @@ feature -- Status Report
 								end
 							end
 
-							if Result then								
+							if Result then
 								-- minutes
 								right := hms_part.index_of('m', left)
 								if right > 0 then
@@ -447,16 +454,16 @@ feature -- Status Report
 						end
 					end
 					if Result then
-						create cached_iso8601_duration.make(yr, mo, wk, dy, hr, mi, sec, fsec)
+						create cached_iso8601_duration.make(yr, mo, wk, dy, hr, mi, sec, fsec, is_negative)
 						cached_iso8601_duration_string := str
 					end
 				end
 			end
 		end
-		
+
 feature {NONE} -- Implementation
 
-	valid_date_strings(y_str, m_str, d_str: STRING; is_extended: BOOLEAN): BOOLEAN is 
+	valid_date_strings(y_str, m_str, d_str: STRING; is_extended: BOOLEAN): BOOLEAN is
 			-- True if each string is within correct limits for years, mnonths, days
 		require
 			y_str /= Void
@@ -471,7 +478,7 @@ feature {NONE} -- Implementation
 					if m >= 1 and m <= Months_in_year then
 						if d_str /= Void and d_str.is_integer then
 							d := d_str.to_integer
-							if d >= 1 and d <= days_in_month(m, y) then	
+							if d >= 1 and d <= days_in_month(m, y) then
 								Result := True
 								create cached_iso8601_date.make_ymd(y, m, d, is_extended)
 							end
@@ -489,7 +496,7 @@ feature {NONE} -- Implementation
 			Result implies cached_iso8601_date /= Void
 		end
 
-	valid_time_strings(h_str, m_str, s_str, fs_str, tz_str: STRING; is_extended: BOOLEAN): BOOLEAN is 
+	valid_time_strings(h_str, m_str, s_str, fs_str, tz_str: STRING; is_extended: BOOLEAN): BOOLEAN is
 			-- True if each string is within correct limits for hours, minutes, seconds
 		require
 			h_str /= Void
@@ -527,10 +534,10 @@ feature {NONE} -- Implementation
 						if m_str /= Void and then m_str.is_integer then
 							m := m_str.to_integer
 							if m < Minutes_in_hour then
-								if s_str /= Void then 
+								if s_str /= Void then
 									if s_str.is_integer then
 										s := s_str.to_integer
-										if s < Seconds_in_minute then	
+										if s < Seconds_in_minute then
 											if h = Hours_in_day then
 												Result := m = 0 and s = 0
 											else
@@ -539,7 +546,7 @@ feature {NONE} -- Implementation
 											if Result then
 												if fs_str /= Void and fs_str.is_double then
 													fs := fs_str.to_double
-													if fs < 1.0 then			
+													if fs < 1.0 then
 														if h = Hours_in_day then
 															Result := fs = 0.0
 														else
@@ -616,17 +623,17 @@ feature {ISO8601_ROUTINES} -- Implementation
 	cached_iso8601_time_string: STRING
 			-- last time string on which is_valid_iso8601_time was called; used for matching
 			-- to decide on whether to use cached ISO8601_TIME value or not
-	
+
 	cached_iso8601_time: ISO8601_TIME
 			-- side-effect of calling valid_time_strings with valid input
-	
+
 	cached_iso8601_date_string: STRING
 			-- last date string on which is_valid_iso8601_date was called; used for matching
 			-- to decide on whether to use cached ISO8601_DATE value or not
 
 	cached_iso8601_date: ISO8601_DATE
 			-- side-effect of calling valid_time_strings with valid input
-	
+
 	cached_iso8601_date_time_string: STRING
 			-- last date string on which is_valid_iso8601_date was called; used for matching
 			-- to decide on whether to use cached ISO8601_DATE value or not

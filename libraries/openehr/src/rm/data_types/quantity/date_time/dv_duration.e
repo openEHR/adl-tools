@@ -25,15 +25,15 @@ inherit
 		redefine
 			as_string
 		end
-		
+
 	ISO8601_DURATION
 		rename
 			as_string as magnitude_as_string
 		undefine
 			default_create
 		end
-		
-create 
+
+create
 	default_create, make, make_from_seconds, make_from_string, make_from_canonical_string
 
 feature -- Initialization
@@ -41,7 +41,7 @@ feature -- Initialization
 	default_create is
 			-- make of duration days = 0, hours = 0, mins = 0, seconds = 0
 		do
-			make(0, 0, 0, 0, 0, 0, 0, 0.0)
+			make(0, 0, 0, 0, 0, 0, 0, 0.0, False)
 		ensure then
 			years_set: years = 0
 			months_set: months = 0
@@ -51,13 +51,13 @@ feature -- Initialization
 			minutes_set: minutes = 0
 			seconds_set: seconds = 0
 		end
-		
+
 	make_from_seconds(v: DOUBLE) is
 			-- create from a number of seconds, and turn into DHMS canonical form
 		do
-			
+
 		end
-		
+
 	make_from_canonical_string (str: STRING) is
 			-- make from string using default format
 		do
@@ -73,15 +73,15 @@ feature -- Status Report
 		end
 
 feature -- Access
-	
+
 	magnitude: DOUBLE_REF is
 			-- numeric value of the quantity
 		do
 			Result := to_seconds
 		end
-		
+
 feature -- Comparison
-		
+
 	is_strictly_comparable_to (other: like Current): BOOLEAN is
 		do
 			Result := True
@@ -115,7 +115,7 @@ feature -- Output
 				end
 			end
 		end
-	
+
 end
 
 

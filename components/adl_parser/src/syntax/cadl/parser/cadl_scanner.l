@@ -300,10 +300,10 @@ a[ct][0-9.]+ {
 				last_string_value := text
 		}
 
-----------/* V_ISO8601_DURATION PnYnMnWnDtnnHnnMnn.nnnS */ -------------------------------------------------
+----------/* V_ISO8601_DURATION -PnYnMnWnDtnnHnnMnn.nnnS */ -------------------------------------------------
 
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+([\.,][0-9]+)?[sS])? |
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
+-?P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+([\.,][0-9]+)?[sS])? |
+-?P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
 			}
@@ -363,8 +363,8 @@ T[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
 -- the following includes the openEHR deviation from ISO8601, to allow 'W' to be mixed in with 
 -- other designators
 
-P[yY]?[mM]?[Ww]?[dD]?T[hH]?[mM]?[sS]? |
-P[yY]?[mM]?[Ww]?[dD]? {
+-?P[yY]?[mM]?[Ww]?[dD]?T[hH]?[mM]?[sS]? |
+-?P[yY]?[mM]?[Ww]?[dD]? {
 				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN
 				last_string_value := text
 			}

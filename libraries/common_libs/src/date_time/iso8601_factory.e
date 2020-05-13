@@ -50,7 +50,7 @@ feature -- Conversion
 		end
 
 	create_iso8601_duration (str: STRING): ISO8601_DURATION is
-			-- make from string using ISO8601 format "PNNDTNNhNNmNNs"
+			-- make from string using ISO8601 format "-PNNDTNNhNNmNNs"
 		require
 			str_valid: str /= Void and then valid_iso8601_duration(str)
 		do

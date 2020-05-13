@@ -126,7 +126,7 @@ feature -- Access
 	pattern: STRING
 			-- ISO8601-based pattern like "yyyy-mm-XX".
 			-- Allowed patterns:
-			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]] or P[W|w]
+			-- -P[Y|y][M|m][D|d][T[H|h][M|m][S|s]] or -P[W|w]
 
 	interval: INTERVAL [ISO8601_DURATION]
 			-- ISO8601-based interval.
