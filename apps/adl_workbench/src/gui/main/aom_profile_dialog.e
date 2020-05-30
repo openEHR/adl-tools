@@ -64,9 +64,18 @@ feature -- Definitions
 			Result.put (get_text (ec_aom_profile_grid_edit_col_title), Grid_edit_col)
 		end
 
-	Frame_height: INTEGER = 200
+	Grid_fixed_cols: ARRAYED_LIST[INTEGER]
+		once
+			create Result.make(0)
+			Result.extend (Grid_profile_col)
+			Result.extend (Grid_terminologies_col)
+			Result.extend (Grid_validated_col)
+			Result.extend (Grid_edit_col)
+		end
 
-	Frame_width: INTEGER = 400
+	Frame_height: INTEGER = 700
+
+	Frame_width: INTEGER = 1200
 
 	Grid_expansion_factor: REAL = 1.2
 
@@ -87,7 +96,6 @@ feature {NONE} -- Initialisation
 
 			-- ============ main grid ============
 			create evx_grid.make (True, False, True, True)
-	--		evx_grid.set_maximum_dimensions (frame_height, frame_width)
 			ev_root_container.extend (evx_grid.ev_grid)
 
 			-- space cell
@@ -302,7 +310,8 @@ feature {NONE} -- Implementation
 			end
 
 			evx_grid.set_column_titles (Grid_col_names.linear_representation)
-			evx_grid.resize_columns_to_content
+			-- evx_grid.resize_columns_to_content_and_fit (Grid_fixed_cols)
+			-- set_minimum_height ((grid.visible_row_count * grid.row_height + empty_form_height).min(Max_height))
 			evx_grid.resize_viewable_area_to_content
 		end
 

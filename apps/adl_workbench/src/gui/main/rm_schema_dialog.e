@@ -291,7 +291,7 @@ feature {NONE} -- Implementation
 				grid.column (grid_edit_col).set_title (get_text (ec_rm_schema_grid_edit_col_title))
 				grid.column (grid_xml_export_col).set_title (get_text (ec_rm_schema_grid_xml_schema_export_col_title))
 
-				grid.resize_columns_to_content (Grid_expansion_factor)
+				grid.resize_columns_to_content (0, Grid_expansion_factor)
 				from i := 1 until i > grid.column_count loop
 					form_width := form_width + grid.column (i).width
 					i := i + 1

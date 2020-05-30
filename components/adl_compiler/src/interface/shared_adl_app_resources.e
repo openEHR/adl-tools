@@ -100,10 +100,22 @@ feature -- Definitions
 
 	Default_aom_profile_directory: STRING
 			-- default directory of AOM profile files (*.arp files, in ODIN format)
-			-- currently set to <startup_dir>/../../../resources/aom_profiles, since this is the
-			-- location in the source build structure.
+			-- set to <startup_dir>/aom_profiles or if in dev mode, it is
+		local
+			path: KI_PATHNAME
+			dir: STRING
 		once ("PROCESS")
-			Result := file_system.pathname (file_system.dirname (file_system.dirname (application_startup_directory)), file_system.pathname ("resources", "aom_profiles"))
+			Result := file_system.pathname (application_startup_directory, "aom_profiles")
+
+			path := file_system.string_to_pathname (file_system.absolute_pathname (execution_environment.command_line.command_name))
+			path.set_canonical
+			if path.count > 3 then
+				dir := path.item (path.count - 1)
+				if (dir.is_equal ("W_code") or dir.is_equal ("F_code")) and path.item (path.count - 3).is_equal ("EIFGENs") then
+					dir := file_system.dirname (file_system.dirname (file_system.dirname (file_system.dirname (file_system.dirname (Result)))))
+					Result := file_system.pathname (dir, file_system.pathname("resources", "aom_profiles"))
+				end
+			end
 		end
 
 	Default_terminology_directory: STRING
