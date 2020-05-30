@@ -75,8 +75,8 @@ feature -- Definitions
 
 			--	use for testing
 			--	create a_proxy.make_key ("CIMI-CIMI archetypes", "file:///cygdrive/c/dev/CIMI/archetypes", Git_tool_name)
-			create a_proxy.make_key ("CIMI-CIMI archetypes", "https://github.com/opencimi/archetypes.git", Git_tool_name)
-			Result.put (a_proxy, a_proxy.remote_url)
+			-- create a_proxy.make_key ("CIMI-CIMI archetypes", "https://github.com/opencimi/archetypes.git", Git_tool_name)
+			-- Result.put (a_proxy, a_proxy.remote_url)
 		end
 
 	Grid_display_name_col: INTEGER = 1
