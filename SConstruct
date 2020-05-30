@@ -1,11 +1,12 @@
 import os, shutil, re, fnmatch
 
-EnsurePythonVersion(2, 4)
+EnsurePythonVersion(3, 5)
 EnsureSConsVersion(1, 0, 0)
 
 env = Environment(ENV = os.environ, tools = ['default', 'Eiffel'], toolpath = ['scripts'])
 
 if env['PLATFORM'] == 'win32': platform = 'windows'
+if env['PLATFORM'] == 'win64': platform = 'windows'
 if env['PLATFORM'] == 'posix': platform = 'linux'
 if env['PLATFORM'] == 'darwin': platform = 'mac_osx'
 
@@ -88,7 +89,7 @@ aom_profiles = 'aom_profiles'
 
 env.Install(terminology, env.Glob('../terminology/openEHR_RM/*'))
 
-for dir, dirnames, filenames in os.walk('../reference-models/models'):
+for dir, dirnames, filenames in os.walk('../specifications-ITS-BMM'):
 	if '.git' in dirnames: dirnames.remove('.git')
 	env.Install(rm_schemas, [os.path.join(dir, filename) for filename in fnmatch.filter(filenames, '*.bmm')])
 
@@ -130,7 +131,7 @@ if downloads and len(adl_workbench) > 0:
 		Install(downloads + '/adl_parser/dotnet', adl_parser)
 
 		if not env.Detect('makensis'):
-			print 'WARNING! NSIS is missing from your path: cannot build installer for ADL Workbench.'
+			print ('WARNING! NSIS is missing from your path: cannot build installer for ADL Workbench.')
 		else:
 			command = [
 				'makensis', '-V1',
@@ -199,12 +200,12 @@ if downloads and len(adl_workbench) > 0:
 			substitutions += 's|^-+$||'
 			f = open(pkg_resources + '/License.html', 'w')
 			f.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"')
-    			f.write('"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">')
+			f.write('"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">')
 			f.write('<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">')
-  			f.write('<body>')
+			f.write('<body>')
 			f.write(os.popen('sed -E \'' + substitutions + '\' ' + license).read())
-  			f.write('</body>')
-  			f.write('</html>')
+			f.write('</body>')
+			f.write('</html>')
 			f.close()
 
 		pkg_name = ''
@@ -260,12 +261,12 @@ if downloads and len(adl_workbench) > 0:
 #	git tag -m 'Tag for the initial commit.' Revision b900305458cf617ac511c7fdbc5cd183f9bdbd15
 
 if not env.Detect('git'):
-	print 'WARNING! The git command is missing from your path: cannot set the revision part of the version number.'
+	print ('WARNING! The git command is missing from your path: cannot set the revision part of the version number.')
 else:
 	match = re.match(r'Revision-(\d+)', os.popen('git describe --match Revision').read())
 
 	if not match:
-		print 'WARNING! The git Revision tag was missing: cannot set the revision part of the version number.'
+		print ('WARNING! The git Revision tag was missing: cannot set the revision part of the version number.')
 	else:
 		revision = str(int(match.group(1)) + 1000)
 
