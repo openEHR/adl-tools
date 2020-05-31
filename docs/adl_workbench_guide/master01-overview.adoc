@@ -41,7 +41,7 @@ The ADL Workbench (AWB) is a compiler and IDE for working with the archetypes an
 |===
 |Platform           |Release  		|Date       |Executable       |Notes
 
-|Windows (64-bit)	|2.0.6.3060 	  |30-05-2020 | https://www.openehr.org/download_files/adl_workbench/adl_workbench_2.0.6.3060-windows_64bit.exe[.exe installer^]  
+|Windows (64-bit)	|2.0.6.3060 	  |30-05-2020 | https://www.openehr.org/download_files/adl_workbench/adl_workbench_2.0.6-windows_64bit.exe[.exe installer^]  
 a|
 
 
