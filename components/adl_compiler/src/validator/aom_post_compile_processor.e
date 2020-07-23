@@ -67,8 +67,7 @@ feature {NONE} -- Implementation
 					-- if it was a partial match, we have to obtain the real RM type by going into the RM
 					if arch_path.count < ref_path_csr.key.count then
 						tail_path := ref_path_csr.key.substring (arch_path.count+1, ref_path_csr.key.count)
-						bmm_class := ref_model.class_definition (ref_rm_type_name)
-						if attached bmm_class.property_definition_at_path (create {OG_PATH}.make_from_string (tail_path)) as bmm_prop then
+						if attached ref_model.property_at_path (ref_rm_type_name, tail_path) as bmm_prop then
 							ref_rm_type_name := bmm_prop.bmm_type.effective_type.type_base_name
 						end
 					end

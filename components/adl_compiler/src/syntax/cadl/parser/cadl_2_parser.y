@@ -736,7 +736,7 @@ end
 			if not object_nodes.item.has_attribute ($1) then
 				-- check RM to see if path is valid, and if it is a container
 				if ref_model.has_property_path (object_nodes.item.rm_type_name, $1) then
-					rm_prop_def := ref_model.property_definition_at_path (object_nodes.item.rm_type_name, $1)
+					rm_prop_def := ref_model.property_at_path (object_nodes.item.rm_type_name, $1)
 					if rm_prop_def.is_container then
 						create $$.make_multiple (rm_attribute_name, $2, $3)
 						$$.set_differential_path (parent_path_str)

@@ -204,7 +204,7 @@ feature {NONE} -- Implementation
 					co_parent := cp
 				end
 				if ca.has_differential_path then
-					rm_prop_def := ref_model.property_definition_at_path (co_parent.rm_type_name, ca.rm_attribute_path)
+					rm_prop_def := ref_model.property_at_path (co_parent.rm_type_name, ca.rm_attribute_path)
 				else
 					rm_prop_def := ref_model.property_definition (co_parent.rm_type_name, ca.rm_attribute_name)
 				end

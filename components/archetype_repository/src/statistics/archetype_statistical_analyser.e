@@ -152,7 +152,7 @@ feature {NONE} -- Implementation
 									is_root_flag := att_parent_co.is_root
 								end
 							else
-								bmm_class_def := ref_model.class_definition_at_path (target.definition.rm_type_name, path_in_flat)
+								bmm_class_def := ref_model.class_at_path (target.definition.rm_type_name, path_in_flat)
 								co_type_name := bmm_class_def.name
 								is_root_flag := False
 							end

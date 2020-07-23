@@ -34,7 +34,7 @@ feature -- Initialisation
 			create internal_ref_for_rm_type.make (0)
 			set_arch_node_in_ancestor
 			if an_arch_node.has_differential_path then
-				rm_property := ui_graph_state.ref_model.property_definition_at_path (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_path)
+				rm_property := ui_graph_state.ref_model.property_at_path (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_path)
 			else
 				rm_property := ui_graph_state.ref_model.property_definition (an_arch_node.parent.rm_type_name, an_arch_node.rm_attribute_name)
 			end
