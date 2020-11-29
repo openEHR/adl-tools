@@ -248,13 +248,41 @@ c_object: c_complex_object
 			end
 			c_attrs.item.put_child(c_code_phrase_obj)
 		}
-	| c_ordinal 
+	| c_ordinal
 		{
-			debug("ADL_parse")
-				io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(c_ordinal LEAF_OBJ)%N") 
+			create ordinal_node.make
+
+			across scale_node.items as scale_csr loop
+				if ordinal_node /= Void then
+					if scale_csr.item.value_text.has ('.') then
+						ordinal_node := Void
+					else
+						create an_ordinal.make (scale_csr.item.value.rounded, scale_csr.item.symbol)
+						ordinal_node.add_item (an_ordinal)
+					end
+				end
 			end
-			c_attrs.item.put_child(ordinal_node)
+
+			if ordinal_node /= Void then
+				if scale_node.assumed_value /= Void then
+					ordinal_node.set_assumed_value_from_integer (scale_node.assumed_value.value.rounded)
+				end
+
+				debug("ADL_parse")
+					io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(c_ordinal LEAF_OBJ)%N") 
+				end
+
+				c_attrs.item.put_child(ordinal_node)
+			else
+				debug("ADL_parse")
+					io.put_string(indent + "ATTR_NODE " + c_attrs.item.rm_attribute_name + " put_child(c_scale LEAF_OBJ)%N") 
+				end
+
+				c_attrs.item.put_child(scale_node)
+			end
+
 			ordinal_node := Void
+			scale_node := Void
 		}
 	| c_primitive_object
 		{
@@ -1438,8 +1466,18 @@ c_boolean: c_boolean_spec
 c_ordinal: c_ordinal_spec
  	| c_ordinal_spec ';' integer_value
  		{
-			if ordinal_node.has_item ($3) then
-				ordinal_node.set_assumed_value_from_integer ($3)
+			if scale_node.has_item ($3) then
+				scale_node.set_assumed_value_from_real ($3)
+			else
+				raise_error
+				report_error ("invalid assumed value " + $3.out + " not in list")
+				abort
+			end
+ 		}
+ 	| c_ordinal_spec ';' real_value
+ 		{
+			if scale_node.has_item ($3) then
+				scale_node.set_assumed_value_from_real ($3)
 			else
 				raise_error
 				report_error ("invalid assumed value " + $3.out + " not in list")
@@ -1449,7 +1487,7 @@ c_ordinal: c_ordinal_spec
  	| c_ordinal_spec ';' error
  		{
  			raise_error
- 			report_error ("invalid assumed value; must be an ordinal integer value")
+ 			report_error ("invalid assumed value; must be an ordinal integer or a scale real value")
  			abort
  		}
 	;
@@ -1460,19 +1498,36 @@ c_ordinal_spec: ordinal
 
 ordinal: integer_value SYM_INTERVAL_DELIM V_QUALIFIED_TERM_CODE_REF
 		{
-			if ordinal_node = Void then
-				create ordinal_node.make
+			if scale_node = Void then
+				create scale_node.make
 			end
 
 			create a_code_phrase.make_from_string ($3)
-			create an_ordinal.make ($1, a_code_phrase)
 
-			if ordinal_node.has_code_phrase (a_code_phrase) then
+			if scale_node.has_code_phrase (a_code_phrase) then
 				raise_error
-				report_error ("invalid ordinal constraint: duplicated code term " + $3)
+				report_error ("invalid ordinal or scale constraint: duplicated code term " + $3)
 				abort
 			else
-				ordinal_node.add_item (an_ordinal)
+				create a_scale.make ($1, a_code_phrase, last_numeric_text)
+				scale_node.add_item (a_scale)
+			end
+		}
+	| real_value SYM_INTERVAL_DELIM V_QUALIFIED_TERM_CODE_REF
+		{
+			if scale_node = Void then
+				create scale_node.make
+			end
+
+			create a_code_phrase.make_from_string ($3)
+
+			if scale_node.has_code_phrase (a_code_phrase) then
+				raise_error
+				report_error ("invalid ordinal or scale constraint: duplicated code term " + $3)
+				abort
+			else
+				create a_scale.make ($1, a_code_phrase, last_numeric_text)
+				scale_node.add_item (a_scale)
 			end
 		}
 	;
@@ -2352,6 +2407,8 @@ feature {NONE} -- Parse Tree
 
 	ordinal_node: C_DV_ORDINAL
 	an_ordinal: ORDINAL
+	scale_node: C_DV_SCALE
+	a_scale: SCALE
 	a_code_phrase: CODE_PHRASE
 
 	expr_tree: EXPR_OPERATOR

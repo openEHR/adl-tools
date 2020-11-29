@@ -390,6 +390,68 @@ feature -- Modification
 		do
 		end
 
+	start_c_scale(a_node: C_DV_SCALE; depth: INTEGER) is
+			-- start serialising an C_DV_SCALE
+		local
+			adl_term: ARCHETYPE_TERM
+			i: INTEGER
+		do
+			if a_node.any_allowed then
+				-- output in C_DV_SCALE style
+				start_c_domain_type(a_node, depth)
+			elseif a_node.items.count = 1 then
+				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
+				last_result.append(apply_style(clean(a_node.as_string), STYLE_TERM_REF))
+				create last_object_simple_buffer.make(0)
+				if a_node.is_local then
+					last_object_simple_buffer.append(format_item(FMT_INDENT))
+					adl_term := ontology.term_definition(current_language, a_node.items.first.symbol.code_string)
+					last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+						safe_comment(adl_term.item("text")), STYLE_COMMENT))
+				end
+				last_object_simple := True
+
+			elseif a_node.items.count > 1 then
+				from
+					a_node.items.start
+					i := 1
+				until
+					a_node.items.off
+				loop
+					last_result.append(create_indent(depth) + apply_style(a_node.items.item.as_string, STYLE_TERM_REF))
+					if i < a_node.items.count then
+						last_result.append (format_item(FMT_LIST_ITEM_SEPARATOR))
+					elseif a_node.assumed_value /= Void then
+						last_result.append (format_item(FMT_ASSUMED_VALUE_SEPARATOR))
+					else -- pad same number of spaces
+						last_result.append (create {STRING}.make_filled(' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
+					end
+					if a_node.is_local then
+						adl_term := ontology.term_definition(current_language, a_node.items.item.symbol.code_string)
+						last_result.append(format_item(FMT_INDENT) +
+							apply_style(format_item(FMT_COMMENT) +
+							safe_comment(adl_term.item("text")), STYLE_COMMENT))
+					end
+					last_result.append(format_item(FMT_NEWLINE))
+					a_node.items.forth
+					i := i + 1
+				end
+
+				if a_node.assumed_value /= Void then
+					last_result.append(create_indent(depth) + apply_style(a_node.assumed_value.value.out, STYLE_TERM_REF))
+					last_result.append (create {STRING}.make_filled(' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
+					last_result.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+							"assumed value", STYLE_COMMENT))
+					last_result.append(format_item(FMT_NEWLINE))
+				end
+			end
+		end
+
+	end_c_scale(a_node: C_DV_SCALE; depth: INTEGER) is
+			-- end serialising an C_DV_SCALE
+		do
+		end
+
 	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER) is
 			-- any positive range
 		local

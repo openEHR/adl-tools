@@ -11,14 +11,14 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class CONSTRAINT_MODEL_SERIALISER 
+deferred class CONSTRAINT_MODEL_SERIALISER
 
 inherit
 	ANY_SERIALISER
 		rename
 			initialise as initialise_any_serialiser
 		end
-	
+
 	CONSTRAINT_MODEL_COMMON
 		export
 			{NONE} all
@@ -34,34 +34,34 @@ feature -- Initialisation
 			initialise_any_serialiser
 			ontology := an_ontology
 		end
-		
+
 feature -- Modification
 
 	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
 			-- start serialising an C_COMPLEX_OBJECT
 		deferred
 		end
-		
+
 	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
 			-- end serialising an C_COMPLEX_OBJECT
-		deferred	
+		deferred
 		end
 
 	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER) is
 			-- start serialising an ARCHETYPE_SLOT
 		deferred
 		end
-		
+
 	end_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER) is
 			-- end serialising an ARCHETYPE_SLOT
-		deferred	
+		deferred
 		end
 
 	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
 			-- start serialising an C_ATTRIBUTE
 		deferred
 		end
-		
+
 	end_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
 			-- end serialising an C_ATTRIBUTE
 		deferred
@@ -71,7 +71,7 @@ feature -- Modification
 			-- start serialising an ARCHETYPE_INTERNAL_REF
 		deferred
 		end
-		
+
 	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
 			-- end serialising an ARCHETYPE_INTERNAL_REF
 		deferred
@@ -81,7 +81,7 @@ feature -- Modification
 			-- start serialising a CONSTRAINT_REF
 		deferred
 		end
-		
+
 	end_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
 			-- end serialising a CONSTRAINT_REF
 		deferred
@@ -91,7 +91,7 @@ feature -- Modification
 			-- start serialising an C_PRIMITIVE_OBJECT
 		deferred
 		end
-		
+
 	end_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER) is
 			-- end serialising an C_PRIMITIVE_OBJECT
 		deferred
@@ -101,7 +101,7 @@ feature -- Modification
 			-- start serialising an C_DOMAIN_TYPE
 		deferred
 		end
-		
+
 	end_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER) is
 			-- end serialising an C_DOMAIN_TYPE
 		deferred
@@ -111,7 +111,7 @@ feature -- Modification
 			-- start serialising an C_CODE_PHRASE
 		deferred
 		end
-		
+
 	end_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
 			-- end serialising an C_CODE_PHRASE
 		deferred
@@ -121,9 +121,19 @@ feature -- Modification
 			-- start serialising an C_DV_ORDINAL
 		deferred
 		end
-		
+
 	end_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
 			-- end serialising an C_DV_ORDINAL
+		deferred
+		end
+
+	start_c_scale(a_node: C_DV_SCALE; depth: INTEGER) is
+			-- start serialising an C_DV_SCALE
+		deferred
+		end
+
+	end_c_scale(a_node: C_DV_SCALE; depth: INTEGER) is
+			-- end serialising an C_DV_SCALE
 		deferred
 		end
 
@@ -131,12 +141,12 @@ feature -- Modification
 			-- any positive range
 		deferred
 		end
-		
+
 	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER) is
 			-- can only  be a range of 0..1 or 1..1
 		deferred
 		end
-		
+
 	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER) is
 			-- includes a range and possibly ordered, unique qualifiers
 		deferred
@@ -145,7 +155,7 @@ feature -- Modification
 feature {NONE} -- Implementation
 
 	ontology: ARCHETYPE_ONTOLOGY
-	
+
 end
 
 

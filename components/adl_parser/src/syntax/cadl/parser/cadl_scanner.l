@@ -505,6 +505,7 @@ T[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
 [0-9]+		{
 					last_token := V_INTEGER
 					last_integer_value := text.to_integer
+					last_numeric_text := text
 			}
 
 [0-9]{1,3}(,[0-9]{3})+		{
@@ -517,6 +518,7 @@ T[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
 						i_ := i_ + 1
 					end
 					last_integer_value := in_buffer.to_integer
+					last_numeric_text := in_buffer
 					in_buffer.wipe_out
 			}
 
@@ -525,25 +527,27 @@ T[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]	{
 [0-9]+\./[^.0-9]				|
 [0-9]+\.[0-9]*[eE][+-]?[0-9]+		|
 [0-9]*\.[0-9]+([eE][+-]?[0-9]+)?	{
-						last_token := V_REAL
-						last_real_value := text.to_real
-					}
+				last_token := V_REAL
+				last_real_value := text.to_real
+				last_numeric_text := text
+			}
 [0-9]{1,3}(_[0-9]{3})+\./[^.0-9]	|
 [0-9]{1,3}(_[0-9]{3})*\.([0-9]{1,3}(_[0-9]{3})*)?[eE][+-]?[0-9]{1,3}(_[0-9]{3})*	|
 ([0-9]{1,3}(_[0-9]{3})*)?\.[0-9]{1,3}(_[0-9]{3})*([eE][+-]?[0-9]{1,3}(_[0-9]{3})*)?	{
-						last_token := V_REAL
-						str_ := text
-						nb_ := text_count
-						from i_ := 1 until i_ > nb_ loop
-							char_ := str_.item (i_)
-							if char_ /= '_' then
-								in_buffer.append_character (char_)
-							end
-							i_ := i_ + 1
-						end
-						last_real_value := in_buffer.to_real
-						in_buffer.wipe_out
-					}
+				last_token := V_REAL
+				str_ := text
+				nb_ := text_count
+				from i_ := 1 until i_ > nb_ loop
+					char_ := str_.item (i_)
+					if char_ /= '_' then
+						in_buffer.append_character (char_)
+					end
+					i_ := i_ + 1
+				end
+				last_real_value := in_buffer.to_real
+				last_numeric_text := in_buffer
+				in_buffer.wipe_out
+			}
 
 		-- The first and fourth expressions use a trailing context
 		-- to make sure that an integer followed by two dots is
@@ -656,6 +660,9 @@ feature -- Access
 
 	source_start_line: INTEGER
 			-- Offset of source in other document, else 0.
+
+	last_numeric_text: STRING
+			-- The last real value in its original text format.
 
 feature {NONE} -- Implementation
 
