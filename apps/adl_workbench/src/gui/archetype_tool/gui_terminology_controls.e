@@ -63,7 +63,7 @@ feature {NONE} -- Initialisation
 
 			-- tree collapse/expand control
 			create evx_id_terms_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (evx_id_terms_grid),
-				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_DECLARATION} a_row.data end,
+				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end,
 				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"),
 				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"),
 				agent do evx_id_terms_grid.resize_columns_to_content_and_fit (id_grid_fixed_cols) end)
@@ -90,7 +90,7 @@ feature {NONE} -- Initialisation
 
 			-- tree collapse/expand control
 			create evx_vsets_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (evx_values_grid),
-				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_DECLARATION} a_row.data end,
+				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end,
 				get_icon_pixmap ("tool/tree_collapse_all"), get_icon_pixmap ("tool/tree_collapse"),
 				get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_expand_all"),
 				agent do evx_id_terms_grid.resize_columns_to_content_and_fit (id_grid_fixed_cols) end)
