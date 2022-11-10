@@ -1,7 +1,7 @@
 note
 
 	description: "Parser token codes"
-	generator: "geyacc version 4.1"
+	generator: "geyacc"
 
 deferred class CADL_2_TOKENS
 
