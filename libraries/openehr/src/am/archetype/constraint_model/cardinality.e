@@ -67,6 +67,26 @@ feature -- Access
 
 	interval: MULTIPLICITY_INTERVAL
 
+	upper: INTEGER
+		do
+			Result := interval.upper
+		end
+
+	lower: INTEGER
+		do
+			Result := interval.lower
+		end
+
+	upper_unbounded: BOOLEAN
+		do
+			Result := interval.upper_unbounded
+		end
+
+	lower_unbounded: BOOLEAN
+		do
+			Result := interval.lower_unbounded
+		end
+
 feature -- Status Report
 
 	is_ordered: BOOLEAN
@@ -92,6 +112,12 @@ feature -- Status Report
 			-- True if this interval imposes no constraints, i.e. is set to 0..*
 		do
 			Result := interval.is_open
+		end
+
+	is_multiple: BOOLEAN
+			-- True if upper limit is greater than one, including unbounded
+		do
+			Result := upper_unbounded or upper > 1
 		end
 
 feature -- Comparison
