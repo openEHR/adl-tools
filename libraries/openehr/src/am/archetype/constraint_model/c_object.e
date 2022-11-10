@@ -93,14 +93,15 @@ feature -- Comparison
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- `other' is typically from the flat parent archetype.
-			-- Returns True only when the following is True:
-			--	rm_type_name is the same or a subtype of rm_type_name of other;
-			--	occurrences is same (= Void) or a sub-interval
-			--	node_id is the same, or redefined to a legal code at the level of the owning archetype
+			-- Returns True when the following is True:
+	        --	 * rm_type_name is the same or a subtype of rm_type_name of other;
+	        --	 * node_id is the same, or redefined to a legal code at the level of the owning archetype
+	        --	 * occurrences conforms
 		do
-			Result := node_id_conforms_to (other) and occurrences_conforms_to (other) and
+			Result := node_id_conforms_to (other) and
 				(rm_type_name.is_case_insensitive_equal (other.rm_type_name) or else
-				rm_type_conformance_checker(rm_type_name, other.rm_type_name))
+				rm_type_conformance_checker(rm_type_name, other.rm_type_name)) and
+				occurrences_conforms_to (other)
 		end
 
 	c_congruent_to (other: like Current): BOOLEAN
@@ -121,9 +122,15 @@ feature -- Comparison
 		end
 
 	occurrences_conforms_to (other: C_OBJECT): BOOLEAN
-			-- True if this node occurrences conforms to other.occurrences; `other' is assumed to be in a flat archetype
+			-- True if this node occurrences conforms to other.occurrences;
+			-- `other' is assumed to be in a flat archetype
+			-- only redefinitions of single-occurrence nodes can be dealt with here;
+        	-- redefinitions of multiply-occurrences nodes must be evaluated at the owning
+        	-- attribute, according to VSCONCO.
 		do
-			if attached occurrences as occ and attached other.occurrences as other_occ then
+			if attached occurrences as occ and attached other.occurrences as other_occ and
+				other.occurrences.upper = 1
+			then
 				Result := other_occ.contains (occ)
 			else
 				Result := True

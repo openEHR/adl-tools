@@ -202,6 +202,7 @@ feature -- Initialisation
 			message_table.put ("$1 object node at path $2 (AOM type $3) does not conform to $4 node at parent path $5 (AOM type $6)", ec_VSONT)
 			message_table.put ("object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4", ec_VSONCT)
 			message_table.put ("object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4", ec_VSONCO)
+			message_table.put ("object node at path $1 in specialisation group whose collective occurrences $2 does not conform to node at parent path $3 occurrences $4", ec_VSONCOm)
 			message_table.put ("object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node that does not redefine a node in the flat parent", ec_VSONPO)
 			message_table.put ("object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node with AOM type $2 that redefines node in the flat parent of different AOM type $3", ec_VSONPT)
 			message_table.put ("object node at path $1 with prohibited occurrences (i.e. {0}) must have identical id-code $2 to node being redefined", ec_VSONPI)

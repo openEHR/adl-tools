@@ -82,6 +82,7 @@ templates = <
 		["VSONT"] = <"$1 object node at path $2 (AOM type $3) does not conform to $4 node at parent path $5 (AOM type $6)">
 		["VSONCT"] = <"object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
 		["VSONCO"] = <"object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">
+		["VSONCOm"] = <"object node at path $1 in specialisation group whose collective occurrences $2 does not conform to node at parent path $3 occurrences $4">
 		["VSONPO"] = <"object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node that does not redefine a node in the flat parent">
 		["VSONPT"] = <"object node at path $1 prohibited occurrences (i.e. {0}) not allowed on a node with AOM type $2 that redefines node in the flat parent of different AOM type $3">
 		["VSONPI"] = <"object node at path $1 with prohibited occurrences (i.e. {0}) must have identical id-code $2 to node being redefined">

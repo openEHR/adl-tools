@@ -179,6 +179,7 @@ end
 				ca_path_in_flat := apa.path_at_level (arch_flat_parent.specialisation_depth)
 				ca_in_flat_anc := arch_flat_parent.attribute_at_path (ca_path_in_flat)
 
+
 				if not ca_child_diff.c_conforms_to (ca_in_flat_anc, agent ref_model.type_conforms_to) then
 					if ca_child_diff.is_single and not ca_in_flat_anc.is_single then
 						add_error (ec_VSAM1, <<arch_diff_child.annotated_path (ca_child_diff.path, display_language, True)>>)
@@ -202,7 +203,6 @@ end
 					end
 				end
 
-			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT; or redefined external references
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
 				create apa.make (co_child_diff.og_path)
 				co_in_flat_anc := arch_flat_parent.object_at_path (apa.path_at_level (arch_flat_parent.specialisation_depth))
@@ -302,6 +302,13 @@ end
 							add_error (ec_VUNK, <<co_child_diff.rm_type_name, co_child_annotated_path, co_in_flat_anc.rm_type_name, co_flat_anc_annotated_path>>)
 
 						end
+
+					-- process nodes that redefine multiple-occurrence object nodes
+					elseif attached co_child_diff.parent as ca_child and then attached co_in_flat_anc.occurrences as co_anc_occ
+							and then co_anc_occ.is_multiple
+							and then not ca_child.collective_occurrences_of (co_in_flat_anc).intersects (co_anc_occ) then
+						add_error (ec_VSONCOm, <<co_child_annotated_path, ca_child.collective_occurrences_of (co_in_flat_anc).as_string, co_flat_anc_annotated_path, co_in_flat_anc.occurrences.as_string>>)
+
 					else
 						-- deal with any tuples under C_COMPLEX_OBJECTs
 						if attached {C_COMPLEX_OBJECT} co_child_diff as cco_child and then attached {C_COMPLEX_OBJECT} co_in_flat_anc as cco_flat and then
