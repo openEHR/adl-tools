@@ -127,7 +127,7 @@ feature -- Commands
 					-- RM schemas info
 					std_out.put_string ("%N" + get_text (ec_rm_schemas_info_text))
 					across bmm_models_access.bmm_models as loaded_rms_csr loop
-						std_out.put_string ("%T" + loaded_rms_csr.key + "%N")
+						std_out.put_string ("%T" + loaded_rms_csr.key.as_string_8 + "%N")
 					end
 
 					-- repository & library info
@@ -177,7 +177,7 @@ feature -- Commands
 									schema_file_path := file_system.pathname (schema_file_path, schemas_csr.key.as_string_8 + {BMM_DEFINITIONS}.bmm2_schema_file_extension + fmt_csr.item)
 
 									if opts.is_verbose then
-										std_out.put_string ("exported " + schemas_csr.key + " in format " + fmt_csr.key + " to file " + schema_file_path + "%N")
+										std_out.put_string ("exported " + schemas_csr.key.as_string_8 + " in format " + fmt_csr.key + " to file " + schema_file_path + "%N")
 									end
 
 									schemas_csr.item.export_schema (fmt_csr.key, schema_file_path)
@@ -327,7 +327,7 @@ feature -- Commands
 				std_err.put_string (app_root.error_strings)
 				across bmm_models_access.all_schemas as schemas_csr loop
 					if schemas_csr.item.has_errors then
-						std_err.put_string ("========== Schema validation errors for " + schemas_csr.key + " ===========%N")
+						std_err.put_string ("========== Schema validation errors for " + schemas_csr.key.as_string_8 + " ===========%N")
 						std_err.put_string (schemas_csr.item.errors.as_string)
 					end
 				end
