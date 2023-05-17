@@ -270,6 +270,42 @@ feature -- Access
 			end
 		end
 
+	collective_occurrences_of (a_parent_co: C_OBJECT; an_rm_prop_mult: FUNCTION [ANY, TUPLE[STRING, STRING], MULTIPLICITY_INTERVAL]): MULTIPLICITY_INTERVAL
+	        -- compute collective occurrences according to VSONCO, of all object nodes under this
+	        -- attribute node that redefine `a_parent_co`, which is assumed to be an object node
+	        -- within the specialisation parent of this C_ATTRIBUTE
+	    require
+	        a_parent_co.parent.is_multiple
+	    do
+	        -- make a 0..0 interval
+	        create Result.make_prohibited
+
+	        children.do_all (
+	            agent (child_obj, parent_co: C_OBJECT;
+	            		rm_prop_mult: FUNCTION [ANY, TUPLE[STRING, STRING], MULTIPLICITY_INTERVAL];
+	            		interval: MULTIPLICITY_INTERVAL)
+	            	local
+	            		child_occ: MULTIPLICITY_INTERVAL
+	                do
+	                    if child_obj.node_id_conforms_to (parent_co) then
+	                    	-- child object node may have no occurrences
+	                    	child_occ := child_obj.effective_occurrences (rm_prop_mult)
+
+	                        interval.set_lower (interval.lower + child_occ.lower)
+	                        if child_occ.upper_unbounded then
+	                            interval.set_upper_unbounded
+	                        elseif not interval.upper_unbounded then
+	                            interval.set_upper (interval.upper + child_occ.upper)
+	                        end
+	                    end
+	                end (?, a_parent_co, an_rm_prop_mult, Result)
+	        )
+
+	        if attached cardinality and then not cardinality.upper_unbounded then
+	            Result.set_upper (if Result.upper_unbounded then cardinality.upper else Result.upper.min (cardinality.upper) end)
+	        end
+	    end
+
 feature -- Status Report
 
 	any_allowed: BOOLEAN
@@ -428,59 +464,6 @@ feature -- Comparison
 		do
 			Result := cardinality ~ other.cardinality
 		end
-
-	specialised_node_sets_conform_to (other: C_ATTRIBUTE): Boolean
-	        -- test conformance of specialised (object) node sets to parent nodes (see VSONCO)
-	        -- `other` is assumed to be the corresponding C_ATTRIBUTE in specialisation parent
-	    require
-	        other.is_multiple
-	    do
-	        Result := ∀ co: other.children ¦
-	        			if attached co.occurrences as parent_occ and then parent_occ.is_multiple then
-	        				collective_occurrences_of (co).intersects (parent_occ)
-	        			else
-	        				True
-	        			end
-	    end
-
-	collective_occurrences_of (a_parent_co: C_OBJECT): MULTIPLICITY_INTERVAL
-	        -- compute collective occurrences according to VSONCO, of all object nodes under this
-	        -- attribute node that redefine `a_parent_co`, which is assumed to be an object node
-	        -- within the specialisation parent of this C_ATTRIBUTE
-	    require
-	        a_parent_co.parent.is_multiple
-	    do
-	        -- make a 0..0 interval
-	        create Result.make_prohibited
-
-	        children.do_all (
-	            agent (child_obj, parent_co: C_OBJECT; interval: MULTIPLICITY_INTERVAL)
-	            	local
-	            		child_occ: MULTIPLICITY_INTERVAL
-	                do
-	                    if child_obj.node_id_conforms_to (parent_co) then
-	                    	-- if the child object node has no occurrences, use
-	                    	-- that of the parent
-	                    	if attached child_obj.occurrences as occ then
-	                    		child_occ := occ
-	                    	else
-	                    		child_occ := parent_co.occurrences
-	                    	end
-
-	                        interval.set_lower (interval.lower + child_occ.lower)
-	                        if child_occ.upper_unbounded then
-	                            interval.set_upper_unbounded
-	                        elseif not interval.upper_unbounded then
-	                            interval.set_upper (interval.upper + child_occ.upper)
-	                        end
-	                    end
-	                end (?, a_parent_co, Result)
-	        )
-
-	        if attached cardinality and then not cardinality.upper_unbounded then
-	            Result.set_upper (Result.upper.min (cardinality.upper))
-	        end
-	    end
 
 feature -- Modification
 

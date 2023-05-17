@@ -67,7 +67,7 @@ feature -- Definitions
 
 	version_regex: STRING = "v[0-9]+(\.[0-9]+){2}((-rc|-alpha)(\.[0-9]+)?)?"
 			-- Regex for ADL 2 release version
-			-- 	will match string of form vN.M.P with or without -rc.N, +alpha.N at the end
+			-- 	will match string of form vN.M.P with or without -rc.N, -alpha.N at the end
 
 	version_reference_regex: STRING = "v[0-9]+(\.[0-9]+){0,2}"
 			-- regex for matching version part of an archetype id, which can have 1, 2 or 3 parts, i.e. .v1, .v1.2, .v1.2.1
@@ -390,7 +390,7 @@ feature -- Access
 		end
 
 	version_id: STRING
-			-- Full version identifier string, based on release_version and lifecycle, e.g. 1.8.2-rc4.
+			-- Full version identifier string, based on release_version and lifecycle, e.g. 1.8.2-rc.4
 		do
 			create Result.make_empty
 			Result.append (release_version)

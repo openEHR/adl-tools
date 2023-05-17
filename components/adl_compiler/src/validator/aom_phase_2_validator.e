@@ -306,8 +306,8 @@ end
 					-- process nodes that redefine multiple-occurrence object nodes
 					elseif attached co_child_diff.parent as ca_child and then attached co_in_flat_anc.occurrences as co_anc_occ
 							and then co_anc_occ.is_multiple
-							and then not ca_child.collective_occurrences_of (co_in_flat_anc).intersects (co_anc_occ) then
-						add_error (ec_VSONCOm, <<co_child_annotated_path, ca_child.collective_occurrences_of (co_in_flat_anc).as_string, co_flat_anc_annotated_path, co_in_flat_anc.occurrences.as_string>>)
+							and then not ca_child.collective_occurrences_of (co_in_flat_anc, agent ref_model.property_object_multiplicity).intersects (co_anc_occ) then
+						add_error (ec_VSONCOm, <<co_child_annotated_path, ca_child.collective_occurrences_of (co_in_flat_anc, agent ref_model.property_object_multiplicity).as_string, co_flat_anc_annotated_path, co_in_flat_anc.occurrences.as_string>>)
 
 					else
 						-- deal with any tuples under C_COMPLEX_OBJECTs
