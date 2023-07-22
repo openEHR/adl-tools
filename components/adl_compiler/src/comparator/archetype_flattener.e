@@ -488,6 +488,7 @@ end
 								if attached co_output_csr then
 									add_merge_desc (start_pos, end_pos, co_output_csr, False)
 									start_pos := end_pos + 1
+									end_pos := start_pos
 								end
 								co_output_csr := ca_output.child_with_id (co_parent_node_id)
 							else
