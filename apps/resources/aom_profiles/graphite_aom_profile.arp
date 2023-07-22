@@ -58,8 +58,9 @@ aom_rm_type_mappings = <
 -- Used to determine which AOM C_PRIMITIVE_OBJECT descendant is used for a primitive type
 
 rm_primitive_type_equivalences = <
-	["Octet"] = <"Integer">
+	["Byte"] = <"Integer">
 	["Double"] = <"Real">
+	["Uri"] = <"String">
 	["Integer64"] = <"Integer">
 >
 
@@ -75,7 +76,7 @@ aom_rm_type_substitutions = <
 	["DATE_TIME"] = <"String">
 	["TIME"] = <"String">
 	["DURATION"] = <"String">
-	["TERMINOLOGY_CODE"] = <"Coded_text">
+	["TERMINOLOGY_CODE"] = <"Terminology_term">
 	["INTEGER"] = <"Real">
 	["REAL"] = <"Double">
 	["Real"] = <"Double">
