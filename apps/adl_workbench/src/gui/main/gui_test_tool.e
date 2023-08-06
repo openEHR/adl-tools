@@ -161,11 +161,6 @@ feature {NONE} -- Initialisation
 				get_text (ec_Test_start_stop_button_tooltip), agent archetype_test_go, agent archetype_test_stop)
 			evx_test_frame.extend (evx_archetype_test_go_bn.ev_button, False)
 
-			-- close button
-			create evx_close_bn.make (Void, Void, get_text (ec_Test_close_tool_button_text), get_text (ec_Test_close_tool_button_tooltip), agent on_close, Void)
-			evx_test_frame.extend (evx_close_bn.ev_button, False)
-
-
 			-- ==================== 'Diffs' frame =======================
 			create evx_diffs_frame.make ("Diffs", False)
 			evx_control_panel.add_frame_control (evx_diffs_frame, False)
@@ -194,12 +189,25 @@ feature {NONE} -- Initialisation
 				 agent on_diff_round_trip, Void)
 			evx_diffs_frame.extend (evx_diff_source_round_trip_button.ev_button, False)
 
+			--====================== 'App' frame ========================
+			create evx_app_frame.make ("", False)
+			evx_control_panel.add_frame_control (evx_app_frame, True)
+
+			-- padding cell
+			evx_app_frame.add_padding_cell
+
+			-- close button
+			create evx_close_bn.make (Void, Void, get_text (ec_Test_close_tool_button_text), get_text (ec_Test_close_tool_button_tooltip), agent on_close, Void)
+			evx_app_frame.extend (evx_close_bn.ev_button, False)
+
+			--====================== status area ========================
 			-- status area
 			create test_status_area
 			ev_root_container.extend (test_status_area)
 			ev_root_container.disable_item_expand (test_status_area)
 			test_status_area.set_minimum_height (status_area_min_height)
 			test_status_area.disable_edit
+
 
 			populate
 		end
@@ -432,7 +440,7 @@ feature -- Events
 			execution_environment.launch (command)
 		end
 
-feature {NONE} -- Commands
+feature {NONE} -- Local Commands
 
 	run_tests
 			-- Execute tests on all marked archetypes.
@@ -756,7 +764,7 @@ feature {NONE} -- Implementation
 	evx_grid: EVX_GRID
 	evx_control_panel: EVX_CONTROL_PANEL
 	evx_treeview_control: EVX_TREEVIEW_CONTROL
-	evx_batch_update_frame, evx_test_frame, evx_diffs_frame: EVX_FRAME_CONTROL
+	evx_batch_update_frame, evx_test_frame, evx_app_frame, evx_diffs_frame: EVX_FRAME_CONTROL
 	evx_progress_counter: EVX_SINGLE_LINE_TEXT_CONTROL
 
 	info_feedback_agent: PROCEDURE [ANY, TUPLE [READABLE_STRING_8]]
