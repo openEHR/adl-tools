@@ -43,7 +43,7 @@ feature {NONE}-- Initialization
 
 			-- serialise controls frame
 			create ev_serialise_controls_frame
-			ev_serialise_controls_frame.set_text (get_msg (ec_serialise_frame_text, Void))
+			ev_serialise_controls_frame.set_text (get_msg ({ADL_MESSAGES_IDS}.ec_serialise_frame_text, Void))
 			ev_serialise_controls_frame.set_minimum_width (125)
 			ev_serialise_controls_vbox.extend (ev_serialise_controls_frame)
 			ev_serialise_controls_vbox.disable_item_expand (ev_serialise_controls_frame)
@@ -77,17 +77,17 @@ feature {NONE}-- Initialization
 
 			-- include RM check button
 			create ev_flatten_with_rm_cb
-			ev_flatten_with_rm_cb.set_text (get_msg (ec_flatten_with_rm_cb_text, Void))
+			ev_flatten_with_rm_cb.set_text (get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text, Void))
 			ev_flatten_with_rm_cb.select_actions.extend (agent do set_rm_flattening_on (ev_flatten_with_rm_cb.is_selected) end)
 			ev_flatten_with_rm_cb.select_actions.extend (agent try_repopulate)
-			ev_flatten_with_rm_cb.set_tooltip (get_msg (ec_flatten_with_rm_cb_tooltip, Void))
+			ev_flatten_with_rm_cb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip, Void))
 			ev_serialise_controls_vbox.extend (ev_flatten_with_rm_cb)
 			ev_serialise_controls_vbox.disable_item_expand (ev_flatten_with_rm_cb)
 
 			-- line numbers check button
 			create ev_line_numbers_cb
-			ev_line_numbers_cb.set_text (get_msg (ec_add_line_numbers_text, Void))
-			ev_line_numbers_cb.set_tooltip (get_msg (ec_add_line_numbers_tooltip, Void))
+			ev_line_numbers_cb.set_text (get_msg ({EVX_MESSAGES_IDS}.ec_add_line_numbers_text, Void))
+			ev_line_numbers_cb.set_tooltip (get_msg ({EVX_MESSAGES_IDS}.ec_add_line_numbers_tooltip, Void))
 			ev_line_numbers_cb.select_actions.extend (agent do set_show_line_numbers (ev_line_numbers_cb.is_selected) end)
 			ev_line_numbers_cb.select_actions.extend (agent try_repopulate)
 			ev_serialise_controls_vbox.extend (ev_line_numbers_cb)
@@ -168,19 +168,19 @@ feature {NONE} -- Implementation
 	set_serialisation_control_texts
 		do
 			ev_serialise_adl_rb.set_text (syntax_type_adl.as_upper)
-			ev_serialise_adl_rb.set_tooltip (get_msg (ec_show_adl_serialisation_tooltip, <<latest_adl_version>>))
+			ev_serialise_adl_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_adl_serialisation_tooltip, <<latest_adl_version>>))
 
 			ev_serialise_odin_rb.set_text (syntax_type_odin.as_upper)
-			ev_serialise_odin_rb.set_tooltip (get_msg (ec_show_dadl_serialisation_tooltip, <<latest_adl_version>>))
+			ev_serialise_odin_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_dadl_serialisation_tooltip, <<latest_adl_version>>))
 
 			ev_serialise_xml_rb.set_text (syntax_type_xml.as_upper)
-			ev_serialise_xml_rb.set_tooltip (get_msg (ec_show_xml_serialisation_tooltip, <<latest_adl_version>>))
+			ev_serialise_xml_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_xml_serialisation_tooltip, <<latest_adl_version>>))
 
 			ev_serialise_json_rb.set_text (syntax_type_json.as_upper)
-			ev_serialise_json_rb.set_tooltip (get_msg (ec_show_json_serialisation_tooltip, <<latest_adl_version>>))
+			ev_serialise_json_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_json_serialisation_tooltip, <<latest_adl_version>>))
 
 			ev_serialise_yaml_rb.set_text (syntax_type_yaml.as_upper)
-			ev_serialise_yaml_rb.set_tooltip (get_msg (ec_show_yaml_serialisation_tooltip, <<latest_adl_version>>))
+			ev_serialise_yaml_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_yaml_serialisation_tooltip, <<latest_adl_version>>))
 		end
 
 end

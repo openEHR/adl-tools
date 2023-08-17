@@ -166,18 +166,18 @@ feature {NONE} -- Implementation
 			create menu
 
 			-- display archetype in current tool
-			create an_mi.make_with_text_and_action (get_text (ec_display_in_active_tab), agent display_archetype_in_active_tool (aca))
+			create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_display_in_active_tab), agent display_archetype_in_active_tool (aca))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
 	    	menu.extend (an_mi)
 
 			-- display archetype in new tool
-			create an_mi.make_with_text_and_action (get_text (ec_display_in_new_tab), agent display_archetype_in_new_tool (aca))
+			create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_display_in_new_tab), agent display_archetype_in_new_tool (aca))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 			menu.extend (an_mi)
 
 			-- edit archetype in visual editor
 			if aca.is_valid and not gui_agents.call_archetype_has_editor_agent (aca) then -- only offer editor if there is not already one running for this archetype
-				create an_mi.make_with_text_and_action (get_text (ec_edit), agent edit_archetype_in_new_tool (aca))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_edit), agent edit_archetype_in_new_tool (aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_editor"))
 				menu.extend (an_mi)
 			end
@@ -188,17 +188,17 @@ feature {NONE} -- Implementation
 
 				-- add in file submenu
 				-- remove artefact
-				create an_mi.make_with_text_and_action (get_text (ec_remove_artefact), agent remove_artefact (auth_aca))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_remove_artefact), agent remove_artefact (auth_aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/remove"))
 				menu.extend (an_mi)
 
-				create file_menu.make_with_text (get_text (ec_file_menu_text))
+				create file_menu.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_file_menu_text))
 				menu.extend (file_menu)
 				context_menu_add_file_submenu (file_menu, auth_aca)
 			end
 
 			-- add in tree controls
-			create tree_menu.make_with_text (get_text (ec_tree_controls))
+			create tree_menu.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_tree_controls))
 			menu.extend (tree_menu)
 			context_menu_add_tree_controls (tree_menu)
 
@@ -223,16 +223,16 @@ feature {NONE} -- Implementation
 		local
 			an_mi: EV_MENU_ITEM
 		do
-			create an_mi.make_with_text_and_action (get_text (ec_expand_complete_button_text), agent do gui_semantic_grid_tree_control.expand_all end)
+			create an_mi.make_with_text_and_action (get_text ({EVX_MESSAGES_IDS}.ec_expand_complete_button_text), agent do gui_semantic_grid_tree_control.expand_all end)
 			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_collapse_all"))
 			a_menu.extend (an_mi)
-			create an_mi.make_with_text_and_action (get_text (ec_collapse_complete_button_text), agent do gui_semantic_grid_tree_control.collapse_all end)
+			create an_mi.make_with_text_and_action (get_text ({EVX_MESSAGES_IDS}.ec_collapse_complete_button_text), agent do gui_semantic_grid_tree_control.collapse_all end)
 			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_expand_all"))
 			a_menu.extend (an_mi)
-			create an_mi.make_with_text_and_action (get_text (ec_expand_one_level_button_text), agent do gui_semantic_grid_tree_control.expand_one_level end)
+			create an_mi.make_with_text_and_action (get_text ({EVX_MESSAGES_IDS}.ec_expand_one_level_button_text), agent do gui_semantic_grid_tree_control.expand_one_level end)
 			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_collapse"))
 			a_menu.extend (an_mi)
-			create an_mi.make_with_text_and_action (get_text (ec_collapse_one_level_button_text), agent do gui_semantic_grid_tree_control.collapse_one_level end)
+			create an_mi.make_with_text_and_action (get_text ({EVX_MESSAGES_IDS}.ec_collapse_one_level_button_text), agent do gui_semantic_grid_tree_control.collapse_one_level end)
 			an_mi.set_pixmap (get_icon_pixmap ("tool/tree_expand"))
 			a_menu.extend (an_mi)
 		end
@@ -243,7 +243,7 @@ feature {NONE} -- Implementation
 			an_mi: EV_MENU_ITEM
 		do
 			-- edit archetype source in external tool
-			create an_mi.make_with_text_and_action (get_text (ec_edit_source),
+			create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_edit_source),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						library_tool_agents.call_edit_archetype_source_agent (an_aca)
@@ -253,7 +253,7 @@ feature {NONE} -- Implementation
 			a_menu.extend (an_mi)
 
 			-- show file in OS explorer
-			create an_mi.make_with_text_and_action (get_text (ec_show_in_explorer),
+			create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_show_in_explorer),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						show_in_system_explorer (file_system.dirname (an_aca.file_mgr.file_directory))
@@ -263,7 +263,7 @@ feature {NONE} -- Implementation
 			a_menu.extend (an_mi)
 
 			-- save archetype as ...
-			create an_mi.make_with_text_and_action (get_text (ec_save_archetype_as),
+			create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_save_archetype_as),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						library_tool_agents.call_save_archetype_agent (an_aca, True, True)
@@ -273,7 +273,7 @@ feature {NONE} -- Implementation
 			a_menu.extend (an_mi)
 
 			-- export archetype as ...
-			create an_mi.make_with_text_and_action (get_text (ec_export_archetype_as),
+			create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_export_archetype_as),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						library_tool_agents.call_save_archetype_agent (an_aca, True, False)
@@ -282,7 +282,7 @@ feature {NONE} -- Implementation
 			a_menu.extend (an_mi)
 
 			-- export flat archetype as
-			create an_mi.make_with_text_and_action (get_text (ec_export_flat_archetype_as),
+			create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_export_flat_archetype_as),
 				agent (an_aca: ARCH_LIB_AUTHORED_ARCHETYPE)
 					do
 						library_tool_agents.call_save_archetype_agent (an_aca, False, False)
@@ -323,11 +323,11 @@ feature {NONE} -- Implementation
 			question_dialog: EV_QUESTION_DIALOG
 		do
 			if attached source as src then
-				create question_dialog.make_with_text (get_msg (ec_remove_artefact_question, <<aca.id.physical_id>>))
-				question_dialog.set_title (get_text (ec_remove_dialog_title))
-				question_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
+				create question_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_remove_artefact_question, <<aca.id.physical_id>>))
+				question_dialog.set_title (get_text ({ADL_MESSAGES_IDS}.ec_remove_dialog_title))
+				question_dialog.set_buttons (<<get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response), get_text ({GENERAL_MESSAGES_IDS}.ec_no_response)>>)
 				question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-				if attached question_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text (ec_yes_response)) then
+				if attached question_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response)) then
 					src.remove_archetype (aca)
 					aca.remove_file
 					if attached aca.parent as att_parent then

@@ -293,12 +293,12 @@ feature {NONE} -- Implementation
 
 	 			elseif attached {ARCH_LIB_PACKAGE} aci as accl then
 	 				text.append (accl.qualified_name)
-					tooltip.append (get_msg (ec_rm_closure_tree_node_tooltip, Void))
+					tooltip.append (get_msg ({ADL_MESSAGES_IDS}.ec_rm_closure_tree_node_tooltip, Void))
 	 				text.append (" [" + accl.subtree_artefact_total.out + "]")
 
 	 			elseif attached {ARCH_LIB_MODEL} aci as acm then
 	 				text.append (acm.qualified_name)
-					tooltip.append (get_msg (ec_model_tree_node_tooltip, Void))
+					tooltip.append (get_msg ({ADL_MESSAGES_IDS}.ec_model_tree_node_tooltip, Void))
 	 				text.append (" [" + acm.subtree_artefact_total.out + "]")
 				end
 
@@ -503,27 +503,27 @@ feature {NONE} -- Implementation
 			create menu
 
 			-- show class in current tab
-			create an_mi.make_with_text_and_action (get_msg (ec_display_in_active_tab, Void), agent display_context_selected_class_in_active_tool (accn))
+			create an_mi.make_with_text_and_action (get_msg ({ADL_MESSAGES_IDS}.ec_display_in_active_tab, Void), agent display_context_selected_class_in_active_tool (accn))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
 	    	menu.extend (an_mi)
 
 			-- show class in new tab
-			create an_mi.make_with_text_and_action (get_msg (ec_display_in_new_tab, Void), agent display_context_selected_class_in_new_tool (accn))
+			create an_mi.make_with_text_and_action (get_msg ({ADL_MESSAGES_IDS}.ec_display_in_new_tab, Void), agent display_context_selected_class_in_new_tool (accn))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 			menu.extend (an_mi)
 
 			-- show class in RM
-			create an_mi.make_with_text_and_action (get_msg (ec_show_class_in_rm, Void), agent display_context_selected_class_in_rm_schema_tool (accn))
+			create an_mi.make_with_text_and_action (get_msg ({ADL_MESSAGES_IDS}.ec_show_class_in_rm, Void), agent display_context_selected_class_in_rm_schema_tool (accn))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema"))
 			menu.extend (an_mi)
 
 			-- create a new non-specialised archetype
-			create an_mi.make_with_text_and_action (get_msg (ec_create_new_archetype, Void), agent library_tool_agents.call_create_new_non_specialised_archetype_agent (accn, Void))
+			create an_mi.make_with_text_and_action (get_msg ({ADL_MESSAGES_IDS}.ec_create_new_archetype, Void), agent library_tool_agents.call_create_new_non_specialised_archetype_agent (accn, Void))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 			menu.extend (an_mi)
 
 			-- add in tree controls
-			create tree_menu.make_with_text (get_text (ec_tree_controls))
+			create tree_menu.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_tree_controls))
 			menu.extend (tree_menu)
 			context_menu_add_tree_controls (tree_menu)
 
@@ -570,12 +570,12 @@ feature {NONE} -- Implementation
 		do
 			if auth_aca.is_valid then
 				-- create new specialised archetype
-				create an_mi.make_with_text_and_action (get_text (ec_create_new_child_archetype), agent library_tool_agents.call_create_new_specialised_archetype_agent (auth_aca))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_create_new_child_archetype), agent library_tool_agents.call_create_new_specialised_archetype_agent (auth_aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/new_archetype"))
 				a_menu.extend (an_mi)
 
 				-- create new template
-				create an_mi.make_with_text_and_action (get_text (ec_create_new_template), agent library_tool_agents.call_create_new_template_agent (auth_aca))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_create_new_template), agent library_tool_agents.call_create_new_template_agent (auth_aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/new_archetype"))
 				a_menu.extend (an_mi)
 			end

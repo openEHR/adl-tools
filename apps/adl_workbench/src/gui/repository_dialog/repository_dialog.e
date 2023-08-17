@@ -95,14 +95,14 @@ feature -- Definitions
 	Grid_col_names: HASH_TABLE [STRING, INTEGER]
 		once
 			create Result.make (0)
-			Result.put (get_text (ec_repository_grid_display_name_col_title), Grid_display_name_col)
-			Result.put (get_text (ec_repository_grid_status_col_title), grid_status_col)
-			Result.put (get_text (ec_repository_grid_vcs_branch_col_title), grid_vcs_branch_col)
-			Result.put (get_text (ec_repository_grid_vcs_status_col_title), grid_vcs_status_col)
-			Result.put (get_text (ec_repository_grid_description_col_title), grid_description_col)
-			Result.put (get_text (ec_repository_grid_maintainer_col_title), Grid_maintainer_col)
-			Result.put (get_text (ec_repository_grid_validation_col_title), Grid_validation_col)
-			Result.put (get_text (ec_repository_grid_edit_col_title), grid_edit_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_repository_grid_display_name_col_title), Grid_display_name_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_repository_grid_status_col_title), grid_status_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_repository_grid_vcs_branch_col_title), grid_vcs_branch_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_repository_grid_vcs_status_col_title), grid_vcs_status_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_repository_grid_description_col_title), grid_description_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_repository_grid_maintainer_col_title), Grid_maintainer_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_repository_grid_validation_col_title), Grid_validation_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_repository_grid_edit_col_title), grid_edit_col)
 		end
 
 	Grid_col_name (a_col: INTEGER): STRING
@@ -159,7 +159,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (ev_cell_1)
 
 			create ev_label_1
-			ev_label_1.set_text (get_text (ec_repository_dialog_header_label))
+			ev_label_1.set_text (get_text ({ADL_MESSAGES_IDS}.ec_repository_dialog_header_label))
 			ev_root_container.extend (ev_label_1)
 
 			create ev_cell_2
@@ -187,12 +187,12 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_hbox_repo_controls)
 
 			--  refresh VCS status
-			create refresh_vcs_button.make (Void, Void, get_text (ec_refresh_vcs_button_text), get_text (ec_refresh_vcs_button_tooltip), agent do do_with_wait_cursor (Current, agent populate_grid) end, Void)
+			create refresh_vcs_button.make (Void, Void, get_text ({ADL_MESSAGES_IDS}.ec_refresh_vcs_button_text), get_text ({ADL_MESSAGES_IDS}.ec_refresh_vcs_button_tooltip), agent do do_with_wait_cursor (Current, agent populate_grid) end, Void)
 			ev_hbox_repo_controls.extend (refresh_vcs_button.ev_button)
 			ev_hbox_repo_controls.disable_item_expand (refresh_vcs_button.ev_button)
 
 			--  new repository button
-			create new_repo_button.make (Void, Void, get_text (ec_repository_new_text), get_text (ec_repository_dir_tooltip), agent on_add_repository, Void)
+			create new_repo_button.make (Void, Void, get_text ({ADL_MESSAGES_IDS}.ec_repository_new_text), get_text ({ADL_MESSAGES_IDS}.ec_repository_dir_tooltip), agent on_add_repository, Void)
 			ev_hbox_repo_controls.extend (new_repo_button.ev_button)
 			ev_hbox_repo_controls.disable_item_expand (new_repo_button.ev_button)
 
@@ -213,7 +213,7 @@ feature {NONE} -- Initialisation
 		do
 			precursor
 			extend (ev_root_container)
-			set_title (get_text (ec_repository_dialog_title))
+			set_title (get_text ({ADL_MESSAGES_IDS}.ec_repository_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
 			-- ensure size controlled
@@ -223,7 +223,7 @@ feature {NONE} -- Initialisation
 			set_default_push_button (ok_cancel_buttons.ok_button)
 
 			-- add a reload button to the left of Ok/ Cancel
-			ok_cancel_buttons.add_button (get_text (ec_rm_schema_dialog_reload_button_text), agent reload)
+			ok_cancel_buttons.add_button (get_text ({ADL_MESSAGES_IDS}.ec_rm_schema_dialog_reload_button_text), agent reload)
 
 			original_current_library_selected := current_library_name.twin
 
@@ -391,7 +391,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			evx_grid.update_last_row_label_col (Grid_display_name_col, a_rep_if.key, tooltip, Void, Void, col_icon)
 
 			-- column 2 - repository status
-			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_installed), Void, Void, Void, Void)
+			evx_grid.update_last_row_label_col (Grid_status_col, get_text ({ADL_MESSAGES_IDS}.ec_repository_status_installed), Void, Void, Void, Void)
 
 			-- column 3 - checked out branch
 			if a_rep_if.has_repository_access then
@@ -428,7 +428,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			end
 
 			-- column 8 - create edit button and add to row
-			evx_grid.update_last_row_label_col (Grid_edit_col, get_text (ec_edit), Void, Void, Ev_grid_text_link_colour, Void)
+			evx_grid.update_last_row_label_col (Grid_edit_col, get_text ({ADL_MESSAGES_IDS}.ec_edit), Void, Void, Ev_grid_text_link_colour, Void)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_edit_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent edit_repository_definition (a_grid_row, a_rep_if))
 			end
@@ -450,7 +450,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			else
 				text_col := Void
 			end
-			evx_grid.update_last_row_label_col (Grid_status_col, get_text (ec_repository_status_install), Void, Void, text_col, Void)
+			evx_grid.update_last_row_label_col (Grid_status_col, get_text ({ADL_MESSAGES_IDS}.ec_repository_status_install), Void, Void, text_col, Void)
 
 			-- only make the link live if the tool is supported
 			if tool_supported (a_rem_proxy.remote_type) and not evx_grid.has_last_row_pointer_button_press_actions (Grid_status_col) then
@@ -493,11 +493,11 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 				if not repo_install_dialog.user_requires_repository_clone then
 					on_associate_repository (repo_install_dialog.local_directory, repo_install_dialog.legacy_directory)
 				else
-					create verify_dialog.make_with_text (get_msg (ec_repository_clone_dir_confirm_text,
+					create verify_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_clone_dir_confirm_text,
 						<<repo_name, a_rem_proxy.remote_url, repo_install_dialog.local_directory>>))
-					verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
+					verify_dialog.set_buttons (<<get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response), get_text ({GENERAL_MESSAGES_IDS}.ec_no_response)>>)
 					verify_dialog.show_modal_to_window (Current)
-					if attached verify_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text (ec_yes_response)) then
+					if attached verify_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response)) then
 						do_clone_repository (repo_install_dialog.local_directory, repo_install_dialog.legacy_directory, a_rem_proxy)
 					end
 				end
@@ -524,7 +524,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			if a_lib_if.is_remote then
 				col_icon := get_icon_pixmap ("tool/archetype_library_remote")
 				if attached a_lib_if.library_definition as att_lib_def and then attached att_lib_def.remote as att_rem then
-					col_tooltip.append (get_msg (ec_archetype_library_grid_name_col_tooltip, <<att_rem.url, att_rem.custodian>>))
+					col_tooltip.append (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_library_grid_name_col_tooltip, <<att_rem.url, att_rem.custodian>>))
 				end
 			else
 				col_icon := get_icon_pixmap ("tool/archetype_library")
@@ -571,7 +571,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 			end
 
 			-- column 8 - create edit button and add to row
-			evx_grid.update_last_row_label_col (Grid_edit_col, get_text (ec_edit), Void, Void, Ev_grid_text_link_colour, Void)
+			evx_grid.update_last_row_label_col (Grid_edit_col, get_text ({ADL_MESSAGES_IDS}.ec_edit), Void, Void, Ev_grid_text_link_colour, Void)
 			if not evx_grid.has_last_row_pointer_button_press_actions (Grid_edit_col) then
 				evx_grid.add_last_row_pointer_button_press_actions (Grid_edit_col, agent edit_library_definition (a_grid_row, a_lib_if))
 			end
@@ -610,33 +610,33 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 								do_add_local_repository (repo_dir, repo_legacy_dir)
 							end
 						elseif not archetype_repository_interfaces.last_duplicate_key_path.is_empty then
-							create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
+							create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
 							error_dialog.show_modal_to_window (Current)
 						else
-							create error_dialog.make_with_text (get_msg (ec_repository_dir_not_repository, <<repo_dir, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name>>))
+							create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_dir_not_repository, <<repo_dir, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name>>))
 							error_dialog.show_modal_to_window (Current)
 						end
 
 					-- user wants to create a new repository by cloning a remote
 					elseif not repo_url.is_empty then
-						create verify_dialog.make_with_text (get_msg (ec_repository_clone_dir_confirm_text, <<"???", repo_url, repo_dir>>))
-						verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
+						create verify_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_clone_dir_confirm_text, <<"???", repo_url, repo_dir>>))
+						verify_dialog.set_buttons (<<get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response), get_text ({GENERAL_MESSAGES_IDS}.ec_no_response)>>)
 						verify_dialog.show_modal_to_window (Current)
-						if verify_dialog.selected_button.same_string (get_text (ec_yes_response)) then
+						if verify_dialog.selected_button.same_string (get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response)) then
 							do_clone_repository (repo_dir, repo_legacy_dir, create {REPOSITORY_REMOTE_PROXY}.make (repo_url, Git_tool_name))
 						end
 
 					-- valid path for new local repository to be created; will cause creation of new repo meta-data file
 					elseif archetype_repository_interfaces.valid_new_repository_path (repo_dir) then
-						create new_repo_dialog.make_with_text_and_actions (get_msg (ec_repository_create_new_question_text, <<repo_dir>>),
+						create new_repo_dialog.make_with_text_and_actions (get_msg ({ADL_MESSAGES_IDS}.ec_repository_create_new_question_text, <<repo_dir>>),
 							<<agent do_create_new_local_repository (repo_dir, repo_legacy_dir), agent do end, agent do end>>)
 						new_repo_dialog.show_modal_to_window (Current)
 					else
-						create error_dialog.make_with_text (get_msg (ec_repository_dir_in_existing_path, <<repo_dir>>))
+						create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_dir_in_existing_path, <<repo_dir>>))
 						error_dialog.show_modal_to_window (Current)
 					end
 				else
-					create error_dialog.make_with_text (get_msg (ec_repository_dir_invalid, <<repo_dir>>))
+					create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_dir_invalid, <<repo_dir>>))
 					error_dialog.show_modal_to_window (Current)
 				end
 			end
@@ -649,11 +649,11 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		do
 			set_last_user_selected_directory (repo_dir)
 			if not archetype_repository_interfaces.repository_exists_at_path (repo_dir) then
-				create error_dialog.make_with_text (get_msg (ec_repository_dir_not_repository, <<repo_dir, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name>>))
+				create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_dir_not_repository, <<repo_dir, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name>>))
 				error_dialog.show_modal_to_window (Current)
 
 			elseif not is_vcs_checkout_area (repo_dir) then
-				create error_dialog.make_with_text (get_msg (ec_repository_dir_not_checkout, <<repo_dir>>))
+				create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_dir_not_checkout, <<repo_dir>>))
 				error_dialog.show_modal_to_window (Current)
 
 			else
@@ -670,21 +670,21 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 						add_repository_resource (repo_dir)
 
 					elseif last_command_result.did_not_run then
-						create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
+						create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_external_command_did_not_execute, <<last_command_result.command_line>>))
 						error_dialog.show_modal_to_window (Current)
 
 					else
-						create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.error_output>>))
+						create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_external_command_failed, <<last_command_result.command_line, last_command_result.error_output>>))
 						error_dialog.show_modal_to_window (Current)
 
 					end
 					ok_cancel_buttons.enable_sensitive
 
 				elseif not archetype_repository_interfaces.last_duplicate_key_path.is_empty then
-					create error_dialog.make_with_text (get_msg (ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
+					create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_dir_contains_duplicate, <<repo_dir, archetype_repository_interfaces.last_duplicate_key_path>>))
 					error_dialog.show_modal_to_window (Current)
 				else
-					create error_dialog.make_with_text (get_msg (ec_repository_dir_not_repository, <<repo_dir, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name>>))
+					create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_dir_not_repository, <<repo_dir, {ARCHETYPE_REPOSITORY_INTERFACE}.repository_file_name>>))
 					error_dialog.show_modal_to_window (Current)
 				end
 			end
@@ -718,7 +718,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 						end (repo_parent_dir, a_rem_proxy.remote_type)
 				)
 			else
-				create error_dialog.make_with_text (get_msg (ec_repository_clone_dir_invalid,
+				create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_clone_dir_invalid,
 					<<repo_parent_dir, a_rem_proxy.remote_url, repo_name>>))
 				error_dialog.show_modal_to_window (Current)
 			end
@@ -766,10 +766,10 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 						end
 				)
 			elseif last_command_result.did_not_run then
-				create error_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, <<last_command_result.command_line>>))
+				create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_external_command_did_not_execute, <<last_command_result.command_line>>))
 				error_dialog.show_modal_to_window (Current)
 			else
-				create error_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, last_command_result.error_output>>))
+				create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_external_command_failed, <<last_command_result.command_line, last_command_result.error_output>>))
 				error_dialog.show_modal_to_window (Current)
 			end
 			ok_cancel_buttons.enable_sensitive
@@ -884,13 +884,13 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			rep_sync_status := a_rep_if.last_synchronisation_status.max (a_rep_if.last_merge_status)
 
 			-- add new library
-			create an_mi.make_with_text_and_action (get_text (ec_repository_add_new_library), agent add_new_library (a_rep_if))
+			create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_repository_add_new_library), agent add_new_library (a_rep_if))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_library"))
 	    	menu.extend (an_mi)
 
 			-- add new library here (at top of repository) - only if there are no libraries below
 			if not a_rep_if.has_libraries then
-				create an_mi.make_with_text_and_action (get_text (ec_repository_add_new_library_here), agent add_new_library_here (a_rep_if))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_repository_add_new_library_here), agent add_new_library_here (a_rep_if))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_library"))
 		    	menu.extend (an_mi)
 			end
@@ -898,42 +898,42 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			if a_rep_if.has_repository_access then
 				-- VCS fetch
 				if rep_sync_status = vcs_status_sync_required then
-					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_fetch_menu_item), agent repository_vcs_fetch (a_rep_if))
+					create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_repository_vcs_fetch_menu_item), agent repository_vcs_fetch (a_rep_if))
 					an_mi.set_pixmap (Vcs_status_icon (rep_sync_status))
 			    	menu.extend (an_mi)
 				end
 
 				-- VCS pull
 				if rep_sync_status = vcs_status_pull_required then
-					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_pull_menu_item), agent repository_vcs_pull (a_rep_if))
+					create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_repository_vcs_pull_menu_item), agent repository_vcs_pull (a_rep_if))
 					an_mi.set_pixmap (Vcs_status_icon (rep_sync_status))
 			    	menu.extend (an_mi)
 				end
 
 				-- VCS commit
 				if rep_sync_status = vcs_status_files_not_committed then
-					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_commit_menu_item), agent repository_vcs_commit (a_rep_if))
+					create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_repository_vcs_commit_menu_item), agent repository_vcs_commit (a_rep_if))
 					an_mi.set_pixmap (Vcs_status_icon (rep_sync_status))
 			    	menu.extend (an_mi)
 				end
 
 				-- VCS push
 				if rep_sync_status = vcs_status_push_required then
-					create an_mi.make_with_text_and_action (get_text (ec_repository_vcs_push_menu_item), agent repository_vcs_push (a_rep_if))
+					create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_repository_vcs_push_menu_item), agent repository_vcs_push (a_rep_if))
 					an_mi.set_pixmap (Vcs_status_icon (rep_sync_status))
 			    	menu.extend (an_mi)
 				end
 
 				-- checkout other branch
 				if a_rep_if.available_branches.count > 1 then
-					create an_mi.make_with_text_and_action (get_text (ec_repository_checkout_branch_menu_item), agent repository_checkout_branch (a_rep_if))
+					create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_repository_checkout_branch_menu_item), agent repository_checkout_branch (a_rep_if))
 					an_mi.set_pixmap (get_icon_pixmap ("tool/" + a_rep_if.remote_repository_type))
 			    	menu.extend (an_mi)
 				end
 			end
 
 			-- forget
-			create an_mi.make_with_text_and_action (get_text (ec_repository_forget_menu_text), agent repository_forget (a_rep_if))
+			create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_repository_forget_menu_text), agent repository_forget (a_rep_if))
 		   	menu.extend (an_mi)
 
 			menu.show
@@ -947,7 +947,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			lib_path: STRING
 		do
 			create lib_dir_dialog
-			lib_dir_dialog.set_title (get_text (ec_repository_add_new_library))
+			lib_dir_dialog.set_title (get_text ({ADL_MESSAGES_IDS}.ec_repository_add_new_library))
 			lib_dir_dialog.set_start_directory (a_rep_if.local_directory)
 			lib_dir_dialog.show_modal_to_window (Current)
 			lib_path := lib_dir_dialog.directory
@@ -956,7 +956,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 					a_rep_if.add_new_library (lib_path, False)
 					populate_grid
 				else
-					create error_dialog.make_with_text (get_msg (ec_repository_invalid_library_path, <<lib_path>>))
+					create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_invalid_library_path, <<lib_path>>))
 					error_dialog.show_modal_to_window (Current)
 				end
 			end
@@ -1042,10 +1042,10 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 		local
 			verify_dialog: EV_QUESTION_DIALOG
 		do
-			create verify_dialog.make_with_text (get_msg (ec_repository_forget_confirm_text, <<a_rep_if.key>>))
-			verify_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
+			create verify_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_forget_confirm_text, <<a_rep_if.key>>))
+			verify_dialog.set_buttons (<<get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response), get_text ({GENERAL_MESSAGES_IDS}.ec_no_response)>>)
 			verify_dialog.show_modal_to_window (Current)
-			if attached verify_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text (ec_yes_response)) then
+			if attached verify_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response)) then
 				do_with_wait_cursor (Current, agent do_repository_forget (a_rep_if))
 			end
 		end

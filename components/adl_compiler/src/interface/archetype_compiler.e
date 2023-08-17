@@ -102,19 +102,19 @@ feature {NONE} -- Commands
 
 	console_start_progress_message: STRING
 		do
-			Result := get_text (ec_compiler_building_system)
+			Result := get_text ({ADL_MESSAGES_IDS}.ec_compiler_building_system)
 		end
 
 	console_finish_progress_message: STRING
 		do
-			Result := get_msg (ec_compiler_finished_building_system, <<current_library.archetype_count.out,
+			Result := get_msg ({ADL_MESSAGES_IDS}.ec_compiler_finished_building_system, <<current_library.archetype_count.out,
 					current_library.compile_valid_count.out, current_library.compile_warnings_count.out,
 					current_library.compile_errors_count.out>>)
 		end
 
 	console_interrupted_message: STRING
 		do
-			Result := get_text (ec_compiler_interrupted)
+			Result := get_text ({ADL_MESSAGES_IDS}.ec_compiler_interrupted)
 		end
 
 	do_setup_build (args: like build_args_type)
@@ -173,7 +173,7 @@ feature {NONE} -- Implementation
 						ara.check_compilation_currency
 						if not ara.is_in_terminal_compilation_state then
 							if not compiler_quiet then
-								call_console_update_agent (get_msg_line (ec_compiler_compiling_archetype, <<ara.artefact_type.as_upper, ara.id.physical_id>>))
+								call_console_update_agent (get_msg_line ({ADL_MESSAGES_IDS}.ec_compiler_compiling_archetype, <<ara.artefact_type.as_upper, ara.id.physical_id>>))
 							end
 
 							-- first phase
@@ -212,12 +212,12 @@ feature {NONE} -- Implementation
 						elseif global_error_reporting_level = Error_type_debug then
 							if ara.is_valid then
 								if ara.errors.has_warnings then
-									build_status := get_msg_line (ec_compiler_already_attempted_validated_with_warnings, <<ara.artefact_type.as_upper, ara.id.physical_id, ara.error_strings>>)
+									build_status := get_msg_line ({ADL_MESSAGES_IDS}.ec_compiler_already_attempted_validated_with_warnings, <<ara.artefact_type.as_upper, ara.id.physical_id, ara.error_strings>>)
 								else
-									build_status := get_msg_line (ec_compiler_already_attempted_validated, <<ara.artefact_type.as_upper, ara.id.physical_id>>)
+									build_status := get_msg_line ({ADL_MESSAGES_IDS}.ec_compiler_already_attempted_validated, <<ara.artefact_type.as_upper, ara.id.physical_id>>)
 								end
 							else
-								build_status := get_msg_line (ec_compiler_already_attempted_failed, <<ara.artefact_type.as_upper, ara.id.physical_id, ara.error_strings>>)
+								build_status := get_msg_line ({ADL_MESSAGES_IDS}.ec_compiler_already_attempted_failed, <<ara.artefact_type.as_upper, ara.id.physical_id, ara.error_strings>>)
 							end
 							call_debug_update_agent (build_status, dependency_depth)
 						end
@@ -232,15 +232,15 @@ feature {NONE} -- Implementation
 			else
 				ara.signal_exception
 				call_archetype_visual_update_agent (ara)
-				call_console_update_agent (get_msg_line (ec_compiler_infinite_regress, <<ara.id.physical_id, dependency_depth.out>>))
+				call_console_update_agent (get_msg_line ({ADL_MESSAGES_IDS}.ec_compiler_infinite_regress, <<ara.id.physical_id, dependency_depth.out>>))
 			end
 		rescue
 			if attached exception_trace as et then
 				exc_trace_str := et
 			else
-				create exc_trace_str.make_from_string (get_text (ec_compiler_exception_trace_unavailable))
+				create exc_trace_str.make_from_string (get_text ({ADL_MESSAGES_IDS}.ec_compiler_exception_trace_unavailable))
 			end
-			call_console_update_agent (get_msg (ec_compile_exception, <<ara.qualified_name, exception.out, exc_trace_str>>))
+			call_console_update_agent (get_msg ({ADL_MESSAGES_IDS}.ec_compile_exception, <<ara.qualified_name, exception.out, exc_trace_str>>))
 			exception_encountered := True
 			retry
 		end

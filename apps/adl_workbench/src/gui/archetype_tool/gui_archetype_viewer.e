@@ -204,13 +204,13 @@ feature {NONE} -- Implementation
 	set_differential_tab_texts
 			-- set text on tabs for differential form of archetype
 		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text (ec_serialised_diff_tab_text))
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_serialised_diff_tab_text))
 		end
 
 	set_flat_tab_texts
 			-- set text on tabs for flat form of archetype
 		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text (ec_serialised_flat_tab_text))
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_serialised_flat_tab_text))
 		end
 
 	set_tab_appearance

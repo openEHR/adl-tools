@@ -54,7 +54,7 @@ feature {NONE} -- Implementation
 		do
 			across target_flat.use_node_index as use_refs_csr loop
 				if not target_flat.definition.has_path (use_refs_csr.key) then
-					add_error (ec_VUNP, <<use_refs_csr.key>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VUNP, <<use_refs_csr.key>>)
 				end
 			end
 		end
@@ -81,9 +81,9 @@ feature {NONE} -- Implementation
 			if attached {C_ATTRIBUTE} a_c_node as ca then
 				if attached ca.cardinality as att_card and then not att_card.interval.upper_unbounded then
 					if ca.aggregate_occurrences_lower_sum > att_card.interval.upper then
-						add_warning (ec_WACMCL, <<ca.path, ca.aggregate_occurrences_lower_sum.out, att_card.interval.upper.out>>)
+						add_warning ({ADL_MESSAGES_IDS}.ec_WACMCL, <<ca.path, ca.aggregate_occurrences_lower_sum.out, att_card.interval.upper.out>>)
 					elseif ca.minimum_child_count > att_card.interval.upper then
-						add_error (ec_VACMCO, <<ca.path, ca.minimum_child_count.out, att_card.interval.upper.out>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VACMCO, <<ca.path, ca.minimum_child_count.out, att_card.interval.upper.out>>)
 					end
 				end
 			end
@@ -99,7 +99,7 @@ feature {NONE} -- Implementation
 			-- check that there the original language of the root archetype
 			-- is among the languages of the filler
 			if not an_arch.has_language (target_flat.original_language.code_string) then
-				add_error (ec_VTPL, <<target_flat.archetype_id.physical_id, an_arch.archetype_id.physical_id, target_flat.original_language.code_string>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_VTPL, <<target_flat.archetype_id.physical_id, an_arch.archetype_id.physical_id, target_flat.original_language.code_string>>)
 			end
 		end
 

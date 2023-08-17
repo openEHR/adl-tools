@@ -148,11 +148,11 @@ feature {NONE} -- Implementation
 
 				-- put names on columns
 				if ev_root_container.column_count > 0 then
-					ev_root_container.column (Grid_path_col).set_title (get_msg (ec_annotation_path_text, Void))
+					ev_root_container.column (Grid_path_col).set_title (get_msg ({ADL_MESSAGES_IDS}.ec_annotation_path_text, Void))
 					ev_root_container.column (Grid_path_col).resize_to_content
-					ev_root_container.column (Grid_ann_key_col).set_title (get_msg (ec_annotation_key_text, Void))
+					ev_root_container.column (Grid_ann_key_col).set_title (get_msg ({ADL_MESSAGES_IDS}.ec_annotation_key_text, Void))
 					ev_root_container.column (Grid_ann_key_col).resize_to_content
-					ev_root_container.column (Grid_ann_value_col).set_title (get_msg (ec_annotation_value_text, Void))
+					ev_root_container.column (Grid_ann_value_col).set_title (get_msg ({ADL_MESSAGES_IDS}.ec_annotation_value_text, Void))
 					ev_root_container.column (Grid_ann_value_col).resize_to_content
 				end
 			end

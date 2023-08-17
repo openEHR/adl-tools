@@ -66,24 +66,24 @@ feature {NONE} -- Initialisation
 
 			-- ================================== ADL 2 paths =======================================
 			create evx_adl_2_tab.make (on_path_map_key_press_agent, agent path_column_names, agent path_list, agent row_filter_names, agent adl_2_path_row)
-			evx_adl_2_tab.add_boolean_filter (get_text (ec_nat_lang_checkbox_text), get_text (ec_nat_lang_paths_tooltip),
+			evx_adl_2_tab.add_boolean_filter (get_text ({ADL_MESSAGES_IDS}.ec_nat_lang_checkbox_text), get_text ({ADL_MESSAGES_IDS}.ec_nat_lang_paths_tooltip),
 				agent :BOOLEAN do Result := show_natural_language end, agent update_show_natural_language)
 			ev_root_container.extend (evx_adl_2_tab.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_2_tab.ev_root_container, get_text (ec_adl_2_paths_tab_text))
+			ev_root_container.set_item_text (evx_adl_2_tab.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_adl_2_paths_tab_text))
 			gui_controls.extend (evx_adl_2_tab)
 
 			-- ================================== ADL 1.4 paths =======================================
 			create evx_adl_14_tab.make (on_path_map_key_press_agent, agent path_column_names, agent path_list, agent row_filter_names, agent adl_14_path_row)
-			evx_adl_14_tab.add_boolean_filter (get_text (ec_nat_lang_checkbox_text), get_text (ec_nat_lang_paths_tooltip),
+			evx_adl_14_tab.add_boolean_filter (get_text ({ADL_MESSAGES_IDS}.ec_nat_lang_checkbox_text), get_text ({ADL_MESSAGES_IDS}.ec_nat_lang_paths_tooltip),
 				agent :BOOLEAN do Result := show_natural_language end, agent update_show_natural_language)
 			ev_root_container.extend (evx_adl_14_tab.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_14_tab.ev_root_container, get_text (ec_adl_14_paths_tab_text))
+			ev_root_container.set_item_text (evx_adl_14_tab.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_adl_14_paths_tab_text))
 			gui_controls.extend (evx_adl_14_tab)
 
 			-- ================================== ADL interface tags =======================================
 			create evx_interface_tab.make (on_path_map_key_press_agent, agent interface_column_names, agent path_list, agent row_filter_names, agent interface_row)
 			ev_root_container.extend (evx_interface_tab.ev_root_container)
-			ev_root_container.set_item_text (evx_interface_tab.ev_root_container, get_text (ec_adl_interface_tab_text))
+			ev_root_container.set_item_text (evx_interface_tab.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_adl_interface_tab_text))
 			gui_controls.extend (evx_interface_tab)
 
 			ev_root_container.selection_actions.extend (agent on_select_notebook)

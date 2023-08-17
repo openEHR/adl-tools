@@ -118,7 +118,7 @@ feature {NONE} -- Implementation
 				if attached ptr_style as att_ps then
 					parent_dialog.set_pointer_style (att_ps)
 				end
-				create info_dialog.make_with_text (get_msg (ec_external_command_did_not_execute, Void))
+				create info_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_external_command_did_not_execute, Void))
 				info_dialog.show_modal_to_window (parent_dialog)
 			else
 				if attached ptr_style as att_ps then
@@ -131,7 +131,7 @@ feature {NONE} -- Implementation
 				if err_text.count < 2 then
 					err_text := last_command_result.stdout
 				end
-				create info_dialog.make_with_text (get_msg (ec_external_command_failed, <<last_command_result.command_line, err_text>>))
+				create info_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_external_command_failed, <<last_command_result.command_line, err_text>>))
 				info_dialog.show_modal_to_window (parent_dialog)
 			end
 

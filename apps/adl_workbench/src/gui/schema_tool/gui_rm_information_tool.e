@@ -70,9 +70,9 @@ feature {NONE} -- Implementation
 
 			-- column names
 			ev_root_container.insert_new_column (Grid_metric_name_col)
-			ev_root_container.column (Grid_metric_name_col).set_title (get_msg (ec_rm_info_grid_metric_col_title, Void))
+			ev_root_container.column (Grid_metric_name_col).set_title (get_msg ({ADL_MESSAGES_IDS}.ec_rm_info_grid_metric_col_title, Void))
 			ev_root_container.insert_new_column (Grid_metric_count_col)
-			ev_root_container.column (Grid_metric_count_col).set_title (get_msg (ec_rm_info_grid_count_col_title, Void))
+			ev_root_container.column (Grid_metric_count_col).set_title (get_msg ({ADL_MESSAGES_IDS}.ec_rm_info_grid_count_col_title, Void))
 
 			rm_stats := safe_source.statistics_table
 			across rm_stats as rm_stats_csr loop

@@ -191,7 +191,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 		do
 			if is_specialised and not specialisation_parent.is_valid then
 				compilation_state := cs_lineage_invalid
-				add_error (ec_compile_e1, <<parent_id.physical_id>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_compile_e1, <<parent_id.physical_id>>)
 			else
 				clear_cache
 
@@ -202,7 +202,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			 	compilation_state := Cs_parsed
 				if attached {like flat_archetype} adl_14_engine.parse (legacy_flat_text, Current) as flat_arch then
 					legacy_flat_archetype := flat_arch
-					add_info (ec_compile_legacy_i1, <<id.physical_id>>)
+					add_info ({ADL_MESSAGES_IDS}.ec_compile_legacy_i1, <<id.physical_id>>)
 
 					-- perform post-parse processing and then diff conversion
 					if  attached specialisation_parent as att_sp then
@@ -317,7 +317,7 @@ feature -- File Access
 			else -- must be a DT serialisation format
 				file_mgr.save_as (a_full_path, serialise_object (False, a_format))
 			end
-			status := get_msg_line (ec_file_saved_as_in_format, <<a_full_path, a_format>>)
+			status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
 
 	save_flat_as (a_full_path, a_format: STRING)
@@ -334,7 +334,7 @@ feature -- File Access
 			else -- must be a DT serialisation format
 				file_mgr.save_as (a_full_path, serialise_object (True, a_format))
 			end
-			status := get_msg_line (ec_file_saved_as_in_format, <<a_full_path, a_format>>)
+			status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
 
 	save_text_to_legacy_file (a_text: STRING)

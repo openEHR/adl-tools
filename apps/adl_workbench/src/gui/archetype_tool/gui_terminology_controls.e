@@ -49,7 +49,7 @@ feature {NONE} -- Initialisation
 			ev_id_terms_hbox.set_padding (Default_padding_width)
 			ev_id_terms_hbox.set_border_width (Default_border_width)
 			ev_root_container.extend (ev_id_terms_hbox)
-			ev_root_container.set_item_text (ev_id_terms_hbox, get_text (ec_term_defs_tab_text))
+			ev_root_container.set_item_text (ev_id_terms_hbox, get_text ({ADL_MESSAGES_IDS}.ec_term_defs_tab_text))
 
 			-- EV_GRID
 			create evx_id_terms_grid.make (True, False, True, True)
@@ -76,7 +76,7 @@ feature {NONE} -- Initialisation
 			ev_vsets_hbox.set_padding (Default_padding_width)
 			ev_vsets_hbox.set_border_width (Default_border_width)
 			ev_root_container.extend (ev_vsets_hbox)
-			ev_root_container.set_item_text (ev_vsets_hbox, get_text (ec_value_sets_tab_text))
+			ev_root_container.set_item_text (ev_vsets_hbox, get_text ({ADL_MESSAGES_IDS}.ec_value_sets_tab_text))
 
 			-- EV_GRID
 			create evx_values_grid.make (True, False, True, True)

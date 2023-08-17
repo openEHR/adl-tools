@@ -797,7 +797,7 @@ debug ("ADL_parse")
 	indent.append ("%T")
 end
 			else
-				abort_with_error (ec_VCORM, <<yyvs14.item (yyvsp14).rm_type_name, yyvs14.item (yyvsp14).path>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_VCORM, <<yyvs14.item (yyvsp14).rm_type_name, yyvs14.item (yyvsp14).path>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -814,7 +814,7 @@ end
 			if object_nodes.is_empty then
 				create yyval14.make (yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4))
 			else
-				abort_with_error (ec_VARND, <<yyvs4.item (yyvsp4), Id_code_regex_pattern>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_VARND, <<yyvs4.item (yyvsp4), Id_code_regex_pattern>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -839,7 +839,7 @@ end
 			if not object_nodes.is_empty then
 				create yyval14.make (yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4))
 			else
-				abort_with_error (ec_VARCN, <<yyvs4.item (yyvsp4), Root_id_code_regex_pattern>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_VARCN, <<yyvs4.item (yyvsp4), Root_id_code_regex_pattern>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -885,7 +885,7 @@ debug ("GEYACC")
 end
 
 			if object_nodes.is_empty then
-				abort_with_error (ec_VARCN, <<"(none)", Root_id_code_regex_pattern>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_VARCN, <<"(none)", Root_id_code_regex_pattern>>)
 			else
 				create yyval14.make (yyvs4.item (yyvsp4), new_fake_node_id)
 			end
@@ -979,7 +979,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 312")
 end
 
-			abort_with_error (ec_SCOAT, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCOAT, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -1080,7 +1080,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 342")
 end
 
-			abort_with_error (ec_SCCOG, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCCOG, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -1200,7 +1200,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 391")
 end
 
-			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SDINV, <<odin_parser_error.as_string>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -1221,7 +1221,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 395")
 end
 
-			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SDINV, <<odin_parser_error.as_string>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -1242,7 +1242,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 399")
 end
 
-			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SDINV, <<odin_parser_error.as_string>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -1263,7 +1263,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 403")
 end
 
-			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SDINV, <<odin_parser_error.as_string>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -1349,7 +1349,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 439")
 end
 
-			abort_with_error (ec_SUNPA, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SUNPA, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -1498,7 +1498,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 496")
 end
 
-			abort_with_error (ec_SUAS, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SUAS, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -1787,7 +1787,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 590")
 end
 
-			abort_with_error (ec_SCAS, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCAS, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -1808,7 +1808,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 594")
 end
 
-			abort_with_error (ec_SCAS, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCAS, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 5
@@ -1830,14 +1830,14 @@ end
 
 						-- for ADL 1.4 archetypes, remove existence and cardinality if it is a duplicate of the RM constraint
 						if attached yyvs12.item (yyvsp12) as ivl and then ivl.is_equal (rm_prop_def.existence) then
-							add_warning (ec_WCAEX14, <<rm_attribute_name, object_nodes.item.path, ivl.as_string, rm_prop_def.existence.as_string>>)
+							add_warning ({ADL_MESSAGES_IDS}.ec_WCAEX14, <<rm_attribute_name, object_nodes.item.path, ivl.as_string, rm_prop_def.existence.as_string>>)
 							yyvs12.item (yyvsp12) := Void
 						end
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as rm_cont_prop_def and then
 							attached yyvs48.item (yyvsp48) as ivl and then (ivl.interval.is_equal (rm_cont_prop_def.cardinality) or else
 							ivl.interval.contains (rm_cont_prop_def.cardinality))
 						then
-							add_warning (ec_WCACA14, <<rm_attribute_name, object_nodes.item.path, ivl.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
+							add_warning ({ADL_MESSAGES_IDS}.ec_WCACA14, <<rm_attribute_name, object_nodes.item.path, ivl.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
 							yyvs48.item (yyvsp48) := Void
 						end
 
@@ -1857,7 +1857,7 @@ end
 					elseif not attached yyvs48.item (yyvsp48) then
 						-- for ADL 1.4 archetypes, remove existence and cardinality if it is a duplicate of the RM constraint
 						if attached yyvs12.item (yyvsp12) as ivl and then ivl.is_equal (rm_prop_def.existence) then
-							add_warning (ec_WCAEX14, <<rm_attribute_name, object_nodes.item.path, ivl.as_string, rm_prop_def.existence.as_string>>)
+							add_warning ({ADL_MESSAGES_IDS}.ec_WCAEX14, <<rm_attribute_name, object_nodes.item.path, ivl.as_string, rm_prop_def.existence.as_string>>)
 							yyvs12.item (yyvsp12) := Void
 						end
 
@@ -1873,13 +1873,13 @@ debug ("ADL_parse")
 end
 						object_nodes.item.put_attribute (yyval18)
 					else -- error - cardinality stated, but on a non-container attribute
-						abort_with_error (ec_VSAM2, <<rm_attribute_name>>)
+						abort_with_error ({ADL_MESSAGES_IDS}.ec_VSAM2, <<rm_attribute_name>>)
 					end
 				else
-					abort_with_error (ec_VCARM, <<rm_attribute_name, object_nodes.item.path, object_nodes.item.rm_type_name>>)
+					abort_with_error ({ADL_MESSAGES_IDS}.ec_VCARM, <<rm_attribute_name, object_nodes.item.path, object_nodes.item.rm_type_name>>)
 				end
 			else
-				abort_with_error (ec_VCATU, <<rm_attribute_name>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_VCATU, <<rm_attribute_name>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -2108,7 +2108,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 727")
 end
 
-			abort_with_error (ec_SINVS, <<yyvs4.item (yyvsp4)>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SINVS, <<yyvs4.item (yyvsp4)>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -2437,7 +2437,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 839")
 end
 
-			abort_with_error (ec_SEXPT, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SEXPT, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -3078,7 +3078,7 @@ end
 			elseif yyvs2.item (yyvsp2) = 1 then
 				create yyval13.make_mandatory
 			else
-				abort_with_error (ec_SEXLSG, Void)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SEXLSG, Void)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -3106,16 +3106,16 @@ end
 				elseif yyvs2.item (yyvsp2) = 1 then
 					create yyval13.make_bounded (0, 1)
 				else
-					abort_with_error (ec_SEXLU1, Void)
+					abort_with_error ({ADL_MESSAGES_IDS}.ec_SEXLU1, Void)
 				end
 			elseif yyvs2.item (yyvsp2 - 1) = 1 then
 				if yyvs2.item (yyvsp2) = 1 then
 					create yyval13.make_point (1)
 				else
-					abort_with_error (ec_SEXLU2, Void)
+					abort_with_error ({ADL_MESSAGES_IDS}.ec_SEXLU2, Void)
 				end
 			else
-				abort_with_error (ec_SEXLMG, Void)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SEXLMG, Void)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -3403,7 +3403,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1114")
 end
 
-			abort_with_error (ec_SOCCF, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SOCCF, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -3598,7 +3598,7 @@ end
 				yyvs58.item (yyvsp58).set_assumed_value (yyvs2.item (yyvsp2))
 				yyval58 := yyvs58.item (yyvsp58)
 			else
-				abort_with_error (ec_VOBAV, <<yyvs2.item (yyvsp2).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<yyvs2.item (yyvsp2).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -3613,7 +3613,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1165")
 end
 
-			abort_with_error (ec_SCIAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCIAV, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -3714,7 +3714,7 @@ end
 				yyvs57.item (yyvsp57).set_assumed_value (yyvs3.item (yyvsp3))
 				yyval57 := yyvs57.item (yyvsp57)
 			else
-				abort_with_error (ec_VOBAV, <<yyvs3.item (yyvsp3).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<yyvs3.item (yyvsp3).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -3729,7 +3729,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1196")
 end
 
-			abort_with_error (ec_SCRAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCRAV, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -3753,7 +3753,7 @@ end
 					str.append (valid_date_constraint_patterns.item)
 					valid_date_constraint_patterns.forth
 				end
-				abort_with_error (ec_SCDPT, <<yyvs4.item (yyvsp4), str>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDPT, <<yyvs4.item (yyvsp4), str>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -3863,7 +3863,7 @@ end
 				yyvs55.item (yyvsp55).set_assumed_value (yyvs24.item (yyvsp24))
 				yyval55 := yyvs55.item (yyvsp55)
 			else
-				abort_with_error (ec_VOBAV, <<yyvs24.item (yyvsp24).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<yyvs24.item (yyvsp24).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -3878,7 +3878,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1243")
 end
 
-			abort_with_error (ec_SCDAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDAV, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -3901,7 +3901,7 @@ end
 					end
 					str.append (patterns_csr.item)
 				end
-				abort_with_error (ec_SCTPT, <<yyvs4.item (yyvsp4), str>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCTPT, <<yyvs4.item (yyvsp4), str>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4011,7 +4011,7 @@ end
 				yyvs56.item (yyvsp56).set_assumed_value (yyvs26.item (yyvsp26))
 				yyval56 := yyvs56.item (yyvsp56)
 			else
-				abort_with_error (ec_VOBAV, <<yyvs26.item (yyvsp26).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<yyvs26.item (yyvsp26).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4026,7 +4026,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1289")
 end
 
-			abort_with_error (ec_SCTAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCTAV, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -4049,7 +4049,7 @@ end
 					end
 					str.append (patterns_csr.item)
 				end
-				abort_with_error (ec_SCDTPT, <<yyvs4.item (yyvsp4), str>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDTPT, <<yyvs4.item (yyvsp4), str>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4159,7 +4159,7 @@ end
 				yyvs53.item (yyvsp53).set_assumed_value (yyvs25.item (yyvsp25))
 				yyval53 := yyvs53.item (yyvsp53)
 			else
-				abort_with_error (ec_VOBAV, <<yyvs25.item (yyvsp25).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<yyvs25.item (yyvsp25).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4174,7 +4174,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1335")
 end
 
-			abort_with_error (ec_SCDTAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDTAV, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -4190,7 +4190,7 @@ end
 			if valid_iso8601_duration_constraint_pattern (yyvs4.item (yyvsp4)) then
 				create yyval54.make_pattern_with_range (yyvs4.item (yyvsp4), yyvs41.item (yyvsp41))
 			else
-				abort_with_error (ec_SCDUPT, <<yyvs4.item (yyvsp4)>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDUPT, <<yyvs4.item (yyvsp4)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4217,7 +4217,7 @@ end
 			if valid_iso8601_duration_constraint_pattern (yyvs4.item (yyvsp4)) then
 				create yyval54.make_pattern_with_range (yyvs4.item (yyvsp4), create {POINT_INTERVAL [ISO8601_DURATION]}.make (yyvs27.item (yyvsp27)))
 			else
-				abort_with_error (ec_SCDUPT, <<yyvs4.item (yyvsp4)>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDUPT, <<yyvs4.item (yyvsp4)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4244,7 +4244,7 @@ end
 			if valid_iso8601_duration_constraint_pattern (yyvs4.item (yyvsp4)) then
 				create yyval54.make_from_pattern (yyvs4.item (yyvsp4))
 			else
-				abort_with_error (ec_SCDUPT, <<yyvs4.item (yyvsp4)>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDUPT, <<yyvs4.item (yyvsp4)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4354,7 +4354,7 @@ end
 				yyvs54.item (yyvsp54).set_assumed_value (yyvs27.item (yyvsp27))
 				yyval54 := yyvs54.item (yyvsp54)
 			else
-				abort_with_error (ec_VOBAV, <<yyvs27.item (yyvsp27).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<yyvs27.item (yyvsp27).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4369,7 +4369,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1390")
 end
 
-			abort_with_error (ec_SCDUAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDUAV, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -4382,7 +4382,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1395")
 end
 
-			abort_with_error (ec_SCDUPT, <<yyvs4.item (yyvsp4).out>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDUPT, <<yyvs4.item (yyvsp4).out>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4447,7 +4447,7 @@ end
 
 			create yyval52.make_value (yyvs4.item (yyvsp4))
 			if yyval52.constraint.first.is_equal ({C_STRING}.Invalid_regex_message) then
-				abort_with_error (ec_SCSRE, <<yyvs4.item (yyvsp4)>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCSRE, <<yyvs4.item (yyvsp4)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4473,7 +4473,7 @@ end
 				yyvs52.item (yyvsp52).set_assumed_value (yyvs4.item (yyvsp4))
 				yyval52 := yyvs52.item (yyvsp52)
 			else
-				abort_with_error (ec_VOBAV, <<yyvs4.item (yyvsp4).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<yyvs4.item (yyvsp4).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -4488,7 +4488,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1425")
 end
 
-			abort_with_error (ec_SCSAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCSAV, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -4672,7 +4672,7 @@ debug ("GEYACC")
 end
 
 			create yyval59.make (Missing_codes)
-			-- abort_with_error (ec_STVSI, <<err_str, c_attrs.item.path>>)
+			-- abort_with_error ({ADL_MESSAGES_IDS}.ec_STVSI, <<err_str, c_attrs.item.path>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4693,7 +4693,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1544")
 end
 
-			abort_with_error (ec_STCDC, <<err_str, c_attrs.item.path>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_STCDC, <<err_str, c_attrs.item.path>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4714,7 +4714,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1548")
 end
 
-			abort_with_error (ec_STCAC, <<err_str, c_attrs.item.path>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_STCAC, <<err_str, c_attrs.item.path>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4735,7 +4735,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1552")
 end
 
-			abort_with_error (ec_STCVA, <<c_attrs.item.path>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_STCVA, <<c_attrs.item.path>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -4822,7 +4822,7 @@ end
 			if yyvs51.item (yyvsp51).valid_value (yyvs23.item (yyvsp23)) then
 				yyvs51.item (yyvsp51).set_assumed_value (yyvs23.item (yyvsp23))
 			else
-				abort_with_error (ec_VOBAV, <<yyvs23.item (yyvsp23).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<yyvs23.item (yyvsp23).out>>)
 			end
 			yyval51 := yyvs51.item (yyvsp51)
 		
@@ -4838,7 +4838,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1579")
 end
 
-			abort_with_error (ec_SCBAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCBAV, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -4901,7 +4901,7 @@ end
 						end (?, yyvs50.item (yyvsp50).value)
 				)
 			then
-				abort_with_error (ec_VCOV, <<yyvs50.item (yyvsp50).value.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VCOV, <<yyvs50.item (yyvsp50).value.out>>)
 
 			elseif yyval14.attribute_with_name ("symbol").children.there_exists (
 					agent (co: C_OBJECT; a_sym: TERMINOLOGY_CODE): BOOLEAN
@@ -4910,7 +4910,7 @@ end
 						end (?, create {TERMINOLOGY_CODE}.make (Local_terminology_id, yyvs50.item (yyvsp50).symbol))
 				)
 			then
-				abort_with_error (ec_VCOC, <<yyvs50.item (yyvsp50).symbol>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VCOC, <<yyvs50.item (yyvsp50).symbol>>)
 
 			else
 				create ordinal_integer.make_value (yyvs50.item (yyvsp50).value)
@@ -4940,7 +4940,7 @@ end
 			yyval14 := yyvs14.item (yyvsp14)
 
 			-- assumed value for C_DV_ORDINAL not supported
-			add_warning (ec_WDTOAV, Void)
+			add_warning ({ADL_MESSAGES_IDS}.ec_WDTOAV, Void)
  		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -4954,7 +4954,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1656")
 end
 
-			abort_with_error (ec_SCOAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCOAV, Void)
  		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -5013,7 +5013,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_14_parser.y' at line 1673")
 end
 
-			abort_with_error (ec_STCV, <<c_attrs.item.path>>)
+			abort_with_error ({ODIN_MESSAGES_IDS}.ec_STCV, <<c_attrs.item.path>>)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -5273,7 +5273,7 @@ end
 			if yyvs2.item (yyvsp2 - 1) <= yyvs2.item (yyvsp2) then
 				create {PROPER_INTERVAL [INTEGER]} yyval36.make_bounded(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), True, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -5299,7 +5299,7 @@ end
 			if yyvs2.item (yyvsp2 - 1) <= yyvs2.item (yyvsp2) then
 				create {PROPER_INTERVAL [INTEGER]} yyval36.make_bounded(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), False, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -5325,7 +5325,7 @@ end
 			if yyvs2.item (yyvsp2 - 1) <= yyvs2.item (yyvsp2) then
 				create {PROPER_INTERVAL [INTEGER]} yyval36.make_bounded(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), True, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -5351,7 +5351,7 @@ end
 			if yyvs2.item (yyvsp2 - 1) <= yyvs2.item (yyvsp2) then
 				create {PROPER_INTERVAL [INTEGER]} yyval36.make_bounded (yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2), False, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs2.item (yyvsp2 - 1).out, yyvs2.item (yyvsp2).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -5649,7 +5649,7 @@ end
 			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
 				create {PROPER_INTERVAL [REAL]} yyval37.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), True, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -5675,7 +5675,7 @@ end
 			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
 				create {PROPER_INTERVAL [REAL]} yyval37.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), False, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -5701,7 +5701,7 @@ end
 			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
 				create {PROPER_INTERVAL [REAL]} yyval37.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), True, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -5727,7 +5727,7 @@ end
 			if yyvs3.item (yyvsp3 - 1) <= yyvs3.item (yyvsp3) then
 				create {PROPER_INTERVAL [REAL]} yyval37.make_bounded(yyvs3.item (yyvsp3 - 1), yyvs3.item (yyvsp3), False, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs3.item (yyvsp3 - 1).out, yyvs3.item (yyvsp3).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6029,7 +6029,7 @@ end
 			if valid_iso8601_date(yyvs4.item (yyvsp4)) then
 				create yyval24.make_from_string(yyvs4.item (yyvsp4))
 			else
-				abort_with_error (ec_VIDV, <<yyvs4.item (yyvsp4)>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIDV, <<yyvs4.item (yyvsp4)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6116,7 +6116,7 @@ end
 			if yyvs24.item (yyvsp24 - 1) <= yyvs24.item (yyvsp24) then
 				create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), True, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6142,7 +6142,7 @@ end
 			if yyvs24.item (yyvsp24 - 1) <= yyvs24.item (yyvsp24) then
 				create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), False, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6168,7 +6168,7 @@ end
 			if yyvs24.item (yyvsp24 - 1) <= yyvs24.item (yyvsp24) then
 				create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), True, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6194,7 +6194,7 @@ end
 			if yyvs24.item (yyvsp24 - 1) <= yyvs24.item (yyvsp24) then
 				create {PROPER_INTERVAL [ISO8601_DATE]} yyval39.make_bounded(yyvs24.item (yyvsp24 - 1), yyvs24.item (yyvsp24), False, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs24.item (yyvsp24 - 1).out, yyvs24.item (yyvsp24).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6392,7 +6392,7 @@ end
 			if valid_iso8601_time(yyvs4.item (yyvsp4)) then
 				create yyval26.make_from_string(yyvs4.item (yyvsp4))
 			else
-				abort_with_error (ec_VITV, <<yyvs4.item (yyvsp4)>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VITV, <<yyvs4.item (yyvsp4)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6479,7 +6479,7 @@ end
 			if yyvs26.item (yyvsp26 - 1) <= yyvs26.item (yyvsp26) then
 				create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_bounded(yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), True, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6505,7 +6505,7 @@ end
 			if yyvs26.item (yyvsp26 - 1) <= yyvs26.item (yyvsp26) then
 				create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_bounded(yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), False, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6531,7 +6531,7 @@ end
 			if yyvs26.item (yyvsp26 - 1) <= yyvs26.item (yyvsp26) then
 				create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_bounded(yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), True, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6557,7 +6557,7 @@ end
 			if yyvs26.item (yyvsp26 - 1) <= yyvs26.item (yyvsp26) then
 				create {PROPER_INTERVAL [ISO8601_TIME]} yyval38.make_bounded(yyvs26.item (yyvsp26 - 1), yyvs26.item (yyvsp26), False, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs26.item (yyvsp26 - 1).out, yyvs26.item (yyvsp26).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6755,7 +6755,7 @@ end
 			if valid_iso8601_date_time(yyvs4.item (yyvsp4)) then
 				create yyval25.make_from_string(yyvs4.item (yyvsp4))
 			else
-				abort_with_error (ec_VIDTV, <<yyvs4.item (yyvsp4)>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIDTV, <<yyvs4.item (yyvsp4)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6842,7 +6842,7 @@ end
 			if yyvs25.item (yyvsp25 - 1) <= yyvs25.item (yyvsp25) then
 				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_bounded(yyvs25.item (yyvsp25 - 1), yyvs25.item (yyvsp25), True, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6868,7 +6868,7 @@ end
 			if yyvs25.item (yyvsp25 - 1) <= yyvs25.item (yyvsp25) then
 				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_bounded(yyvs25.item (yyvsp25 - 1), yyvs25.item (yyvsp25), False, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6894,7 +6894,7 @@ end
 			if yyvs25.item (yyvsp25 - 1) <= yyvs25.item (yyvsp25) then
 				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_bounded(yyvs25.item (yyvsp25 - 1), yyvs25.item (yyvsp25), True, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -6920,7 +6920,7 @@ end
 			if yyvs25.item (yyvsp25 - 1) <= yyvs25.item (yyvsp25) then
 				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} yyval40.make_bounded(yyvs25.item (yyvsp25 - 1), yyvs25.item (yyvsp25), False, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs25.item (yyvsp25 - 1).out, yyvs25.item (yyvsp25).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -7118,7 +7118,7 @@ end
 			if valid_iso8601_duration(yyvs4.item (yyvsp4)) then
 				create yyval27.make_from_string(yyvs4.item (yyvsp4))
 			else
-				abort_with_error (ec_VIDUV, <<yyvs4.item (yyvsp4)>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIDUV, <<yyvs4.item (yyvsp4)>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -7205,7 +7205,7 @@ end
 			if yyvs27.item (yyvsp27 - 1) <= yyvs27.item (yyvsp27) then
 				create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_bounded(yyvs27.item (yyvsp27 - 1), yyvs27.item (yyvsp27), True, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs27.item (yyvsp27 - 1).out, yyvs27.item (yyvsp27).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs27.item (yyvsp27 - 1).out, yyvs27.item (yyvsp27).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -7231,7 +7231,7 @@ end
 			if yyvs27.item (yyvsp27 - 1) <= yyvs27.item (yyvsp27) then
 				create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_bounded(yyvs27.item (yyvsp27 - 1), yyvs27.item (yyvsp27), False, True)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs27.item (yyvsp27 - 1).out, yyvs27.item (yyvsp27).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs27.item (yyvsp27 - 1).out, yyvs27.item (yyvsp27).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -7257,7 +7257,7 @@ end
 			if yyvs27.item (yyvsp27 - 1) <= yyvs27.item (yyvsp27) then
 				create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_bounded(yyvs27.item (yyvsp27 - 1), yyvs27.item (yyvsp27), True, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs27.item (yyvsp27 - 1).out, yyvs27.item (yyvsp27).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs27.item (yyvsp27 - 1).out, yyvs27.item (yyvsp27).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -7283,7 +7283,7 @@ end
 			if yyvs27.item (yyvsp27 - 1) <= yyvs27.item (yyvsp27) then
 				create {PROPER_INTERVAL [ISO8601_DURATION]} yyval41.make_bounded(yyvs27.item (yyvsp27 - 1), yyvs27.item (yyvsp27), False, False)
 			else
-				abort_with_error (ec_VIVLO, <<yyvs27.item (yyvsp27 - 1).out, yyvs27.item (yyvsp27).out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<yyvs27.item (yyvsp27 - 1).out, yyvs27.item (yyvsp27).out>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -9067,10 +9067,10 @@ feature {NONE} -- Implementation
 			ar.extend (an_attr.rm_attribute_name) -- $3
 
 			if an_attr.has_child_with_id (an_obj.node_id) then
-				err_code := ec_VCOSU
+				err_code := {ADL_MESSAGES_IDS}.ec_VCOSU
 			elseif an_attr.is_single then
 				if attached an_obj.occurrences as att_occ and then (att_occ.upper_unbounded or att_occ.upper > 1) then
-					err_code := ec_VACSO
+					err_code := {ADL_MESSAGES_IDS}.ec_VACSO
 				else
 					Result := True
 				end
@@ -9079,7 +9079,7 @@ feature {NONE} -- Implementation
 						attached an_obj.occurrences as att_occ and then not att_occ.upper_unbounded and then
 						att_occ.upper > att_card.interval.upper 
 				then
-					err_code := ec_VACMCU
+					err_code := {ADL_MESSAGES_IDS}.ec_VACMCU
 					ar.extend (att_occ.upper.out)
 					ar.extend (att_card.interval.upper.out)
 				else

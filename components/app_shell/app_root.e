@@ -122,7 +122,7 @@ feature -- Initialisation
 				if file_system.file_exists (xml_rules_sample_file_path) then
 					file_system.copy_file (xml_rules_sample_file_path, xml_rules_file_path)
 				else
-					add_warning (ec_xml_rules_sample_file_missing, <<xml_rules_sample_file_path>>)
+					add_warning ({GENERAL_MESSAGES_IDS}.ec_xml_rules_sample_file_missing, <<xml_rules_sample_file_path>>)
 				end
 			end
 
@@ -141,7 +141,7 @@ feature -- Initialisation
 			-- get rid of any non-existent schema directories
 			across rm_schema_directories as sch_dirs loop
 				if not file_system.directory_exists (sch_dirs.item) then
-					add_warning (ec_bmm_schema_dir_not_valid, <<sch_dirs.item>>)
+					add_warning ({BMM_MESSAGES_IDS}.ec_bmm_schema_dir_not_valid, <<sch_dirs.item>>)
 					dead_schema_dirs.extend (sch_dirs.item)
 				end
 			end
@@ -152,9 +152,9 @@ feature -- Initialisation
 			bmm_models_access.initialise_with_load_list (rm_schema_directories, rm_schemas_load_list)
 			if not bmm_models_access.found_valid_models then
 				if repository_resources.is_empty then
-					add_warning (ec_bmm_schemas_config_not_valid, <<bmm_models_access.schemas_load_list_string>>)
+					add_warning ({BMM_MESSAGES_IDS}.ec_bmm_schemas_config_not_valid, <<bmm_models_access.schemas_load_list_string>>)
 				else
-					add_error (ec_bmm_schemas_config_not_valid, <<bmm_models_access.schemas_load_list_string>>)
+					add_error ({BMM_MESSAGES_IDS}.ec_bmm_schemas_config_not_valid, <<bmm_models_access.schemas_load_list_string>>)
 				end
 			end
 
@@ -167,7 +167,7 @@ feature -- Initialisation
 					merge_errors (aom_profiles_access.errors)
 				end
 			else
-				add_warning (ec_aom_profile_dir_not_valid, <<aom_profile_directory>>)
+				add_warning ({ADL_MESSAGES_IDS}.ec_aom_profile_dir_not_valid, <<aom_profile_directory>>)
 			end
 
 			-- process repositories and validate; determine setting for `current_library' if
@@ -183,7 +183,7 @@ feature -- Initialisation
 					end
 				end
 				across dead_repos as repos_csr loop
-					add_warning (ec_remove_library_cfg, <<get_msg (ec_ref_library_not_found, <<repos_csr.item>>)>>)
+					add_warning ({ADL_MESSAGES_IDS}.ec_remove_library_cfg, <<get_msg ({ADL_MESSAGES_IDS}.ec_ref_library_not_found, <<repos_csr.item>>)>>)
 					repository_resources.remove_repository (repos_csr.item)
 				end
 
@@ -192,7 +192,7 @@ feature -- Initialisation
 					if is_vcs_checkout_area (repos_csr.item) and archetype_repository_interfaces.repository_exists_at_path (repos_csr.item) then
 						archetype_repository_interfaces.extend_associate_with_remote (repos_csr.item)
 						if not archetype_repository_interfaces.last_repository_interface.has_repository_tool then
-							add_warning (ec_repository_tool_unavailable, <<archetype_repository_interfaces.last_repository_interface.repository_type>>)
+							add_warning ({ADL_MESSAGES_IDS}.ec_repository_tool_unavailable, <<archetype_repository_interfaces.last_repository_interface.repository_type>>)
 						end
 					else
 						archetype_repository_interfaces.extend (repos_csr.item)
@@ -214,9 +214,9 @@ feature -- Initialisation
 
 				-- tell the user a few useful things
 				if validation_strict then
-					add_info (ec_validation_strict, Void)
+					add_info ({ADL_MESSAGES_IDS}.ec_validation_strict, Void)
 				else
-					add_info (ec_validation_non_strict, Void)
+					add_info ({ADL_MESSAGES_IDS}.ec_validation_non_strict, Void)
 				end
 			end
 
@@ -226,7 +226,7 @@ feature -- Initialisation
 			end
 			create term_init.make
 			if term_init.init_failed then
-				add_error (ec_terminology_init_failed, <<term_init.init_fail_reason>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_terminology_init_failed, <<term_init.init_fail_reason>>)
 			end
 		end
 

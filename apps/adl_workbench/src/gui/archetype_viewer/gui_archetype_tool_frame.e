@@ -56,7 +56,7 @@ feature {NONE}-- Initialization
 
 			-- archetype set-to-primary-source button (= not is_generated flag)
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/edit_active"), get_icon_pixmap ("tool/edit_inactive"),
-				get_text (ec_archetype_is_primary_source_button_text), Void)
+				get_text ({ADL_MESSAGES_IDS}.ec_archetype_is_primary_source_button_text), Void)
 			check attached tool_bar.last_tool_bar_button as tb then
 				ev_primary_source_button := tb
 			end
@@ -68,7 +68,7 @@ feature {NONE}-- Initialization
 			end
 
 			-- archetype id: namespace
-			tool_bar.add_fixed_text_field ("", get_text (ec_archetype_hrid_namespace_tooltip), 120)
+			tool_bar.add_fixed_text_field ("", get_text ({ADL_MESSAGES_IDS}.ec_archetype_hrid_namespace_tooltip), 120)
 			check attached tool_bar.last_text_field as tf then
 				ev_archetype_hrid_namespace := tf
 			end
@@ -77,7 +77,7 @@ feature {NONE}-- Initialization
 			tool_bar.add_label ({ARCHETYPE_HRID}.namespace_separator, 8, False, False)
 
 			-- archetype id: qualified RM class
-			tool_bar.add_expanding_text_field ("", get_text (ec_archetype_hrid_qualified_rm_class_tooltip))
+			tool_bar.add_expanding_text_field ("", get_text ({ADL_MESSAGES_IDS}.ec_archetype_hrid_qualified_rm_class_tooltip))
 			check attached tool_bar.last_text_field as tf then
 				ev_archetype_hrid_qualified_rm_class := tf
 			end
@@ -86,7 +86,7 @@ feature {NONE}-- Initialization
 			tool_bar.add_label ({ARCHETYPE_HRID}.axis_separator.out, 3, False, False)
 
 			-- archetype id: concept_id
-			tool_bar.add_expanding_text_field ("", get_text (ec_archetype_hrid_concept_id_tooltip))
+			tool_bar.add_expanding_text_field ("", get_text ({ADL_MESSAGES_IDS}.ec_archetype_hrid_concept_id_tooltip))
 			check attached tool_bar.last_text_field as tf then
 				ev_archetype_hrid_concept_id := tf
 			end
@@ -95,7 +95,7 @@ feature {NONE}-- Initialization
 			tool_bar.add_label ({ARCHETYPE_HRID}.version_axis_delimiter, 8, False, False)
 
 			-- archetype id: version_id
-			tool_bar.add_fixed_text_field ("", get_text (ec_archetype_hrid_version_id_tooltip), 70)
+			tool_bar.add_fixed_text_field ("", get_text ({ADL_MESSAGES_IDS}.ec_archetype_hrid_version_id_tooltip), 70)
 			check attached tool_bar.last_text_field as tf then
 				ev_archetype_hrid_version_id := tf
 			end
@@ -104,34 +104,34 @@ feature {NONE}-- Initialization
 			tool_bar.add_label ("@", 12, False, False)
 
 			-- archetype lifecycle
-			tool_bar.add_fixed_text_field ("", get_text (ec_archetype_lifecycle_tooltip), 80)
+			tool_bar.add_fixed_text_field ("", get_text ({ADL_MESSAGES_IDS}.ec_archetype_lifecycle_tooltip), 80)
 			check attached tool_bar.last_text_field as tf then
 				ev_archetype_lifecycle_state := tf
 			end
 
 			-- diff/flat 'View' label + diff & flat controls
-			tool_bar.add_tool_bar_with_title (get_msg (ec_diff_flat_form_label, Void))
+			tool_bar.add_tool_bar_with_title (get_msg ({ADL_MESSAGES_IDS}.ec_diff_flat_form_label, Void))
 			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/diff_class"),
-				get_text (ec_differential_view_button_tooltip), agent on_differential_view)
+				get_text ({ADL_MESSAGES_IDS}.ec_differential_view_button_tooltip), agent on_differential_view)
 			check attached tool_bar.last_tool_bar_radio_button as tbrb then
 				ev_differential_view_button := tbrb
 			end
 			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/flat_class"),
-				get_text (ec_flat_view_button_tooltip), agent on_flat_view)
+				get_text ({ADL_MESSAGES_IDS}.ec_flat_view_button_tooltip), agent on_flat_view)
 			check attached tool_bar.last_tool_bar_radio_button as tbrb then
 				ev_flat_view_button := tbrb
 			end
 
 			-- add language combo box
-			tool_bar.add_fixed_combo_box (get_msg (ec_language_label, Void),
-				get_msg (ec_language_combo_tooltip, Void), 60, agent on_select_language)
+			tool_bar.add_fixed_combo_box (get_msg ({ADL_MESSAGES_IDS}.ec_language_label, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_language_combo_tooltip, Void), 60, agent on_select_language)
 			check attached tool_bar.last_combo_box as cb then
 				ev_language_combo := cb
 			end
 
 			-- add version text field
-			tool_bar.add_titled_label (get_msg (ec_adl_version_label_text, Void), "",
-				get_msg (ec_adl_version_label_tooltip, Void), 30)
+			tool_bar.add_titled_label (get_msg ({ADL_MESSAGES_IDS}.ec_adl_version_label_text, Void), "",
+				get_msg ({ADL_MESSAGES_IDS}.ec_adl_version_label_tooltip, Void), 30)
 			check attached tool_bar.last_label as lb then
 				ev_adl_version_text := lb
 			end

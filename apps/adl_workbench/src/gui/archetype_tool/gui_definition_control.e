@@ -64,19 +64,19 @@ feature -- Initialisation
 			-- ========= view detail level options  =========
 
 			-- 'Detail level' frame
-			create evx_view_detail_frame.make (get_text (ec_view_detail_controls_text), False)
+			create evx_view_detail_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_view_detail_controls_text), False)
 			evx_definition_control_panel.add_frame_control (evx_view_detail_frame, False)
 
 			-- view detail radio buttons
-			create evx_view_detail_radio.make (get_text (ec_domain_detail_button_text), get_text (ec_technical_detail_button_text),
-				get_text (ec_domain_detail_button_tooltip), get_text (ec_technical_detail_button_tooltip),
+			create evx_view_detail_radio.make (get_text ({ADL_MESSAGES_IDS}.ec_domain_detail_button_text), get_text ({ADL_MESSAGES_IDS}.ec_technical_detail_button_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_domain_detail_button_tooltip), get_text ({ADL_MESSAGES_IDS}.ec_technical_detail_button_tooltip),
 				agent :BOOLEAN do Result := not show_technical_view end,
 				agent update_show_technical_view, 0, 0, False)
 			evx_view_detail_frame.extend (evx_view_detail_radio.ev_root_container, False)
 			gui_controls.extend (evx_view_detail_radio)
 
 			-- include codes checkbox
-			create evx_show_codes_cb.make_linked (get_text (ec_domain_view_add_codes_text), Void,
+			create evx_show_codes_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_domain_view_add_codes_text), Void,
 				agent :BOOLEAN do Result := show_codes end, agent update_show_codes)
 			evx_view_detail_frame.extend (evx_show_codes_cb.ev_data_control, False)
 			gui_controls.extend (evx_show_codes_cb)
@@ -85,44 +85,44 @@ feature -- Initialisation
 			-- ========= RM view options =========
 
 			-- 'RM visibility' frame
-			create evx_rm_property_visibility_frame.make (get_text (ec_rm_visibility_controls_text), False)
+			create evx_rm_property_visibility_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_rm_visibility_controls_text), False)
 			evx_definition_control_panel.add_frame_control (evx_rm_property_visibility_frame, False)
 
 			-- add RM multiplicities check button
-			create evx_rm_multiplicities_cb.make_linked (get_text (ec_show_rm_multiplicities_button_text),
-				get_text (ec_show_rm_multiplicities_tooltip),
+			create evx_rm_multiplicities_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_show_rm_multiplicities_button_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_show_rm_multiplicities_tooltip),
 				agent :BOOLEAN do Result := show_rm_multiplicities end, agent update_show_rm_multiplicities)
 			gui_controls.extend (evx_rm_multiplicities_cb)
 			evx_rm_property_visibility_frame.extend (evx_rm_multiplicities_cb.ev_data_control, False)
 
 			-- add RM data properties check button
-			create evx_rm_data_attrs_visible_cb.make_linked (get_text (ec_show_rm_properties_button_text),
-				get_text (ec_show_rm_properties_tooltip),
+			create evx_rm_data_attrs_visible_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_show_rm_properties_button_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_show_rm_properties_tooltip),
 				agent :BOOLEAN do Result := show_rm_data_properties end, agent update_show_rm_data_properties)
 			gui_controls.extend (evx_rm_data_attrs_visible_cb)
 			evx_rm_property_visibility_frame.extend (evx_rm_data_attrs_visible_cb.ev_data_control, False)
 
 			-- add RM runtime properties option check button
-			create evx_rm_runtime_attrs_visible_cb.make_linked (get_text (ec_show_rm_runtime_properties_button_text),
-				get_text (ec_show_rm_runtime_properties_tooltip),
+			create evx_rm_runtime_attrs_visible_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_show_rm_runtime_properties_button_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_show_rm_runtime_properties_tooltip),
 				agent :BOOLEAN do Result := show_rm_runtime_properties end, agent update_show_rm_runtime_properties)
 			gui_controls.extend (evx_rm_runtime_attrs_visible_cb)
 			evx_rm_property_visibility_frame.extend (evx_rm_runtime_attrs_visible_cb.ev_data_control, False)
 
 			-- add RM infrastructure properties option check button
-			create evx_rm_if_attrs_visible_cb.make_linked (get_text (ec_show_rm_if_properties_button_text),
-				get_text (ec_show_rm_if_properties_tooltip),
+			create evx_rm_if_attrs_visible_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_show_rm_if_properties_button_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_show_rm_if_properties_tooltip),
 				agent :BOOLEAN do Result := show_rm_infrastructure_properties end, agent update_show_rm_infrastructure_properties)
 			gui_controls.extend (evx_rm_if_attrs_visible_cb)
 			evx_rm_property_visibility_frame.extend (evx_rm_if_attrs_visible_cb.ev_data_control, False)
 
 			-- 'RM rendering' frame
-			create evx_rendering_frame.make (get_text (ec_rendering_controls_text), False)
+			create evx_rendering_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_rendering_controls_text), False)
 			evx_definition_control_panel.add_frame_control (evx_rendering_frame, False)
 
 			-- use RM inheritance rendering check button
-			create evx_view_rm_display_inheritance_cb.make_linked (get_text (ec_show_rm_inh_button_text),
-				get_text (ec_show_rm_inh_button_tooltip),
+			create evx_view_rm_display_inheritance_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_show_rm_inh_button_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_show_rm_inh_button_tooltip),
 				agent :BOOLEAN do Result := show_rm_inheritance or editing_enabled end, agent update_show_rm_inheritance)
 			gui_controls.extend (evx_view_rm_display_inheritance_cb)
 			evx_rendering_frame.extend (evx_view_rm_display_inheritance_cb.ev_data_control, False)

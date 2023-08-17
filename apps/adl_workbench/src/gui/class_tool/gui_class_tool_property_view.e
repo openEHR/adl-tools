@@ -90,13 +90,13 @@ feature {NONE} -- Implementation
 		do
 			-- grid columns
 			ev_grid.insert_new_column (Grid_declared_in_col)
-			ev_grid.column (Grid_declared_in_col).set_title (get_text (ec_property_grid_declared_in_col_title))
+			ev_grid.column (Grid_declared_in_col).set_title (get_text ({ADL_MESSAGES_IDS}.ec_property_grid_declared_in_col_title))
 
 			ev_grid.insert_new_column (Grid_property_col)
-			ev_grid.column (Grid_property_col).set_title (get_text (ec_property_grid_property_col_title))
+			ev_grid.column (Grid_property_col).set_title (get_text ({ADL_MESSAGES_IDS}.ec_property_grid_property_col_title))
 
 			ev_grid.insert_new_column (Grid_property_type_col)
-			ev_grid.column (Grid_property_type_col).set_title (get_text (ec_property_grid_property_type_col_title))
+			ev_grid.column (Grid_property_type_col).set_title (get_text ({ADL_MESSAGES_IDS}.ec_property_grid_property_type_col_title))
 
 			-- add the rows
 			check attached source as src then
@@ -111,10 +111,10 @@ feature {NONE} -- Implementation
 		do
 			-- grid columns
 			ev_grid.insert_new_column (Grid_enum_name_col)
-			ev_grid.column (Grid_enum_name_col).set_title (get_text (ec_enumeration_grid_enum_name_col_title))
+			ev_grid.column (Grid_enum_name_col).set_title (get_text ({ADL_MESSAGES_IDS}.ec_enumeration_grid_enum_name_col_title))
 
 			ev_grid.insert_new_column (Grid_enum_value_col)
-			ev_grid.column (Grid_enum_value_col).set_title (get_text (ec_enumeration_grid_enum_value_col_title))
+			ev_grid.column (Grid_enum_value_col).set_title (get_text ({ADL_MESSAGES_IDS}.ec_enumeration_grid_enum_value_col_title))
 
 			ev_grid.insert_new_column (Grid_enum_dummy_col)
 
@@ -164,7 +164,7 @@ feature {NONE} -- Implementation
 				create gli.make_with_text (a_class_def.type.type_signature)
 				gli.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.entity_category))
 				if attached a_class_def.documentation as bmm_class_doc then
-					gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_class_doc)
+					gli.set_tooltip (get_text ({BMM_MESSAGES_IDS}.ec_bmm_documentation_text) + "%N%T" + bmm_class_doc)
 				end
 				gli.set_data (a_class_def)
 				gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
@@ -195,10 +195,10 @@ feature {NONE} -- Implementation
 						-- tooltip
 						create prop_text.make_empty
 						if props_csr.item.is_synthesised_generic then
-							prop_text.append (get_text (ec_bmm_prop_synth_gen_text) + "%N")
+							prop_text.append (get_text ({BMM_MESSAGES_IDS}.ec_bmm_prop_synth_gen_text) + "%N")
 						end
 						if attached props_csr.item.documentation as bmm_prop_doc then
-							prop_text.append (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_doc)
+							prop_text.append (get_text ({BMM_MESSAGES_IDS}.ec_bmm_documentation_text) + "%N%T" + bmm_prop_doc)
 						end
 						if not prop_text.is_empty then
 							gli.set_tooltip (prop_text)
@@ -225,7 +225,7 @@ feature {NONE} -- Implementation
 						if attached {BMM_MODEL_TYPE} prop_type.effective_type as bmm_model_type and then
 							attached bmm_model_type.defining_class.documentation as bmm_prop_class_doc
 						then
-							gli.set_tooltip (get_text (ec_bmm_documentation_text) + "%N%T" + bmm_prop_class_doc)
+							gli.set_tooltip (get_text ({BMM_MESSAGES_IDS}.ec_bmm_documentation_text) + "%N%T" + bmm_prop_class_doc)
 						end
 
 						-- add actions

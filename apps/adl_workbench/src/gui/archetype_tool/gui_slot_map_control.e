@@ -37,7 +37,7 @@ feature {NONE} -- Initialisation
 
 			-- Slot fillers tree
 			create slot_fillers_frame
-			slot_fillers_frame.set_text (get_msg (ec_slot_fillers_frame_text, Void))
+			slot_fillers_frame.set_text (get_msg ({ADL_MESSAGES_IDS}.ec_slot_fillers_frame_text, Void))
 			ev_root_container.extend (slot_fillers_frame)
 
 			create slot_fillers_vbox
@@ -50,7 +50,7 @@ feature {NONE} -- Initialisation
 
 			-- Slot owners tree
 			create slot_owners_frame
-			slot_owners_frame.set_text (get_msg (ec_slot_owners_frame_text, Void))
+			slot_owners_frame.set_text (get_msg ({ADL_MESSAGES_IDS}.ec_slot_owners_frame_text, Void))
 			ev_root_container.extend (slot_owners_frame)
 
 			create slot_owners_vbox
@@ -136,7 +136,7 @@ feature {NONE} -- Implementation
 
 				-- =============== CLIENTS ===============
 				if current_library.compile_attempt_count < current_library.archetype_count then
-					ev_slot_owners_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_text (ec_slots_incomplete_w1)))
+					ev_slot_owners_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_slots_incomplete_w1)))
 				end
 
 				if attached src.slot_owners_index as ci then
@@ -197,7 +197,7 @@ feature {NONE} -- Implementation
 			an_mi: EV_MENU_ITEM
 		do
 			if attached {ARCH_LIB_ARCHETYPE} current_library.archetype_matching_ref (an_archetype_key) as ext_ref_node then
-				create an_mi.make_with_text_and_action (get_text (ec_open_target_in_new_tab), agent gui_agents.call_select_archetype_in_new_tool_agent (ext_ref_node))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_open_target_in_new_tab), agent gui_agents.call_select_archetype_in_new_tool_agent (ext_ref_node))
 				an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ext_ref_node.group_name))
 				a_menu.extend (an_mi)
 			end

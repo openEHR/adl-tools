@@ -35,7 +35,7 @@ feature {NONE}-- Initialization
 
 			-- translation control
 			-- ev_notebook.extend (translation_control.ev_root_container)
-			-- ev_notebook.set_item_text (translation_control.ev_root_container, get_text (ec_translation_tab_text))
+			-- ev_notebook.set_item_text (translation_control.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_translation_tab_text))
 			-- ev_notebook.item_tab (translation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/translation"))
 
 			ev_root_container.set_data (Current)
@@ -120,7 +120,7 @@ feature {NONE} -- Implementation
 			safe_source.commit
 			gui_agents.call_refresh_archetype_viewers_agent (source.id.physical_id)
 			if attached auth_source as att_source then
-				gui_agents.call_console_tool_append_agent (get_msg_line (ec_arch_editor_commit_notification,
+				gui_agents.call_console_tool_append_agent (get_msg_line ({ADL_MESSAGES_IDS}.ec_arch_editor_commit_notification,
 					<<att_source.id.physical_id, att_source.source_file_path>>))
 			end
 		end

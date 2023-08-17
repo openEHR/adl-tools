@@ -157,12 +157,12 @@ feature {NONE} -- Implementation
 				p := a_n.path
 				Result := ui_graph_state.flat_archetype.annotated_path (p, display_settings.language, True)
 				if display_settings.show_rm_inheritance then
-					Result.append ("%N%N" + get_text (ec_inheritance_status_text) +  specialisation_status_name (specialisation_status))
+					Result.append ("%N%N" + get_text ({ADL_MESSAGES_IDS}.ec_inheritance_status_text) +  specialisation_status_name (specialisation_status))
 				end
 
 				-- node-based bindings
 				if attached {C_OBJECT} arch_node as co and then ui_graph_state.flat_terminology.has_any_term_binding (co.node_id) then
-					Result.append ("%N%N" + get_text (ec_node_term_bindings_tooltip_text) + "%N")
+					Result.append ("%N%N" + get_text ({ADL_MESSAGES_IDS}.ec_node_term_bindings_tooltip_text) + "%N")
 					bindings := ui_graph_state.flat_terminology.term_bindings_for_key (co.node_id)
 					across bindings as bindings_csr loop
 						Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
@@ -170,14 +170,14 @@ feature {NONE} -- Implementation
 
 					-- documentation, if there is any
 					if not node_documentation.is_empty then
-						Result.append ("%N%N" + get_text (ec_bmm_documentation_text) + "%N")
+						Result.append ("%N%N" + get_text ({BMM_MESSAGES_IDS}.ec_bmm_documentation_text) + "%N")
 						Result.append ("%T" + node_documentation + "%N")
 					end
 				end
 
 				-- path-based bindings
 				if ui_graph_state.flat_terminology.has_any_term_binding (p) then
-					Result.append ("%N%N" + get_text (ec_path_term_bindings_tooltip_text) + "%N")
+					Result.append ("%N%N" + get_text ({ADL_MESSAGES_IDS}.ec_path_term_bindings_tooltip_text) + "%N")
 					bindings := ui_graph_state.flat_terminology.term_bindings_for_key (p)
 					across bindings as bindings_csr loop
 						Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
@@ -188,7 +188,7 @@ feature {NONE} -- Implementation
 					auth_arch.has_annotations_at_path (display_settings.language, a_n.path) and then
 					attached auth_arch.annotations_at_path (display_settings.language, a_n.path) as att_ann
 				then
-					Result.append ("%N%N" + get_text (ec_annotations_text) + ":%N")
+					Result.append ("%N%N" + get_text ({ADL_MESSAGES_IDS}.ec_annotations_text) + ":%N")
 					create annots.make_empty
 					across att_ann as ann_vals_csr loop
 						annots.append (ann_vals_csr.key + ": " + ann_vals_csr.item + "%N")

@@ -114,13 +114,13 @@ feature {NONE} -- Implementation
 									ref_rm_type_name := bmm_prop.bmm_type.effective_type.type_base_name
 								end
 							else
-								add_error (ec_VRRLPRM, <<ref_path_csr.key, tail_path, arch_rm_type_name>>)
+								add_error ({ADL_MESSAGES_IDS}.ec_VRRLPRM, <<ref_path_csr.key, tail_path, arch_rm_type_name>>)
 							end
 						else
 							ref_rm_type_name := arch_rm_type_name
 						end
 					else
-						add_error (ec_VRRLPAR, <<ref_path_csr.key>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VRRLPAR, <<ref_path_csr.key>>)
 					end
 					if attached ref_rm_type_name as rtn then
 						across ref_path_csr.item as expr_leaf_csr loop
@@ -182,21 +182,21 @@ end
 
 				if not ca_child_diff.c_conforms_to (ca_in_flat_anc, agent ref_model.type_conforms_to) then
 					if ca_child_diff.is_single and not ca_in_flat_anc.is_single then
-						add_error (ec_VSAM1, <<arch_diff_child.annotated_path (ca_child_diff.path, display_language, True)>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VSAM1, <<arch_diff_child.annotated_path (ca_child_diff.path, display_language, True)>>)
 
 					elseif not ca_child_diff.is_single and ca_in_flat_anc.is_single then
-						add_error (ec_VSAM2, <<arch_diff_child.annotated_path (ca_child_diff.path, display_language, True)>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VSAM2, <<arch_diff_child.annotated_path (ca_child_diff.path, display_language, True)>>)
 
 					elseif not ca_child_diff.existence_conforms_to (ca_in_flat_anc) then
 						check attached ca_child_diff.existence as ccd_ex and then attached ca_in_flat_anc.existence as cpf_ex then
-							add_error (ec_VSANCE, <<arch_diff_child.annotated_path (ca_child_diff.path, display_language, True),
+							add_error ({ADL_MESSAGES_IDS}.ec_VSANCE, <<arch_diff_child.annotated_path (ca_child_diff.path, display_language, True),
 								ccd_ex.as_string, arch_diff_child.annotated_path (ca_in_flat_anc.path, display_language, True),
 								cpf_ex.as_string>>)
 						end
 
 					elseif not ca_child_diff.cardinality_conforms_to (ca_in_flat_anc) then
 						check attached ca_child_diff.cardinality as ccd_card and then attached ca_in_flat_anc.cardinality as cpf_card then
-							add_error (ec_VSANCC, <<arch_diff_child.annotated_path (ca_child_diff.path, display_language, True),
+							add_error ({ADL_MESSAGES_IDS}.ec_VSANCC, <<arch_diff_child.annotated_path (ca_child_diff.path, display_language, True),
 								ccd_card.as_string, arch_diff_child.annotated_path (ca_in_flat_anc.path, display_language, True),
 								cpf_card.as_string>>)
 						end
@@ -219,24 +219,24 @@ end
 				if attached {C_ARCHETYPE_ROOT} co_child_diff as car and attached {ARCHETYPE_SLOT} co_in_flat_anc as parent_slot then
 					if flat_parent_slot_fillers_index.has (parent_slot.path) then
 						if not archetype_id_matches_slot (car.archetype_ref, parent_slot) then -- doesn't match the slot definition
-							add_error (ec_VARXS, <<co_child_annotated_path, car.archetype_ref>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VARXS, <<co_child_annotated_path, car.archetype_ref>>)
 
 						-- matches def, but not found in actual list from current repo
 						elseif not slot_filler_valid (parent_slot.path, car.archetype_ref) then
-							add_error (ec_VARXR, <<co_child_annotated_path, car.archetype_ref>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VARXR, <<co_child_annotated_path, car.archetype_ref>>)
 
 						-- filler id is not specialised
 						elseif specialisation_depth_from_code (car.node_id) /= arch_diff_child.specialisation_depth then
-							add_error (ec_VARXID, <<car.node_id, co_child_annotated_path, parent_slot.node_id>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VARXID, <<car.node_id, co_child_annotated_path, parent_slot.node_id>>)
 						end
 					else
-						add_error (ec_compiler_unexpected_error, <<generator + ".specialised_node_validate location 3; descriptor does not have slot match list">>)
+						add_error ({ADL_MESSAGES_IDS}.ec_compiler_unexpected_error, <<generator + ".specialised_node_validate location 3; descriptor does not have slot match list">>)
 					end
 
 				-- ARCHETYPE_SLOT redefines ARCHETYPE_SLOT
 				elseif attached {ARCHETYPE_SLOT} co_child_diff as child_slot and attached {ARCHETYPE_SLOT} co_in_flat_anc as parent_slot then
 					if not child_slot.node_id.same_string (parent_slot.node_id) then
-						add_error (ec_VDSSID, <<child_slot.node_id, co_child_annotated_path, parent_slot.node_id>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VDSSID, <<child_slot.node_id, co_child_annotated_path, parent_slot.node_id>>)
 					end
 
 				-- C_ARCHETYPE_ROOT redefines C_ARCHETYPE_ROOT
@@ -247,12 +247,12 @@ end
 							-- the following attachment has to work, because the parent is already validated
 							if attached current_library.archetype_matching_ref (parent_car.archetype_ref) as att_matched_parent then
 								if not att_matched_child.has_ancestor_descriptor (att_matched_parent) then
-									add_error (ec_VARXAV, <<co_child_annotated_path, car.archetype_ref, parent_car.archetype_ref>>)
+									add_error ({ADL_MESSAGES_IDS}.ec_VARXAV, <<co_child_annotated_path, car.archetype_ref, parent_car.archetype_ref>>)
 								end
 							end
 						end
 					else
-						add_error (ec_VARXRA, <<co_child_annotated_path, car.archetype_ref>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VARXRA, <<co_child_annotated_path, car.archetype_ref>>)
 					end
 
 				-- where C_COMPLEX_OBJECT redefines a C_COMPLEX_OBJECT_PROXY
@@ -262,7 +262,7 @@ end
 					if attached arch_flat_parent.object_at_path (air_p.path) as cpf then
 						co_in_flat_anc := cpf
 					else
-						add_error (ec_VSUNT, <<co_child_annotated_path, co_child_diff.generating_type.name, co_flat_anc_annotated_path, co_in_flat_anc.generating_type.name>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VSUNT, <<co_child_annotated_path, co_child_diff.generating_type.name, co_flat_anc_annotated_path, co_in_flat_anc.generating_type.name>>)
 					end
 
 				-- a C_COMPLEX_OBJECT with any_allowed = True to be redefined into anything. (Basic conformance - RM type, occurrences - checked below)
@@ -271,7 +271,7 @@ end
 
 				-- else the AOM meta-types must be the same
 				elseif dynamic_type (co_child_diff) /= dynamic_type (co_in_flat_anc) then
-					add_error (ec_VSONT, <<co_child_diff.rm_type_name, co_child_annotated_path, co_child_diff.generating_type.name, co_in_flat_anc.rm_type_name,
+					add_error ({ADL_MESSAGES_IDS}.ec_VSONT, <<co_child_diff.rm_type_name, co_child_annotated_path, co_child_diff.generating_type.name, co_in_flat_anc.rm_type_name,
 						co_flat_anc_annotated_path, co_in_flat_anc.generating_type.name>>)
 				end
 
@@ -285,21 +285,21 @@ end
 
 						-- RM type non-conformance was the reason
 						if not ref_model.type_conforms_to (co_child_diff.rm_type_name, co_in_flat_anc.rm_type_name) then
-							add_error (ec_VSONCT, <<co_child_annotated_path, co_child_diff.rm_type_name, co_flat_anc_annotated_path, co_in_flat_anc.rm_type_name>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VSONCT, <<co_child_annotated_path, co_child_diff.rm_type_name, co_flat_anc_annotated_path, co_in_flat_anc.rm_type_name>>)
 
 						-- occurrences non-conformance was the reason
 						elseif not co_child_diff.occurrences_conforms_to (co_in_flat_anc) then
-							add_error (ec_VSONCO, <<co_child_annotated_path, co_child_diff.occurrences_as_string, co_flat_anc_annotated_path, co_in_flat_anc.occurrences.as_string>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VSONCO, <<co_child_annotated_path, co_child_diff.occurrences_as_string, co_flat_anc_annotated_path, co_in_flat_anc.occurrences.as_string>>)
 
 						-- node id non-conformance value mismatch was the reason
 						elseif not co_child_diff.node_id_conforms_to (co_in_flat_anc) then
-							add_error (ec_VSONI, <<co_child_annotated_path, co_child_diff.node_id, co_flat_anc_annotated_path, co_in_flat_anc.node_id>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VSONI, <<co_child_annotated_path, co_child_diff.node_id, co_flat_anc_annotated_path, co_in_flat_anc.node_id>>)
 
 						-- leaf object value redefinition
 						elseif attached {C_PRIMITIVE_OBJECT} co_child_diff as cpo_child and attached {C_PRIMITIVE_OBJECT} co_in_flat_anc as cpo_flat then
-							add_error (ec_VPOV, <<cpo_child.rm_type_name, co_child_annotated_path, cpo_child.as_string, cpo_flat.as_string, cpo_flat.rm_type_name, co_flat_anc_annotated_path>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VPOV, <<cpo_child.rm_type_name, co_child_annotated_path, cpo_child.as_string, cpo_flat.as_string, cpo_flat.rm_type_name, co_flat_anc_annotated_path>>)
 						else
-							add_error (ec_VUNK, <<co_child_diff.rm_type_name, co_child_annotated_path, co_in_flat_anc.rm_type_name, co_flat_anc_annotated_path>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VUNK, <<co_child_diff.rm_type_name, co_child_annotated_path, co_in_flat_anc.rm_type_name, co_flat_anc_annotated_path>>)
 
 						end
 
@@ -307,7 +307,7 @@ end
 					elseif attached co_child_diff.parent as ca_child and then attached co_in_flat_anc.occurrences as co_anc_occ
 							and then co_anc_occ.is_multiple
 							and then not ca_child.collective_occurrences_of (co_in_flat_anc, agent ref_model.property_object_multiplicity).intersects (co_anc_occ) then
-						add_error (ec_VSONCOm, <<co_child_annotated_path, ca_child.collective_occurrences_of (co_in_flat_anc, agent ref_model.property_object_multiplicity).as_string, co_flat_anc_annotated_path, co_in_flat_anc.occurrences.as_string>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VSONCOm, <<co_child_annotated_path, ca_child.collective_occurrences_of (co_in_flat_anc, agent ref_model.property_object_multiplicity).as_string, co_flat_anc_annotated_path, co_in_flat_anc.occurrences.as_string>>)
 
 					else
 						-- deal with any tuples under C_COMPLEX_OBJECTs
@@ -318,12 +318,12 @@ end
 								if cco_flat.has_comparable_attribute_tuple (child_tuples_csr.item) then
 									comparable_flat_tuple := cco_flat.comparable_attribute_tuple (child_tuples_csr.item)
 									if not child_tuples_csr.item.c_conforms_to (comparable_flat_tuple, agent ref_model.type_conforms_to) then
-										add_error (ec_VTPNC, <<co_child_diff.rm_type_name, co_child_annotated_path, child_tuples_csr.item.signature, co_flat_anc_annotated_path>>)
+										add_error ({ADL_MESSAGES_IDS}.ec_VTPNC, <<co_child_diff.rm_type_name, co_child_annotated_path, child_tuples_csr.item.signature, co_flat_anc_annotated_path>>)
 									end
 								else
 									across child_tuples_csr.item as child_tuple_attrs_csr loop
 										if cco_flat.has_attribute (child_tuple_attrs_csr.item.rm_attribute_name) then
-											add_error (ec_VTPIN, <<co_child_diff.rm_type_name, co_child_annotated_path, child_tuples_csr.item.signature,
+											add_error ({ADL_MESSAGES_IDS}.ec_VTPIN, <<co_child_diff.rm_type_name, co_child_annotated_path, child_tuples_csr.item.signature,
 												child_tuple_attrs_csr.item.rm_attribute_name, co_flat_anc_annotated_path>>)
 										end
 									end
@@ -333,7 +333,7 @@ end
 
 						-- deal with sibling marker on C_OBJECTs that are redefines of nodes in flat parent
 						if attached co_child_diff.sibling_order as att_so and then not co_in_flat_anc.parent.has_child_with_id (att_so.sibling_node_id) then
-							add_error (ec_VSSM, <<co_child_annotated_path, att_so.sibling_node_id>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VSSM, <<co_child_annotated_path, att_so.sibling_node_id>>)
 						end
 					end
 				end
@@ -374,9 +374,9 @@ end
 								flat_anc_obj := arch_flat_parent.object_at_path (flat_anc_path)
 								if c_obj.is_prohibited then
 									if dynamic_type (c_obj) /= dynamic_type (flat_anc_obj) then
-										add_error (ec_VSONPT, <<co_child_annotated_path, c_obj.generating_type.name, flat_anc_obj.generating_type.name>>)
+										add_error ({ADL_MESSAGES_IDS}.ec_VSONPT, <<co_child_annotated_path, c_obj.generating_type.name, flat_anc_obj.generating_type.name>>)
 									elseif not flat_anc_obj.node_id.is_equal (c_obj.node_id) then
-										add_error (ec_VSONPI, <<co_child_annotated_path, flat_anc_obj.node_id>>)
+										add_error ({ADL_MESSAGES_IDS}.ec_VSONPI, <<co_child_annotated_path, flat_anc_obj.node_id>>)
 									end
 								end
 
@@ -385,13 +385,13 @@ end
 							elseif not attached {C_PRIMITIVE_OBJECT} c_obj then
 								-- Since we already know above that the node code is either an inherited code, or else a redefined code
 								-- it should have a matching node in flat ancestor; if it doesn't, it's an error
-								add_error (ec_VSONIN, <<c_obj.node_id, c_obj.rm_type_name, co_child_annotated_path,
+								add_error ({ADL_MESSAGES_IDS}.ec_VSONIN, <<c_obj.node_id, c_obj.rm_type_name, co_child_annotated_path,
 									arch_diff_child.annotated_path (flat_anc_path, display_language, True)>>)
 							end
 
 						-- in this case, check if the node code appears to be a redefine at this level, which would be an error
 						elseif specialisation_status_from_code (c_obj.node_id, arch_diff_child.specialisation_depth) = ss_redefined then
-							add_error (ec_VSONIN, <<c_obj.node_id, c_obj.rm_type_name, co_child_annotated_path, "(none)">>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VSONIN, <<c_obj.node_id, c_obj.rm_type_name, co_child_annotated_path, "(none)">>)
 						end
 
 					-- special checks if it is a non-overlay node...
@@ -403,13 +403,13 @@ end
 							if not (ca_in_flat_anc.has_child_with_id (sib_ord.sibling_node_id) or else
 								ca_in_flat_anc.has_child_with_id (code_at_level (sib_ord.sibling_node_id, arch_flat_parent.specialisation_depth)))
 							then
-								add_error (ec_VSSM, <<co_child_annotated_path, sib_ord.sibling_node_id>>)
+								add_error ({ADL_MESSAGES_IDS}.ec_VSSM, <<co_child_annotated_path, sib_ord.sibling_node_id>>)
 							end
 						end
 
 						-- if it has occurrences matches {0}, it's an error because this can only make sense for nodes that exist
 						if c_obj.is_prohibited then
-							add_error (ec_VSONPO, <<co_child_annotated_path>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VSONPO, <<co_child_annotated_path>>)
 						end
 debug ("validate")
 	io.put_string ("????? specialised_node_validate_test: C_OBJECT at " +
@@ -485,7 +485,7 @@ end
 												c_int.set_rm_type_name (rm_attr_type)
 												c_int.set_enumerated_type_constraint
 												if not across c_int.enumeration_values as int_vals_csr all bmm_enum_int.has_value (int_vals_csr.item) end then
-													add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
+													add_error ({ADL_MESSAGES_IDS}.ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 														rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_int.single_value.out>>)
 												end
 
@@ -493,13 +493,13 @@ end
 												c_str.set_rm_type_name (rm_attr_type)
 												c_str.set_enumerated_type_constraint
 												if not across c_str.constraint as str_vals_csr all bmm_enum_str.has_value (str_vals_csr.item) end then
-													add_error (ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
+													add_error ({ADL_MESSAGES_IDS}.ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 														rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_str.single_value>>)
 												end
 
 											else
 												-- error - unsupported subtype of BMM_ENUMERATION
-												add_error (ec_VCORMEN, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
+												add_error ({ADL_MESSAGES_IDS}.ec_VCORMEN, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 													rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
 											end
 
@@ -508,14 +508,14 @@ end
 										elseif not rm_attr_type.is_case_insensitive_equal (co.rm_type_name) then
 
 											-- node RM type doesn't conform
-											add_error (ec_VCORMENU, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
+											add_error ({ADL_MESSAGES_IDS}.ec_VCORMENU, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 												rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
 										end
 
 									-- check for type substitutions e.g. ISO8601_DATE appears in the archetype but the RM
 									-- has a String field (possibly within some other kind of DATE class)
 									elseif has_type_substitution (co.rm_type_name, rm_attr_type) then
-										add_info (ec_ICORMTS, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
+										add_info ({ADL_MESSAGES_IDS}.ec_ICORMTS, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 											rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
 										co.set_rm_type_name (rm_attr_type)
 
@@ -526,13 +526,13 @@ end
 									vcormt_fail := True
 								end
 								if vcormt_fail then
-									add_error (ec_VCORMT, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
+									add_error ({ADL_MESSAGES_IDS}.ec_VCORMT, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
 										rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name>>)
 									invalid_types.extend (co.rm_type_name)
 								end
 							end
 						else
-							add_error (ec_VCARM, <<att_parent_ca.rm_attribute_name, arch_diff_child.annotated_path (co.path, display_language, True),
+							add_error ({ADL_MESSAGES_IDS}.ec_VCARM, <<att_parent_ca.rm_attribute_name, arch_diff_child.annotated_path (co.path, display_language, True),
 								attr_rm_type_in_flat_anc>>)
 						end
 					end
@@ -547,19 +547,19 @@ end
 					attr_rm_type_in_flat_anc := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
 				end
 				if not ref_model.has_property (attr_rm_type_in_flat_anc, ca.rm_attribute_name) then
-					add_error (ec_VCARM, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True), attr_rm_type_in_flat_anc>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VCARM, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True), attr_rm_type_in_flat_anc>>)
 				else
 					rm_prop_def := ref_model.property_definition (attr_rm_type_in_flat_anc, ca.rm_attribute_name)
 					if attached ca.existence as ca_ex then
 						if not rm_prop_def.existence.contains (ca_ex) then
 							if not arch_diff_child.is_specialised and rm_prop_def.existence.is_equal (ca_ex) then
-								add_warning (ec_WCAEX, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
+								add_warning ({ADL_MESSAGES_IDS}.ec_WCAEX, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
 									ca_ex.as_string>>)
 								if not validation_strict then
 									ca.remove_existence
 								end
 							else
-								add_error (ec_VCAEX, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
+								add_error ({ADL_MESSAGES_IDS}.ec_VCAEX, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
 									ca_ex.as_string, rm_prop_def.existence.as_string>>)
 							end
 						end
@@ -571,32 +571,32 @@ end
 								if not rm_cont_prop_def.cardinality.contains (ca_card.interval) then
 									if rm_cont_prop_def.cardinality.is_equal (ca_card.interval) then
 										if validation_strict then
-											add_error (ec_VCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
+											add_error ({ADL_MESSAGES_IDS}.ec_VCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
 												ca_card.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
 										else
-											add_warning (ec_WCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
+											add_warning ({ADL_MESSAGES_IDS}.ec_WCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
 												ca_card.interval.as_string>>)
 											ca.remove_cardinality
 										end
 									else
-										add_error (ec_VCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
+										add_error ({ADL_MESSAGES_IDS}.ec_VCACA, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
 											ca_card.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
 									end
 								end
 							else -- archetype has multiple attribute but RM does not
-								add_error (ec_VCAMm, <<arch_diff_child.annotated_path (ca.path, display_language, True), ca_card.as_string>>)
+								add_error ({ADL_MESSAGES_IDS}.ec_VCAMm, <<arch_diff_child.annotated_path (ca.path, display_language, True), ca_card.as_string>>)
 							end
 						end
 
 					-- archetype attribute is single-valued, but RM has a container attribute
 					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as rm_cont_prop_def then
-						add_error (ec_VCAMs, <<arch_diff_child.annotated_path (ca.path, display_language, True),
+						add_error ({ADL_MESSAGES_IDS}.ec_VCAMs, <<arch_diff_child.annotated_path (ca.path, display_language, True),
 							rm_cont_prop_def.cardinality.as_string>>)
 					end
 
 					if rm_prop_def.is_computed then
 						-- flag if this is a computed property constraint (i.e. a constraint on a function from the RM)
-						add_warning (ec_WCARMC, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
+						add_warning ({ADL_MESSAGES_IDS}.ec_WCARMC, <<ca.rm_attribute_name, arch_diff_child.annotated_path (ca.path, display_language, True),
 							attr_rm_type_in_flat_anc>>)
 					end
 				end
@@ -616,7 +616,7 @@ end
 			if attached {C_OBJECT} a_c_node as co and then not ref_model.has_class_definition (co.rm_type_name) and then
 				not invalid_types.has (co.rm_type_name) and then not has_any_type_substitution (co.rm_type_name)
 			then
-				add_error (ec_VCORM, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True)>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_VCORM, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True)>>)
 				invalid_types.extend (co.rm_type_name)
 				Result := False
 			elseif attached {C_ATTRIBUTE} a_c_node then

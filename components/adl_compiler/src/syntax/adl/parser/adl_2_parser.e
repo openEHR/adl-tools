@@ -227,7 +227,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 69")
 end
 
-			abort_with_error (ec_SUNK, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SUNK, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -617,7 +617,7 @@ end
 			if archetype_id_checker.valid_id_reference (yyvs2.item (yyvsp2)) then
 				parent_archetype_id := yyvs2.item (yyvsp2)
 			else
-				abort_with_error (ec_SASID, Void)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -631,7 +631,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 226")
 end
 
-			abort_with_error (ec_SASID, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -659,7 +659,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 238")
 end
 
-			abort_with_error (ec_SALA, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SALA, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -687,7 +687,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 250")
 end
 
-			abort_with_error (ec_SADS, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SADS, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -713,7 +713,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 260")
 end
 
-			abort_with_error (ec_SADF, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SADF, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -758,7 +758,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 271")
 end
 
-			abort_with_error (ec_SAIV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SAIV, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -784,7 +784,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 281")
 end
 
-			abort_with_error (ec_SAON, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SAON, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -829,7 +829,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 292")
 end
 
-			abort_with_error (ec_SAAN, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SAAN, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -855,7 +855,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 302")
 end
 
-			abort_with_error (ec_SAAN, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SAAN, Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -1235,7 +1235,7 @@ feature {NONE} -- Implementation
 			if archetype_id_checker.valid_id (an_arch_id) then
 				create archetype_id.make_from_string (an_arch_id)
 			else
-				abort_with_error (ec_SASID, Void)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)
 			end
 		end
 

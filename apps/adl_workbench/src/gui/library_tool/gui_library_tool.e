@@ -73,19 +73,19 @@ feature {NONE} -- Initialisation
 			-- archetype explorer tab
 			ev_notebook.extend (archetype_explorer.ev_root_container)
 			ev_notebook.item_tab (archetype_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/archetype_catalog"))
-			ev_notebook.set_item_text (archetype_explorer.ev_root_container, get_text (ec_library_archetype_tab_text))
+			ev_notebook.set_item_text (archetype_explorer.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_library_archetype_tab_text))
 
 			-- template explorer tab
 			ev_notebook.extend (template_explorer.ev_root_container)
-			ev_notebook.set_item_text (template_explorer.ev_root_container, get_text (ec_library_template_tab_text))
+			ev_notebook.set_item_text (template_explorer.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_library_template_tab_text))
 
 			-- metrics viewer tab
 			ev_notebook.extend (metrics_viewer.ev_root_container)
-			ev_notebook.set_item_text (metrics_viewer.ev_root_container, get_text (ec_library_metrics_tab_text))
+			ev_notebook.set_item_text (metrics_viewer.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_library_metrics_tab_text))
 
 			-- statistics viewer tab
 			ev_notebook.extend (stats_viewer.ev_root_container)
-			ev_notebook.set_item_text (stats_viewer.ev_root_container, get_text (ec_library_stats_tab_text))
+			ev_notebook.set_item_text (stats_viewer.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_library_stats_tab_text))
 
 			set_tabs_appearance
 
@@ -95,7 +95,7 @@ feature {NONE} -- Initialisation
 
 			-- add view all classes button (class tree shows classes with no archetypes when active)
 			gui_mini_tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/view_all_classes_active"), get_icon_pixmap ("tool/view_all_classes_inactive"),
-				get_text (ec_library_mini_toolbar_view_all_classes), agent on_view_all_classes)
+				get_text ({ADL_MESSAGES_IDS}.ec_library_mini_toolbar_view_all_classes), agent on_view_all_classes)
 			check attached gui_mini_tool_bar.last_tool_bar_button as tbb then
 				view_all_classes_button := tbb
 				gui_mini_tool_bar.activate_tool_bar_button (tbb)
@@ -103,7 +103,7 @@ feature {NONE} -- Initialisation
 
 			-- add rotate-view button
 			gui_mini_tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/view_rotate_active"), get_icon_pixmap ("tool/view_rotate_inactive"),
-				get_text (ec_library_mini_toolbar_view_rotate), agent on_rotate_view)
+				get_text ({ADL_MESSAGES_IDS}.ec_library_mini_toolbar_view_rotate), agent on_rotate_view)
 			check attached gui_mini_tool_bar.last_tool_bar_button as tbb then
 				rotate_view_button := tbb
 				gui_mini_tool_bar.activate_tool_bar_button (tbb)
@@ -117,7 +117,7 @@ feature {NONE} -- Initialisation
 --			ev_root_container.extend (ev_status_hb)
 --			ev_root_container.disable_item_expand (ev_status_hb)
 
---			create ev_status_label.make_with_text (get_text (ec_library_compile_status_text))
+--			create ev_status_label.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_library_compile_status_text))
 --			ev_status_hb.extend (ev_status_label)
 --			ev_status_hb.disable_item_expand (ev_status_label)
 
@@ -244,8 +244,8 @@ feature -- Commands
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
-			dialog.filters.extend (["*" + File_ext_archetype_source, get_text (ec_adl_2_source_files)])
-			dialog.filters.extend (["*" + File_ext_archetype_adl14, get_text (ec_adl_14_files)])
+			dialog.filters.extend (["*" + File_ext_archetype_source, get_text ({ADL_MESSAGES_IDS}.ec_adl_2_source_files)])
+			dialog.filters.extend (["*" + File_ext_archetype_adl14, get_text ({ADL_MESSAGES_IDS}.ec_adl_14_files)])
 			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			fname := dialog.file_name.as_string_8
 
@@ -253,7 +253,7 @@ feature -- Commands
 				if not current_library.library_access.adhoc_source.has_path (fname) then
 					set_current_work_directory (file_system.dirname (fname))
 					if not file_system.file_exists (fname) then
-						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg (ec_file_not_found, <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
+						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg ({GENERAL_MESSAGES_IDS}.ec_file_not_found, <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
 					else
 						safe_source.add_adhoc_archetype (fname)
 						if not safe_source.has_errors and attached safe_source.last_added_archetype as arch then
@@ -265,7 +265,7 @@ feature -- Commands
 						end
 					end
 				else
-					(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg (ec_file_already_exists, <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
+					(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg ({GENERAL_MESSAGES_IDS}.ec_file_already_exists, <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
 				end
 			end
 		end
@@ -278,7 +278,7 @@ feature -- Commands
 			if selection_history.has_validated_selected_archetype and attached {ARCH_LIB_AUTHORED_ARCHETYPE} selection_history.selected_archetype as auth_aca then
 				save_archetype (auth_aca, True, True)
 			else
-				create error_dialog.make_with_text (get_text (ec_no_archetype_selected))
+				create error_dialog.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_no_archetype_selected))
 				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			end
 		end
@@ -291,7 +291,7 @@ feature -- Commands
 			if selection_history.has_validated_selected_archetype and attached {ARCH_LIB_AUTHORED_ARCHETYPE} selection_history.selected_archetype as auth_aca then
 				save_archetype (auth_aca, True, False)
 			else
-				create error_dialog.make_with_text (get_text (ec_no_archetype_selected))
+				create error_dialog.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_no_archetype_selected))
 				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			end
 		end
@@ -304,7 +304,7 @@ feature -- Commands
 			if selection_history.has_validated_selected_archetype and attached {ARCH_LIB_AUTHORED_ARCHETYPE} selection_history.selected_archetype as auth_aca then
 				save_archetype (auth_aca, False, False)
 			else
-				create error_dialog.make_with_text (get_text (ec_no_archetype_selected))
+				create error_dialog.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_no_archetype_selected))
 				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			end
 		end
@@ -395,11 +395,11 @@ feature {NONE} -- Implementation
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do
-			docking_pane.set_short_title (get_text (ec_library_tool_title))
-			docking_pane.set_long_title (get_text (ec_library_tool_title) + " " + current_library_name)
+			docking_pane.set_short_title (get_text ({ADL_MESSAGES_IDS}.ec_library_tool_title))
+			docking_pane.set_long_title (get_text ({ADL_MESSAGES_IDS}.ec_library_tool_title) + " " + current_library_name)
 			if attached source as src then
 				if src.archetype_count = 0 and not show_entire_ontology then
-					create info_dialog.make_with_text (get_text (ec_library_no_archetypes_found))
+					create info_dialog.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_library_no_archetypes_found))
 					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				else
 					archetype_explorer.populate (src)
@@ -486,10 +486,10 @@ feature {NONE} -- Implementation
 			if aca.is_valid then
 				if native_format_flag then
 					format_list := archetype_native_serialiser_formats
-					dialog_title := get_text (ec_save_archetype_title)
+					dialog_title := get_text ({ADL_MESSAGES_IDS}.ec_save_archetype_title)
 				else
 					format_list := archetype_all_serialiser_formats
-					dialog_title := get_text (ec_export_archetype_title)
+					dialog_title := get_text ({ADL_MESSAGES_IDS}.ec_export_archetype_title)
 				end
 				name := extension_replaced (aca.source_file_path, "")
 
@@ -502,7 +502,7 @@ feature {NONE} -- Implementation
 				across format_list as formats_csr loop
 					check attached archetype_file_extensions [formats_csr.item] as file_ext then
 						save_dialog.filters.extend (["*" + file_ext,
-							get_msg (ec_save_archetype_as_type, <<formats_csr.item.as_upper>>)])
+							get_msg ({ADL_MESSAGES_IDS}.ec_save_archetype_as_type, <<formats_csr.item.as_upper>>)])
 					end
 				end
 
@@ -523,11 +523,11 @@ feature {NONE} -- Implementation
 						-- if the file already exists, ask user about overwrite
 						ok_to_write := True
 						if file.exists then
-							create question_dialog.make_with_text (get_msg (ec_file_exists_replace_question, <<file_system.basename (name)>>))
-							question_dialog.set_title (get_msg (ec_save_archetype_as_type, <<format.as_upper>>))
-							question_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
+							create question_dialog.make_with_text (get_msg ({GENERAL_MESSAGES_IDS}.ec_file_exists_replace_question, <<file_system.basename (name)>>))
+							question_dialog.set_title (get_msg ({ADL_MESSAGES_IDS}.ec_save_archetype_as_type, <<format.as_upper>>))
+							question_dialog.set_buttons (<<get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response), get_text ({GENERAL_MESSAGES_IDS}.ec_no_response)>>)
 							question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-							ok_to_write := attached question_dialog.selected_button as q_sel_btn and then q_sel_btn.same_string (get_text (ec_yes_response))
+							ok_to_write := attached question_dialog.selected_button as q_sel_btn and then q_sel_btn.same_string (get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response))
 						end
 						if ok_to_write then
 							if diff_flag then
@@ -540,7 +540,7 @@ feature {NONE} -- Implementation
 					end
 				end
 			else
-				create error_dialog.make_with_text (get_text (ec_compile_before_serialising))
+				create error_dialog.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_compile_before_serialising))
 				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			end
 		end
@@ -561,18 +561,18 @@ feature {NONE} -- Implementation
 					legacy_path := lfp
 				end
 				if auth_aca.has_source_file then
-					create question_dialog.make_with_text (get_msg_line (ec_edit_which_file_question,
+					create question_dialog.make_with_text (get_msg_line ({ADL_MESSAGES_IDS}.ec_edit_which_file_question,
 						<<file_system.basename (path), file_system.basename (legacy_path)>>))
-					question_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<auth_aca.qualified_name>>))
-					question_dialog.set_buttons (<<get_text (ec_library_edit_differential_button_text), get_text (ec_library_edit_adl14_button_text)>>)
+					question_dialog.set_title (get_msg ({ADL_MESSAGES_IDS}.ec_library_edit_differential_button_text, <<auth_aca.qualified_name>>))
+					question_dialog.set_buttons (<<get_text ({ADL_MESSAGES_IDS}.ec_library_edit_differential_button_text), get_text ({ADL_MESSAGES_IDS}.ec_library_edit_adl14_button_text)>>)
 					question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-					if attached question_dialog.selected_button as att_sel_btn and then att_sel_btn.is_equal (get_text (ec_library_edit_adl14_button_text)) then
+					if attached question_dialog.selected_button as att_sel_btn and then att_sel_btn.is_equal (get_text ({ADL_MESSAGES_IDS}.ec_library_edit_adl14_button_text)) then
 						path := legacy_path
 					end
 				else
-					create info_dialog.make_with_text (get_msg_line (ec_edit_legacy_file_info,
+					create info_dialog.make_with_text (get_msg_line ({ADL_MESSAGES_IDS}.ec_edit_legacy_file_info,
 						<<file_system.basename (legacy_path)>>))
-					info_dialog.set_title (get_msg (ec_library_edit_differential_button_text, <<auth_aca.id.physical_id>>))
+					info_dialog.set_title (get_msg ({ADL_MESSAGES_IDS}.ec_library_edit_differential_button_text, <<auth_aca.id.physical_id>>))
 					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 					path := legacy_path
 				end

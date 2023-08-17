@@ -71,7 +71,7 @@ feature {NONE} -- Implementation
 			if attached arch_node then
 				-- menu option to display the archetype for this reference in a new tab
 				if attached current_library.archetype_matching_ref (arch_node.archetype_ref) as ext_ref_node then
-					create an_mi.make_with_text_and_action (get_text (ec_open_target_in_new_tab),
+					create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_open_target_in_new_tab),
 						agent gui_agents.call_select_archetype_in_new_tool_agent (ext_ref_node))
 					an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ext_ref_node.group_name))
 					context_menu.extend (an_mi)

@@ -99,24 +99,24 @@ feature {NONE} -- Implementation
 			-- into account validity with respect to parent archetypes.
 		do
 			if not arch_diff_child.definition.rm_type_name.is_equal (arch_diff_child.archetype_id.rm_class) then
-				add_error (ec_VARDT, <<arch_diff_child.archetype_id.rm_class, arch_diff_child.definition.rm_type_name>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_VARDT, <<arch_diff_child.archetype_id.rm_class, arch_diff_child.definition.rm_type_name>>)
 
 			elseif not is_valid_root_id_code (arch_diff_child.concept_id) then
-				add_error (ec_VARCN, <<arch_diff_child.concept_id, root_id_code_regex_pattern>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_VARCN, <<arch_diff_child.concept_id, root_id_code_regex_pattern>>)
 
 			-- empty terminology
 			elseif arch_diff_child.terminology.term_definitions.is_empty then
-				add_error (ec_STCNT, Void)
+				add_error ({ADL_MESSAGES_IDS}.ec_STCNT, Void)
 
 			-- if specialised according to declaration of parent archetype id
 			elseif arch_diff_child.is_specialised then
 				if arch_diff_child.specialisation_depth /= arch_flat_parent.specialisation_depth + 1 then
-					add_error (ec_VACSD, <<specialisation_depth_from_code (arch_diff_child.concept_id).out, arch_diff_child.specialisation_depth.out>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VACSD, <<specialisation_depth_from_code (arch_diff_child.concept_id).out, arch_diff_child.specialisation_depth.out>>)
 				end
 
 			else -- not specialised
 				if specialisation_depth_from_code (arch_diff_child.concept_id) /= 0 then
- 					add_error (ec_VACSDtop, <<specialisation_depth_from_code (arch_diff_child.concept_id).out>>)
+ 					add_error ({ADL_MESSAGES_IDS}.ec_VACSDtop, <<specialisation_depth_from_code (arch_diff_child.concept_id).out>>)
  				end
 			end
 		end
@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 		do
 			if arch_diff_child.is_specialised then
 				if not arch_diff_child.languages_available.is_subset (arch_flat_parent.languages_available) then
-					add_error (ec_VALC, <<arrayed_list_out (arch_diff_child.languages_available), arrayed_list_out (arch_flat_parent.languages_available)>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VALC, <<arrayed_list_out (arch_diff_child.languages_available), arrayed_list_out (arch_flat_parent.languages_available)>>)
 				end
 			end
 		end
@@ -152,7 +152,7 @@ feature {NONE} -- Implementation
 				if ca.has_differential_path then
 					-- if differntial path found in non-specialised archetype, it's an error
 					if not arch_diff_child.is_specialised then
-						add_error (ec_VDIFV, <<ca.path>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VDIFV, <<ca.path>>)
 					else
 						-- if path doesn't exist in flat parent or path of immediate parent node doesn't exist in flat parent either
 						-- then it's an error
@@ -164,11 +164,11 @@ feature {NONE} -- Implementation
 								-- (since parent archetype is guaranteed to have that)
 								create og_path.make_from_string (flat_anc_path)
 								if og_path.parent_path.is_root or else not arch_flat_parent.has_path (og_path.parent_path.as_string) then
-									add_error (ec_VDIFP1, <<ca.path, flat_anc_path>>)
+									add_error ({ADL_MESSAGES_IDS}.ec_VDIFP1, <<ca.path, flat_anc_path>>)
 								end
 							end
 						else
-							add_error (ec_VDIFP3, <<ca.path>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VDIFP3, <<ca.path>>)
 						end
 					end
 				end
@@ -192,11 +192,11 @@ feature {NONE} -- Implementation
 				if not includes.is_empty then
 					if includes.first.matches_any then
 						if not (excludes.is_empty or not excludes.first.matches_any) then
-							add_error (ec_VDSEV1, <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VDSEV1, <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
 						end
 					else
 						if not (excludes.is_empty or excludes.first.matches_any) then
-							add_error (ec_VDSEV2, <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VDSEV2, <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
 						end
 					end
 				end
@@ -211,10 +211,10 @@ feature {NONE} -- Implementation
 			across arch_diff_child.suppliers_index as supp_csr loop
 				-- check that supplier is known in archetype library
 				if not current_library.has_archetype_matching_ref (supp_csr.key) then
-					add_error (ec_VARXRA, <<supp_csr.item.first.path, supp_csr.key>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VARXRA, <<supp_csr.item.first.path, supp_csr.key>>)
 				-- we could detect supplier loop here if we want
 --				elseif current_library.matching_archetype (supp_csr.key).is_equal (child_desc) then
---					add_error (ec_VSUP, <<arch_diff_child.archetype_id.as_string, supp_csr.item.first.parent.path>>)
+--					add_error ({ADL_MESSAGES_IDS}.ec_VSUP, <<arch_diff_child.archetype_id.as_string, supp_csr.item.first.parent.path>>)
 				end
 
 				-- check that the RM type in the archetype reference is compatible with the RM type of the C_ARCHETYPE_ROOT node
@@ -223,7 +223,7 @@ feature {NONE} -- Implementation
 					if not (car_csr.item.rm_type_name.is_equal (filler_id.rm_class) or else
 						ref_model.type_conforms_to (filler_id.rm_class, car_csr.item.rm_type_name))
 					then
-						add_error (ec_VARXTV, <<car_csr.item.path, car_csr.item.archetype_ref, car_csr.item.rm_type_name>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VARXTV, <<car_csr.item.path, car_csr.item.archetype_ref, car_csr.item.rm_type_name>>)
 					end
 				end
 			end
@@ -246,9 +246,9 @@ feature {NONE} -- Implementation
 				across terms_for_lang_csr.item as term_defs_csr loop
 					code := term_defs_csr.key
 					if not is_valid_code (code) then
-						add_error (ec_VATCV, <<code, any_code_regex_pattern>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VATCV, <<code, any_code_regex_pattern>>)
 					elseif specialisation_depth_from_code (code) /= terminology.specialisation_depth then
-						add_error (ec_VTSD, <<code>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VTSD, <<code>>)
 					end
 				end
 			end
@@ -264,17 +264,17 @@ feature {NONE} -- Implementation
 			across langs as langs_csr loop
 				across terminology.id_codes as code_csr loop
 					if not terminology.has_term_definition (langs_csr.item, code_csr.item) then
-						add_error (ec_VTLC, <<code_csr.item, langs_csr.item>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VTLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
 				across terminology.value_codes as code_csr loop
 					if not terminology.has_term_definition (langs_csr.item, code_csr.item) then
-						add_error (ec_VTLC, <<code_csr.item, langs_csr.item>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VTLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
 				across terminology.value_set_codes as code_csr loop
 					if not terminology.has_term_definition (langs_csr.item, code_csr.item) then
-						add_error (ec_VTLC, <<code_csr.item, langs_csr.item>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VTLC, <<code_csr.item, langs_csr.item>>)
 					end
 				end
 			end
@@ -298,12 +298,12 @@ feature {NONE} -- Implementation
 				-- to decide. There can be more than one C_OBJECT with the same id-code.
 				across codes_csr.item as ac_csr loop
 					if code_spec_depth > arch_depth then
-						add_error (ec_VTSD, <<codes_csr.key>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VTSD, <<codes_csr.key>>)
 					elseif attached {C_OBJECT} ac_csr.item as co and then (co.is_root or else attached co.parent as parent_ca and then parent_ca.is_multiple) then
 						if code_spec_depth < arch_depth and not arch_flat_parent.terminology.has_id_code (codes_csr.key) or else
 							code_spec_depth = arch_depth and not terminology.has_id_code (codes_csr.key)
 						then
-							add_error (ec_VATID, <<codes_csr.key, co.path>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VATID, <<codes_csr.key, co.path>>)
 						end
 					end
 				end
@@ -319,11 +319,11 @@ feature {NONE} -- Implementation
 				code := codes_csr.key
 				code_spec_depth := specialisation_depth_from_code (code)
 				if code_spec_depth > arch_depth then
-					add_error (ec_VATCD, <<code, arch_depth.out>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VATCD, <<code, arch_depth.out>>)
 				elseif code_spec_depth < arch_depth and not arch_flat_parent.terminology.has_code (code) or else
 					code_spec_depth = arch_depth and not terminology.has_code (code)
 				then
-					add_error (ec_VATDF, <<code, codes_csr.item.first.path>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VATDF, <<code, codes_csr.item.first.path>>)
 				end
 			end
 
@@ -331,14 +331,14 @@ feature {NONE} -- Implementation
 				code := term_constraints_csr.key
 				code_spec_depth := specialisation_depth_from_code (code)
 				if code_spec_depth > arch_depth then
-					add_error (ec_VATCD, <<code, arch_depth.out>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VATCD, <<code, arch_depth.out>>)
 				elseif code_spec_depth < arch_depth and not arch_flat_parent.terminology.has_value_set_code (code) or else
 					code_spec_depth = arch_depth and not terminology.has_value_set_code (code)
 				then
-					add_error (ec_VACDF, <<code, term_constraints_csr.item.path>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VACDF, <<code, term_constraints_csr.item.path>>)
 				elseif attached term_constraints_csr.item.assumed_value as att_av then
 					if attached terminology.value_sets.item (code) as vset and then not vset.has_member_code (att_av) then
-						add_error (ec_VATDA, <<att_av, code, term_constraints_csr.item.path>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VATDA, <<att_av, code, term_constraints_csr.item.path>>)
 					end
 				end
 			end
@@ -349,16 +349,16 @@ feature {NONE} -- Implementation
 		do
 			across terminology.value_sets as vsets_csr loop
 				if not terminology.has_value_set_code (vsets_csr.item.id) then
-					add_error (ec_VTVSID, <<vsets_csr.item.id>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VTVSID, <<vsets_csr.item.id>>)
 				end
 				across vsets_csr.item.members as vset_at_codes_csr loop
 					-- check if at-code exists
 					if not (terminology.has_value_code (vset_at_codes_csr.item) or else arch_diff_child.is_specialised and then  arch_flat_parent.terminology.has_code (vset_at_codes_csr.item)) then
-						add_error (ec_VTVSMD, <<vset_at_codes_csr.item>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VTVSMD, <<vset_at_codes_csr.item>>)
 
 					-- check if at-code duplicated
 					elseif vsets_csr.item.members.occurrences (vset_at_codes_csr.item) > 1 then
-						add_error (ec_VTVSUQ, <<vset_at_codes_csr.item, vsets_csr.item.id>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VTVSUQ, <<vset_at_codes_csr.item, vsets_csr.item.id>>)
 					end
 				end
 			end
@@ -385,21 +385,21 @@ feature {NONE} -- Implementation
 
 					-- if it is not a code, it must be a path that is valid in archetype or at least RM for the archetyped class
 					if not is_valid_code (binding_key) and then not (arch_diff_child.has_path (binding_key) or else ref_model.has_property_path (arch_diff_child.definition.rm_type_name, binding_key)) then
-						add_error (ec_VTTBK, <<binding_key>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VTTBK, <<binding_key>>)
 
 					-- it must be code; check it exists
 					elseif is_valid_code (binding_key) and then not (terminology.has_code (binding_key) or else arch_diff_child.is_specialised and then arch_flat_parent.terminology.has_code (binding_key)) then
-						add_error (ec_VTTBK, <<binding_key>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VTTBK, <<binding_key>>)
 
 					-- key is valid; check validity of RHS
 					else
 						binding_target_code := terminology_code_from_uri (bindings_csr.item.as_string)
 						if ts.has_terminology (terminology_id) then
 							if not ts.terminology (terminology_id).has_concept_id (binding_target_code) then
-								add_warning (ec_VETDF, <<binding_target_code, terminology_id>>)
+								add_warning ({ADL_MESSAGES_IDS}.ec_VETDF, <<binding_target_code, terminology_id>>)
 							end
 						else
-							add_warning (ec_WETDF, <<binding_target_code, terminology_id>>)
+							add_warning ({ADL_MESSAGES_IDS}.ec_WETDF, <<binding_target_code, terminology_id>>)
 						end
 					end
 				end
@@ -411,7 +411,7 @@ feature {NONE} -- Implementation
 			-- are not referenced anywhere in the archetype definition
 		do
 			across arch_diff_child.terminology_unused_term_codes as unused_codes_csr loop
-				add_warning (ec_WOUC, <<unused_codes_csr.item>>)
+				add_warning ({ADL_MESSAGES_IDS}.ec_WOUC, <<unused_codes_csr.item>>)
 			end
 		end
 

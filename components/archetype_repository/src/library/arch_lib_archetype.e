@@ -593,7 +593,7 @@ feature -- Compilation
 			else
 				signal_exception
 				if attached meaning (exception) as att_meaning and attached exception_trace as att_exc_trace then
-					add_error (ec_compile_exception, <<id.physical_id, att_meaning, att_exc_trace>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_compile_exception, <<id.physical_id, att_meaning, att_exc_trace>>)
 				end
 			end
 			set_compile_attempt_timestamp
@@ -660,7 +660,7 @@ feature -- Compilation
 				compilation_state := Cs_ready_to_validate
 			else
 				compilation_state := cs_suppliers_invalid
-				add_error (ec_compile_e2, <<suppliers_index.item_for_iteration.id.physical_id>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_compile_e2, <<suppliers_index.item_for_iteration.id.physical_id>>)
 			end
 		ensure
 			Compilation_state_set: (<<Cs_ready_to_validate, cs_suppliers_invalid>>).has (compilation_state)
@@ -723,7 +723,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 				compilation_state := Cs_ready_to_parse
 			else
 				compilation_state := Cs_lineage_invalid
-				add_error (ec_compile_e1, <<parent_id.physical_id>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_compile_e1, <<parent_id.physical_id>>)
 			end
 		end
 
@@ -757,7 +757,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 				across suppliers_index as supp_idx_csr loop
 					if supp_idx_csr.item.has_ancestor_descriptor (Current) then
 						compilation_state := Cs_supplier_loop
-						add_error (ec_VINH, <<supp_idx_csr.item.id.physical_id>>)
+						add_error ({ADL_MESSAGES_IDS}.ec_VINH, <<supp_idx_csr.item.id.physical_id>>)
 					end
 				end
 				if not has_errors then
@@ -779,7 +779,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			Initial_state: compilation_state = Cs_ready_to_parse
 			has_source: has_source
 		do
-			add_info (ec_parse_i2, Void)
+			add_info ({ADL_MESSAGES_IDS}.ec_parse_i2, Void)
 			clear_cache
 		 	compilation_state := Cs_parsed
 			if attached {like differential_archetype} adl_2_engine.parse (source_text, Current) as diff_arch then
@@ -791,9 +791,9 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 				end
 
 				if is_specialised and then attached diff_arch.parent_archetype_id as da_parent_ref and then not parent_id.physical_id.starts_with (da_parent_ref) then
-					add_warning (ec_parse_w1, <<id.physical_id, parent_id.physical_id, da_parent_ref>>)
+					add_warning ({ADL_MESSAGES_IDS}.ec_parse_w1, <<id.physical_id, parent_id.physical_id, da_parent_ref>>)
 				else
-					add_info (ec_parse_i1, <<id.physical_id>>)
+					add_info ({ADL_MESSAGES_IDS}.ec_parse_i1, <<id.physical_id>>)
 				end
 
 				-- perform version upgrading if applicable
@@ -834,7 +834,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			if not id.physical_id.is_equal (diff_arch.archetype_id.physical_id) then
 				-- this is a serious error, because it means that the archteype and its descriptor are
 				-- out of sync, due to some uncontrolled modification on the archetype
-				add_error (ec_validate_e3, <<id.physical_id, diff_arch.archetype_id.physical_id>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_validate_e3, <<id.physical_id, diff_arch.archetype_id.physical_id>>)
 				compilation_state := Cs_validate_failed
 			else
 				-- phase 1: validate archetype stand-alone
@@ -875,7 +875,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			adl_2_engine.phase_3_validate (Current)
 			merge_errors (adl_2_engine.errors)
 			if adl_2_engine.validation_passed then
-				add_info (ec_parse_archetype_i2, <<id.physical_id>>)
+				add_info ({ADL_MESSAGES_IDS}.ec_parse_archetype_i2, <<id.physical_id>>)
 				compilation_state := Cs_validated
 				-- not yet in use
 				--	adl_2_engine.post_compile_process (Current)

@@ -320,6 +320,14 @@ feature -- Status Report
 			Result := children.count > 0
 		end
 
+	is_constraint_multiple: BOOLEAN
+			-- True if this node reprsents a container or else there are multiple alternative object
+			-- nodes below this node. True implies that the id-codes on all child nodes must be
+			-- defined in the terminology
+		do
+			Result := is_multiple or children.count > 1
+		end
+
 	is_multiple: BOOLEAN
 			-- True if this node logically represents a container attribute
 		do

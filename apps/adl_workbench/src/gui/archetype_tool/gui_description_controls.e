@@ -41,11 +41,11 @@ feature {NONE} -- Initialisation
 			-- ================================== Governance tab ========================================
 			create ev_governance_tab_vbox
 			ev_root_container.extend (ev_governance_tab_vbox)
-			ev_root_container.set_item_text (ev_governance_tab_vbox, get_text (ec_governance_tab_text))
+			ev_root_container.set_item_text (ev_governance_tab_vbox, get_text ({ADL_MESSAGES_IDS}.ec_governance_tab_text))
 
 			-- lifecycle state control - single line combo text-selection field
-			create evx_lifecycle_state_combo.make_linked (get_text (ec_lifecycle_state_label_text),
-				get_text (ec_lifecycle_state_label_tooltip),
+			create evx_lifecycle_state_combo.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_lifecycle_state_label_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_lifecycle_state_label_tooltip),
 				agent : detachable STRING do Result := source_archetype.description.lifecycle_state end,
 				resource_lifecycle_states,
 				agent (a_str: STRING) do source_archetype.description.set_lifecycle_state (a_str) end,
@@ -55,10 +55,10 @@ feature {NONE} -- Initialisation
 			ev_governance_tab_vbox.disable_item_expand (evx_lifecycle_state_combo.ev_root_container)
 
 			-- resource package - String
-			create evx_package_frame.make (get_msg (ec_package_frame_text, Void), False)
+			create evx_package_frame.make (get_msg ({ADL_MESSAGES_IDS}.ec_package_frame_text, Void), False)
 			ev_governance_tab_vbox.extend (evx_package_frame.ev_root_container)
 			ev_governance_tab_vbox.disable_item_expand (evx_package_frame.ev_root_container)
-			create evx_resource_package.make_linked (get_text (ec_packages_label_text),
+			create evx_resource_package.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_packages_label_text),
 				agent :detachable STRING
 					do
 						if attached source_archetype.description.resource_package_uri as rpi then
@@ -72,12 +72,12 @@ feature {NONE} -- Initialisation
 			evx_package_frame.extend (evx_resource_package.ev_root_container, False)
 
 			-- current custodian frame & controls
-			create evx_custodian_frame.make (get_msg (ec_custodian_frame_text, Void), False)
+			create evx_custodian_frame.make (get_msg ({ADL_MESSAGES_IDS}.ec_custodian_frame_text, Void), False)
 			ev_governance_tab_vbox.extend (evx_custodian_frame.ev_root_container)
 			ev_governance_tab_vbox.disable_item_expand (evx_custodian_frame.ev_root_container)
 
 			-- custodian namespace - String
-			create evx_custodian_namespace_text.make_linked (get_text (ec_custodian_namespace_label_text),
+			create evx_custodian_namespace_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_custodian_namespace_label_text),
 				agent : detachable STRING
 					do
 						if attached source_archetype.description.custodian_namespace as rpi then
@@ -91,7 +91,7 @@ feature {NONE} -- Initialisation
 			evx_custodian_frame.extend (evx_custodian_namespace_text.ev_root_container, False)
 
 			-- custodian organisation - String
-			create evx_custodian_organisation_text.make_linked (get_text (ec_custodian_organisation_label_text),
+			create evx_custodian_organisation_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_custodian_organisation_label_text),
 				agent : detachable STRING
 					do
 						if attached source_archetype.description.custodian_organisation as rpi then
@@ -106,12 +106,12 @@ feature {NONE} -- Initialisation
 
 
 			-- ---------- original publisher frame & controls -----------
-			create evx_original_publisher_frame.make (get_text (ec_original_publisher_frame_text), False)
+			create evx_original_publisher_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_original_publisher_frame_text), False)
 			ev_governance_tab_vbox.extend (evx_original_publisher_frame.ev_root_container)
 			ev_governance_tab_vbox.disable_item_expand (evx_original_publisher_frame.ev_root_container)
 
 			-- original namespace - String
-			create evx_original_namespace_text.make_linked (get_text (ec_original_namespace_label_text),
+			create evx_original_namespace_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_original_namespace_label_text),
 				agent : detachable STRING
 					do
 						if attached source_archetype.description.original_namespace as rpi then
@@ -125,7 +125,7 @@ feature {NONE} -- Initialisation
 			evx_original_publisher_frame.extend (evx_original_namespace_text.ev_root_container, False)
 
 			-- original publisher - String
-			create evx_original_publisher_text.make_linked (get_text (ec_original_publisher_label_text),
+			create evx_original_publisher_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_original_publisher_label_text),
 				agent : detachable STRING
 					do
 						if attached source_archetype.description.original_publisher as rpi then
@@ -140,11 +140,11 @@ feature {NONE} -- Initialisation
 
 
 			-- ---------- IP frame and controls ----------
-			create evx_ip_frame.make (get_text (ec_intellectual_property_frame_text), False)
+			create evx_ip_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_intellectual_property_frame_text), False)
 			ev_governance_tab_vbox.extend (evx_ip_frame.ev_root_container)
 
 			-- copyright - multi-line text
-			create evx_copyright_text.make_linked (get_text (ec_copyright_label_text),
+			create evx_copyright_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_copyright_label_text),
 				agent : detachable STRING do Result := source_archetype.description.copyright end,
 				agent (a_str: STRING) do source_archetype.description.set_copyright (a_str) end,
 				agent do source_archetype.description.clear_copyright end,
@@ -153,7 +153,7 @@ feature {NONE} -- Initialisation
 			evx_ip_frame.extend (evx_copyright_text.ev_root_container, False)
 
 			-- licence - multi-line text
-			create evx_licence_text.make_linked (get_text (ec_licence_label_text),
+			create evx_licence_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_licence_label_text),
 				agent : detachable STRING do Result := source_archetype.description.licence end,
 				agent (a_str: STRING) do source_archetype.description.set_licence (a_str) end,
 				agent do source_archetype.description.clear_licence end,
@@ -162,7 +162,7 @@ feature {NONE} -- Initialisation
 			evx_ip_frame.extend (evx_licence_text.ev_root_container, False)
 
 			-- ip_acknowledgements control - Hash
-			create evx_ip_acknowledgements.make_linked (get_text (ec_ip_acknowledgements_label_text),
+			create evx_ip_acknowledgements.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_ip_acknowledgements_label_text),
 				agent : detachable HASH_TABLE [STRING, STRING] do if attached source_archetype.description.ip_acknowledgements as ack then Result := ack end end,
 				agent (a_key, a_val: STRING) do source_archetype.description.put_ip_acknowledgements_item (a_key, a_val) end,
 				agent (a_key: STRING) do source_archetype.description.remove_ip_acknowledgements_item (a_key) end,
@@ -172,18 +172,18 @@ feature {NONE} -- Initialisation
 			evx_ip_frame.extend (evx_ip_acknowledgements.ev_root_container, True)
 
 			-- ---------- source status frame and controls ----------
-			create evx_source_status_frame.make (get_text (ec_source_status_frame_text), False)
+			create evx_source_status_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_source_status_frame_text), False)
 			ev_governance_tab_vbox.extend (evx_source_status_frame.ev_root_container)
 
 			-- generated checkbox
-			create evx_generated_cb.make_linked (get_text (ec_generated_status_label), get_text (ec_generated_status_tooltip),
+			create evx_generated_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_generated_status_label), get_text ({ADL_MESSAGES_IDS}.ec_generated_status_tooltip),
 				agent get_archetype_is_generated,
 				agent (a_val: BOOLEAN) do if a_val then source_archetype.set_is_generated else source_archetype.clear_is_generated end end)
 			gui_controls.extend (evx_generated_cb)
 			evx_source_status_frame.extend (evx_generated_cb.ev_data_control, False)
 
 			-- conversion_details control - Hash
-			create evx_conversion_details.make_linked (get_text (ec_conversion_details_label_text),
+			create evx_conversion_details.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_conversion_details_label_text),
 				agent : detachable HASH_TABLE [STRING, STRING] do if attached source_archetype.description as desc and then attached desc.conversion_details as cd then Result := cd end end,
 				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_conversion_details_item (a_key, a_val) end end,
 				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_conversion_details_item (a_key) end end,
@@ -196,13 +196,13 @@ feature {NONE} -- Initialisation
 			-- ================================== Authoring tab ========================================
 			create ev_author_tab_vbox
 			ev_root_container.extend (ev_author_tab_vbox)
-			ev_root_container.set_item_text (ev_author_tab_vbox, get_text (ec_authoring_tab_text))
+			ev_root_container.set_item_text (ev_author_tab_vbox, get_text ({ADL_MESSAGES_IDS}.ec_authoring_tab_text))
 
-			create evx_auth_frame.make (get_text (ec_auth_frame_text), True)
+			create evx_auth_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_auth_frame_text), True)
 			ev_author_tab_vbox.extend (evx_auth_frame.ev_root_container)
 
 			-- original_author control - Hash
-			create evx_original_author.make_linked (get_text (ec_auth_orig_auth_label_text),
+			create evx_original_author.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_auth_orig_auth_label_text),
 				agent : detachable HASH_TABLE [STRING, STRING] do if attached source_archetype.description as desc then Result := desc.original_author end end,
 				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_original_author_item (a_key, a_val) end end,
 				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_original_author_item (a_key) end end,
@@ -211,7 +211,7 @@ feature {NONE} -- Initialisation
 			evx_auth_frame.extend (evx_original_author.ev_root_container, True)
 
 			-- contributors - list
-			create evx_auth_contrib_list.make_linked (get_text (ec_auth_contrib_label_text),
+			create evx_auth_contrib_list.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_auth_contrib_label_text),
 				agent : detachable DYNAMIC_LIST [STRING] do if attached source_archetype.description as desc and then attached desc.other_contributors as oc then Result := oc end end,
 				agent (a_str: STRING; i: INTEGER) do if attached source_archetype.description as desc then desc.add_other_contributor (a_str, i) end end,
 				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.remove_other_contributor (a_str) end end,
@@ -219,19 +219,19 @@ feature {NONE} -- Initialisation
 			gui_controls.extend (evx_auth_contrib_list)
 			evx_auth_frame.extend (evx_auth_contrib_list.ev_root_container, True)
 
-			create evx_lang_frame.make (get_text (ec_lang_frame_text), False)
+			create evx_lang_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_lang_frame_text), False)
 			ev_author_tab_vbox.extend (evx_lang_frame.ev_root_container)
 			create ev_lang_original_trans_hbox
 			evx_lang_frame.extend (ev_lang_original_trans_hbox, False)
 
 			-- original_language - text field (not modifiable)
-			create evx_original_language_text.make (get_text (ec_original_language_label_text),
+			create evx_original_language_text.make (get_text ({ADL_MESSAGES_IDS}.ec_original_language_label_text),
 				agent : STRING do Result := source_archetype.original_language.code_string end, 6, True)
 			gui_controls.extend (evx_original_language_text)
 			ev_lang_original_trans_hbox.extend (evx_original_language_text.ev_root_container)
 
 			-- translation languages selector
-			create evx_trans_languages_combo.make (get_text (ec_trans_languages_label_text), Void,
+			create evx_trans_languages_combo.make (get_text ({ADL_MESSAGES_IDS}.ec_trans_languages_label_text), Void,
 				agent : detachable DYNAMIC_LIST [STRING]
 					do
 						if source_archetype.has_translations then
@@ -247,7 +247,7 @@ feature {NONE} -- Initialisation
 			-- translation author - Hash table
 			create ev_trans_author_accreditation_vbox
 			ev_lang_translations_hbox.extend (ev_trans_author_accreditation_vbox)
-			create evx_trans_author.make_linked (get_text (ec_translator_label_text),
+			create evx_trans_author.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_translator_label_text),
 				agent : detachable HASH_TABLE [STRING, STRING]
 					do
 						if attached translation_details as att_td then
@@ -262,7 +262,7 @@ feature {NONE} -- Initialisation
 			ev_trans_author_accreditation_vbox.extend (evx_trans_author.ev_root_container)
 
 			-- translator accreditation - multi-line text field
-			create evx_trans_accreditation_text.make_linked (get_text (ec_accreditation_label_text),
+			create evx_trans_accreditation_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_accreditation_label_text),
 				agent : detachable STRING do if attached translation_details as att_td then Result := att_td.accreditation end end,
 				agent (a_str: STRING) do if attached translation_details as att_td then att_td.set_accreditation (a_str) end end,
 				agent do if attached translation_details as att_td then att_td.clear_accreditation end end,
@@ -272,7 +272,7 @@ feature {NONE} -- Initialisation
 			evx_trans_languages_combo.add_linked_control (evx_trans_accreditation_text)
 
 			-- translator other_details - Hash
-			create evx_trans_other_details.make_linked (get_text (ec_translator_other_details_label_text),
+			create evx_trans_other_details.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_translator_other_details_label_text),
 				agent : detachable HASH_TABLE [STRING, STRING] do if attached translation_details as att_td then Result := att_td.other_details end end,
 				agent (a_key, a_val: STRING) do if attached translation_details as att_td then att_td.put_other_details_item (a_key, a_val) end end,
 				agent (a_key: STRING) do if attached translation_details as att_td then att_td.remove_other_details_item (a_key) end end,
@@ -285,15 +285,15 @@ feature {NONE} -- Initialisation
 			-- ================================== Details tab ========================================
 			create ev_description_tab_vbox
 			ev_root_container.extend (ev_description_tab_vbox)
-			ev_root_container.set_item_text (ev_description_tab_vbox, get_text (ec_descriptive_tab_text))
+			ev_root_container.set_item_text (ev_description_tab_vbox, get_text ({ADL_MESSAGES_IDS}.ec_descriptive_tab_text))
 
 			create ev_details_hbox
 			ev_description_tab_vbox.extend (ev_details_hbox)
-			create evx_details_frame.make (get_text (ec_archetype_details_label_text), False)
+			create evx_details_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_archetype_details_label_text), False)
 			ev_details_hbox.extend (evx_details_frame.ev_root_container)
 
 			-- purpose - mutli-line String
-			create evx_purpose_text.make_linked (get_text (ec_purpose_label_text),
+			create evx_purpose_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_purpose_label_text),
 				agent :detachable STRING do if attached description_details as dd then Result := dd.purpose end end,
 				agent (a_str: STRING) do if attached description_details as dd then dd.set_purpose (a_str) end end,
 				Void, undo_redo_chain, 3, 0, True)
@@ -301,7 +301,7 @@ feature {NONE} -- Initialisation
 			evx_details_frame.extend (evx_purpose_text.ev_root_container, False)
 
 			-- use - mutli-line String
-			create evx_use_text.make_linked (get_text (ec_use_label_text),
+			create evx_use_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_use_label_text),
 				agent :detachable STRING do if attached description_details as dd then Result := dd.use end end,
 				agent (a_str: STRING) do if attached description_details as dd then dd.set_use (a_str) end end,
 				agent do if attached description_details as dd then dd.clear_use end end,
@@ -310,7 +310,7 @@ feature {NONE} -- Initialisation
 			evx_details_frame.extend (evx_use_text.ev_root_container, True)
 
 			-- misuse - mutli-line String
-			create evx_misuse_text.make_linked (get_text (ec_misuse_label_text),
+			create evx_misuse_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_misuse_label_text),
 				agent :detachable STRING do if attached description_details as dd then Result := dd.misuse end end,
 				agent (a_str: STRING) do if attached description_details as dd then dd.set_misuse (a_str) end end,
 				agent do if attached description_details as dd then dd.clear_misuse end end,
@@ -319,7 +319,7 @@ feature {NONE} -- Initialisation
 			evx_details_frame.extend (evx_misuse_text.ev_root_container, True)
 
 			-- keywords list
-			create evx_keywords_list.make_linked (get_text (ec_keywords_label_text),
+			create evx_keywords_list.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_keywords_label_text),
 				agent :detachable DYNAMIC_LIST [STRING] do if attached description_details as dd then Result := dd.keywords end end,
 				agent (a_str: STRING; i: INTEGER) do if attached description_details as dd then dd.add_keyword (a_str, i) end end,
 				agent (a_str: STRING) do if attached description_details as dd then dd.remove_keyword (a_str) end end,
@@ -328,12 +328,12 @@ feature {NONE} -- Initialisation
 			ev_details_hbox.extend (evx_keywords_list.ev_root_container)
 			ev_details_hbox.disable_item_expand (evx_keywords_list.ev_root_container)
 
-			create evx_resource_frame.make (get_text (ec_resources_label_text), False)
+			create evx_resource_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_resources_label_text), False)
 			ev_description_tab_vbox.extend (evx_resource_frame.ev_root_container)
 			ev_description_tab_vbox.disable_item_expand (evx_resource_frame.ev_root_container)
 
 			-- original resource URIs - Hash <String, String>
-			create evx_original_resources.make_linked (get_text (ec_resource_orig_res_label_text),
+			create evx_original_resources.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_resource_orig_res_label_text),
 				agent :detachable HASH_TABLE [STRING, STRING]
 					do
 						if attached description_details as dd and then attached dd.original_resource_uri as ori then
@@ -347,7 +347,7 @@ feature {NONE} -- Initialisation
 			evx_resource_frame.extend (evx_original_resources.ev_root_container, False)
 
 			-- other details - Hash <String, String>
-			create evx_description_other_details.make_linked (get_text (ec_other_details_label_text),
+			create evx_description_other_details.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_other_details_label_text),
 				agent :detachable HASH_TABLE [STRING, STRING]
 					do
 						if attached description_details as dd and then attached dd.other_details as od then
@@ -365,7 +365,7 @@ feature {NONE} -- Initialisation
 			-- ================================== References tab ========================================
 			create ev_references_tab_vbox
 			ev_root_container.extend (ev_references_tab_vbox)
-			ev_root_container.set_item_text (ev_references_tab_vbox, get_text (ec_references_tab_text))
+			ev_root_container.set_item_text (ev_references_tab_vbox, get_text ({ADL_MESSAGES_IDS}.ec_references_tab_text))
 
 			-- other details - Hash <String, String>
 			create evx_references.make_linked ("",
@@ -385,7 +385,7 @@ feature {NONE} -- Initialisation
 			-- ================================== Other Details tab ========================================
 			create ev_other_details_tab_vbox
 			ev_root_container.extend (ev_other_details_tab_vbox)
-			ev_root_container.set_item_text (ev_other_details_tab_vbox, get_text (ec_other_details_tab_text))
+			ev_root_container.set_item_text (ev_other_details_tab_vbox, get_text ({ADL_MESSAGES_IDS}.ec_other_details_tab_text))
 
 			-- other details - Hash <String, String>
 			create evx_other_details.make_linked ("",

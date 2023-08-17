@@ -70,12 +70,12 @@ feature -- Definitions: Archetype viewer
 	Definition_grid_col_names: HASH_TABLE [STRING, INTEGER]
 		once ("PROCESS")
 			create Result.make (0)
-			Result.put (get_text (ec_definition_grid_col_rm_name_text), Definition_grid_col_rm_name)
-			Result.put (get_text (ec_definition_grid_col_meaning_text), Definition_grid_col_meaning)
-			Result.put (get_text (ec_definition_grid_col_constraint_text), Definition_grid_col_constraint)
-			Result.put (get_text (ec_definition_grid_col_existence_text), Definition_grid_col_existence)
-			Result.put (get_text (ec_definition_grid_col_card_occ_text), Definition_grid_col_card_occ)
-			Result.put (get_text (ec_definition_grid_col_sibling_order_text), Definition_grid_col_sibling_order)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_definition_grid_col_rm_name_text), Definition_grid_col_rm_name)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_definition_grid_col_meaning_text), Definition_grid_col_meaning)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_definition_grid_col_constraint_text), Definition_grid_col_constraint)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_definition_grid_col_existence_text), Definition_grid_col_existence)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_definition_grid_col_card_occ_text), Definition_grid_col_card_occ)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_definition_grid_col_sibling_order_text), Definition_grid_col_sibling_order)
 		end
 
 	Rules_grid_col_expr_type: INTEGER = 1
@@ -84,16 +84,16 @@ feature -- Definitions: Archetype viewer
 	Rules_grid_col_names: HASH_TABLE [STRING, INTEGER]
 		once ("PROCESS")
 			create Result.make (0)
-			Result.put (get_text (ec_rules_grid_col_expr_type_text), Rules_grid_col_expr_type)
-			Result.put (get_text (ec_rules_grid_col_expr_value_text), Rules_grid_col_expr_value)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_rules_grid_col_expr_type_text), Rules_grid_col_expr_type)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_rules_grid_col_expr_value_text), Rules_grid_col_expr_value)
 		end
 
 	Value_sets_grid_col_names: HASH_TABLE [STRING, INTEGER]
 		once ("PROCESS")
 			create Result.make (0)
-			Result.put (get_text (ec_value_sets_grid_col_code_text), Value_sets_grid_col_code)
-			Result.put (get_text (ec_value_sets_grid_col_text_text), Value_sets_grid_col_text)
-			Result.put (get_text (ec_value_sets_grid_col_description_text), Value_sets_grid_col_description)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_value_sets_grid_col_code_text), Value_sets_grid_col_code)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_value_sets_grid_col_text_text), Value_sets_grid_col_text)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_value_sets_grid_col_description_text), Value_sets_grid_col_description)
 		end
 
 	Value_sets_grid_col_code: INTEGER = 1
@@ -107,9 +107,9 @@ feature -- Definitions: Archetype viewer
 	Id_terms_grid_col_names: HASH_TABLE [STRING, INTEGER]
 		once ("PROCESS")
 			create Result.make (0)
-			Result.put (get_text (ec_id_terms_grid_col_code_text), Id_terms_grid_col_code)
-			Result.put (get_text (ec_id_terms_grid_col_text_text), Id_terms_grid_col_text)
-			Result.put (get_text (ec_id_terms_grid_col_member_code_text), Id_terms_grid_col_description)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_id_terms_grid_col_code_text), Id_terms_grid_col_code)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_id_terms_grid_col_text_text), Id_terms_grid_col_text)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_id_terms_grid_col_member_code_text), Id_terms_grid_col_description)
 		end
 
 	Id_terms_grid_col_code: INTEGER = 1
@@ -140,17 +140,17 @@ feature -- Definitions: Tool tabs
 			-- names of tool tabs keyed by tab constants
 		once ("PROCESS")
 			create Result.make (0)
-			Result.put (get_text (ec_description_tab_text), Tool_tab_description)
-			Result.put (get_text (ec_definition_tab_text), Tool_tab_definition)
-			Result.put (get_text (ec_terminology_tab_text), Tool_tab_terminology)
-			Result.put (get_text (ec_annotations_tab_text), Tool_tab_annotations)
-			Result.put (get_text (ec_interface_tab_text), Tool_tab_interface)
-			Result.put (get_text (ec_slots_tab_text), Tool_tab_slots)
-			Result.put (get_text (ec_clients_suppliers_tab_text), Tool_tab_clients_suppliers)
-			Result.put (get_text (ec_source_tab_text), Tool_tab_source)
-			Result.put (get_text (ec_serialised_tab_text), Tool_tab_serialised)
-			Result.put (get_text (ec_validity_tab_text), Tool_tab_validity)
-			Result.put (get_text (ec_stat_info_tab_text), Tool_tab_stats)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_description_tab_text), Tool_tab_description)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_definition_tab_text), Tool_tab_definition)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_terminology_tab_text), Tool_tab_terminology)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_annotations_tab_text), Tool_tab_annotations)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_interface_tab_text), Tool_tab_interface)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_slots_tab_text), Tool_tab_slots)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_clients_suppliers_tab_text), Tool_tab_clients_suppliers)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_source_tab_text), Tool_tab_source)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_serialised_tab_text), Tool_tab_serialised)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_validity_tab_text), Tool_tab_validity)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_stat_info_tab_text), Tool_tab_stats)
 		end
 
 	tool_tab_text_to_id (a_tab_text: STRING): INTEGER
@@ -401,13 +401,13 @@ feature -- Definitions: VCS status
 	Vcs_status_tooltips: HASH_TABLE [READABLE_STRING_8, INTEGER]
 		once
 			create Result.make (0)
-			Result.put (get_text (ec_vcs_status_unknown_tooltip), Vcs_status_unknown)
-			Result.put (get_text (ec_vcs_status_files_not_committed_tooltip), Vcs_status_files_not_committed)
-			Result.put (get_text (ec_vcs_status_up_to_date_tooltip), Vcs_status_up_to_date)
-			Result.put (get_text (ec_vcs_status_sync_required_tooltip), Vcs_status_sync_required)
-			Result.put (get_text (ec_vcs_status_pull_required_tooltip), Vcs_status_pull_required)
-			Result.put (get_text (ec_vcs_status_push_required_tooltip), Vcs_status_push_required)
-			Result.put (get_text (ec_vcs_status_diverged_tooltip), Vcs_status_diverged)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_vcs_status_unknown_tooltip), Vcs_status_unknown)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_vcs_status_files_not_committed_tooltip), Vcs_status_files_not_committed)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_vcs_status_up_to_date_tooltip), Vcs_status_up_to_date)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_vcs_status_sync_required_tooltip), Vcs_status_sync_required)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_vcs_status_pull_required_tooltip), Vcs_status_pull_required)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_vcs_status_push_required_tooltip), Vcs_status_push_required)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_vcs_status_diverged_tooltip), Vcs_status_diverged)
 		end
 
 	vcs_status_tooltip (a_status: INTEGER): STRING

@@ -57,11 +57,11 @@ feature -- Definitions
 	Grid_col_names: HASH_TABLE [STRING, INTEGER]
 		once
 			create Result.make (0)
-			Result.put (get_text (ec_aom_profile_grid_profile_col_title), Grid_profile_col)
-			Result.put (get_text (ec_aom_profile_grid_rm_col_title), Grid_rm_schemas_col)
-			Result.put (get_text (ec_aom_profile_grid_term_col_title), Grid_terminologies_col)
-			Result.put (get_text (ec_aom_profile_grid_validated_col_title), Grid_validated_col)
-			Result.put (get_text (ec_aom_profile_grid_edit_col_title), Grid_edit_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_aom_profile_grid_profile_col_title), Grid_profile_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_aom_profile_grid_rm_col_title), Grid_rm_schemas_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_aom_profile_grid_term_col_title), Grid_terminologies_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_aom_profile_grid_validated_col_title), Grid_validated_col)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_aom_profile_grid_edit_col_title), Grid_edit_col)
 		end
 
 	Grid_fixed_cols: ARRAYED_LIST[INTEGER]
@@ -105,7 +105,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_cell_3)
 
 			-- ============ AOM profile directory setter ============
-			create evx_dir_setter.make_linked (get_text (ec_aom_profile_dir_text), agent :STRING do Result := aom_profile_directory end, agent on_set_aom_profile_dir, Void, Void, 0)
+			create evx_dir_setter.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_aom_profile_dir_text), agent :STRING do Result := aom_profile_directory end, agent on_set_aom_profile_dir, Void, Void, 0)
 			ev_root_container.extend (evx_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (evx_dir_setter.ev_root_container)
 			gui_controls.extend (evx_dir_setter)
@@ -120,7 +120,7 @@ feature {NONE} -- Initialisation
 		do
 			precursor
 			extend (ev_root_container)
-			set_title (get_text (ec_aom_profile_dialog_title))
+			set_title (get_text ({ADL_MESSAGES_IDS}.ec_aom_profile_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
@@ -134,7 +134,7 @@ feature {NONE} -- Initialisation
 			show_actions.extend (agent do_populate)
 
 			-- add a reload button to the left of Ok/ Cancel
-			ok_cancel_buttons.add_button (get_text (ec_rm_schema_dialog_reload_button_text), agent on_reload)
+			ok_cancel_buttons.add_button (get_text ({ADL_MESSAGES_IDS}.ec_rm_schema_dialog_reload_button_text), agent on_reload)
 
 			enable_edit
 		end
@@ -185,7 +185,7 @@ feature -- Events
 
 			-- case where the directory no longer exists or is readable
 			if not directory_exists (last_populated_aom_profile_dir) then
-				create error_dialog.make_with_text (get_msg (ec_aom_profile_dir_not_valid, <<last_populated_aom_profile_dir>>))
+				create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_aom_profile_dir_not_valid, <<last_populated_aom_profile_dir>>))
 				error_dialog.show_modal_to_window (Current)
 			else
 				hide
@@ -202,7 +202,7 @@ feature -- Events
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if not directory_exists (last_populated_aom_profile_dir) then
-				create error_dialog.make_with_text (get_msg (ec_aom_profile_dir_not_valid, <<last_populated_aom_profile_dir>>))
+				create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_aom_profile_dir_not_valid, <<last_populated_aom_profile_dir>>))
 				error_dialog.show_modal_to_window (Current)
 			else
 				hide
@@ -219,7 +219,7 @@ feature -- Events
 				ok_cancel_buttons.disable_sensitive
 				aom_profiles_access.initialise (new_dir)
 				if not aom_profiles_access.found_valid_profiles then
-					create error_dialog.make_with_text (get_msg (ec_aom_profile_dir_contains_no_valid_profiles, <<new_dir>>))
+					create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_aom_profile_dir_contains_no_valid_profiles, <<new_dir>>))
 					error_dialog.show_modal_to_window (Current)
 				end
 				populate_grid
@@ -305,7 +305,7 @@ feature {NONE} -- Implementation
 				end
 
 				-- column 8 - create edit button and add to row
-				evx_grid.update_last_row_label_col (Grid_edit_col, get_text (ec_edit), Void, Void, Ev_grid_text_link_colour, Void)
+				evx_grid.update_last_row_label_col (Grid_edit_col, get_text ({ADL_MESSAGES_IDS}.ec_edit), Void, Void, Ev_grid_text_link_colour, Void)
 				evx_grid.add_last_row_select_actions (Grid_edit_col, agent do_edit_profile (profs_csr.item))
 			end
 

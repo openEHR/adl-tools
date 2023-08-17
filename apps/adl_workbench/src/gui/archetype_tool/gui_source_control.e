@@ -34,32 +34,32 @@ feature {NONE}-- Initialization
 
 			create evx_adl_14_source_editor.make_editable (agent adl_14_source_text, agent save_adl_14_source_editor_text)
 			ev_root_container.extend (evx_adl_14_source_editor.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_14_source_editor.ev_root_container, get_text (ec_adl_14_source_tab_text))
+			ev_root_container.set_item_text (evx_adl_14_source_editor.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_adl_14_source_tab_text))
 			gui_controls.extend (evx_adl_14_source_editor)
 
 			create evx_adl_14_converted_editor.make (agent adl_14_converted_text)
 			ev_root_container.extend (evx_adl_14_converted_editor.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_14_converted_editor.ev_root_container, get_text (ec_adl_14_converted_tab_text))
+			ev_root_container.set_item_text (evx_adl_14_converted_editor.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_adl_14_converted_tab_text))
 			gui_controls.extend (evx_adl_14_converted_editor)
 
 			create evx_adl_source_editor.make_editable (agent adl_source_text, agent save_adl_source_editor_text)
 			ev_root_container.extend (evx_adl_source_editor.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_text (ec_adl_source_tab_text))
+			ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_adl_source_tab_text))
 			gui_controls.extend (evx_adl_source_editor)
 
 			create evx_adl_converted_editor.make (agent adl_converted_text)
 			ev_root_container.extend (evx_adl_converted_editor.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_converted_editor.ev_root_container, get_msg (ec_adl_converted_tab_text, <<Latest_adl_major_version>>))
-			evx_adl_converted_editor.add_button (Void, Void, get_text (ec_save_adl_converted_button_text),
-				get_msg (ec_save_adl_converted_button_tooltip, <<latest_adl_version>>), agent save_adl_converted_source, Void)
+			ev_root_container.set_item_text (evx_adl_converted_editor.ev_root_container, get_msg ({ADL_MESSAGES_IDS}.ec_adl_converted_tab_text, <<Latest_adl_major_version>>))
+			evx_adl_converted_editor.add_button (Void, Void, get_text ({ADL_MESSAGES_IDS}.ec_save_adl_converted_button_text),
+				get_msg ({ADL_MESSAGES_IDS}.ec_save_adl_converted_button_tooltip, <<latest_adl_version>>), agent save_adl_converted_source, Void)
 			gui_controls.extend (evx_adl_converted_editor)
 
 			create evx_adl_serialised_editor.make (agent adl_current_serialised_text)
 			ev_root_container.extend (evx_adl_serialised_editor.ev_root_container)
-			ev_root_container.set_item_text (evx_adl_serialised_editor.ev_root_container, get_msg (ec_adl_serialised_tab_text, <<Latest_adl_major_version>>))
-			evx_adl_serialised_editor.set_text_filter (get_text (ec_symbolic_text), get_text (ec_symbolic_text_tooltip), agent symbolic_text)
-			evx_adl_serialised_editor.add_button (Void, Void, get_text (ec_save_adl_serialised_button_text),
-				get_msg (ec_save_adl_serialised_button_tooltip, <<latest_adl_version>>), agent save_adl_serialised_source, Void)
+			ev_root_container.set_item_text (evx_adl_serialised_editor.ev_root_container, get_msg ({ADL_MESSAGES_IDS}.ec_adl_serialised_tab_text, <<Latest_adl_major_version>>))
+			evx_adl_serialised_editor.set_text_filter (get_text ({ADL_MESSAGES_IDS}.ec_symbolic_text), get_text ({ADL_MESSAGES_IDS}.ec_symbolic_text_tooltip), agent symbolic_text)
+			evx_adl_serialised_editor.add_button (Void, Void, get_text ({ADL_MESSAGES_IDS}.ec_save_adl_serialised_button_text),
+				get_msg ({ADL_MESSAGES_IDS}.ec_save_adl_serialised_button_tooltip, <<latest_adl_version>>), agent save_adl_serialised_source, Void)
 			gui_controls.extend (evx_adl_serialised_editor)
 
 			differential_view := True
@@ -200,9 +200,9 @@ feature {NONE} -- Implementation
 				sel_tab := ev_root_container.item_tab (evx_adl_source_editor.ev_root_container)
 				sel_tab.set_pixmap (get_icon_pixmap ("tool/edit_active"))
 				if not source.file_mgr.adl_version.is_empty then
-					ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<source.file_mgr.adl_version>>))
+					ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_msg ({ADL_MESSAGES_IDS}.ec_adl_ver_source_tab_text, <<source.file_mgr.adl_version>>))
 				else
-					ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_msg (ec_adl_ver_source_tab_text, <<latest_adl_version>>))
+					ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_msg ({ADL_MESSAGES_IDS}.ec_adl_ver_source_tab_text, <<latest_adl_version>>))
 				end
 			else
 				ev_root_container.item_tab (evx_adl_source_editor.ev_root_container).remove_pixmap
@@ -237,7 +237,7 @@ feature {NONE} -- Implementation
 			if attached auth_source as att_source then
 				att_source.save_differential_text
 				evx_adl_source_editor.populate
-				gui_agents.call_console_tool_append_agent (get_msg (ec_saved_serialised_msg, <<latest_adl_version, att_source.source_file_path>>))
+				gui_agents.call_console_tool_append_agent (get_msg ({ADL_MESSAGES_IDS}.ec_saved_serialised_msg, <<latest_adl_version, att_source.source_file_path>>))
 				gui_agents.call_select_archetype_agent (att_source)
 				gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
 			end
@@ -249,7 +249,7 @@ feature {NONE} -- Implementation
 			if attached auth_source as att_source then
 				att_source.save_differential_text
 				evx_adl_source_editor.populate
-				gui_agents.call_console_tool_append_agent (get_msg_line (ec_saved_converted_msg, <<latest_adl_version, att_source.source_file_path>>))
+				gui_agents.call_console_tool_append_agent (get_msg_line ({ADL_MESSAGES_IDS}.ec_saved_converted_msg, <<latest_adl_version, att_source.source_file_path>>))
 				gui_agents.call_select_archetype_agent (att_source)
 				gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
 			end
@@ -262,7 +262,7 @@ feature {NONE} -- Implementation
 			if attached auth_source as att_source then
 				att_source.save_text_to_differential_file (a_text)
 				att_source.signal_source_edited
-				gui_agents.call_console_tool_append_agent (get_msg_line (ec_saved_source_msg, <<att_source.source_file_path>>))
+				gui_agents.call_console_tool_append_agent (get_msg_line ({ADL_MESSAGES_IDS}.ec_saved_source_msg, <<att_source.source_file_path>>))
 				gui_agents.call_select_archetype_agent (att_source)
 				gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
 			end
@@ -277,13 +277,13 @@ feature {NONE} -- Implementation
 			if attached auth_source as att_source then
 				if att_source.can_save_to_legacy_file then
 					att_source.save_text_to_legacy_file (a_text)
-					gui_agents.call_console_tool_append_agent (get_msg_line (ec_saved_14_source_msg,
+					gui_agents.call_console_tool_append_agent (get_msg_line ({ADL_MESSAGES_IDS}.ec_saved_14_source_msg,
 						<<if attached att_source.file_mgr.legacy_flat_path as fp then fp else "" end>>))
 					gui_agents.call_select_archetype_agent (att_source)
 					gui_agents.call_refresh_archetype_editors_agent (att_source.id.physical_id)
 				else
 					check attached att_source.file_mgr.legacy_flat_path as lfp then
-						create err_dlg.make_with_text (get_msg (ec_could_not_write_to_file, <<lfp>>))
+						create err_dlg.make_with_text (get_msg ({GENERAL_MESSAGES_IDS}.ec_could_not_write_to_file, <<lfp>>))
 						err_dlg.show_modal_to_window (proximate_ev_window (ev_root_container))
 					end
 				end

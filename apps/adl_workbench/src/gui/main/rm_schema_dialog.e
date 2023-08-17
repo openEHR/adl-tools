@@ -86,7 +86,7 @@ feature {NONE} -- Initialisation
 			ev_cell_1.set_minimum_height (20)
 			ev_root_container.extend (ev_cell_1)
 			create ev_label_1
-			ev_label_1.set_text (get_text (ec_rm_schema_dialog_header_label))
+			ev_label_1.set_text (get_text ({ADL_MESSAGES_IDS}.ec_rm_schema_dialog_header_label))
 			ev_root_container.extend (ev_label_1)
 			create ev_cell_2
 			ev_cell_2.set_minimum_height (20)
@@ -107,7 +107,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_cell_3)
 
 			-- ============ RM schema directory getter ============
-			create rm_dir_setter.make_linked (get_text (ec_rm_schema_dir_text), agent :ARRAYED_LIST[STRING] do Result := rm_schema_directories end, agent on_set_rm_schema_dirs, Void, Void, 0)
+			create rm_dir_setter.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_rm_schema_dir_text), agent :ARRAYED_LIST[STRING] do Result := rm_schema_directories end, agent on_set_rm_schema_dirs, Void, Void, 0)
 			ev_root_container.extend (rm_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (rm_dir_setter.ev_root_container)
 			gui_controls.extend (rm_dir_setter)
@@ -122,7 +122,7 @@ feature {NONE} -- Initialisation
 		do
 			precursor
 			extend (ev_root_container)
-			set_title (get_text (ec_rm_schema_dialog_title))
+			set_title (get_text ({ADL_MESSAGES_IDS}.ec_rm_schema_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
@@ -132,7 +132,7 @@ feature {NONE} -- Initialisation
 			show_actions.extend (agent grid.set_focus)
 
 			-- add a reload button to the left of Ok/ Cancel
-			ok_cancel_buttons.add_button (get_text (ec_rm_schema_dialog_reload_button_text), agent on_reload)
+			ok_cancel_buttons.add_button (get_text ({ADL_MESSAGES_IDS}.ec_rm_schema_dialog_reload_button_text), agent on_reload)
 
 			-- record height for later use
 			empty_form_height := height
@@ -216,7 +216,7 @@ feature -- Events
 						dir_list_str.append (", ")
 					end
 				end
-				create error_dialog.make_with_text (get_msg (ec_bmm_schema_dir_contains_no_valid_schemas, <<dir_list_str>>))
+				create error_dialog.make_with_text (get_msg ({BMM_MESSAGES_IDS}.ec_bmm_schema_dir_contains_no_valid_schemas, <<dir_list_str>>))
 				error_dialog.show_modal_to_window (Current)
 			end
 			populate_grid
@@ -285,11 +285,11 @@ feature {NONE} -- Implementation
 			-- make the columnn content visible
 			if grid.row_count > 0 then
 				-- set grid column titles
-				grid.column (Grid_schema_col).set_title (get_text (ec_rm_schema_grid_schema_col_title))
-				grid.column (grid_lifecycle_state_col).set_title (get_text (ec_rm_schema_grid_lifecycle_state_col_title))
-				grid.column (Grid_validated_col).set_title (get_text (ec_rm_schema_grid_validated_col_title))
-				grid.column (grid_edit_col).set_title (get_text (ec_rm_schema_grid_edit_col_title))
-				grid.column (grid_xml_export_col).set_title (get_text (ec_rm_schema_grid_xml_schema_export_col_title))
+				grid.column (Grid_schema_col).set_title (get_text ({ADL_MESSAGES_IDS}.ec_rm_schema_grid_schema_col_title))
+				grid.column (grid_lifecycle_state_col).set_title (get_text ({ADL_MESSAGES_IDS}.ec_rm_schema_grid_lifecycle_state_col_title))
+				grid.column (Grid_validated_col).set_title (get_text ({ADL_MESSAGES_IDS}.ec_rm_schema_grid_validated_col_title))
+				grid.column (grid_edit_col).set_title (get_text ({ADL_MESSAGES_IDS}.ec_rm_schema_grid_edit_col_title))
+				grid.column (grid_xml_export_col).set_title (get_text ({ADL_MESSAGES_IDS}.ec_rm_schema_grid_xml_schema_export_col_title))
 
 				grid.resize_columns_to_content (0, Grid_expansion_factor)
 				from i := 1 until i > grid.column_count loop
@@ -343,13 +343,13 @@ feature {NONE} -- Implementation
 			row.set_item (Grid_validated_col, gli)
 
 			-- column 4 - create edit button and add to row
-			create gli.make_with_text (get_text (ec_edit))
+			create gli.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_edit))
 			gli.set_foreground_color (Ev_grid_text_link_colour)
 			gli.select_actions.extend (agent do_edit_schema (a_schema_desc))
 			row.set_item (Grid_edit_col, gli)
 
 			-- column 5 - create XML export button and add to row
-			create gli.make_with_text (get_text (ec_export_xml))
+			create gli.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_export_xml))
 			gli.set_foreground_color (Ev_grid_text_link_colour)
 			gli.select_actions.extend (agent do_export_schema (a_schema_desc))
 			row.set_item (Grid_xml_export_col, gli)
@@ -377,10 +377,10 @@ feature {NONE} -- Implementation
 			save_dialog: EV_FILE_SAVE_DIALOG
 		do
 			create save_dialog
-			save_dialog.set_title (get_text (ec_export_bmm_schema_dialog_title))
+			save_dialog.set_title (get_text ({ADL_MESSAGES_IDS}.ec_export_bmm_schema_dialog_title))
 			save_dialog.set_file_name (schema_desc.schema_id + ".xml")
 			save_dialog.set_start_directory (export_directory)
-			save_dialog.filters.extend (["*.xml", get_msg (ec_save_schema_as, <<"XML">>)])
+			save_dialog.filters.extend (["*.xml", get_msg ({ADL_MESSAGES_IDS}.ec_save_schema_as, <<"XML">>)])
 			check attached proximate_ev_window (ev_root_container) as prox_win then
 				save_dialog.show_modal_to_window (prox_win)
 			end

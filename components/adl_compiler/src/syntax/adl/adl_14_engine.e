@@ -93,7 +93,7 @@ feature -- Parsing
 						orig_lang_trans := lt
 					end
 				else
-					errors.add_error (ec_deserialise_e1, <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
+					errors.add_error ({ADL_MESSAGES_IDS}.ec_deserialise_e1, <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
 					errors.append (dt_object_converter.errors)
 				end
 
@@ -122,7 +122,7 @@ feature -- Parsing
 							then
 								res_desc := rd
 							else
-								errors.add_error (ec_deserialise_e1, <<({RESOURCE_DESCRIPTION}).name>>, generator + ".parse")
+								errors.add_error ({ADL_MESSAGES_IDS}.ec_deserialise_e1, <<({RESOURCE_DESCRIPTION}).name>>, generator + ".parse")
 								errors.append (dt_object_converter.errors)
 							end
 						else
@@ -184,7 +184,7 @@ feature -- Parsing
 								annots := res_ann
 							end
 						else
-							errors.add_error (ec_deserialise_e1, <<({RESOURCE_ANNOTATIONS}).name>>, generator + ".parse")
+							errors.add_error ({ADL_MESSAGES_IDS}.ec_deserialise_e1, <<({RESOURCE_ANNOTATIONS}).name>>, generator + ".parse")
 							errors.append (dt_object_converter.errors)
 						end
 					else
@@ -236,7 +236,7 @@ feature -- Parsing
 							new_flat_arch.rebuild
 							Result := new_flat_arch
 						else
-							errors.add_error (ec_SAON, Void, generator + ".parse")
+							errors.add_error ({ADL_MESSAGES_IDS}.ec_SAON, Void, generator + ".parse")
 							errors.append (dt_object_converter.errors)
 						end
 					end

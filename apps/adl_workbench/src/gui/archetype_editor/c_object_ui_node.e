@@ -132,7 +132,7 @@ feature -- Display
 						if not att_occ.is_prohibited then
 							s.append (att_occ.as_string)
 						else
-							s.append (get_text (ec_occurrences_removed_text))
+							s.append (get_text ({ADL_MESSAGES_IDS}.ec_occurrences_removed_text))
 						end
 					elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities and not is_root then
 						s := arch_node.effective_occurrences (agent (ui_graph_state.ref_model).property_object_multiplicity).as_string
@@ -408,13 +408,13 @@ feature {NONE} -- Context menu
 			an_mi: EV_MENU_ITEM
 		do
 			create context_menu
-			create an_mi.make_with_text_and_action (get_msg (ec_display_class, Void), agent display_context_selected_class_in_new_tool (rm_type.defining_class))
+			create an_mi.make_with_text_and_action (get_msg ({ADL_MESSAGES_IDS}.ec_display_class, Void), agent display_context_selected_class_in_new_tool (rm_type.defining_class))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 			context_menu.extend (an_mi)
 
 			if attached arch_node then
 				-- if this node is addressable, add menu item to show node_id in terminology
-				create an_mi.make_with_text_and_action (get_text (ec_menu_option_display_code),
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_menu_option_display_code),
 					agent (node_id_str: STRING)
 						do
 							archetype_tool_agents.id_code_select_action_agent.call ([node_id_str])
@@ -425,7 +425,7 @@ feature {NONE} -- Context menu
 				if not ui_graph_state.editing_enabled then
 					-- add menu item for displaying path in path map
 					if attached archetype_tool_agents.path_select_action_agent then
-						create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_display_path),
+						create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_object_context_menu_display_path),
 							agent (path_str: STRING)
 								do
 									archetype_tool_agents.path_select_action_agent.call ([path_str])
@@ -437,11 +437,11 @@ feature {NONE} -- Context menu
 					if not arch_node.is_root then
 						if arch_node.specialisation_status /= ss_added then
 							-- add menu item to refine constraint
-							create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_refine), agent ui_offer_refine_constraint)
+							create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_object_context_menu_refine), agent ui_offer_refine_constraint)
 							context_menu.extend (an_mi)
 						else
 							-- add menu item for deleting this node
-							create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_delete), agent do_remove)
+							create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_object_context_menu_delete), agent do_remove)
 							context_menu.extend (an_mi)
 						end
 					end
@@ -451,7 +451,7 @@ feature {NONE} -- Context menu
 				if attached {C_COMPLEX_OBJECT} arch_node as cco and
 					attached current_library.class_for_definition (rm_type.defining_class) as arch_lib_class
 				then
-					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_new_archetype),
+					create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_object_context_menu_new_archetype),
 						agent library_tool_agents.call_create_new_non_specialised_archetype_agent (arch_lib_class,
 							agent (an_arch: ARCHETYPE; a_def: C_COMPLEX_OBJECT; a_terminology: ARCHETYPE_TERMINOLOGY)
 								do
@@ -464,7 +464,7 @@ feature {NONE} -- Context menu
 
 				-- add menu item for copying path to clipboard
 				if attached archetype_tool_agents.path_select_action_agent then
-					create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_copy_path),
+					create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_object_context_menu_copy_path),
 						agent (path_str: STRING)
 							do
 								archetype_tool_agents.path_copy_action_agent.call ([path_str])
@@ -475,7 +475,7 @@ feature {NONE} -- Context menu
 
 			elseif ui_graph_state.editing_enabled and not is_root and then not parent.parent.is_rm and parent.is_rm then
 				-- add menu item for 'convert to constraint'
-				create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_convert), agent ui_offer_convert_to_constraint)
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_object_context_menu_convert), agent ui_offer_convert_to_constraint)
 				context_menu.extend (an_mi)
 			end
 		end

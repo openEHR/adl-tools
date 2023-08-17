@@ -66,17 +66,17 @@ feature {NONE} -- Commands
 
 	console_start_progress_message: STRING
 		do
-			Result := get_msg (ec_compiler_export, <<syntax, export_dir>>)
+			Result := get_msg ({ADL_MESSAGES_IDS}.ec_compiler_export, <<syntax, export_dir>>)
 		end
 
 	console_finish_progress_message: STRING
 		do
-			Result := get_text (ec_compiler_finished_export)
+			Result := get_text ({ADL_MESSAGES_IDS}.ec_compiler_finished_export)
 		end
 
 	console_interrupted_message: STRING
 		do
-			Result := get_text (ec_compiler_interrupted)
+			Result := get_text ({ADL_MESSAGES_IDS}.ec_compiler_interrupted)
 		end
 
 feature {NONE} -- Commands
@@ -144,7 +144,7 @@ feature {NONE} -- Implementation
 			else
 				create exc_trace_str.make_from_string ("(Exception trace not available)")
 			end
-			call_console_update_agent (get_msg (ec_export_exception, <<ara.qualified_name, exception.out, exc_trace_str>>))
+			call_console_update_agent (get_msg ({ADL_MESSAGES_IDS}.ec_export_exception, <<ara.qualified_name, exception.out, exc_trace_str>>))
 			exception_encountered := True
 			retry
 		end

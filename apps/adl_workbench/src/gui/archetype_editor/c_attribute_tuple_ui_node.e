@@ -91,14 +91,14 @@ feature {NONE} -- Implementation
 					Result.append (ui_graph_state.flat_archetype.annotated_path (p, display_settings.language, True))
 					Result.append ("%N")
 					if display_settings.show_rm_inheritance then
-						Result.append (get_text (ec_inheritance_status_text) + specialisation_status_name (specialisation_status) + "%N")
+						Result.append (get_text ({ADL_MESSAGES_IDS}.ec_inheritance_status_text) + specialisation_status_name (specialisation_status) + "%N")
 					end
 
 					-- append any annotations
 					if auth_arch.has_annotations_at_path (display_settings.language, p) and then
 						attached auth_arch.annotations_at_path (display_settings.language, p) as att_ann
 					then
-						Result.append (get_text (ec_annotations_text) + ":%N")
+						Result.append (get_text ({ADL_MESSAGES_IDS}.ec_annotations_text) + ":%N")
 
 						create annots.make_empty
 						across att_ann as ann_vals_csr loop

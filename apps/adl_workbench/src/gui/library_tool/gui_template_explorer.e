@@ -187,7 +187,7 @@ feature {NONE} -- Implementation
 			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
 				tooltip.append (auth_aca.source_file_path)
 				if auth_aca.file_mgr.has_legacy_flat_file and auth_aca.file_mgr.is_source_generated then
-					tooltip.append ("%N" + get_text (ec_archetype_tree_node_tooltip))
+					tooltip.append ("%N" + get_text ({ADL_MESSAGES_IDS}.ec_archetype_tree_node_tooltip))
 				end
 			end
 

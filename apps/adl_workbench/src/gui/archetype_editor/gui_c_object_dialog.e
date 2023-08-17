@@ -82,7 +82,7 @@ feature {NONE} -- Initialization
 
 			-- ============ node_id checkbox, text & description controls ============
 
-			create node_id_cb_ctl.make_linked (get_text (ec_node_id_cb_text), get_text (ec_node_id_cb_tooltip),
+			create node_id_cb_ctl.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_node_id_cb_text), get_text ({ADL_MESSAGES_IDS}.ec_node_id_cb_tooltip),
 				agent :BOOLEAN do Result := user_requires_id_term_definition end,
 				agent set_user_requires_id_term_definition)
 			ev_root_container.extend (node_id_cb_ctl.ev_data_control)
@@ -93,7 +93,7 @@ feature {NONE} -- Initialization
 			gui_controls.extend (node_id_cb_ctl)
 
 			-- terminology text - not shown by default if not needed
-			create node_id_text_ctl.make_linked (get_text (ec_node_id_text),
+			create node_id_text_ctl.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_node_id_text),
 				agent :STRING do Result := new_params.node_id_text end,
 				agent (v:STRING) do new_params.set_node_id_text (v) end,
 				Void, Void, 0, True)
@@ -105,7 +105,7 @@ feature {NONE} -- Initialization
 			gui_controls.extend (node_id_text_ctl)
 
 			-- terminology description - not shown by default if not needed
-			create node_id_description_ctl.make_linked (get_text (ec_node_id_description),
+			create node_id_description_ctl.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_node_id_description),
 				agent :STRING do Result := new_params.node_id_description end,
 				agent (v:STRING) do new_params.set_node_id_description (v) end,
 				Void, Void, 0, True)
@@ -117,8 +117,8 @@ feature {NONE} -- Initialization
 			gui_controls.extend (node_id_description_ctl)
 
 			-- ============ constraint type combo-box control ============
-			create aom_type_ctl.make_linked (get_text (ec_initial_c_object_config_constraint_type_text),
-				get_text (ec_initial_c_object_config_constraint_type_tooltip),
+			create aom_type_ctl.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_initial_c_object_config_constraint_type_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_initial_c_object_config_constraint_type_tooltip),
 				agent :STRING do Result := new_params.aom_type end,
 				aom_types, agent set_new_aom_type, Void, Void, 0)
 			ev_root_container.extend (aom_type_ctl.ev_root_container)
@@ -129,8 +129,8 @@ feature {NONE} -- Initialization
 			end
 
 			-- ============ RM type combo-box control ============
-			create rm_type_ctl.make_linked (get_text (ec_initial_c_object_config_rm_type_text),
-				get_text (ec_initial_c_object_config_rm_type_tooltip),
+			create rm_type_ctl.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_initial_c_object_config_rm_type_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_initial_c_object_config_rm_type_tooltip),
 				agent :STRING do Result := new_params.rm_type end,
 				rm_types, agent (a_str: STRING) do new_params.set_rm_type (a_str) end,
 				Void, Void, 0)
@@ -142,8 +142,8 @@ feature {NONE} -- Initialization
 			end
 
 			-- ============ Occurrences ============
-			create occurrences_choice_ctl.make_linked (get_text (ec_initial_c_object_config_occurrences_text),
-				get_text (ec_initial_c_object_config_occurrences_tooltip),
+			create occurrences_choice_ctl.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_initial_c_object_config_occurrences_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_initial_c_object_config_occurrences_tooltip),
 				agent :STRING do Result := new_params.occurrences end,
 				occurrences_constrained_list, agent (a_str: STRING) do new_params.set_occurrences (a_str) end, Void, Void, 0)
 			ev_root_container.extend (occurrences_choice_ctl.ev_root_container)
@@ -151,8 +151,8 @@ feature {NONE} -- Initialization
 			gui_controls.extend (occurrences_choice_ctl)
 
 			-- ============ Archetype ext ref list ============			
-			create arch_id_list_ctl.make_linked (get_text (ec_initial_c_object_config_ext_ref_text),
-				get_text (ec_initial_c_object_config_ext_ref_tooltip),
+			create arch_id_list_ctl.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_initial_c_object_config_ext_ref_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_initial_c_object_config_ext_ref_tooltip),
 				agent :detachable STRING
 					do
 						Result := new_params.ext_ref
@@ -173,8 +173,8 @@ feature {NONE} -- Initialization
 
 
 			-- ============ Archetype path list ============			
-			create arch_path_list_ctl.make_linked (get_text (ec_initial_c_object_config_path_ref_text),
-				get_text (ec_initial_c_object_config_path_ref_tooltip),
+			create arch_path_list_ctl.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_initial_c_object_config_path_ref_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_initial_c_object_config_path_ref_tooltip),
 				agent :detachable STRING do Result := new_params.path_ref end,
 				arch_path_list, agent (a_str: STRING) do new_params.set_path_ref (a_str) end, Void, Void, 0)
 			ev_root_container.extend (arch_path_list_ctl.ev_root_container)
@@ -198,7 +198,7 @@ feature {NONE} -- Initialization
 			precursor
 
 			-- window characteristics
-			set_title (get_text (ec_initial_c_object_config_dialog_title))
+			set_title (get_text ({ADL_MESSAGES_IDS}.ec_initial_c_object_config_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
 			extend (ev_root_container)

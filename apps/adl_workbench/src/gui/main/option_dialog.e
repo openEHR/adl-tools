@@ -58,26 +58,26 @@ feature {NONE} -- Initialization
 			-- =========== Tab 1 - container ===========
 			create ev_notebook_paths_vb
 			ev_notebook.extend (ev_notebook_paths_vb)
-			ev_notebook.set_item_text (ev_notebook_paths_vb, get_text (ec_options_path_tab_text))
+			ev_notebook.set_item_text (ev_notebook_paths_vb, get_text ({ADL_MESSAGES_IDS}.ec_options_path_tab_text))
 
 			-- =========== Tab 1 - path settings ===========
 
 			-- frame
-			create evx_path_settings_frame.make (get_text (ec_path_settings_frame_text), False)
+			create evx_path_settings_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_path_settings_frame_text), False)
 			ev_notebook_paths_vb.extend (evx_path_settings_frame.ev_root_container)
 
 			-- Terminology directory setting
-			create evx_terminology_dir_setter.make (get_text (ec_terminology_directory_text), agent terminology_directory, 0)
+			create evx_terminology_dir_setter.make (get_text ({ADL_MESSAGES_IDS}.ec_terminology_directory_text), agent terminology_directory, 0)
 			evx_path_settings_frame.extend (evx_terminology_dir_setter.ev_root_container, False)
 			gui_controls.extend (evx_terminology_dir_setter)
 
 			-- Export directory setting
-			create evx_export_dir_setter.make (get_text (ec_export_directory_text), agent export_directory, 0)
+			create evx_export_dir_setter.make (get_text ({ADL_MESSAGES_IDS}.ec_export_directory_text), agent export_directory, 0)
 			evx_path_settings_frame.extend (evx_export_dir_setter.ev_root_container, False)
 			gui_controls.extend (evx_export_dir_setter)
 
 			-- Save test diff files directory setting
-			create evx_test_files_dir_setter.make (get_text (ec_test_diff_files_directory_text), agent test_diff_directory, 0)
+			create evx_test_files_dir_setter.make (get_text ({ADL_MESSAGES_IDS}.ec_test_diff_files_directory_text), agent test_diff_directory, 0)
 			evx_path_settings_frame.extend (evx_test_files_dir_setter.ev_root_container, False)
 			gui_controls.extend (evx_test_files_dir_setter)
 
@@ -85,21 +85,21 @@ feature {NONE} -- Initialization
 			-- ========== Tab 1 - external tools settings ==========
 
 			-- frame
-			create evx_tool_paths_frame.make (get_msg (ec_tool_paths_frame_text, Void), False)
+			create evx_tool_paths_frame.make (get_msg ({ADL_MESSAGES_IDS}.ec_tool_paths_frame_text, Void), False)
 			ev_notebook_paths_vb.extend (evx_tool_paths_frame.ev_root_container)
 
 			-- Text editor path setter control
-			create evx_text_editor_dir_setter.make_linked (get_text (ec_text_editor_directory_text), agent text_editor_command, agent set_text_editor_command, Void, Void, 0)
+			create evx_text_editor_dir_setter.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_text_editor_directory_text), agent text_editor_command, agent set_text_editor_command, Void, Void, 0)
 			evx_tool_paths_frame.extend (evx_text_editor_dir_setter.ev_root_container, False)
 			gui_controls.extend (evx_text_editor_dir_setter)
 
 			-- ADL editor path setter control
-			create evx_adl_editor_dir_setter.make (get_text (ec_adl_editor_directory_text), agent editor_app_command, 0)
+			create evx_adl_editor_dir_setter.make (get_text ({ADL_MESSAGES_IDS}.ec_adl_editor_directory_text), agent editor_app_command, 0)
 			evx_tool_paths_frame.extend (evx_adl_editor_dir_setter.ev_root_container, False)
 			gui_controls.extend (evx_adl_editor_dir_setter)
 
 			-- Diff tool path setter control
-			create evx_diff_tool_dir_setter.make (get_text (ec_diff_tool_directory_text), agent difftool_command, 0)
+			create evx_diff_tool_dir_setter.make (get_text ({ADL_MESSAGES_IDS}.ec_diff_tool_directory_text), agent difftool_command, 0)
 			evx_tool_paths_frame.extend (evx_diff_tool_dir_setter.ev_root_container, False)
 			gui_controls.extend (evx_diff_tool_dir_setter)
 
@@ -108,10 +108,10 @@ feature {NONE} -- Initialization
 
 			create ev_notebook_compiler_settings_vb
 			ev_notebook.extend (ev_notebook_compiler_settings_vb)
-			ev_notebook.set_item_text (ev_notebook_compiler_settings_vb, get_text (ec_options_compiler_settings_tab_text))
+			ev_notebook.set_item_text (ev_notebook_compiler_settings_vb, get_text ({ADL_MESSAGES_IDS}.ec_options_compiler_settings_tab_text))
 
 			-- Error reporting level combo			
-			create evx_parser_error_reporting_level_cob.make (get_text (ec_error_reporting_level_text), get_text (ec_error_reporting_level_tooltip),
+			create evx_parser_error_reporting_level_cob.make (get_text ({ADL_MESSAGES_IDS}.ec_error_reporting_level_text), get_text ({ADL_MESSAGES_IDS}.ec_error_reporting_level_tooltip),
 				agent :STRING
 					do
 						check attached error_type_name_table.item (error_reporting_level) as errname then
@@ -124,20 +124,20 @@ feature {NONE} -- Initialization
 			gui_controls.extend (evx_parser_error_reporting_level_cob)
 
 			-- validation strict checkbox
-			create evx_validation_strict_cb.make (get_text (ec_validation_strict_text),
-				get_text (ec_validation_strict_tooltip), agent validation_strict)
+			create evx_validation_strict_cb.make (get_text ({ADL_MESSAGES_IDS}.ec_validation_strict_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_validation_strict_tooltip), agent validation_strict)
 			ev_notebook_compiler_settings_vb.extend (evx_validation_strict_cb.ev_data_control)
 			ev_notebook_compiler_settings_vb.disable_item_expand (evx_validation_strict_cb.ev_data_control)
 			gui_controls.extend (evx_validation_strict_cb)
 
 			-- RM flattening on checkbox
-			create evx_rm_flattening_cb.make (get_text (ec_rm_flattening_text), get_text (ec_rm_flattening_tooltip), agent rm_flattening_on)
+			create evx_rm_flattening_cb.make (get_text ({ADL_MESSAGES_IDS}.ec_rm_flattening_text), get_text ({ADL_MESSAGES_IDS}.ec_rm_flattening_tooltip), agent rm_flattening_on)
 			ev_notebook_compiler_settings_vb.extend (evx_rm_flattening_cb.ev_data_control)
 			ev_notebook_compiler_settings_vb.disable_item_expand (evx_rm_flattening_cb.ev_data_control)
 			gui_controls.extend (evx_rm_flattening_cb)
 
 			-- Quiet mode checkbox
-			create evx_quiet_mode_cb.make (get_text (ec_compiler_quiet_text), get_text (ec_compiler_quiet_tooltip), agent compiler_quiet)
+			create evx_quiet_mode_cb.make (get_text ({ADL_MESSAGES_IDS}.ec_compiler_quiet_text), get_text ({ADL_MESSAGES_IDS}.ec_compiler_quiet_tooltip), agent compiler_quiet)
 			ev_notebook_compiler_settings_vb.extend (evx_quiet_mode_cb.ev_data_control)
 			ev_notebook_compiler_settings_vb.disable_item_expand (evx_quiet_mode_cb.ev_data_control)
 			gui_controls.extend (evx_quiet_mode_cb)
@@ -149,32 +149,32 @@ feature {NONE} -- Initialization
 			ev_notebook.extend (ev_notebook_ui_settings_hb)
 			create ev_notebook_ui_settings_1_vb
 			ev_notebook_ui_settings_hb.extend (ev_notebook_ui_settings_1_vb)
-			ev_notebook.set_item_text (ev_notebook_ui_settings_hb, get_text (ec_options_ui_settings_tab_text))
+			ev_notebook.set_item_text (ev_notebook_ui_settings_hb, get_text ({ADL_MESSAGES_IDS}.ec_options_ui_settings_tab_text))
 
 			-- show entire class hierarchy in archetype explorer
-			create evx_show_all_classes_cb.make (get_text (ec_show_all_classes_text), get_text (ec_show_all_classes_tooltip), agent show_entire_ontology)
+			create evx_show_all_classes_cb.make (get_text ({ADL_MESSAGES_IDS}.ec_show_all_classes_text), get_text ({ADL_MESSAGES_IDS}.ec_show_all_classes_tooltip), agent show_entire_ontology)
 			ev_notebook_ui_settings_1_vb.extend (evx_show_all_classes_cb.ev_data_control)
 			gui_controls.extend (evx_show_all_classes_cb)
 
 			-- show 'lf' marker in archetype tree to indicate original source form (legacy or authored)
-			create evx_display_source_cb.make (get_text (ec_show_source_format_text), get_text (ec_show_source_format_tooltip), agent display_archetype_source)
+			create evx_display_source_cb.make (get_text ({ADL_MESSAGES_IDS}.ec_show_source_format_text), get_text ({ADL_MESSAGES_IDS}.ec_show_source_format_tooltip), agent display_archetype_source)
 			ev_notebook_ui_settings_1_vb.extend (evx_display_source_cb.ev_data_control)
 			gui_controls.extend (evx_display_source_cb)
 
 			-- Show flat form by default
-			create evx_show_flat_form.make (get_text (ec_show_flat_form_text),
-				get_text (ec_show_flat_form_tooltip), agent show_flat_form)
+			create evx_show_flat_form.make (get_text ({ADL_MESSAGES_IDS}.ec_show_flat_form_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_show_flat_form_tooltip), agent show_flat_form)
 			ev_notebook_ui_settings_1_vb.extend (evx_show_flat_form.ev_data_control)
 			gui_controls.extend (evx_show_flat_form)
 
 			-- Show definition tree expanded
-			create evx_expand_definition_tree_cb.make (get_text (ec_show_definition_tree_expanded_text),
-				get_text (ec_show_definition_tree_expanded_tooltip), agent expand_definition_tree)
+			create evx_expand_definition_tree_cb.make (get_text ({ADL_MESSAGES_IDS}.ec_show_definition_tree_expanded_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_show_definition_tree_expanded_tooltip), agent expand_definition_tree)
 			ev_notebook_ui_settings_1_vb.extend (evx_expand_definition_tree_cb.ev_data_control)
 			gui_controls.extend (evx_expand_definition_tree_cb)
 
 			-- Show line numbers in ADL source tab
-			create evx_show_line_numbers_cb.make (get_text (ec_show_line_numbers), Void, agent show_line_numbers)
+			create evx_show_line_numbers_cb.make (get_text ({ADL_MESSAGES_IDS}.ec_show_line_numbers), Void, agent show_line_numbers)
 			ev_notebook_ui_settings_1_vb.extend  (evx_show_line_numbers_cb.ev_data_control)
 			gui_controls.extend (evx_show_line_numbers_cb)
 
@@ -183,7 +183,7 @@ feature {NONE} -- Initialization
 			ev_notebook_ui_settings_hb.extend (ev_notebook_ui_settings_2_vb)
 
 			-- Tool tab combo
-			create evx_tool_tab_cob.make (get_text (ec_options_tool_tab_text), get_text (ec_options_tool_tab_tooltip),
+			create evx_tool_tab_cob.make (get_text ({ADL_MESSAGES_IDS}.ec_options_tool_tab_text), get_text ({ADL_MESSAGES_IDS}.ec_options_tool_tab_tooltip),
 				agent :STRING
 					do
 						check attached Tool_tab_index.item (default_tool_tab) as tt then
@@ -200,9 +200,9 @@ feature {NONE} -- Initialization
 
 			create ev_notebook_authoring_vb
 			ev_notebook.extend (ev_notebook_authoring_vb)
-			ev_notebook.set_item_text (ev_notebook_authoring_vb, get_text (ec_options_authoring_tab_text))
+			ev_notebook.set_item_text (ev_notebook_authoring_vb, get_text ({ADL_MESSAGES_IDS}.ec_options_authoring_tab_text))
 
-			create evx_auth_name_text.make_linked (get_text (ec_options_auth_name_label),
+			create evx_auth_name_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_options_auth_name_label),
 				agent :STRING do Result := author_name end,
 				agent (a_str :STRING) do set_author_name (a_str) end,
 				agent do set_author_name ("") end,
@@ -211,7 +211,7 @@ feature {NONE} -- Initialization
 			ev_notebook_authoring_vb.disable_item_expand (evx_auth_name_text.ev_root_container)
 			gui_controls.extend (evx_auth_name_text)
 
-			create evx_auth_org_text.make_linked (get_text (ec_options_auth_org_label),
+			create evx_auth_org_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_options_auth_org_label),
 				agent :STRING do Result := author_org end,
 				agent (a_str :STRING) do set_author_org (a_str) end,
 				agent do set_author_org ("") end,
@@ -221,7 +221,7 @@ feature {NONE} -- Initialization
 			ev_notebook_authoring_vb.disable_item_expand (evx_auth_org_text.ev_root_container)
 			gui_controls.extend (evx_auth_org_text)
 
-			create evx_auth_copyright_text.make_linked (get_text (ec_options_auth_copyright_label),
+			create evx_auth_copyright_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_options_auth_copyright_label),
 				agent :STRING do Result := author_copyright end,
 				agent (a_str :STRING) do set_author_copyright (a_str) end,
 				agent do set_author_copyright ("") end,
@@ -230,7 +230,7 @@ feature {NONE} -- Initialization
 			ev_notebook_authoring_vb.disable_item_expand (evx_auth_copyright_text.ev_root_container)
 			gui_controls.extend (evx_auth_copyright_text)
 
-			create evx_auth_language_text.make_linked (get_text (ec_options_auth_language_label),
+			create evx_auth_language_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_options_auth_language_label),
 				agent :STRING do Result := author_language end,
 				agent (a_str :STRING) do set_author_language (a_str) end,
 				agent do set_author_language ("") end,
@@ -243,9 +243,9 @@ feature {NONE} -- Initialization
 
 			create ev_notebook_namespaces_vb
 			ev_notebook.extend (ev_notebook_namespaces_vb)
-			ev_notebook.set_item_text (ev_notebook_namespaces_vb, get_text (ec_options_namespaces_tab_text))
+			ev_notebook.set_item_text (ev_notebook_namespaces_vb, get_text ({ADL_MESSAGES_IDS}.ec_options_namespaces_tab_text))
 
-			create evx_namespaces.make_linked (get_text (ec_options_namespaces_tab_text),
+			create evx_namespaces.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_options_namespaces_tab_text),
 				agent :HASH_TABLE [STRING, STRING] do Result := namespace_table.namespaces end,
 				agent (a_key, a_val: STRING) do namespace_table.put_namespace (a_key, a_val) end,
 				agent (a_key: STRING) do namespace_table.remove_namespace (a_key) end,
@@ -260,9 +260,9 @@ feature {NONE} -- Initialization
 
 			create ev_notebook_terminology_settings_vb
 			ev_notebook.extend (ev_notebook_terminology_settings_vb)
-			ev_notebook.set_item_text (ev_notebook_terminology_settings_vb, get_text (ec_options_terminology_uris_tab_text))
+			ev_notebook.set_item_text (ev_notebook_terminology_settings_vb, get_text ({ADL_MESSAGES_IDS}.ec_options_terminology_uris_tab_text))
 
-			create evx_terminology_settings.make_linked (get_text (ec_options_terminology_uris_tab_text),
+			create evx_terminology_settings.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_options_terminology_uris_tab_text),
 				agent :HASH_TABLE [STRING, STRING] do Result := terminology_settings.uri_templates end,
 				agent (a_key, a_val: STRING) do terminology_settings.put_uri (a_key, a_val) end,
 				agent (a_key: STRING) do terminology_settings.remove_uri (a_key) end,
@@ -284,7 +284,7 @@ feature {NONE} -- Initialization
 			precursor
 
 			set_minimum_width (700)
-			set_title (get_text (ec_option_dialog_title))
+			set_title (get_text ({ADL_MESSAGES_IDS}.ec_option_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
 			extend (ev_root_container)
@@ -292,7 +292,7 @@ feature {NONE} -- Initialization
 			set_default_push_button (evx_ok_cancel_buttons.ok_button)
 
 			-- add another button to OK/cancel button row to enable edit of options file
-			evx_ok_cancel_buttons.add_button (get_text (ec_option_dialog_edit_file_text), agent on_edit_options_file)
+			evx_ok_cancel_buttons.add_button (get_text ({ADL_MESSAGES_IDS}.ec_option_dialog_edit_file_text), agent on_edit_options_file)
 			enable_edit
 			do_populate
 		end

@@ -39,7 +39,7 @@ feature -- Initialisation
 			tool_bar.disable_vertical_button_style
 
 			create back_button
-			back_button.set_tooltip (get_text (ec_history_button_back_one_item_text))
+			back_button.set_tooltip (get_text ({ADL_MESSAGES_IDS}.ec_history_button_back_one_item_text))
 			back_button.set_pixmap (get_icon_pixmap ("tool/history_back"))
 			tool_bar.extend (back_button)
 
@@ -47,7 +47,7 @@ feature -- Initialisation
 			tool_bar.extend (tool_bar_sep_3)
 
 			create forward_button
-			forward_button.set_tooltip (get_text (ec_history_button_forward_one_item_text))
+			forward_button.set_tooltip (get_text ({ADL_MESSAGES_IDS}.ec_history_button_forward_one_item_text))
 			forward_button.set_pixmap (get_icon_pixmap ("tool/history_forward"))
 			tool_bar.extend (forward_button)
 
@@ -59,10 +59,10 @@ feature -- Initialisation
 	initialise_menu (a_menu_bar: EVX_MENU_BAR)
 		do
 			evx_menu_bar := a_menu_bar
-			evx_menu_bar.add_menu_with_action ("History", get_text (ec_history_menu_text), agent on_history)
+			evx_menu_bar.add_menu_with_action ("History", get_text ({ADL_MESSAGES_IDS}.ec_history_menu_text), agent on_history)
 			menu := evx_menu_bar.last_menu
-			evx_menu_bar.add_menu_item ("History>Back", get_text (ec_history_menu_back_text), get_icon_pixmap ("tool/history_back"), agent on_back)
-			evx_menu_bar.add_menu_item ("History>Forward", get_text (ec_history_menu_forward_text), get_icon_pixmap ("tool/history_forward"), agent on_forward)
+			evx_menu_bar.add_menu_item ("History>Back", get_text ({ADL_MESSAGES_IDS}.ec_history_menu_back_text), get_icon_pixmap ("tool/history_back"), agent on_back)
+			evx_menu_bar.add_menu_item ("History>Forward", get_text ({ADL_MESSAGES_IDS}.ec_history_menu_forward_text), get_icon_pixmap ("tool/history_forward"), agent on_forward)
 			evx_menu_bar.add_menu_separator
 		end
 

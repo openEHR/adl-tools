@@ -104,7 +104,7 @@ feature -- Parsing
 							orig_lang := orig_lang_trans.original_language.code_string
 						end
 					else
-						errors.add_error (ec_deserialise_e1, <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
+						errors.add_error ({ADL_MESSAGES_IDS}.ec_deserialise_e1, <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
 						errors.append (dt_object_converter.errors)
 					end
 
@@ -125,7 +125,7 @@ feature -- Parsing
 							-- FIXME: move copyright from RESOURCE_DESCRIPTION.details.copyright to RESOURCE_DESCRIPTION.copyright
 							if has_old_copyright (resource_desc) then
 								move_copyright (resource_desc)
-								errors.add_warning (ec_old_copyright, Void, generator + ".parse")
+								errors.add_warning ({ADL_MESSAGES_IDS}.ec_old_copyright, Void, generator + ".parse")
 							end
 
 							if not dt_object_converter.errors.has_errors and
@@ -133,7 +133,7 @@ feature -- Parsing
 							then
 								res_desc := rd
 							else
-								errors.add_error (ec_deserialise_e1, <<({RESOURCE_DESCRIPTION}).name>>, generator + ".parse")
+								errors.add_error ({ADL_MESSAGES_IDS}.ec_deserialise_e1, <<({RESOURCE_DESCRIPTION}).name>>, generator + ".parse")
 								errors.append (dt_object_converter.errors)
 							end
 						else
@@ -191,7 +191,7 @@ feature -- Parsing
 								annots := res_ann
 							end
 						else
-							errors.add_error (ec_deserialise_e1, <<({RESOURCE_ANNOTATIONS}).name>>, generator + ".parse")
+							errors.add_error ({ADL_MESSAGES_IDS}.ec_deserialise_e1, <<({RESOURCE_ANNOTATIONS}).name>>, generator + ".parse")
 							errors.append (dt_object_converter.errors)
 						end
 					else
@@ -220,8 +220,8 @@ feature -- Parsing
 						arch_diff_terminology := tobj
 
 						-- build either a full archetype or an overlay
-						if attached orig_lang_trans as att_olt and attached res_desc as att_res_desc then
-							new_auth_arch := build_authored_archetype (att_res_desc, att_olt, definition, rules_context.tree, arch_diff_terminology, annots)
+						if attached orig_lang_trans and attached res_desc then
+							new_auth_arch := build_authored_archetype (res_desc, orig_lang_trans, definition, rules_context.tree, arch_diff_terminology, annots)
 
 							-- if it is a template, iterate on the overlays, and create descriptors for those that don't already have them
 							-- (from previous compilation)
@@ -240,13 +240,13 @@ feature -- Parsing
 												current_library.put_new_archetype (arch_lib_tpl_ovl)
 												tpl_aca.add_overlay (arch_lib_tpl_ovl, overlay_texts_csr.item, arch_thumbnail.archetype_id.physical_id)
 											else
-												errors.add_error (ec_VTPIOV, <<tpl_aca.id.physical_id, arch_thumbnail.archetype_id.physical_id>>, generator + ".parse")
+												errors.add_error ({ADL_MESSAGES_IDS}.ec_VTPIOV, <<tpl_aca.id.physical_id, arch_thumbnail.archetype_id.physical_id>>, generator + ".parse")
 											end
 										else
 											-- possibly check if the parent has changed
 										end
 									else
-										errors.add_error (ec_STOV, Void, generator + ".parse")
+										errors.add_error ({ADL_MESSAGES_IDS}.ec_STOV, Void, generator + ".parse")
 									end
 								end
 							end
@@ -257,7 +257,7 @@ feature -- Parsing
 							Result := build_overlay (definition, rules_context.tree, arch_diff_terminology)
 						end
 					else
-						errors.add_error (ec_SAON, Void, generator + ".parse")
+						errors.add_error ({ADL_MESSAGES_IDS}.ec_SAON, Void, generator + ".parse")
 						errors.append (dt_object_converter.errors)
 					end
 				end

@@ -851,15 +851,15 @@ end
 								last_c_dv_quantity_value := cdt
 								last_token := V_C_DV_QUANTITY
 							else
-								odin_parser_error.add_error (ec_VDTCV, <<att_output.im_type_name>>, "")
+								odin_parser_error.add_error ({ADL_MESSAGES_IDS}.ec_VDTCV, <<att_output.im_type_name>>, "")
 								last_token := ERR_C_DV_QUANTITY_1
 							end
 						else
-							odin_parser_error.add_error (ec_VDTTU, <<att_output.im_type_name>>, "")
+							odin_parser_error.add_error ({ADL_MESSAGES_IDS}.ec_VDTTU, <<att_output.im_type_name>>, "")
 							last_token := ERR_C_DV_QUANTITY_2
 						end
 					else
-						odin_parser_error.add_error (ec_VDTNT, Void, "")
+						odin_parser_error.add_error ({ADL_MESSAGES_IDS}.ec_VDTNT, Void, "")
 						last_token := ERR_C_DV_QUANTITY_3
 					end
 				else

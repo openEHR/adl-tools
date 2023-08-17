@@ -103,11 +103,11 @@ feature -- Commands
 			amp.parse (a_file_path)
 			if amp.passed and then attached amp.last_archetype as arch_thumbnail then
 				if arch_thumbnail.archetype_id_is_old_style then
-					errors.add_error (ec_parse_archetype_e7, <<a_file_path>>, "")
+					errors.add_error ({ADL_MESSAGES_IDS}.ec_parse_archetype_e7, <<a_file_path>>, "")
 				elseif arch_thumbnail.is_specialised and then arch_thumbnail.parent_archetype_id_is_old_style and attached arch_thumbnail.parent_archetype_id as pid then
-					errors.add_error (ec_parse_archetype_e11, <<a_file_path, pid>>, "")
+					errors.add_error ({ADL_MESSAGES_IDS}.ec_parse_archetype_e11, <<a_file_path, pid>>, "")
 				elseif not has_model_for_archetype_id (arch_thumbnail.archetype_id) then
-					errors.add_error (ec_parse_archetype_e4, <<a_file_path, arch_thumbnail.archetype_id.physical_id>>, "")
+					errors.add_error ({ADL_MESSAGES_IDS}.ec_parse_archetype_e4, <<a_file_path, arch_thumbnail.archetype_id.physical_id>>, "")
 				elseif not arch_phys_id_index.has (arch_thumbnail.archetype_id.physical_id) then
 					if adl_legacy_flat_filename_pattern_regex.matches (file_system.basename (a_file_path)) then
 						create ara.make_legacy (a_file_path, Current, arch_thumbnail)
@@ -120,10 +120,10 @@ feature -- Commands
 					put_archetype (ara)
 					last_added_archetype := ara
 				else
-					errors.add_info (ec_pair_filename_i1, <<a_file_path>>, "")
+					errors.add_info ({ADL_MESSAGES_IDS}.ec_pair_filename_i1, <<a_file_path>>, "")
 				end
 			else
-				errors.add_error (ec_parse_archetype_e5, <<a_file_path>>, "")
+				errors.add_error ({ADL_MESSAGES_IDS}.ec_parse_archetype_e5, <<a_file_path>>, "")
 			end
 		end
 
@@ -142,9 +142,9 @@ feature -- Commands
 			if file_context.file_writable (a_file_path) then
 				file_context.save_file (a_file_path, a_text)
 				text_timestamp := file_context.file_timestamp
-				errors.add_info (ec_save_as_i1, <<a_file_path>>, "save_text_to_file")
+				errors.add_info ({ADL_MESSAGES_IDS}.ec_save_as_i1, <<a_file_path>>, "save_text_to_file")
 			else
-				errors.add_error (ec_save_as_e1, <<a_file_path>>, "save_text_to_file")
+				errors.add_error ({ADL_MESSAGES_IDS}.ec_save_as_e1, <<a_file_path>>, "save_text_to_file")
 			end
 		end
 
@@ -213,16 +213,16 @@ feature {NONE} -- Implementation
 								-- perform a rename - KEEP
 								if not file_system.file_exists (new_full_path) then
 									file_system.rename_file (arch_full_path, new_full_path)
-									errors.add_warning (ec_renamed_old_adls_filename, <<arch_full_path, new_full_path>>, "")
+									errors.add_warning ({ADL_MESSAGES_IDS}.ec_renamed_old_adls_filename, <<arch_full_path, new_full_path>>, "")
 									fn := new_arch_fn
 									keep := True
 								else
 									-- both a new and an old version exist; needs manual intervention - IGNORE
-									errors.add_warning (ec_old_and_new_adls_filename, <<arch_full_path, new_full_path>>, "")
+									errors.add_warning ({ADL_MESSAGES_IDS}.ec_old_and_new_adls_filename, <<arch_full_path, new_full_path>>, "")
 								end
 							-- something wrong with the file - no thumbnail - IGNORE
 							else
-								errors.add_warning (ec_faulty_old_adls_filename, <<arch_full_path>>, "")
+								errors.add_warning ({ADL_MESSAGES_IDS}.ec_faulty_old_adls_filename, <<arch_full_path>>, "")
 							end
 						else
 							keep := True
@@ -235,7 +235,7 @@ feature {NONE} -- Implementation
 							if amp.passed and then attached amp.last_archetype as arch_tn then
 								arch_id := arch_tn.archetype_id.physical_id
 								if not has_model_for_archetype_id (arch_tn.archetype_id) then
-									errors.add_error (ec_parse_archetype_e4, <<fn, arch_id>>, "")
+									errors.add_error ({ADL_MESSAGES_IDS}.ec_parse_archetype_e4, <<fn, arch_id>>, "")
 								elseif not arch_phys_id_index.has (arch_id) then
 									if arch_tn.is_template then
 										create {ARCH_LIB_TEMPLATE} ara.make (arch_full_path, Current, arch_tn)
@@ -248,10 +248,10 @@ feature {NONE} -- Implementation
 										folder_node.put_child (ara)
 									end
 								else
-									errors.add_error (ec_arch_cat_dup_archetype, <<arch_full_path>>, "")
+									errors.add_error ({ADL_MESSAGES_IDS}.ec_arch_cat_dup_archetype, <<arch_full_path>>, "")
 								end
 							else
-								errors.add_error (ec_general, <<amp.error_strings>>, "")
+								errors.add_error ({GENERAL_MESSAGES_IDS}.ec_general, <<amp.error_strings>>, "")
 							end
 						end
 					end
@@ -270,13 +270,13 @@ feature {NONE} -- Implementation
 							if amp.passed and then attached amp.last_archetype as arch_tn then
 								arch_id := arch_tn.archetype_id.physical_id
 								if arch_tn.archetype_id_is_old_style then
-									errors.add_error (ec_parse_archetype_e7, <<fn, arch_id>>, "")
+									errors.add_error ({ADL_MESSAGES_IDS}.ec_parse_archetype_e7, <<fn, arch_id>>, "")
 
 								elseif arch_tn.is_specialised and arch_tn.parent_archetype_id_is_old_style and attached arch_tn.parent_archetype_id as pid then
-									errors.add_error (ec_parse_archetype_e11, <<fn, pid>>, "")
+									errors.add_error ({ADL_MESSAGES_IDS}.ec_parse_archetype_e11, <<fn, pid>>, "")
 
 								elseif not has_model_for_archetype_id (arch_tn.archetype_id) then
-									errors.add_error (ec_parse_archetype_e4, <<fn, arch_id>>, "")
+									errors.add_error ({ADL_MESSAGES_IDS}.ec_parse_archetype_e4, <<fn, arch_id>>, "")
 
 								-- here we check for an exact match first (physical_id) and then a match on semantic_id (down to major ver).
 								-- The reason for this is that in a previous compilation, an ADL 1.4 archetype that contains revision meta-data
@@ -295,7 +295,7 @@ feature {NONE} -- Implementation
 									ara.file_mgr.add_legacy_archetype (arch_full_path)
 								end
 							else
-								errors.add_error (ec_general, <<amp.error_strings>>, "")
+								errors.add_error ({GENERAL_MESSAGES_IDS}.ec_general, <<amp.error_strings>>, "")
 							end
 						end
 					end

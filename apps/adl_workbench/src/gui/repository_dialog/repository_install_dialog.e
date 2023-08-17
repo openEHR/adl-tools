@@ -34,7 +34,7 @@ feature {NONE} -- Initialization
 			repository_url := a_repo_url
 			create local_directory.make_empty
 			create legacy_directory.make_empty
-			header_text := get_text (ec_repository_install_dialog_header_label_url)
+			header_text := get_text ({ADL_MESSAGES_IDS}.ec_repository_install_dialog_header_label_url)
 			default_create
 		end
 
@@ -43,7 +43,7 @@ feature {NONE} -- Initialization
 			create repository_url.make_empty
 			create local_directory.make_empty
 			create legacy_directory.make_empty
-			header_text := get_text (ec_repository_install_dialog_header_label)
+			header_text := get_text ({ADL_MESSAGES_IDS}.ec_repository_install_dialog_header_label)
 			default_create
 		end
 
@@ -75,24 +75,24 @@ feature {NONE} -- Initialization
 
 			-- ============ URL text entry ============
 			if repository_url.is_empty then
-				create evx_url_text.make_linked (get_text (ec_repository_url_label), agent :STRING do Result := repository_url end, agent set_repository_url, Void, Void, 0, True)
+				create evx_url_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_repository_url_label), agent :STRING do Result := repository_url end, agent set_repository_url, Void, Void, 0, True)
 			else
-				create evx_url_text.make_readonly (get_text (ec_repository_url_label), agent :STRING do Result := repository_url end, 0, True)
+				create evx_url_text.make_readonly (get_text ({ADL_MESSAGES_IDS}.ec_repository_url_label), agent :STRING do Result := repository_url end, 0, True)
 			end
 			ev_root_container.extend (evx_url_text.ev_root_container)
 			ev_root_container.disable_item_expand (evx_url_text.ev_root_container)
 			gui_controls.extend (evx_url_text)
 
 			-- ============ new ADL2 repository dir chooser ============
-			create evx_dir_setter.make_linked (get_text (ec_repository_dir_text), agent :STRING do Result := local_directory end, agent set_local_directory, Void, Void, 0)
-			evx_dir_setter.set_button_tooltip (get_text (ec_repository_dir_tooltip))
+			create evx_dir_setter.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_repository_dir_text), agent :STRING do Result := local_directory end, agent set_local_directory, Void, Void, 0)
+			evx_dir_setter.set_button_tooltip (get_text ({ADL_MESSAGES_IDS}.ec_repository_dir_tooltip))
 			evx_dir_setter.set_default_directory_agent (agent :STRING do Result := last_user_selected_directory end)
 			ev_root_container.extend (evx_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (evx_dir_setter.ev_root_container)
 			gui_controls.extend (evx_dir_setter)
 
 			-- ============ clone new checkbox ============
-			create evx_clone_cb.make_linked (get_text (ec_repository_clone_here_text), get_text (ec_repository_clone_here_tooltip),
+			create evx_clone_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_repository_clone_here_text), get_text ({ADL_MESSAGES_IDS}.ec_repository_clone_here_tooltip),
 				agent :BOOLEAN do Result := user_requires_repository_clone end,
 				agent set_user_requires_repository_clone)
 			ev_root_container.extend (evx_clone_cb.ev_data_control)
@@ -100,8 +100,8 @@ feature {NONE} -- Initialization
 			gui_controls.extend (evx_clone_cb)
 
 			-- ============ optional: ADL 1.4 legacy repository dir chooser ============
-			create evx_legacy_dir_setter.make_linked (get_text (ec_repository_legacy_dir_text), agent :STRING do Result := legacy_directory end, agent set_legacy_directory, Void, Void, 0)
-			evx_legacy_dir_setter.set_button_tooltip (get_text (ec_repository_legacy_dir_tooltip))
+			create evx_legacy_dir_setter.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_repository_legacy_dir_text), agent :STRING do Result := legacy_directory end, agent set_legacy_directory, Void, Void, 0)
+			evx_legacy_dir_setter.set_button_tooltip (get_text ({ADL_MESSAGES_IDS}.ec_repository_legacy_dir_tooltip))
 			evx_legacy_dir_setter.set_default_directory_agent (agent :STRING do Result := last_user_selected_directory end)
 			ev_root_container.extend (evx_legacy_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (evx_legacy_dir_setter.ev_root_container)
@@ -118,7 +118,7 @@ feature {NONE} -- Initialization
 			precursor
 
 			-- window characteristics
-			set_title (get_text (ec_repository_install_dialog_title))
+			set_title (get_text ({ADL_MESSAGES_IDS}.ec_repository_install_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
 			extend (ev_root_container)

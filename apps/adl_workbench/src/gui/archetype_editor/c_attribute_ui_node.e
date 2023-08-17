@@ -158,7 +158,7 @@ feature -- Display
 					if not att_ex.is_prohibited then
 						ex_str.append (att_ex.as_string)
 					else
-						ex_str.append (get_text (ec_attribute_removed_text))
+						ex_str.append (get_text ({ADL_MESSAGES_IDS}.ec_attribute_removed_text))
 					end
 					c_col := c_constraint_colour
 				elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities then
@@ -608,15 +608,15 @@ feature {NONE} -- Context menu
 			if ui_graph_state.editing_enabled then
 				-- offer mandate/prohibit options
 				if rm_property.existence.is_optional then
-					create an_mi.make_with_text_and_action (get_text (ec_c_attribute_prohibit), agent ui_do_prohibit)
+					create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_c_attribute_prohibit), agent ui_do_prohibit)
 					context_menu.extend (an_mi)
-					create an_mi.make_with_text_and_action (get_text (ec_c_attribute_mandate), agent ui_do_mandate)
+					create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_c_attribute_mandate), agent ui_do_mandate)
 					context_menu.extend (an_mi)
 				end
 
 				-- only offer addition of new nodes if current node existence is not prohibited
 				if attached arch_node and then not arch_node.is_prohibited then
-					create types_sub_menu.make_with_text (get_text (ec_attribute_context_menu_add_child))
+					create types_sub_menu.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_attribute_context_menu_add_child))
 
 					-- make a menu item with the base class of the property
 					create an_mi.make_with_text_and_action (rm_property.bmm_type.effective_type.type_base_name,
@@ -645,7 +645,7 @@ feature {NONE} -- Context menu
 
 			-- add menu item for copying path to clipboard
 			if attached arch_node and attached archetype_tool_agents.path_select_action_agent then
-				create an_mi.make_with_text_and_action (get_text (ec_object_context_menu_copy_path),
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_object_context_menu_copy_path),
 					agent (path_str: STRING)
 						do
 							archetype_tool_agents.path_copy_action_agent.call ([path_str])

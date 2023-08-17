@@ -58,7 +58,7 @@ input: archetype
 		}
 	| error
 		{
-			abort_with_error (ec_SUNK, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SUNK, Void)
 		}
 	;
 
@@ -90,12 +90,12 @@ source_identification: source_artefact_type arch_meta_data V_ARCHETYPE_ID
 			if archetype_id_parser.valid_id ($3) then
 				create archetype_id.make_from_string ($3)
 			else
-				abort_with_error (ec_SASID, Void)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)
 			end
 		}
 	| source_artefact_type error
 		{
-			abort_with_error (ec_SARID, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SARID, Void)
 		}
 	;
 
@@ -173,12 +173,12 @@ arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID
 			if archetype_id_parser.valid_id_reference ($2) then
 				parent_archetype_id := $2
 			else
-				abort_with_error (ec_SASID, Void)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)
 			end
 		}
 	| SYM_SPECIALIZE error
 		{
-			abort_with_error (ec_SASID, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)
 		}
 	;
 
@@ -192,7 +192,7 @@ arch_concept: -- no concept ok
 		}
 	| SYM_CONCEPT error
 		{
-			abort_with_error (ec_SACO, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SACO, Void)
 		}
 	;
 
@@ -204,7 +204,7 @@ arch_language: SYM_LANGUAGE V_ODIN_TEXT
 		}
 	| SYM_LANGUAGE error
 		{
-			abort_with_error (ec_SALA, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SALA, Void)
 		}
 	;
 
@@ -216,7 +216,7 @@ arch_description: SYM_DESCRIPTION V_ODIN_TEXT
 		}
 	| SYM_DESCRIPTION error
 		{
-			abort_with_error (ec_SADS, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SADS, Void)
 		}
 	;
 		
@@ -227,7 +227,7 @@ arch_definition:	SYM_DEFINITION V_CADL_TEXT
 		}
 	| SYM_DEFINITION error
 		{
-			abort_with_error (ec_SADF, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SADF, Void)
 		}
 	;
 
@@ -238,7 +238,7 @@ arch_invariant: -- no invariant ok
 		}
 	| SYM_INVARIANT error
 		{
-			abort_with_error (ec_SAIV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SAIV, Void)
 		}
 	;
 
@@ -248,7 +248,7 @@ arch_terminology: SYM_ONTOLOGY V_ODIN_TEXT
 		}
 	| SYM_ONTOLOGY error
 		{
-			abort_with_error (ec_SAON, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SAON, Void)
 		}
 	;
 
@@ -259,7 +259,7 @@ arch_annotations: -- no meta-data ok
 		}
 	| SYM_ANNOTATIONS error
 		{
-			abort_with_error (ec_SAAN, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SAAN, Void)
 		}
 	;
 		

@@ -88,7 +88,7 @@ feature {NONE} -- Initialization
 
 			-- repository combo
 			create arch_libraries_combo
-			arch_libraries_combo.set_tooltip (get_text (ec_library_cfg_combo_tooltip))
+			arch_libraries_combo.set_tooltip (get_text ({ADL_MESSAGES_IDS}.ec_library_cfg_combo_tooltip))
 			arch_libraries_combo.set_minimum_width (160)
 			arch_libraries_combo.disable_edit
 			arch_libraries_combo.select_actions.extend (agent select_library)
@@ -101,9 +101,9 @@ feature {NONE} -- Initialization
 			action_bar.disable_item_expand (arch_compile_tool_bar)
 
 			create compile_button
-			compile_button.set_text (get_text (ec_compile_button_text))
+			compile_button.set_text (get_text ({ADL_MESSAGES_IDS}.ec_compile_button_text))
 			compile_button.set_pixmap (get_icon_pixmap ("tool/compile"))
-			compile_button.set_tooltip (get_text (ec_compile_button_tooltip))
+			compile_button.set_tooltip (get_text ({ADL_MESSAGES_IDS}.ec_compile_button_tooltip))
 			compile_button.select_actions.extend (agent compile_toggle)
 			arch_compile_tool_bar.extend (compile_button)
 
@@ -124,76 +124,76 @@ feature {NONE} -- Initialization
 			create evx_menu_bar.make
 
 			-- ========== File Menu ===========
-			evx_menu_bar.add_menu (get_text (ec_menu_file_key), get_text (ec_file_menu_text))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_file_open_key), get_text (ec_file_menu_open_text), get_icon_pixmap ("tool/open_archetype"), agent library_tool.open_adhoc_archetype)
+			evx_menu_bar.add_menu (get_text ({ADL_MESSAGES_IDS}.ec_menu_file_key), get_text ({ADL_MESSAGES_IDS}.ec_file_menu_text))
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_file_open_key), get_text ({ADL_MESSAGES_IDS}.ec_file_menu_open_text), get_icon_pixmap ("tool/open_archetype"), agent library_tool.open_adhoc_archetype)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_file_exit_key), "E&xit", Void, agent exit_app)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_file_exit_key), "E&xit", Void, agent exit_app)
 
 			-- ================== Edit menu ==================
-			evx_menu_bar.add_menu (get_text (ec_menu_edit_key), get_text (ec_edit_menu_text))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_edit_copy_key), get_text (ec_edit_menu_copy_text), Void, agent text_widget_handler.on_copy)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_edit_select_all_key), get_text (ec_edit_menu_select_all_text), Void, agent text_widget_handler.on_select_all)
+			evx_menu_bar.add_menu (get_text ({ADL_MESSAGES_IDS}.ec_menu_edit_key), get_text ({ADL_MESSAGES_IDS}.ec_edit_menu_text))
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_edit_copy_key), get_text ({ADL_MESSAGES_IDS}.ec_edit_menu_copy_text), Void, agent text_widget_handler.on_copy)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_edit_select_all_key), get_text ({ADL_MESSAGES_IDS}.ec_edit_menu_select_all_text), Void, agent text_widget_handler.on_select_all)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_edit_show_clipboard_key), get_text (ec_edit_menu_clipboard_text), Void, agent show_clipboard)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_edit_show_clipboard_key), get_text ({ADL_MESSAGES_IDS}.ec_edit_menu_clipboard_text), Void, agent show_clipboard)
 
 			-- ================== View menu ==================
-			evx_menu_bar.add_menu (get_text (ec_menu_view_key), get_text (ec_view_menu_text))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_view_differential_key), get_text (ec_view_menu_differential_text), get_icon_pixmap ("tool/diff_class"), agent on_differential_view)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_view_flat_key), get_text (ec_view_menu_flat_text), get_icon_pixmap ("tool/flat_class"), agent on_flat_view)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_view_new_archetype_tool_key), get_text (ec_view_menu_new_arch_tab_text), get_icon_pixmap ("tool/archetype_tool_new"), Void)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_view_new_class_tool_key), get_text (ec_view_menu_new_class_tab_text), get_icon_pixmap ("tool/class_tool_new"), Void)
+			evx_menu_bar.add_menu (get_text ({ADL_MESSAGES_IDS}.ec_menu_view_key), get_text ({ADL_MESSAGES_IDS}.ec_view_menu_text))
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_view_differential_key), get_text ({ADL_MESSAGES_IDS}.ec_view_menu_differential_text), get_icon_pixmap ("tool/diff_class"), agent on_differential_view)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_view_flat_key), get_text ({ADL_MESSAGES_IDS}.ec_view_menu_flat_text), get_icon_pixmap ("tool/flat_class"), agent on_flat_view)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_view_new_archetype_tool_key), get_text ({ADL_MESSAGES_IDS}.ec_view_menu_new_arch_tab_text), get_icon_pixmap ("tool/archetype_tool_new"), Void)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_view_new_class_tool_key), get_text ({ADL_MESSAGES_IDS}.ec_view_menu_new_class_tab_text), get_icon_pixmap ("tool/class_tool_new"), Void)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_view_reset_layout_key), get_text (ec_view_menu_reset_layout_text), Void, agent on_reset_tool_layout)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_view_reset_layout_key), get_text ({ADL_MESSAGES_IDS}.ec_view_menu_reset_layout_text), Void, agent on_reset_tool_layout)
 
 			-- ================== History menu ==================
 			history_bar.initialise_menu (evx_menu_bar)
 
 			-- ================== AOM profile menu ==================
-			evx_menu_bar.add_menu (get_text (ec_menu_aom_profiles_key), get_text (ec_aom_profiles_menu_text))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_aom_profiles_configure_key), get_text (ec_aom_profiles_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_aom_profiles)
+			evx_menu_bar.add_menu (get_text ({ADL_MESSAGES_IDS}.ec_menu_aom_profiles_key), get_text ({ADL_MESSAGES_IDS}.ec_aom_profiles_menu_text))
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_aom_profiles_configure_key), get_text ({ADL_MESSAGES_IDS}.ec_aom_profiles_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_aom_profiles)
 
 			-- ================== Repository menu ==================
-			evx_menu_bar.add_menu (get_text (ec_menu_archetypes_key), get_text (ec_archetypes_menu_text))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_build_all_key), get_text (ec_archetypes_menu_build_all_text), Void, agent build_all)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_rebuild_all_key), get_text (ec_archetypes_menu_rebuild_all_text), Void, agent rebuild_all)
+			evx_menu_bar.add_menu (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_text))
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_build_all_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_build_all_text), Void, agent build_all)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_rebuild_all_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_rebuild_all_text), Void, agent rebuild_all)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_export_library_key), get_text (ec_archetypes_menu_export_library_text), Void, agent export_library)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_report_key), get_text (ec_archetypes_menu_export_report_text), Void, agent export_library_report)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_export_library_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_export_library_text), Void, agent export_library)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_report_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_export_report_text), Void, agent export_library_report)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item_disabled (get_text (ec_menu_archetypes_interrupt_build_key), get_text (ec_archetypes_menu_interrupt_text), Void, agent interrupt_build)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_refresh_key), get_text (ec_archetypes_menu_refresh_text), Void, agent refresh_directory)
+			evx_menu_bar.add_menu_item_disabled (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_interrupt_build_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_interrupt_text), Void, agent interrupt_build)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_refresh_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_refresh_text), Void, agent refresh_directory)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_archetypes_configure_key), get_text (ec_archetypes_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_repositories)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_configure_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_configure_text), get_icon_pixmap ("tool/tools"), agent configure_repositories)
 
 			-- ================== RM Schemas menu ==================
-			evx_menu_bar.add_menu (get_text (ec_menu_rm_schemas_key), get_text (ec_rm_schemas_menu_text))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_rm_schemas_reload_key), get_text (ec_rm_schemas_reload_text), Void, agent reload_schemas)
+			evx_menu_bar.add_menu (get_text ({ADL_MESSAGES_IDS}.ec_menu_rm_schemas_key), get_text ({ADL_MESSAGES_IDS}.ec_rm_schemas_menu_text))
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_rm_schemas_reload_key), get_text ({ADL_MESSAGES_IDS}.ec_rm_schemas_reload_text), Void, agent reload_schemas)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_rm_schemas_configure_key), get_text (ec_rm_schemas_configure_text), get_icon_pixmap ("tool/tools"), agent set_rm_schemas)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_rm_schemas_configure_key), get_text ({ADL_MESSAGES_IDS}.ec_rm_schemas_configure_text), get_icon_pixmap ("tool/tools"), agent set_rm_schemas)
 
 			-- ================== XML menu ==================
-			evx_menu_bar.add_menu (get_text (ec_menu_xml_key), get_text (ec_xml_menu_text))
+			evx_menu_bar.add_menu (get_text ({ADL_MESSAGES_IDS}.ec_menu_xml_key), get_text ({ADL_MESSAGES_IDS}.ec_xml_menu_text))
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_xml_edit_rules_key), get_text (ec_xml_menu_edit_rules_text), get_icon_pixmap ("tool/tools"), agent set_xml_rules)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_xml_edit_rules_key), get_text ({ADL_MESSAGES_IDS}.ec_xml_menu_edit_rules_text), get_icon_pixmap ("tool/tools"), agent set_xml_rules)
 
 			-- ================== Tools menu ==================
-			evx_menu_bar.add_menu (get_text (ec_menu_tools_key), get_text (ec_tools_menu_text))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_tools_test_tool_key), get_text (ec_test_tool_title), Void, agent open_test_tool)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_tools_clean_files_key), get_text (ec_tools_menu_clean_text), Void, agent clean_generated_files)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_tools_adl_roundtrip_key), get_text (ec_tools_menu_adl_roundtrip_text),
+			evx_menu_bar.add_menu (get_text ({ADL_MESSAGES_IDS}.ec_menu_tools_key), get_text ({ADL_MESSAGES_IDS}.ec_tools_menu_text))
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_tools_test_tool_key), get_text ({ADL_MESSAGES_IDS}.ec_test_tool_title), Void, agent open_test_tool)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_tools_clean_files_key), get_text ({ADL_MESSAGES_IDS}.ec_tools_menu_clean_text), Void, agent clean_generated_files)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_tools_adl_roundtrip_key), get_text ({ADL_MESSAGES_IDS}.ec_tools_menu_adl_roundtrip_text),
 				if adl_roundtripping then get_icon_pixmap ("tool/test_passed") else get_icon_pixmap ("tool/test_failed") end, agent toggle_adl_roundtripping)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_tools_options_key), get_text (ec_tools_menu_options_text), get_icon_pixmap ("tool/tools"), agent set_options)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_tools_options_key), get_text ({ADL_MESSAGES_IDS}.ec_tools_menu_options_text), get_icon_pixmap ("tool/tools"), agent set_options)
 
 			-- ================== Help menu ==================
-			evx_menu_bar.add_menu (get_text (ec_menu_help_key), get_text (ec_help_menu_text))
-			evx_menu_bar.add_menu_item (get_text (ec_menu_help_online_help_key), get_text (ec_help_menu_online_text), Void, agent show_online_help)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_help_release_notes_key), get_text (ec_help_menu_release_notes_text), Void, agent show_release_notes)
+			evx_menu_bar.add_menu (get_text ({ADL_MESSAGES_IDS}.ec_menu_help_key), get_text ({ADL_MESSAGES_IDS}.ec_help_menu_text))
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_help_online_help_key), get_text ({ADL_MESSAGES_IDS}.ec_help_menu_online_text), Void, agent show_online_help)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_help_release_notes_key), get_text ({ADL_MESSAGES_IDS}.ec_help_menu_release_notes_text), Void, agent show_release_notes)
 			evx_menu_bar.add_menu_separator
-			evx_menu_bar.add_menu_item (get_text (ec_menu_help_external_tools_key), get_text (ec_help_menu_external_tools_text), Void, agent show_external_tools_help_page)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_help_ckm_key), get_text (ec_help_menu_ckm_text), Void, agent show_clinical_knowledge_manager)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_help_report_bug_key), get_text (ec_help_menu_report_bug_text), Void, agent show_bug_reporter)
-			evx_menu_bar.add_menu_item (get_text (ec_menu_help_about_key), get_text (ec_help_menu_about_text), Void, agent show_about)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_help_external_tools_key), get_text ({ADL_MESSAGES_IDS}.ec_help_menu_external_tools_text), Void, agent show_external_tools_help_page)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_help_ckm_key), get_text ({ADL_MESSAGES_IDS}.ec_help_menu_ckm_text), Void, agent show_clinical_knowledge_manager)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_help_report_bug_key), get_text ({ADL_MESSAGES_IDS}.ec_help_menu_report_bug_text), Void, agent show_bug_reporter)
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_help_about_key), get_text ({ADL_MESSAGES_IDS}.ec_help_menu_about_text), Void, agent show_about)
 		end
 
 	initialize
@@ -207,7 +207,7 @@ feature {NONE} -- Initialization
 
 
 			-- basic UI parameters
-			set_title (get_msg (ec_main_window_title, <<latest_adl_version>>))
+			set_title (get_msg ({ADL_MESSAGES_IDS}.ec_main_window_title, <<latest_adl_version>>))
 			close_request_actions.extend (agent exit_app)
 			set_icon_pixmap (adl_workbench_logo)
 			extend (ev_root_vbox)
@@ -221,8 +221,8 @@ feature {NONE} -- Initialization
 			archetype_viewers.create_new_tool
 
 			-- set up anything else dependent on docking
-			evx_menu_bar.menu_item (get_text (ec_menu_view_new_class_tool_key)).select_actions.extend (agent class_tools.create_new_tool)
-			evx_menu_bar.menu_item (get_text (ec_menu_view_new_archetype_tool_key)).select_actions.extend (agent archetype_viewers.create_new_tool)
+			evx_menu_bar.menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_view_new_class_tool_key)).select_actions.extend (agent class_tools.create_new_tool)
+			evx_menu_bar.menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_view_new_archetype_tool_key)).select_actions.extend (agent archetype_viewers.create_new_tool)
 
 			-- set UI feedback handlers
 			archetype_compiler.set_console_update_agent (agent compiler_console_update)
@@ -288,23 +288,23 @@ feature {NONE} -- Initialization
 			create evx_accelerators.make (accelerators)
 			evx_menu_bar.set_accelerators (evx_accelerators)
 
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_file_open_key), key_o, True, False, False)
-			evx_menu_bar.add_menu_shortcut_for_action (get_text (ec_menu_edit_copy_key), agent text_widget_handler.call_unless_text_focused (agent text_widget_handler.on_copy), key_c, True, False, False)
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_edit_select_all_key), key_a, True, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text ({ADL_MESSAGES_IDS}.ec_menu_file_open_key), key_o, True, False, False)
+			evx_menu_bar.add_menu_shortcut_for_action (get_text ({ADL_MESSAGES_IDS}.ec_menu_edit_copy_key), agent text_widget_handler.call_unless_text_focused (agent text_widget_handler.on_copy), key_c, True, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text ({ADL_MESSAGES_IDS}.ec_menu_edit_select_all_key), key_a, True, False, False)
 
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_view_differential_key), key_d, True, False, True)
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_view_flat_key), key_f, True, False, True)
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_view_new_archetype_tool_key), key_t, True, False, False)
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_view_new_class_tool_key), key_t, True, False, True)
+			evx_menu_bar.add_menu_shortcut (get_text ({ADL_MESSAGES_IDS}.ec_menu_view_differential_key), key_d, True, False, True)
+			evx_menu_bar.add_menu_shortcut (get_text ({ADL_MESSAGES_IDS}.ec_menu_view_flat_key), key_f, True, False, True)
+			evx_menu_bar.add_menu_shortcut (get_text ({ADL_MESSAGES_IDS}.ec_menu_view_new_archetype_tool_key), key_t, True, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text ({ADL_MESSAGES_IDS}.ec_menu_view_new_class_tool_key), key_t, True, False, True)
 
 			history_bar.add_shortcuts
 
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_refresh_key), key_r, True, False, False)
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_interrupt_build_key), key_escape, False, False, True)
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_rebuild_all_key), key_f7, False, False, True)
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_archetypes_build_all_key), key_f7, False, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_refresh_key), key_r, True, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_interrupt_build_key), key_escape, False, False, True)
+			evx_menu_bar.add_menu_shortcut (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_rebuild_all_key), key_f7, False, False, True)
+			evx_menu_bar.add_menu_shortcut (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_build_all_key), key_f7, False, False, False)
 
-			evx_menu_bar.add_menu_shortcut (get_text (ec_menu_rm_schemas_reload_key), key_l, True, False, False)
+			evx_menu_bar.add_menu_shortcut (get_text ({ADL_MESSAGES_IDS}.ec_menu_rm_schemas_reload_key), key_l, True, False, False)
 
 			evx_accelerators.add_shortcut (agent text_widget_handler.step_focused_notebook_tab (1), key_tab, True, False, False)
 			evx_accelerators.add_shortcut (agent text_widget_handler.step_focused_notebook_tab (-1), key_tab, True, False, True)
@@ -359,14 +359,14 @@ feature {NONE} -- Initialization
 					end
 				elseif file_system.file_exists (user_docking_layout_file_path) then
 					docking_file_to_use := user_docking_layout_file_path
-					console_tool.append_text (get_msg_line (ec_copy_docking_file, <<user_docking_layout_file_path, default_docking_layout_file_path>>))
+					console_tool.append_text (get_msg_line ({ADL_MESSAGES_IDS}.ec_copy_docking_file, <<user_docking_layout_file_path, default_docking_layout_file_path>>))
 					file_system.copy_file (user_docking_layout_file_path, default_docking_layout_file_path)
 				else
-					console_tool.append_text (get_msg_line (ec_no_docking_file_found, <<user_docking_layout_file_path, default_docking_layout_file_path>>))
+					console_tool.append_text (get_msg_line ({ADL_MESSAGES_IDS}.ec_no_docking_file_found, <<user_docking_layout_file_path, default_docking_layout_file_path>>))
 				end
 
 				if attached docking_file_to_use and then not docking_manager.open_config_with_path (create {PATH}.make_from_string (docking_file_to_use)) then
-					console_tool.append_text (get_msg_line (ec_read_docking_file_failed, <<user_docking_layout_file_path>>))
+					console_tool.append_text (get_msg_line ({ADL_MESSAGES_IDS}.ec_read_docking_file_failed, <<user_docking_layout_file_path>>))
 				end
 			end
 		rescue
@@ -401,7 +401,7 @@ feature -- Commands
 
 			-- check if git is available
 			if not system_has_command ({EXTERNAL_TOOL_DEFINITIONS}.Git_tool_name) then
-				info_feedback (get_msg_line (ec_repository_tool_unavailable, <<{EXTERNAL_TOOL_DEFINITIONS}.Git_tool_name>>))
+				info_feedback (get_msg_line ({ADL_MESSAGES_IDS}.ec_repository_tool_unavailable, <<{EXTERNAL_TOOL_DEFINITIONS}.Git_tool_name>>))
 			end
 
 			-- if no RM schemas yet available, ask user to configure
@@ -430,9 +430,9 @@ feature -- Commands
 				backup_xml_rules_file := xml_rules_file_path + ".bak"
 				file_system.copy_file (xml_rules_file_path, backup_xml_rules_file)
 				file_system.copy_file (xml_rules_sample_file_path, xml_rules_file_path)
-				console_tool.append_text (get_msg (ec_copy_file_with_backup, <<xml_rules_sample_file_path, xml_rules_file_path, backup_xml_rules_file>>))
+				console_tool.append_text (get_msg ({ADL_MESSAGES_IDS}.ec_copy_file_with_backup, <<xml_rules_sample_file_path, xml_rules_file_path, backup_xml_rules_file>>))
 
-				create info_dialog.make_with_text (get_msg (ec_xml_rules_file_update_msg, <<xml_rules_file_path, backup_xml_rules_file>>))
+				create info_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_xml_rules_file_update_msg, <<xml_rules_file_path, backup_xml_rules_file>>))
 				info_dialog.show_modal_to_window (Current)
 			end
 
@@ -471,7 +471,7 @@ feature -- Commands
 				close_test_tool
 			end
 			if not docking_manager.save_data_with_path (create {PATH}.make_from_string (user_docking_layout_file_path)) then
-				console_tool.append_text (get_msg_line (ec_write_docking_file_failed, <<user_docking_layout_file_path>>))
+				console_tool.append_text (get_msg_line ({ADL_MESSAGES_IDS}.ec_write_docking_file_failed, <<user_docking_layout_file_path>>))
 			end
 
 			ev_application.destroy
@@ -510,7 +510,7 @@ feature -- View Events
 				file_system.copy_file (default_docking_layout_file_path, user_docking_layout_file_path)
 				initialise_docking_layout
 			else
-				console_tool.append_text (get_msg_line (ec_read_docking_file_failed, <<default_docking_layout_file_path>>))
+				console_tool.append_text (get_msg_line ({ADL_MESSAGES_IDS}.ec_read_docking_file_failed, <<default_docking_layout_file_path>>))
 			end
 		end
 
@@ -626,10 +626,10 @@ feature {NONE} -- Library events
 		do
 			if current_library.has_statistics then
 				create save_dialog
-				save_dialog.set_title (get_text (ec_export_report_dialog_title))
+				save_dialog.set_title (get_text ({ADL_MESSAGES_IDS}.ec_export_report_dialog_title))
 				save_dialog.set_file_name (Library_report_filename)
 				save_dialog.set_start_directory (current_work_directory)
-				save_dialog.filters.extend (["*" + File_ext_xml_default, get_msg (ec_save_archetype_as_type, <<Syntax_type_xml.as_upper>>)])
+				save_dialog.filters.extend (["*" + File_ext_xml_default, get_msg ({ADL_MESSAGES_IDS}.ec_save_archetype_as_type, <<Syntax_type_xml.as_upper>>)])
 				save_dialog.show_modal_to_window (Current)
 				xml_name := save_dialog.file_name.as_string_8
 
@@ -644,25 +644,25 @@ feature {NONE} -- Library events
 					create file.make (xml_name)
 
 					if file.exists then
-						create question_dialog.make_with_text (get_msg_line (ec_file_exists_replace_question, <<xml_name>>))
-						question_dialog.set_title (get_text (ec_export_report_dialog_title))
-						question_dialog.set_buttons (<<get_text (ec_yes_response), get_text (ec_no_response)>>)
+						create question_dialog.make_with_text (get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_exists_replace_question, <<xml_name>>))
+						question_dialog.set_title (get_text ({ADL_MESSAGES_IDS}.ec_export_report_dialog_title))
+						question_dialog.set_buttons (<<get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response), get_text ({GENERAL_MESSAGES_IDS}.ec_no_response)>>)
 						question_dialog.show_modal_to_window (Current)
-						ok_to_write := question_dialog.selected_button.same_string (get_text (ec_yes_response))
+						ok_to_write := question_dialog.selected_button.same_string (get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response))
 					end
 
 					if ok_to_write then
 						do_with_wait_cursor (Current, agent error_tool.export_library_report (xml_name))
 						if file.exists then
-							console_tool.append_text (get_msg (ec_export_library_report_replace_info, <<xml_name>>))
+							console_tool.append_text (get_msg ({ADL_MESSAGES_IDS}.ec_export_library_report_replace_info, <<xml_name>>))
 							show_in_system_browser (xml_name)
 						else
-							console_tool.append_text (get_msg (ec_export_library_report_replace_err, <<xml_name>>))
+							console_tool.append_text (get_msg ({ADL_MESSAGES_IDS}.ec_export_library_report_replace_err, <<xml_name>>))
 						end
 					end
 				end
 			else
-				info_feedback (get_text (ec_export_errors_stats_requires_build_text))
+				info_feedback (get_text ({ADL_MESSAGES_IDS}.ec_export_errors_stats_requires_build_text))
 			end
 		end
 
@@ -735,11 +735,11 @@ feature {NONE} -- Tools menu events
 			yes_text, no_text, cancel_text: STRING
 		do
 			if not adl_roundtripping then
-				create question_dialog.make_with_text (get_text (ec_roundtripping_question))
-				question_dialog.set_title (get_text (ec_roundtripping_dialog_title))
-				yes_text := get_text (ec_yes_response)
-				no_text := get_text (ec_no_response)
-				cancel_text := get_text (ec_cancel_button_text)
+				create question_dialog.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_roundtripping_question))
+				question_dialog.set_title (get_text ({ADL_MESSAGES_IDS}.ec_roundtripping_dialog_title))
+				yes_text := get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response)
+				no_text := get_text ({GENERAL_MESSAGES_IDS}.ec_no_response)
+				cancel_text := get_text ({EVX_MESSAGES_IDS}.ec_cancel_button_text)
 				question_dialog.set_buttons (<<yes_text, no_text, cancel_text>>)
 
 				question_dialog.set_default_cancel_button (question_dialog.button (cancel_text))
@@ -751,7 +751,7 @@ feature {NONE} -- Tools menu events
 			else
 				set_adl_roundtripping (False)
 			end
-			evx_menu_bar.menu_item (get_text (ec_menu_tools_adl_roundtrip_key)).set_pixmap (
+			evx_menu_bar.menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_tools_adl_roundtrip_key)).set_pixmap (
 				if adl_roundtripping then get_icon_pixmap ("tool/test_passed") else
 				get_icon_pixmap ("tool/test_failed") end)
 		end
@@ -833,7 +833,7 @@ feature {NONE} -- Help events
 			dialog: EV_INFORMATION_DIALOG
 		do
 			create dialog.make_with_text (splash_text)
-			dialog.set_title (get_text (ec_about_awb_dialog_title))
+			dialog.set_title (get_text ({ADL_MESSAGES_IDS}.ec_about_awb_dialog_title))
 			dialog.set_pixmap (adl_workbench_logo)
 			dialog.set_background_color (Off_white_background_color)
 --			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
@@ -871,11 +871,11 @@ feature -- RM Schema explorer
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (ref_model_explorer.ev_root_container, get_icon_pixmap ("tool/rm_schema"), get_msg (ec_reference_models_docking_area_title, Void), docking_manager)
+			create a_docking_pane.make_with_widget_title_pixmap (ref_model_explorer.ev_root_container, get_icon_pixmap ("tool/rm_schema"), get_msg ({ADL_MESSAGES_IDS}.ec_reference_models_docking_area_title, Void), docking_manager)
 			docking_manager.contents.extend (a_docking_pane)
 			ref_model_explorer.set_docking_pane (a_docking_pane)
-			a_docking_pane.set_long_title (get_msg (ec_reference_models_docking_area_title, Void))
-			a_docking_pane.set_short_title (get_msg (ec_reference_models_docking_area_title, Void))
+			a_docking_pane.set_long_title (get_msg ({ADL_MESSAGES_IDS}.ec_reference_models_docking_area_title, Void))
+			a_docking_pane.set_short_title (get_msg ({ADL_MESSAGES_IDS}.ec_reference_models_docking_area_title, Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.left)
 			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (ref_model_explorer))
@@ -921,14 +921,14 @@ feature -- library tool
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (library_tool.ev_root_container, get_icon_pixmap ("tool/archetype_category"), get_msg (ec_library_tool_title, Void), docking_manager)
+			create a_docking_pane.make_with_widget_title_pixmap (library_tool.ev_root_container, get_icon_pixmap ("tool/archetype_category"), get_msg ({ADL_MESSAGES_IDS}.ec_library_tool_title, Void), docking_manager)
 			if attached library_tool.mini_tool_bar then
 				a_docking_pane.set_mini_toolbar (library_tool.mini_tool_bar)
 			end
 			library_tool.set_docking_pane (a_docking_pane)
 			docking_manager.contents.extend (a_docking_pane)
-			a_docking_pane.set_long_title (get_msg (ec_library_tool_title, Void))
-			a_docking_pane.set_short_title (get_msg (ec_library_tool_title, Void))
+			a_docking_pane.set_long_title (get_msg ({ADL_MESSAGES_IDS}.ec_library_tool_title, Void))
+			a_docking_pane.set_short_title (get_msg ({ADL_MESSAGES_IDS}.ec_library_tool_title, Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_top ({SD_ENUMERATION}.left)
 			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (library_tool))
@@ -1051,10 +1051,10 @@ feature -- Test tool
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, get_icon_pixmap ("tool/tools"), get_text (ec_test_tool_title), docking_manager)
+			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, get_icon_pixmap ("tool/tools"), get_text ({ADL_MESSAGES_IDS}.ec_test_tool_title), docking_manager)
 			docking_manager.contents.extend (a_docking_pane)
-			a_docking_pane.set_long_title (get_text (ec_test_tool_title))
-			a_docking_pane.set_short_title (get_text (ec_test_tool_title))
+			a_docking_pane.set_long_title (get_text ({ADL_MESSAGES_IDS}.ec_test_tool_title))
+			a_docking_pane.set_short_title (get_text ({ADL_MESSAGES_IDS}.ec_test_tool_title))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
@@ -1070,12 +1070,12 @@ feature -- Console Tool
 		local
 			docking_pane: SD_CONTENT
 		do
-			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, get_icon_pixmap ("tool/console"), get_text (ec_console_tool_title), docking_manager)
+			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, get_icon_pixmap ("tool/console"), get_text ({ADL_MESSAGES_IDS}.ec_console_tool_title), docking_manager)
 			console_tool.set_docking_pane (docking_pane)
 			docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.tool)
-			docking_pane.set_long_title (get_text (ec_console_tool_title))
-			docking_pane.set_short_title (get_text (ec_console_tool_title))
+			docking_pane.set_long_title (get_text ({ADL_MESSAGES_IDS}.ec_console_tool_title))
+			docking_pane.set_short_title (get_text ({ADL_MESSAGES_IDS}.ec_console_tool_title))
 			docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
 
@@ -1094,18 +1094,18 @@ feature -- Error Tool
 
 	create_new_error_tool
 		do
-			create error_docking_pane.make_with_widget_title_pixmap (error_tool.ev_grid, get_icon_pixmap ("tool/errors"), get_text (ec_error_tool_title), docking_manager)
+			create error_docking_pane.make_with_widget_title_pixmap (error_tool.ev_grid, get_icon_pixmap ("tool/errors"), get_text ({ADL_MESSAGES_IDS}.ec_error_tool_title), docking_manager)
 			docking_manager.contents.extend (error_docking_pane)
 			error_docking_pane.set_type ({SD_ENUMERATION}.tool)
-			error_docking_pane.set_long_title (get_msg (ec_error_tool_title, Void))
-			error_docking_pane.set_short_title (get_msg (ec_error_tool_title, Void))
+			error_docking_pane.set_long_title (get_msg ({ADL_MESSAGES_IDS}.ec_error_tool_title, Void))
+			error_docking_pane.set_short_title (get_msg ({ADL_MESSAGES_IDS}.ec_error_tool_title, Void))
 			error_docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
 
 	error_tool_title_update (parse_error_count, validity_error_count, warning_count: INTEGER)
 		do
-			error_docking_pane.set_short_title (get_msg (ec_error_tool_title, Void) + " (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
-			error_docking_pane.set_long_title (get_msg (ec_error_tool_title, Void) + " (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
+			error_docking_pane.set_short_title (get_msg ({ADL_MESSAGES_IDS}.ec_error_tool_title, Void) + " (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
+			error_docking_pane.set_long_title (get_msg ({ADL_MESSAGES_IDS}.ec_error_tool_title, Void) + " (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
 		end
 
 feature -- Clipboard
@@ -1146,7 +1146,7 @@ feature {NONE} -- Implementation
 			-- Save the application configuration file and update the status area.
 		do
 			app_cfg.save
-			console_tool.append_text (get_msg (ec_cfg_file_i1, <<user_config_file_path>>))
+			console_tool.append_text (get_msg ({GENERAL_MESSAGES_IDS}.ec_cfg_file_i1, <<user_config_file_path>>))
 		end
 
 	display_archetype_library (refresh_from_source: BOOLEAN)
@@ -1161,10 +1161,10 @@ feature {NONE} -- Implementation
 		do
 			console_tool.show
 			if has_current_library then
-				console_tool.append_text (get_msg_line (ec_populating_directory_start, <<current_library_name>>))
+				console_tool.append_text (get_msg_line ({ADL_MESSAGES_IDS}.ec_populating_directory_start, <<current_library_name>>))
 				use_current_library (refresh_from_source)
 				console_tool.append_text (current_library.error_strings)
-				console_tool.append_text (get_msg_line (ec_populating_directory_complete, Void))
+				console_tool.append_text (get_msg_line ({ADL_MESSAGES_IDS}.ec_populating_directory_complete, Void))
 
 				clear_toolbar_controls
 				error_tool.clear
@@ -1222,16 +1222,16 @@ feature {NONE} -- Build commands
 			build_started: BOOLEAN
 		do
 			if not build_started then
-				evx_menu_bar.disable_menu_items (<<get_text (ec_menu_archetypes_build_all_key), get_text (ec_menu_archetypes_rebuild_all_key),
-					get_text (ec_menu_archetypes_export_library_key)>>)
-				evx_menu_bar.enable_menu_items (<<get_text (ec_menu_archetypes_interrupt_build_key)>>)
+				evx_menu_bar.disable_menu_items (<<get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_build_all_key), get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_rebuild_all_key),
+					get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_export_library_key)>>)
+				evx_menu_bar.enable_menu_items (<<get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_interrupt_build_key)>>)
 				build_started := True
 				do_with_wait_cursor (Current, action)
 			end
 
-			evx_menu_bar.enable_menu_items (<<get_text (ec_menu_archetypes_build_all_key), get_text (ec_menu_archetypes_rebuild_all_key),
-					get_text (ec_menu_archetypes_export_library_key)>>)
-			evx_menu_bar.disable_menu_items (<<get_text (ec_menu_archetypes_interrupt_build_key)>>)
+			evx_menu_bar.enable_menu_items (<<get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_build_all_key), get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_rebuild_all_key),
+					get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_export_library_key)>>)
+			evx_menu_bar.disable_menu_items (<<get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_interrupt_build_key)>>)
 		end
 
 	compiler_console_update (a_msg: STRING)

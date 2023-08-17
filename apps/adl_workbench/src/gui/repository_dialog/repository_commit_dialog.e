@@ -41,10 +41,10 @@ feature -- Definitions
 	col_titles: ARRAYED_LIST [STRING]
 		once
 			create Result.make (0)
-			Result.extend (get_text (ec_repository_commit_status_col_title))
-			Result.extend (get_text (ec_repository_commit_commit_col_title))
-			Result.extend (get_text (ec_repository_commit_revert_col_title))
-			Result.extend (get_text (ec_repository_commit_file_list_col_title))
+			Result.extend (get_text ({ADL_MESSAGES_IDS}.ec_repository_commit_status_col_title))
+			Result.extend (get_text ({ADL_MESSAGES_IDS}.ec_repository_commit_commit_col_title))
+			Result.extend (get_text ({ADL_MESSAGES_IDS}.ec_repository_commit_revert_col_title))
+			Result.extend (get_text ({ADL_MESSAGES_IDS}.ec_repository_commit_file_list_col_title))
 		end
 
 	Col_status: INTEGER = 1
@@ -86,7 +86,7 @@ feature {NONE} -- Initialization
 			ev_cell_1.set_minimum_height (20)
 			ev_root_container.extend (ev_cell_1)
 			create ev_label_1
-			ev_label_1.set_text (get_msg (ec_repository_commit_dialog_header_label, <<repository_name>>))
+			ev_label_1.set_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_commit_dialog_header_label, <<repository_name>>))
 			ev_root_container.extend (ev_label_1)
 			create ev_cell_2
 			ev_cell_2.set_minimum_height (20)
@@ -101,7 +101,7 @@ feature {NONE} -- Initialization
 			ev_root_container.extend (evx_grid.ev_grid)
 
 			-- ============ commit message ============
-			create evx_commit_msg_text.make (get_text (ec_repository_commit_message_label), agent :STRING do Result := message end, 2, 0, True)
+			create evx_commit_msg_text.make (get_text ({ADL_MESSAGES_IDS}.ec_repository_commit_message_label), agent :STRING do Result := message end, 2, 0, True)
 			ev_root_container.extend (evx_commit_msg_text.ev_root_container)
 			ev_root_container.disable_item_expand (evx_commit_msg_text.ev_root_container)
 			gui_controls.extend (evx_commit_msg_text)
@@ -117,7 +117,7 @@ feature {NONE} -- Initialization
 			precursor
 
 			-- window characteristics
-			set_title (get_text (ec_repository_commit_dialog_title))
+			set_title (get_text ({ADL_MESSAGES_IDS}.ec_repository_commit_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 
 			-- ensure size controlled
@@ -174,7 +174,7 @@ feature -- Events
 
 			commit_all := not unchecked_files_exist
 			if (commit_all or not commit_list.is_empty) and message.is_empty then
-				create error_dialog.make_with_text (get_text (ec_no_commit_message_supplied))
+				create error_dialog.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_no_commit_message_supplied))
 				error_dialog.show_modal_to_window (Current)
 			else
 				is_valid := True

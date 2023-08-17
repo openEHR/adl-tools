@@ -30,26 +30,6 @@ inherit
 			{NONE} all
 		end
 
-	ADL_MESSAGES_IDS
-		export
-			{NONE} all
-		end
-
-	GENERAL_MESSAGES_IDS
-		export
-			{NONE} all
-		end
-
-	ODIN_MESSAGES_IDS
-		export
-			{NONE} all
-		end
-
-	BMM_MESSAGES_IDS
-		export
-			{NONE} all
-		end
-
 	ADL_2_TERM_CODE_TOOLS
 		export
 			{NONE} all

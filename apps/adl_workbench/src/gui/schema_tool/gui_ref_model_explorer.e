@@ -275,15 +275,15 @@ feature {NONE} -- Implementation
 
 				elseif button = {EV_POINTER_CONSTANTS}.right then
 					create menu
-					create an_mi.make_with_text_and_action (get_msg (ec_display_in_active_tab, Void), agent display_context_selected_class_in_active_tool (ev_ti))
+					create an_mi.make_with_text_and_action (get_msg ({ADL_MESSAGES_IDS}.ec_display_in_active_tab, Void), agent display_context_selected_class_in_active_tool (ev_ti))
 					an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
 			    	menu.extend (an_mi)
 
-					create an_mi.make_with_text_and_action (get_msg (ec_display_in_new_tab, Void), agent display_context_selected_class_in_new_tool (ev_ti))
+					create an_mi.make_with_text_and_action (get_msg ({ADL_MESSAGES_IDS}.ec_display_in_new_tab, Void), agent display_context_selected_class_in_new_tool (ev_ti))
 					an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 					menu.extend (an_mi)
 
-					create an_mi.make_with_text_and_action (get_msg (ec_edit_source_schema, Void), agent do_edit_schema (a_class_def.source_schema_id))
+					create an_mi.make_with_text_and_action (get_msg ({ADL_MESSAGES_IDS}.ec_edit_source_schema, Void), agent do_edit_schema (a_class_def.source_schema_id))
 					an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 					menu.extend (an_mi)
 
@@ -301,41 +301,41 @@ feature {NONE} -- Implementation
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_MODEL} ev_ti.data as bm then
 				create menu
 
-				create an_mi.make_with_text_and_action (get_text (ec_display_in_active_tab), agent display_context_selected_rm_in_active_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_display_in_active_tab), agent display_context_selected_rm_in_active_tool (ev_ti))
 		    	menu.extend (an_mi)
 				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema_tool"))
 
-				create an_mi.make_with_text_and_action (get_text (ec_display_in_new_tab), agent display_context_selected_rm_in_new_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_display_in_new_tab), agent display_context_selected_rm_in_new_tool (ev_ti))
 		    	menu.extend (an_mi)
 				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema_tool_new"))
 
-				create an_mi.make_with_text_and_action (get_text (ec_edit_source_schema), agent do_edit_schema (bm.source_schema.schema_id))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_edit_source_schema), agent do_edit_schema (bm.source_schema.schema_id))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 		    	menu.extend (an_mi)
 
 				-- P_BMM_SCHEMA export
 
-				create an_mi.make_with_text_and_action (get_text (ec_export_schema_as_xml), agent do_schema_export (bm.source_schema.schema_id, syntax_type_xml))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_export_schema_as_xml), agent do_schema_export (bm.source_schema.schema_id, syntax_type_xml))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/xml"))
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_text (ec_export_schema_as_json), agent do_schema_export (bm.source_schema.schema_id, syntax_type_json))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_export_schema_as_json), agent do_schema_export (bm.source_schema.schema_id, syntax_type_json))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/json"))
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_text (ec_export_schema_as_odin), agent do_schema_export (bm.source_schema.schema_id, syntax_type_odin))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_export_schema_as_odin), agent do_schema_export (bm.source_schema.schema_id, syntax_type_odin))
 				menu.extend (an_mi)
 
 				-- tree controls
-				create tree_menu.make_with_text (get_text (ec_tree_controls))
+				create tree_menu.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_tree_controls))
 				menu.extend (tree_menu)
-				create an_mi.make_with_text_and_action (get_text (ec_expand_button_expand_text), agent schema_expand_all (ev_ti))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_expand_button_expand_text), agent schema_expand_all (ev_ti))
 		    	tree_menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_text (ec_expand_packages), agent schema_expand_packages (ev_ti))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_expand_packages), agent schema_expand_packages (ev_ti))
 		    	tree_menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_text (ec_expand_button_collapse_text), agent schema_collapse (ev_ti))
+				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_expand_button_collapse_text), agent schema_collapse (ev_ti))
 		    	tree_menu.extend (an_mi)
 
 				menu.show
@@ -426,10 +426,10 @@ feature {NONE} -- Implementation
 					file_ext := fx
 				end
 				create save_dialog
-				save_dialog.set_title (get_text (ec_export_bmm_schema_dialog_title))
+				save_dialog.set_title (get_text ({ADL_MESSAGES_IDS}.ec_export_bmm_schema_dialog_title))
 				save_dialog.set_file_name (schema_desc.schema_id + ".bmm" + file_ext)
 				save_dialog.set_start_directory (export_directory)
-				save_dialog.filters.extend (["*" + file_ext, get_msg (ec_save_schema_as, <<a_syntax_type.tail (a_syntax_type.count-1)>>)])
+				save_dialog.filters.extend (["*" + file_ext, get_msg ({ADL_MESSAGES_IDS}.ec_save_schema_as, <<a_syntax_type.tail (a_syntax_type.count-1)>>)])
 				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				path := save_dialog.file_name.as_string_8
 

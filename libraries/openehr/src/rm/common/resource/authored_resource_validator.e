@@ -55,7 +55,7 @@ feature {NONE} -- Implementation
 			-- True if `original_language' is not still set on the fake default value
 		do
 			if target.original_language.code_string.is_equal (ts.Non_existent_language) then
-				add_error (ec_VDEOL, Void)
+				add_error ({ADL_MESSAGES_IDS}.ec_VDEOL, Void)
 			end
 		end
 
@@ -72,7 +72,7 @@ feature {NONE} -- Implementation
 					tgt_trans.forth
 				end
 				if not tgt_trans.off then
-					add_error (ec_VTRLA, <<tgt_trans.key_for_iteration, tgt_trans.item_for_iteration.language.code_string>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VTRLA, <<tgt_trans.key_for_iteration, tgt_trans.item_for_iteration.language.code_string>>)
 				end
 			end
 		end
@@ -90,7 +90,7 @@ feature {NONE} -- Implementation
 					tgt_desc.details.forth
 				end
 				if not tgt_desc.details.off then
-					add_error (ec_VRDLA, <<tgt_desc.details.key_for_iteration, tgt_desc.details.item_for_iteration.language.code_string>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VRDLA, <<tgt_desc.details.key_for_iteration, tgt_desc.details.item_for_iteration.language.code_string>>)
 				end
 			end
 		end

@@ -68,7 +68,7 @@ input: archetype
 		}
 	| error
 		{
-			abort_with_error (ec_SUNK, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SUNK, Void)
 		}
 	;
 
@@ -220,12 +220,12 @@ arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID
 			if archetype_id_checker.valid_id_reference ($2) then
 				parent_archetype_id := $2
 			else
-				abort_with_error (ec_SASID, Void)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)
 			end
 		}
 	| SYM_SPECIALIZE error
 		{
-			abort_with_error (ec_SASID, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)
 		}
 	;
 
@@ -237,7 +237,7 @@ arch_language: SYM_LANGUAGE V_ODIN_TEXT
 		}
 	| SYM_LANGUAGE error
 		{
-			abort_with_error (ec_SALA, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SALA, Void)
 		}
 	;
 
@@ -249,7 +249,7 @@ arch_description: SYM_DESCRIPTION V_ODIN_TEXT
 		}
 	| SYM_DESCRIPTION error
 		{
-			abort_with_error (ec_SADS, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SADS, Void)
 		}
 	;
 		
@@ -259,7 +259,7 @@ arch_definition:	SYM_DEFINITION V_CADL_TEXT
 		}
 	| SYM_DEFINITION error
 		{
-			abort_with_error (ec_SADF, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SADF, Void)
 		}
 	;
 
@@ -270,7 +270,7 @@ arch_rules: -- no rules ok
 		}
 	| SYM_RULES error
 		{
-			abort_with_error (ec_SAIV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SAIV, Void)
 		}
 	;
 
@@ -280,7 +280,7 @@ arch_terminology: SYM_TERMINOLOGY V_ODIN_TEXT
 		}
 	| SYM_TERMINOLOGY error
 		{
-			abort_with_error (ec_SAON, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SAON, Void)
 		}
 	;
 
@@ -291,7 +291,7 @@ arch_annotations: -- no annotations ok
 		}
 	| SYM_ANNOTATIONS error
 		{
-			abort_with_error (ec_SAAN, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SAAN, Void)
 		}
 	;
 		
@@ -301,7 +301,7 @@ arch_component_terminologies: SYM_COMPONENT_TERMINOLOGIES V_ODIN_TEXT
 		}
 	| SYM_COMPONENT_TERMINOLOGIES error
 		{
-			abort_with_error (ec_SAAN, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SAAN, Void)
 		}
 	;
 		
@@ -416,7 +416,7 @@ feature {NONE} -- Implementation
 			if archetype_id_checker.valid_id (an_arch_id) then
 				create archetype_id.make_from_string (an_arch_id)
 			else
-				abort_with_error (ec_SASID, Void)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)
 			end
 		end
 

@@ -257,7 +257,7 @@ feature -- File Operations
 					parent_id := amp.last_archetype.parent_archetype_id
 				end
 			else
-				status := get_msg_line (ec_general, <<amp.error_strings>>)
+				status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_general, <<amp.error_strings>>)
 			end
 		end
 
@@ -312,7 +312,7 @@ feature {ARCH_LIB_ARCHETYPE} -- File Management (Legacy)
 			if is_source_generated then
 				if has_source_file then
 					file_system.delete_file (source_file_path)
-					status.append (get_msg_line (ec_clean_generated_file, <<source_file_path>>))
+					status.append (get_msg_line ({ADL_MESSAGES_IDS}.ec_clean_generated_file, <<source_file_path>>))
 				end
 			end
 
@@ -428,7 +428,7 @@ feature {GUI_SOURCE_CONTROL, ARCH_LIB_ARCHETYPE} -- File Management
 		do
 			file_repository.save_text_to_file (source_file_path, a_text)
 			source_text_timestamp := source_file_timestamp
-			status := get_msg_line (ec_file_saved_as_in_format, <<source_file_path, Syntax_type_adl>>)
+			status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<source_file_path, Syntax_type_adl>>)
 		ensure
 			source_text_timestamp = source_file_timestamp
 		end
@@ -461,7 +461,7 @@ feature {GUI_TEST_TOOL} -- File Operations
 		do
 			if attached legacy_flat_text as lft then
 				file_repository.save_text_to_file (a_full_path, lft)
-				status := get_msg_line (ec_file_saved_as_in_format, <<a_full_path, file_ext_archetype_adl14>>)
+				status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<a_full_path, file_ext_archetype_adl14>>)
 			end
 		end
 

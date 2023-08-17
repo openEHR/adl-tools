@@ -61,7 +61,7 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (ev_cell_1)
 
 			create ev_label_1
-			ev_label_1.set_text (get_text (ec_export_description))
+			ev_label_1.set_text (get_text ({ADL_MESSAGES_IDS}.ec_export_description))
 			ev_root_container.extend (ev_label_1)
 			ev_root_container.disable_item_expand (ev_label_1)
 
@@ -71,12 +71,12 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (ev_cell_2)
 
 			-- ============ input format ============
-			create evx_input_frame.make (get_text (ec_export_input_settings), True)
+			create evx_input_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_export_input_settings), True)
 			ev_root_container.extend (evx_input_frame.ev_root_container)
 			ev_root_container.disable_item_expand (evx_input_frame.ev_root_container)
 
 			-- differential or flat: 2 x radio buttons
-			create evx_diff_flat_rb.make (get_text (ec_export_differential_text), get_text (ec_export_flat_text),
+			create evx_diff_flat_rb.make (get_text ({ADL_MESSAGES_IDS}.ec_export_differential_text), get_text ({ADL_MESSAGES_IDS}.ec_export_flat_text),
 				Void, Void,
 				agent :BOOLEAN do Result := not export_flat end,
 				agent update_export_flat, 0, 0, True)
@@ -84,32 +84,32 @@ feature {NONE} -- Initialization
 			gui_controls.extend (evx_diff_flat_rb)
 
 			-- flatten with RM: check box
-			create evx_flatten_with_rm_cb.make_linked (get_text (ec_flatten_with_rm_cb_text), get_text (ec_flatten_with_rm_cb_tooltip),
+			create evx_flatten_with_rm_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text), get_text ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip),
 				agent :BOOLEAN do Result := user_rm_flattening_on end, agent set_user_rm_flattening_on)
 			evx_input_frame.extend (evx_flatten_with_rm_cb.ev_data_control, True)
 			gui_controls.extend (evx_flatten_with_rm_cb)
 
 			-- compile all first: check box
 			evx_input_frame.add_row (False)
-			create evx_compile_first_cb.make_linked (get_text (ec_export_compile_first_text), get_text (ec_export_compile_first_tooltip),
+			create evx_compile_first_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_export_compile_first_text), get_text ({ADL_MESSAGES_IDS}.ec_export_compile_first_tooltip),
 				agent :BOOLEAN do Result := compile_all_first end, agent set_compile_all_first)
 			evx_input_frame.extend (evx_compile_first_cb.ev_data_control, False)
 			gui_controls.extend (evx_compile_first_cb)
 
 
 			-- ============ output format ============
-			create evx_output_frame.make (get_text (ec_export_output_settings), False)
+			create evx_output_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_export_output_settings), False)
 			ev_root_container.extend (evx_output_frame.ev_root_container)
 			ev_root_container.disable_item_expand (evx_output_frame.ev_root_container)
 
 			-- file format combo			
-			create evx_format_cob.make_linked (get_text (ec_export_format_text), get_text (ec_export_format_tooltip),
+			create evx_format_cob.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_export_format_text), get_text ({ADL_MESSAGES_IDS}.ec_export_format_tooltip),
 				agent :STRING do Result := export_format end, export_formats, agent set_export_format, Void, Void, 15)
 			evx_output_frame.extend (evx_format_cob.ev_root_container, False)
 			gui_controls.extend (evx_format_cob)
 
 			-- ============ output directory ============
-			create evx_dir_setter.make_linked (get_text (ec_export_directory_text),
+			create evx_dir_setter.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_export_directory_text),
 				agent :STRING do Result := user_export_directory end, agent set_user_export_directory, Void, Void, 0)
 			evx_dir_setter.add_explore_button (agent show_in_system_explorer, get_icon_pixmap ("tool/magnifier"))
 			evx_output_frame.extend (evx_dir_setter.ev_root_container, False)
@@ -132,7 +132,7 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (ev_bottom_row_hb)
 
 			-- execution button
-			create evx_export_button.make (get_text (ec_export_button_text), get_text (ec_export_button_text), Void,
+			create evx_export_button.make (get_text ({ADL_MESSAGES_IDS}.ec_export_button_text), get_text ({ADL_MESSAGES_IDS}.ec_export_button_text), Void,
 				agent :BOOLEAN do Result := is_running end, agent do_export, 0, 0)
 			evx_export_button.set_pixmaps (get_icon_pixmap ("tool/compile"), get_icon_pixmap ("tool/pause"))
 			ev_bottom_row_hb.extend (evx_export_button.ev_data_control)
@@ -155,7 +155,7 @@ feature {NONE} -- Initialization
 			precursor
 
 			-- window characteristics
-			set_title (get_text (ec_export_library_dialog_title))
+			set_title (get_text ({ADL_MESSAGES_IDS}.ec_export_library_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 			set_minimum_width (Min_width_in_chars * Text_char_width)
 			extend (ev_root_container)
@@ -263,9 +263,9 @@ feature -- Events
 		do
 			compile_all_first := val
 			if compile_all_first then
-				evx_export_button.set_labels (get_text (ec_compile_button_text), get_text (ec_compile_button_text))
+				evx_export_button.set_labels (get_text ({ADL_MESSAGES_IDS}.ec_compile_button_text), get_text ({ADL_MESSAGES_IDS}.ec_compile_button_text))
 			else
-				evx_export_button.set_labels (get_text (ec_export_button_text), get_text (ec_export_button_text))
+				evx_export_button.set_labels (get_text ({ADL_MESSAGES_IDS}.ec_export_button_text), get_text ({ADL_MESSAGES_IDS}.ec_export_button_text))
 			end
 			evx_export_button.populate
 		end
@@ -353,7 +353,7 @@ feature {NONE} -- Implementation
 				-- start export
 				elseif execution_state = es_ready_to_export then
 					execution_state := es_exporting
-					evx_export_button.set_labels (get_text (ec_export_button_text), get_text (ec_export_button_text))
+					evx_export_button.set_labels (get_text ({ADL_MESSAGES_IDS}.ec_export_button_text), get_text ({ADL_MESSAGES_IDS}.ec_export_button_text))
 					archetype_exporter.build_all
 					if not archetype_exporter.is_interrupted then
 						execution_state := es_completed

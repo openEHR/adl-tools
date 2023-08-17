@@ -72,19 +72,19 @@ feature {NONE} -- Initialization
 			ev_root_container.set_border_width (Default_border_width)
 
 			-- ============ archetype id data entry control ============
-			create archetype_id_ctl.make_linked (archetype_id, get_text (ec_archetype_id_label_text),
+			create archetype_id_ctl.make_linked (archetype_id, get_text ({ADL_MESSAGES_IDS}.ec_archetype_id_label_text),
 				agent :STRING do Result := archetype_id.concept_id end,
 				agent (a_str: STRING) do archetype_id.set_concept_id (a_str) end,
 				Void, Void
 			)
-			archetype_id_ctl.set_validity_agents (agent archetype_id.valid_concept_id, agent get_msg (ec_invalid_archetype_id_concept_err, ?))
+			archetype_id_ctl.set_validity_agents (agent archetype_id.valid_concept_id, agent get_msg ({ADL_MESSAGES_IDS}.ec_invalid_archetype_id_concept_err, ?))
 			ev_root_container.extend (archetype_id_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (archetype_id_ctl.ev_root_container)
 			gui_controls.extend (archetype_id_ctl)
 
 			-- ============ parent archetype id data entry control ============
 			if attached parent_archetype_id as pid then
-				create parent_archetype_id_ctl.make_readonly (pid, get_text (ec_parent_archetype_id_label_text),
+				create parent_archetype_id_ctl.make_readonly (pid, get_text ({ADL_MESSAGES_IDS}.ec_parent_archetype_id_label_text),
 					agent (a_parent_id: attached like parent_archetype_id):STRING do Result := a_parent_id.concept_id end (pid)
 				)
 				ev_root_container.extend (parent_archetype_id_ctl.ev_root_container)
@@ -93,7 +93,7 @@ feature {NONE} -- Initialization
 			end
 
 			-- ============ Directory path ============
-			create dir_setter.make (get_text (ec_archetype_dir_label_text), agent :STRING do Result := archetype_directory end, 0)
+			create dir_setter.make (get_text ({ADL_MESSAGES_IDS}.ec_archetype_dir_label_text), agent :STRING do Result := archetype_directory end, 0)
 			ev_root_container.extend (dir_setter.ev_root_container)
 			gui_controls.extend (dir_setter)
 
@@ -109,7 +109,7 @@ feature {NONE} -- Initialization
 			Precursor {EV_DIALOG}
 
 			-- window characteristics
-			set_title (get_text (ec_create_archetype_dialog_title))
+			set_title (get_text ({ADL_MESSAGES_IDS}.ec_create_archetype_dialog_title))
 			set_icon_pixmap (adl_workbench_logo)
 			set_minimum_width (650)
 
@@ -130,10 +130,10 @@ feature -- Events
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if source.has_item_with_id (archetype_id.physical_id) then
-				create error_dialog.make_with_text (get_msg (ec_duplicate_archetype_id_err_msg, <<archetype_id.physical_id>>))
+				create error_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_duplicate_archetype_id_err_msg, <<archetype_id.physical_id>>))
 				error_dialog.show_modal_to_window (Current)
 			elseif not has_model_for_archetype_id (archetype_id) then
-				create error_dialog.make_with_text (get_msg (ec_model_access_e7, <<archetype_id.qualified_model_name>>))
+				create error_dialog.make_with_text (get_msg ({BMM_MESSAGES_IDS}.ec_model_access_e7, <<archetype_id.qualified_model_name>>))
 				error_dialog.show_modal_to_window (Current)
 			else
 				archetype_directory := dir_setter.data_control_text

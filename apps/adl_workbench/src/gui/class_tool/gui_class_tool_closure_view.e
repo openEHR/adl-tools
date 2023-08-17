@@ -72,49 +72,49 @@ feature -- Initialisation
 			-- ========= RM view options =========
 
 			-- frame
-			create rm_property_visibility_frame_ctl.make (get_text (ec_rm_visibility_controls_text), False)
+			create rm_property_visibility_frame_ctl.make (get_text ({ADL_MESSAGES_IDS}.ec_rm_visibility_controls_text), False)
 			control_panel.add_frame_control (rm_property_visibility_frame_ctl, False)
 
 			-- add RM data properties check button
-			create rm_attrs_visible_checkbox_ctl.make_linked (get_text (ec_show_rm_properties_button_text),
-				get_text (ec_show_rm_properties_tooltip),
+			create rm_attrs_visible_checkbox_ctl.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_show_rm_properties_button_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_show_rm_properties_tooltip),
 				agent :BOOLEAN do Result := include_rm_data_properties end, agent update_include_rm_data_properties)
 			gui_controls.extend (rm_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- add RM runtime properties option check button
-			create rm_runtime_attrs_visible_checkbox_ctl.make_linked (get_text (ec_show_rm_runtime_properties_button_text),
-				get_text (ec_show_rm_runtime_properties_tooltip),
+			create rm_runtime_attrs_visible_checkbox_ctl.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_show_rm_runtime_properties_button_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_show_rm_runtime_properties_tooltip),
 				agent :BOOLEAN do Result := include_rm_runtime_properties end, agent update_include_rm_runtime_properties)
 			gui_controls.extend (rm_runtime_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_runtime_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- add RM infrastructure properties option check button
 			use_rm_pixmaps := True
-			create rm_if_attrs_visible_checkbox_ctl.make_linked (get_text (ec_show_rm_if_properties_button_text),
-				get_text (ec_show_rm_if_properties_tooltip),
+			create rm_if_attrs_visible_checkbox_ctl.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_show_rm_if_properties_button_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_show_rm_if_properties_tooltip),
 				agent :BOOLEAN do Result := include_rm_infrastructure_properties end, agent update_include_rm_infrastructure_properties)
 			gui_controls.extend (rm_if_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_if_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- frame
-			create rm_rendering_frame_ctl.make (get_text (ec_rendering_controls_text), False)
+			create rm_rendering_frame_ctl.make (get_text ({ADL_MESSAGES_IDS}.ec_rendering_controls_text), False)
 			control_panel.add_frame_control (rm_rendering_frame_ctl, False)
 
 			-- use RM icons check button
-			create view_rm_use_icons_checkbox_ctl.make_linked (get_text (ec_use_rm_icons_text),
-				get_text (ec_use_rm_icons_tooltip),
+			create view_rm_use_icons_checkbox_ctl.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_use_rm_icons_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_use_rm_icons_tooltip),
 				agent :BOOLEAN do Result := use_rm_pixmaps end, agent update_use_rm_pixmaps)
 			gui_controls.extend (view_rm_use_icons_checkbox_ctl)
 			rm_rendering_frame_ctl.extend (view_rm_use_icons_checkbox_ctl.ev_data_control, False)
 
 			-- ========== recompute controls =========
-			create rm_recompute_frame_ctl.make (get_text (ec_rm_closure_depth_control_frame_text), False)
+			create rm_recompute_frame_ctl.make (get_text ({ADL_MESSAGES_IDS}.ec_rm_closure_depth_control_frame_text), False)
 			control_panel.add_frame_control (rm_recompute_frame_ctl, False)
 
 			-- closure depth control
 			create ev_closure_depth_spin_button
-			ev_closure_depth_spin_button.set_tooltip (get_msg (ec_closure_depth_spin_button_tooltip, Void))
+			ev_closure_depth_spin_button.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_closure_depth_spin_button_tooltip, Void))
 			ev_closure_depth_spin_button.set_value (default_closure_depth)
 			rm_recompute_frame_ctl.extend (ev_closure_depth_spin_button, False)
 
@@ -480,7 +480,7 @@ feature {NONE} -- Implementation
 			bmm_class: BMM_CLASS
 		do
 			-- create sub menu listing subtypes to change current node into
-			create chg_sub_menu.make_with_text (get_text (ec_context_menu_convert_node_to_subtype))
+			create chg_sub_menu.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_context_menu_convert_node_to_subtype))
 			across a_substitutions as subs_csr loop
 				bmm_class := safe_source.bmm_model.class_definition (subs_csr.item)
 				create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (bmm_class, a_class_grid_row, True))
@@ -498,7 +498,7 @@ feature {NONE} -- Implementation
 --				attached {BMM_PROPERTY} a_class_grid_row.parent_row.data as a_prop_def and then a_prop_def.is_container
 --			then
 --				-- create sub menu listing subtypes to add to parent node
---				create chg_sub_menu.make_with_text (get_text (ec_context_menu_add_subtype_mode))
+--				create chg_sub_menu.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_context_menu_add_subtype_mode))
 --				from a_substitutions.start until a_substitutions.off loop
 --					create an_mi.make_with_text_and_action (a_substitutions.item, agent convert_node_to_subtype (a_substitutions.item, a_class_grid_row, False))
 --					if rm_schema.class_definition (a_substitutions.item).is_abstract then

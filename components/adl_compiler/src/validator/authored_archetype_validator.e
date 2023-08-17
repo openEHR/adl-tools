@@ -82,10 +82,10 @@ feature -- Commands
 						-- firstly see if annotation path is valid
 						if apa.is_archetype_path then
 							if not (target.has_path (ann_path) or else attached arch_flat_parent as att_fa and then att_fa.has_path (ann_path)) then
-								add_error (ec_VRANP1, <<annots_csr.key, ann_path>>)
+								add_error ({ADL_MESSAGES_IDS}.ec_VRANP1, <<annots_csr.key, ann_path>>)
 							end
 						elseif not ref_model.has_property_path (target.definition.rm_type_name, ann_path) then
-							add_error (ec_VRANP2, <<annots_csr.key, ann_path>>)
+							add_error ({ADL_MESSAGES_IDS}.ec_VRANP2, <<annots_csr.key, ann_path>>)
 						end
 
 						-- FIXME: now we should do some other checks to see if contents are of same structure as annotations in other languages
@@ -101,7 +101,7 @@ feature {NONE} -- Implementation
 			precursor
 			if passed then
 				if not target.terminology.languages_available.has (target.original_language.code_string) then
-					add_error (ec_VOLT, <<target.original_language.code_string>>)
+					add_error ({ADL_MESSAGES_IDS}.ec_VOLT, <<target.original_language.code_string>>)
 				end
 			end
 		end
@@ -110,10 +110,10 @@ feature {NONE} -- Implementation
 			-- check metadata items
 		do
 			if not valid_standard_version (target.adl_version) then
-				add_error (ec_VARAV, <<target.adl_version>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_VARAV, <<target.adl_version>>)
 
 			elseif not valid_standard_version (target.rm_release) then
-				add_error (ec_VARRV, <<target.rm_release>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_VARRV, <<target.rm_release>>)
 			end
 		end
 
@@ -135,7 +135,7 @@ feature {NONE} -- Implementation
 						err_str.append (langs_csr.item)
 					end
 				end
-				add_error (ec_VOTM, <<err_str>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_VOTM, <<err_str>>)
 			end
 		end
 

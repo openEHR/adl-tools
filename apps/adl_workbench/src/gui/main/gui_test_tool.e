@@ -133,7 +133,7 @@ feature {NONE} -- Initialisation
 			evx_control_panel.add_frame_control (evx_batch_update_frame, False)
 
 			-- remove unused codes RB
-			create evx_remove_unused_codes_cb.make (get_text (ec_Test_remove_unused_codes_button_text), get_text (ec_Test_remove_unused_codes_button_tooltip),
+			create evx_remove_unused_codes_cb.make (get_text ({ADL_MESSAGES_IDS}.ec_Test_remove_unused_codes_button_text), get_text ({ADL_MESSAGES_IDS}.ec_Test_remove_unused_codes_button_tooltip),
 				agent :BOOLEAN do Result := remove_unused_codes end)
 			evx_batch_update_frame.extend (evx_remove_unused_codes_cb.ev_data_control, False)
 
@@ -142,23 +142,23 @@ feature {NONE} -- Initialisation
 			evx_control_panel.add_frame_control (evx_test_frame, False)
 
 			-- test refresh button
-			create evx_arch_test_refresh_bn.make (Void, Void, get_text (ec_Test_refresh_button_text), get_text (ec_Test_refresh_button_tooltip), agent populate, Void)
+			create evx_arch_test_refresh_bn.make (Void, Void, get_text ({ADL_MESSAGES_IDS}.ec_Test_refresh_button_text), get_text ({ADL_MESSAGES_IDS}.ec_Test_refresh_button_tooltip), agent populate, Void)
 			evx_test_frame.extend (evx_arch_test_refresh_bn.ev_button, False)
 
 			-- regression test button
-			create evx_regression_test_cb.make_linked (get_text (ec_Test_regression_checkbox_text), get_text (ec_Test_regression_checkbox_tooltip),
+			create evx_regression_test_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_Test_regression_checkbox_text), get_text ({ADL_MESSAGES_IDS}.ec_Test_regression_checkbox_tooltip),
 				agent :BOOLEAN do Result := regression_test_on end,
 				agent (a_flag: BOOLEAN) do regression_test_on := a_flag end
 			)
 			evx_test_frame.extend (evx_regression_test_cb.ev_data_control, False)
 
 			-- progress indicator
-			create evx_progress_counter.make_readonly (get_text (ec_Test_processed_indicator_text), agent :STRING do Result := last_tested_archetypes_count.out end, 0, True)
+			create evx_progress_counter.make_readonly (get_text ({ADL_MESSAGES_IDS}.ec_Test_processed_indicator_text), agent :STRING do Result := last_tested_archetypes_count.out end, 0, True)
 			evx_test_frame.extend (evx_progress_counter.ev_root_container, False)
 
 			-- start / stop button
-			create evx_archetype_test_go_bn.make (get_icon_pixmap ("tool/stop"), get_icon_pixmap ("tool/go"), get_text (ec_Test_start_stop_button_text),
-				get_text (ec_Test_start_stop_button_tooltip), agent archetype_test_go, agent archetype_test_stop)
+			create evx_archetype_test_go_bn.make (get_icon_pixmap ("tool/stop"), get_icon_pixmap ("tool/go"), get_text ({ADL_MESSAGES_IDS}.ec_Test_start_stop_button_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_Test_start_stop_button_tooltip), agent archetype_test_go, agent archetype_test_stop)
 			evx_test_frame.extend (evx_archetype_test_go_bn.ev_button, False)
 
 			-- ==================== 'Diffs' frame =======================
@@ -167,25 +167,25 @@ feature {NONE} -- Initialisation
 
 			-- diff source button
 			create evx_diff_source_button.make (Void, Void,
-				get_text (ec_Test_source_serialised_button_text), get_text (ec_Test_source_serialised_button_tooltip),
+				get_text ({ADL_MESSAGES_IDS}.ec_Test_source_serialised_button_text), get_text ({ADL_MESSAGES_IDS}.ec_Test_source_serialised_button_tooltip),
 				 agent on_diff_source, Void)
 			evx_diffs_frame.extend (evx_diff_source_button.ev_button, False)
 
 			-- diff flat button
 			create evx_diff_flat_button.make (Void, Void,
-				get_text (ec_Test_diff_flat_button_text), get_text (ec_Test_diff_flat_button_tooltip),
+				get_text ({ADL_MESSAGES_IDS}.ec_Test_diff_flat_button_text), get_text ({ADL_MESSAGES_IDS}.ec_Test_diff_flat_button_tooltip),
 				 agent on_diff_flat, Void)
 			evx_diffs_frame.extend (evx_diff_flat_button.ev_button, False)
 
 			-- diff source flat button
 			create evx_diff_source_flat_button.make (Void, Void,
-				get_text (ec_Test_source_gen_flat_button_text), get_text (ec_Test_source_gen_flat_button_tooltip),
+				get_text ({ADL_MESSAGES_IDS}.ec_Test_source_gen_flat_button_text), get_text ({ADL_MESSAGES_IDS}.ec_Test_source_gen_flat_button_tooltip),
 				 agent on_diff_source_flat, Void)
 			evx_diffs_frame.extend (evx_diff_source_flat_button.ev_button, False)
 
 			-- round trip button
 			create evx_diff_source_round_trip_button.make (Void, Void,
-				get_text (ec_Test_source_roundtrip_button_text), get_text (ec_Test_source_roundtrip_button_tooltip),
+				get_text ({ADL_MESSAGES_IDS}.ec_Test_source_roundtrip_button_text), get_text ({ADL_MESSAGES_IDS}.ec_Test_source_roundtrip_button_tooltip),
 				 agent on_diff_round_trip, Void)
 			evx_diffs_frame.extend (evx_diff_source_round_trip_button.ev_button, False)
 
@@ -197,7 +197,7 @@ feature {NONE} -- Initialisation
 			evx_app_frame.add_padding_cell
 
 			-- close button
-			create evx_close_bn.make (Void, Void, get_text (ec_Test_close_tool_button_text), get_text (ec_Test_close_tool_button_tooltip), agent on_close, Void)
+			create evx_close_bn.make (Void, Void, get_text ({ADL_MESSAGES_IDS}.ec_Test_close_tool_button_text), get_text ({ADL_MESSAGES_IDS}.ec_Test_close_tool_button_tooltip), agent on_close, Void)
 			evx_app_frame.extend (evx_close_bn.ev_button, False)
 
 			--====================== status area ========================
@@ -220,13 +220,13 @@ feature -- Access
 			-- table of test routines
 		once
 			create Result.make (0)
-			Result.force (agent test_parse, get_text (ec_Test_parse_test_title))
+			Result.force (agent test_parse, get_text ({ADL_MESSAGES_IDS}.ec_Test_parse_test_title))
 			Result.force (agent regression_test, Regression_test_key)
-			Result.force (agent test_save_flat, get_text (ec_Test_save_flat_test_title))
-			Result.force (agent test_compare_flat, get_text (ec_Test_compare_flat_test_title))
-			Result.force (agent test_source_compare, get_text (ec_Test_source_compare_test_title))
-			Result.force (agent test_save_source_odin, get_text (ec_Test_save_source_odin_test_title))
-			Result.force (agent test_read_source_odin, get_text (ec_Test_read_source_odin_test_title))
+			Result.force (agent test_save_flat, get_text ({ADL_MESSAGES_IDS}.ec_Test_save_flat_test_title))
+			Result.force (agent test_compare_flat, get_text ({ADL_MESSAGES_IDS}.ec_Test_compare_flat_test_title))
+			Result.force (agent test_source_compare, get_text ({ADL_MESSAGES_IDS}.ec_Test_source_compare_test_title))
+			Result.force (agent test_save_source_odin, get_text ({ADL_MESSAGES_IDS}.ec_Test_save_source_odin_test_title))
+			Result.force (agent test_read_source_odin, get_text ({ADL_MESSAGES_IDS}.ec_Test_read_source_odin_test_title))
 		end
 
 	last_tested_archetypes_count: INTEGER

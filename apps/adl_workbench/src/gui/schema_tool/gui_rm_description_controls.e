@@ -87,13 +87,13 @@ feature {NONE} -- Implementation
 
 			-- column names
 			ev_grid.insert_new_column (Grid_attr_group_col)
-			ev_grid.column (Grid_attr_group_col).set_title (get_msg (ec_rm_desc_attr_group, Void))
+			ev_grid.column (Grid_attr_group_col).set_title (get_msg ({ADL_MESSAGES_IDS}.ec_rm_desc_attr_group, Void))
 
 			ev_grid.insert_new_column (Grid_attr_col)
-			ev_grid.column (Grid_attr_col).set_title (get_msg (ec_rm_desc_attr_name, Void))
+			ev_grid.column (Grid_attr_col).set_title (get_msg ({ADL_MESSAGES_IDS}.ec_rm_desc_attr_name, Void))
 
 			ev_grid.insert_new_column (grid_attr_val_col)
-			ev_grid.column (grid_attr_val_col).set_title (get_msg (ec_rm_desc_attr_value, Void))
+			ev_grid.column (grid_attr_val_col).set_title (get_msg ({ADL_MESSAGES_IDS}.ec_rm_desc_attr_value, Void))
 
 			-- model meta-data
 			create gli.make_with_text ("Model identification")

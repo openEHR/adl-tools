@@ -57,7 +57,7 @@ feature -- Display
 							a_gui_grid.add_sub_row (gr, includes_csr.item)
 
 							-- put pixmap on RM col
-							a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_include_text), Void, c_node_font,
+							a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ({ADL_MESSAGES_IDS}.ec_include_text), Void, c_node_font,
 								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type.name + "_include"))
 
 							-- put blank text in constraint col
@@ -76,7 +76,7 @@ feature -- Display
 							a_gui_grid.add_sub_row (gr, excludes_csr.item)
 
 							-- put pixmap on RM col
-							a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text (ec_exclude_text), Void, Void,
+							a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ({ADL_MESSAGES_IDS}.ec_exclude_text), Void, Void,
 								c_object_colour, get_icon_pixmap ("am/added/" + a_n.generating_type.name + "_exclude"))
 
 							-- put blank text in constraint col
@@ -140,9 +140,9 @@ feature {NONE} -- Implementation
 			Result.replace_substring_all (" ", "%N")
 			Result.replace_substring_all ("|", "|%N")
 			if is_required then
-				Result.append ("%N(" + get_text (ec_slot_match_required_text) + ")")
+				Result.append ("%N(" + get_text ({ADL_MESSAGES_IDS}.ec_slot_match_required_text) + ")")
 			else
-				Result.append ("%N(" + get_text (ec_slot_match_recommended_text) + ")")
+				Result.append ("%N(" + get_text ({ADL_MESSAGES_IDS}.ec_slot_match_recommended_text) + ")")
 			end
 		end
 
@@ -171,9 +171,9 @@ feature {NONE} -- Implementation
 					end
 				end
 				if a_n.has_open_excludes then
-					create context_slot_sub_menu.make_with_text (get_text (ec_archetype_slot_node_submenu_exact_text))
+					create context_slot_sub_menu.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_archetype_slot_node_submenu_exact_text))
 				else
-					create context_slot_sub_menu.make_with_text (get_text (ec_archetype_slot_node_submenu_preferred_text))
+					create context_slot_sub_menu.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_archetype_slot_node_submenu_preferred_text))
 				end
 
 				-- ensure we have only a unique set

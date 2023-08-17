@@ -247,7 +247,7 @@ debug ("ADL_parse")
 	indent.append ("%T")
 end
 			else
-				abort_with_error (ec_VCORM, <<$1.rm_type_name, $1.path>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_VCORM, <<$1.rm_type_name, $1.path>>)
 			end
 		}
 	;
@@ -257,7 +257,7 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 			if object_nodes.is_empty then
 				create $$.make ($1, $2)
 			else
-				abort_with_error (ec_VARND, <<$2, Id_code_regex_pattern>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_VARND, <<$2, Id_code_regex_pattern>>)
 			end
 		}
 	| type_identifier V_ID_CODE
@@ -265,7 +265,7 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 			if not object_nodes.is_empty then
 				create $$.make ($1, $2)
 			else
-				abort_with_error (ec_VARCN, <<$2, Root_id_code_regex_pattern>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_VARCN, <<$2, Root_id_code_regex_pattern>>)
 			end
 		}
 	| sibling_order type_identifier V_ID_CODE
@@ -279,7 +279,7 @@ c_complex_object_id: type_identifier V_ROOT_ID_CODE
 	| type_identifier
 		{
 			if object_nodes.is_empty then
-				abort_with_error (ec_VARCN, <<"(none)", Root_id_code_regex_pattern>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_VARCN, <<"(none)", Root_id_code_regex_pattern>>)
 			else
 				create $$.make ($1, new_fake_node_id)
 			end
@@ -311,7 +311,7 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 		}
 	| error
 		{
-			abort_with_error (ec_SCOAT, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCOAT, Void)
 		}
 	;
 
@@ -341,7 +341,7 @@ c_object: c_complex_object
 		}
 	| error		
 		{
-			abort_with_error (ec_SCCOG, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCCOG, Void)
 		}
 	;
 
@@ -390,19 +390,19 @@ c_non_primitive_object: c_complex_object_proxy
 		}
 	| ERR_C_DV_QUANTITY_1
 		{
-			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SDINV, <<odin_parser_error.as_string>>)
 		}
 	| ERR_C_DV_QUANTITY_2
 		{
-			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SDINV, <<odin_parser_error.as_string>>)
 		}
 	| ERR_C_DV_QUANTITY_3
 		{
-			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SDINV, <<odin_parser_error.as_string>>)
 		}
 	| ERR_C_DV_QUANTITY_4
 		{
-			abort_with_error (ec_SDINV, <<odin_parser_error.as_string>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SDINV, <<odin_parser_error.as_string>>)
 		}
 --
 -- END LEGACY ADL 1.4 Syntax
@@ -438,7 +438,7 @@ c_complex_object_proxy: SYM_USE_NODE type_identifier V_ID_CODE c_occurrences V_A
 		}
 	| SYM_USE_NODE error 
 		{
-			abort_with_error (ec_SUNPA, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SUNPA, Void)
 		}
 	;
 
@@ -495,7 +495,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier V_ID_CODE
 		}
 	| SYM_ALLOW_ARCHETYPE error
 		{
-			abort_with_error (ec_SUAS, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SUAS, Void)
 		}
 	;
 
@@ -589,11 +589,11 @@ c_attribute: c_attribute_head SYM_MATCHES SYM_START_CBLOCK c_attribute_values SY
 		}
 	| c_attribute_head -- ok if existence is being changed in specialised archetype
 		{
-			abort_with_error (ec_SCAS, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCAS, Void)
 		}
 	| c_attribute_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK	
 		{
-			abort_with_error (ec_SCAS, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCAS, Void)
 		}
 	;
 
@@ -607,14 +607,14 @@ c_attribute_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 
 						-- for ADL 1.4 archetypes, remove existence and cardinality if it is a duplicate of the RM constraint
 						if attached $2 as ivl and then ivl.is_equal (rm_prop_def.existence) then
-							add_warning (ec_WCAEX14, <<rm_attribute_name, object_nodes.item.path, ivl.as_string, rm_prop_def.existence.as_string>>)
+							add_warning ({ADL_MESSAGES_IDS}.ec_WCAEX14, <<rm_attribute_name, object_nodes.item.path, ivl.as_string, rm_prop_def.existence.as_string>>)
 							$2 := Void
 						end
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as rm_cont_prop_def and then
 							attached $3 as ivl and then (ivl.interval.is_equal (rm_cont_prop_def.cardinality) or else
 							ivl.interval.contains (rm_cont_prop_def.cardinality))
 						then
-							add_warning (ec_WCACA14, <<rm_attribute_name, object_nodes.item.path, ivl.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
+							add_warning ({ADL_MESSAGES_IDS}.ec_WCACA14, <<rm_attribute_name, object_nodes.item.path, ivl.interval.as_string, rm_cont_prop_def.cardinality.as_string>>)
 							$3 := Void
 						end
 
@@ -634,7 +634,7 @@ end
 					elseif not attached $3 then
 						-- for ADL 1.4 archetypes, remove existence and cardinality if it is a duplicate of the RM constraint
 						if attached $2 as ivl and then ivl.is_equal (rm_prop_def.existence) then
-							add_warning (ec_WCAEX14, <<rm_attribute_name, object_nodes.item.path, ivl.as_string, rm_prop_def.existence.as_string>>)
+							add_warning ({ADL_MESSAGES_IDS}.ec_WCAEX14, <<rm_attribute_name, object_nodes.item.path, ivl.as_string, rm_prop_def.existence.as_string>>)
 							$2 := Void
 						end
 
@@ -650,13 +650,13 @@ debug ("ADL_parse")
 end
 						object_nodes.item.put_attribute ($$)
 					else -- error - cardinality stated, but on a non-container attribute
-						abort_with_error (ec_VSAM2, <<rm_attribute_name>>)
+						abort_with_error ({ADL_MESSAGES_IDS}.ec_VSAM2, <<rm_attribute_name>>)
 					end
 				else
-					abort_with_error (ec_VCARM, <<rm_attribute_name, object_nodes.item.path, object_nodes.item.rm_type_name>>)
+					abort_with_error ({ADL_MESSAGES_IDS}.ec_VCARM, <<rm_attribute_name, object_nodes.item.path, object_nodes.item.rm_type_name>>)
 				end
 			else
-				abort_with_error (ec_VCATU, <<rm_attribute_name>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_VCATU, <<rm_attribute_name>>)
 			end
 		}
 	;
@@ -726,7 +726,7 @@ assertion: any_identifier ':' boolean_node
 		}
 	| any_identifier ':' error
 		{
-			abort_with_error (ec_SINVS, <<$1>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SINVS, <<$1>>)
 		}
 	;
 
@@ -838,7 +838,7 @@ boolean_unop_expr: SYM_EXISTS V_ABS_PATH
 		}
 	| SYM_EXISTS error 
 		{
-			abort_with_error (ec_SEXPT, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SEXPT, Void)
 		}
 	;
 
@@ -1032,7 +1032,7 @@ existence:  V_INTEGER -- can only be 0 or 1
 			elseif $1 = 1 then
 				create $$.make_mandatory
 			else
-				abort_with_error (ec_SEXLSG, Void)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SEXLSG, Void)
 			end
 		}
 	| V_INTEGER SYM_ELLIPSIS V_INTEGER -- can only be 0..0, 0..1, 1..1
@@ -1043,16 +1043,16 @@ existence:  V_INTEGER -- can only be 0 or 1
 				elseif $3 = 1 then
 					create $$.make_bounded (0, 1)
 				else
-					abort_with_error (ec_SEXLU1, Void)
+					abort_with_error ({ADL_MESSAGES_IDS}.ec_SEXLU1, Void)
 				end
 			elseif $1 = 1 then
 				if $3 = 1 then
 					create $$.make_point (1)
 				else
-					abort_with_error (ec_SEXLU2, Void)
+					abort_with_error ({ADL_MESSAGES_IDS}.ec_SEXLU2, Void)
 				end
 			else
-				abort_with_error (ec_SEXLMG, Void)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SEXLMG, Void)
 			end
 		}
 	;
@@ -1113,7 +1113,7 @@ c_occurrences:  -- empty is ok
 		}
 	| SYM_OCCURRENCES error
 		{
-			abort_with_error (ec_SOCCF, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SOCCF, Void)
 		}
 	;
 
@@ -1159,12 +1159,12 @@ c_integer: integer_value
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error (ec_VOBAV, <<$3.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_integer ';' error
 		{
-			abort_with_error (ec_SCIAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCIAV, Void)
 		}
 	;
 
@@ -1190,12 +1190,12 @@ c_real: real_value
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error (ec_VOBAV, <<$3.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_real ';' error
 		{
-			abort_with_error (ec_SCRAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCRAV, Void)
 		}
 	;
 
@@ -1212,7 +1212,7 @@ c_date: V_ISO8601_DATE_CONSTRAINT_PATTERN
 					str.append (valid_date_constraint_patterns.item)
 					valid_date_constraint_patterns.forth
 				end
-				abort_with_error (ec_SCDPT, <<$1, str>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDPT, <<$1, str>>)
 			end
 		}
 	| date_value
@@ -1237,12 +1237,12 @@ c_date: V_ISO8601_DATE_CONSTRAINT_PATTERN
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error (ec_VOBAV, <<$3.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_date ';' error
 		{
-			abort_with_error (ec_SCDAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDAV, Void)
 		}
 	;
 
@@ -1258,7 +1258,7 @@ c_time: V_ISO8601_TIME_CONSTRAINT_PATTERN
 					end
 					str.append (patterns_csr.item)
 				end
-				abort_with_error (ec_SCTPT, <<$1, str>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCTPT, <<$1, str>>)
 			end
 		}
 	| time_value
@@ -1283,12 +1283,12 @@ c_time: V_ISO8601_TIME_CONSTRAINT_PATTERN
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error (ec_VOBAV, <<$3.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_time ';' error
 		{
-			abort_with_error (ec_SCTAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCTAV, Void)
 		}
 	;
 
@@ -1304,7 +1304,7 @@ c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 					end
 					str.append (patterns_csr.item)
 				end
-				abort_with_error (ec_SCDTPT, <<$1, str>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDTPT, <<$1, str>>)
 			end
 		}
 	| date_time_value
@@ -1329,12 +1329,12 @@ c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error (ec_VOBAV, <<$3.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_date_time ';' error
 		{
-			abort_with_error (ec_SCDTAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDTAV, Void)
 		}
 	;
 
@@ -1343,7 +1343,7 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 			if valid_iso8601_duration_constraint_pattern ($1) then
 				create $$.make_pattern_with_range ($1, $3)
 			else
-				abort_with_error (ec_SCDUPT, <<$1>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDUPT, <<$1>>)
 			end
 		}
 	| V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_value
@@ -1351,7 +1351,7 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 			if valid_iso8601_duration_constraint_pattern ($1) then
 				create $$.make_pattern_with_range ($1, create {POINT_INTERVAL [ISO8601_DURATION]}.make ($3))
 			else
-				abort_with_error (ec_SCDUPT, <<$1>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDUPT, <<$1>>)
 			end
 		}
 	| V_ISO8601_DURATION_CONSTRAINT_PATTERN
@@ -1359,7 +1359,7 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 			if valid_iso8601_duration_constraint_pattern ($1) then
 				create $$.make_from_pattern ($1)
 			else
-				abort_with_error (ec_SCDUPT, <<$1>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDUPT, <<$1>>)
 			end
 		}
 	| duration_value
@@ -1384,17 +1384,17 @@ c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error (ec_VOBAV, <<$3.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_duration ';' error
 		{
-			abort_with_error (ec_SCDUAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDUAV, Void)
 		}
 
 	| V_ISO8601_DURATION_CONSTRAINT_PATTERN_ERR
 		{
-			abort_with_error (ec_SCDUPT, <<$1.out>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCDUPT, <<$1.out>>)
 		}
 	;
 
@@ -1410,7 +1410,7 @@ c_string: V_STRING 	-- single value, generates closed list
 		{
 			create $$.make_value ($1)
 			if $$.constraint.first.is_equal ({C_STRING}.Invalid_regex_message) then
-				abort_with_error (ec_SCSRE, <<$1>>)
+				abort_with_error ({ADL_MESSAGES_IDS}.ec_SCSRE, <<$1>>)
 			end
 		}
 	| c_string ';' string_value
@@ -1419,12 +1419,12 @@ c_string: V_STRING 	-- single value, generates closed list
 				$1.set_assumed_value ($3)
 				$$ := $1
 			else
-				abort_with_error (ec_VOBAV, <<$3.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<$3.out>>)
 			end
 		}
 	| c_string ';' error
 		{
-			abort_with_error (ec_SCSAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCSAV, Void)
 		}
 	;
 
@@ -1539,19 +1539,19 @@ c_terminology_code: V_VALUE_SET_REF	-- e.g. "ac3"
 	| ERR_VALUE_SET_MISSING_CODES
 		{
 			create $$.make (Missing_codes)
-			-- abort_with_error (ec_STVSI, <<err_str, c_attrs.item.path>>)
+			-- abort_with_error ({ADL_MESSAGES_IDS}.ec_STVSI, <<err_str, c_attrs.item.path>>)
 		}
 	| ERR_VALUE_SET_DEF_DUP_CODE
 		{
-			abort_with_error (ec_STCDC, <<err_str, c_attrs.item.path>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_STCDC, <<err_str, c_attrs.item.path>>)
 		}
 	| ERR_VALUE_SET_DEF_ASSUMED
 		{
-			abort_with_error (ec_STCAC, <<err_str, c_attrs.item.path>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_STCAC, <<err_str, c_attrs.item.path>>)
 		}
 	| ERR_VALUE_SET_DEF
 		{
-			abort_with_error (ec_STCVA, <<c_attrs.item.path>>)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_STCVA, <<c_attrs.item.path>>)
 		}
 	;
 
@@ -1572,13 +1572,13 @@ c_boolean: SYM_TRUE
 			if $1.valid_value ($3) then
 				$1.set_assumed_value ($3)
 			else
-				abort_with_error (ec_VOBAV, <<$3.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VOBAV, <<$3.out>>)
 			end
 			$$ := $1
 		}
 	| c_boolean ';' error
 		{
-			abort_with_error (ec_SCBAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCBAV, Void)
 		}
 	;
 
@@ -1622,7 +1622,7 @@ c_ordinal: ordinal
 						end (?, $3.value)
 				)
 			then
-				abort_with_error (ec_VCOV, <<$3.value.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VCOV, <<$3.value.out>>)
 
 			elseif $$.attribute_with_name ("symbol").children.there_exists (
 					agent (co: C_OBJECT; a_sym: TERMINOLOGY_CODE): BOOLEAN
@@ -1631,7 +1631,7 @@ c_ordinal: ordinal
 						end (?, create {TERMINOLOGY_CODE}.make (Local_terminology_id, $3.symbol))
 				)
 			then
-				abort_with_error (ec_VCOC, <<$3.symbol>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VCOC, <<$3.symbol>>)
 
 			else
 				create ordinal_integer.make_value ($3.value)
@@ -1651,11 +1651,11 @@ c_ordinal: ordinal
 			$$ := $1
 
 			-- assumed value for C_DV_ORDINAL not supported
-			add_warning (ec_WDTOAV, Void)
+			add_warning ({ADL_MESSAGES_IDS}.ec_WDTOAV, Void)
  		}
  	| c_ordinal ';' error
  		{
-			abort_with_error (ec_SCOAV, Void)
+			abort_with_error ({ADL_MESSAGES_IDS}.ec_SCOAV, Void)
  		}
 	;
 
@@ -1672,7 +1672,7 @@ ordinal: integer_value SYM_INTERVAL_DELIM V_EXPANDED_VALUE_SET_DEF
 		}
 	| integer_value SYM_INTERVAL_DELIM ERR_VALUE_SET_DEF
 		{
-			abort_with_error (ec_STCV, <<c_attrs.item.path>>)
+			abort_with_error ({ODIN_MESSAGES_IDS}.ec_STCV, <<c_attrs.item.path>>)
 		}
 	;
 
@@ -1773,7 +1773,7 @@ integer_interval: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_value SY
 			if $2 <= $4 then
 				create {PROPER_INTERVAL [INTEGER]} $$.make_bounded($2, $4, True, True)
 			else
-				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
@@ -1781,7 +1781,7 @@ integer_interval: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_value SY
 			if $3 <= $5 then
 				create {PROPER_INTERVAL [INTEGER]} $$.make_bounded($3, $5, False, True)
 			else
-				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -1789,7 +1789,7 @@ integer_interval: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_value SY
 			if $2 <= $5 then
 				create {PROPER_INTERVAL [INTEGER]} $$.make_bounded($2, $5, True, False)
 			else
-				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -1797,7 +1797,7 @@ integer_interval: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_value SY
 			if $3 <= $6 then
 				create {PROPER_INTERVAL [INTEGER]} $$.make_bounded ($3, $6, False, False)
 			else
-				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -1877,7 +1877,7 @@ real_interval: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_INTERVA
 			if $2 <= $4 then
 				create {PROPER_INTERVAL [REAL]} $$.make_bounded($2, $4, True, True)
 			else
-				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
@@ -1885,7 +1885,7 @@ real_interval: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_INTERVA
 			if $3 <= $5 then
 				create {PROPER_INTERVAL [REAL]} $$.make_bounded($3, $5, False, True)
 			else
-				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
@@ -1893,7 +1893,7 @@ real_interval: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_INTERVA
 			if $2 <= $5 then
 				create {PROPER_INTERVAL [REAL]} $$.make_bounded($2, $5, True, False)
 			else
-				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
@@ -1901,7 +1901,7 @@ real_interval: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_INTERVA
 			if $3 <= $6 then
 				create {PROPER_INTERVAL [REAL]} $$.make_bounded($3, $6, False, False)
 			else
-				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT real_value SYM_INTERVAL_DELIM
@@ -1977,7 +1977,7 @@ date_value: V_ISO8601_EXTENDED_DATE -- in ISO8601 form yyyy-MM-dd
 			if valid_iso8601_date($1) then
 				create $$.make_from_string($1)
 			else
-				abort_with_error (ec_VIDV, <<$1>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIDV, <<$1>>)
 			end
 		}
 	;
@@ -2005,7 +2005,7 @@ date_interval: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_INTERVA
 			if $2 <= $4 then
 				create {PROPER_INTERVAL [ISO8601_DATE]} $$.make_bounded($2, $4, True, True)
 			else
-				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
@@ -2013,7 +2013,7 @@ date_interval: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_INTERVA
 			if $3 <= $5 then
 				create {PROPER_INTERVAL [ISO8601_DATE]} $$.make_bounded($3, $5, False, True)
 			else
-				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
@@ -2021,7 +2021,7 @@ date_interval: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_INTERVA
 			if $2 <= $5 then
 				create {PROPER_INTERVAL [ISO8601_DATE]} $$.make_bounded($2, $5, True, False)
 			else
-				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
@@ -2029,7 +2029,7 @@ date_interval: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_INTERVA
 			if $3 <= $6 then
 				create {PROPER_INTERVAL [ISO8601_DATE]} $$.make_bounded($3, $6, False, False)
 			else
-				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM
@@ -2077,7 +2077,7 @@ time_value: V_ISO8601_EXTENDED_TIME
 			if valid_iso8601_time($1) then
 				create $$.make_from_string($1)
 			else
-				abort_with_error (ec_VITV, <<$1>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VITV, <<$1>>)
 			end
 		}
 	;
@@ -2105,7 +2105,7 @@ time_interval: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_INTERVA
 			if $2 <= $4 then
 				create {PROPER_INTERVAL [ISO8601_TIME]} $$.make_bounded($2, $4, True, True)
 			else
-				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
@@ -2113,7 +2113,7 @@ time_interval: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_INTERVA
 			if $3 <= $5 then
 				create {PROPER_INTERVAL [ISO8601_TIME]} $$.make_bounded($3, $5, False, True)
 			else
-				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
@@ -2121,7 +2121,7 @@ time_interval: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_INTERVA
 			if $2 <= $5 then
 				create {PROPER_INTERVAL [ISO8601_TIME]} $$.make_bounded($2, $5, True, False)
 			else
-				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
@@ -2129,7 +2129,7 @@ time_interval: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_INTERVA
 			if $3 <= $6 then
 				create {PROPER_INTERVAL [ISO8601_TIME]} $$.make_bounded($3, $6, False, False)
 			else
-				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT time_value SYM_INTERVAL_DELIM
@@ -2177,7 +2177,7 @@ date_time_value: V_ISO8601_EXTENDED_DATE_TIME
 			if valid_iso8601_date_time($1) then
 				create $$.make_from_string($1)
 			else
-				abort_with_error (ec_VIDTV, <<$1>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIDTV, <<$1>>)
 			end
 		}
 	;
@@ -2205,7 +2205,7 @@ date_time_interval: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_time_va
 			if $2 <= $4 then
 				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} $$.make_bounded($2, $4, True, True)
 			else
-				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM
@@ -2213,7 +2213,7 @@ date_time_interval: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_time_va
 			if $3 <= $5 then
 				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} $$.make_bounded($3, $5, False, True)
 			else
-				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -2221,7 +2221,7 @@ date_time_interval: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_time_va
 			if $2 <= $5 then
 				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} $$.make_bounded($2, $5, True, False)
 			else
-				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -2229,7 +2229,7 @@ date_time_interval: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_time_va
 			if $3 <= $6 then
 				create {PROPER_INTERVAL [ISO8601_DATE_TIME]} $$.make_bounded($3, $6, False, False)
 			else
-				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -2277,7 +2277,7 @@ duration_value: V_ISO8601_DURATION
 			if valid_iso8601_duration($1) then
 				create $$.make_from_string($1)
 			else
-				abort_with_error (ec_VIDUV, <<$1>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIDUV, <<$1>>)
 			end
 		}
 	;
@@ -2305,7 +2305,7 @@ duration_interval: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration_value
 			if $2 <= $4 then
 				create {PROPER_INTERVAL [ISO8601_DURATION]} $$.make_bounded($2, $4, True, True)
 			else
-				abort_with_error (ec_VIVLO, <<$2.out, $4.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
@@ -2313,7 +2313,7 @@ duration_interval: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration_value
 			if $3 <= $5 then
 				create {PROPER_INTERVAL [ISO8601_DURATION]} $$.make_bounded($3, $5, False, True)
 			else
-				abort_with_error (ec_VIVLO, <<$3.out, $5.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -2321,7 +2321,7 @@ duration_interval: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration_value
 			if $2 <= $5 then
 				create {PROPER_INTERVAL [ISO8601_DURATION]} $$.make_bounded($2, $5, True, False)
 			else
-				abort_with_error (ec_VIVLO, <<$2.out, $5.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -2329,7 +2329,7 @@ duration_interval: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration_value
 			if $3 <= $6 then
 				create {PROPER_INTERVAL [ISO8601_DURATION]} $$.make_bounded($3, $6, False, False)
 			else
-				abort_with_error (ec_VIVLO, <<$3.out, $6.out>>)
+				abort_with_error ({ODIN_MESSAGES_IDS}.ec_VIVLO, <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -2487,10 +2487,10 @@ feature {NONE} -- Implementation
 			ar.extend (an_attr.rm_attribute_name) -- $3
 
 			if an_attr.has_child_with_id (an_obj.node_id) then
-				err_code := ec_VCOSU
+				err_code := {ADL_MESSAGES_IDS}.ec_VCOSU
 			elseif an_attr.is_single then
 				if attached an_obj.occurrences as att_occ and then (att_occ.upper_unbounded or att_occ.upper > 1) then
-					err_code := ec_VACSO
+					err_code := {ADL_MESSAGES_IDS}.ec_VACSO
 				else
 					Result := True
 				end
@@ -2499,7 +2499,7 @@ feature {NONE} -- Implementation
 						attached an_obj.occurrences as att_occ and then not att_occ.upper_unbounded and then
 						att_occ.upper > att_card.interval.upper 
 				then
-					err_code := ec_VACMCU
+					err_code := {ADL_MESSAGES_IDS}.ec_VACMCU
 					ar.extend (att_occ.upper.out)
 					ar.extend (att_card.interval.upper.out)
 				else
