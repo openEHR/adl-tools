@@ -42,6 +42,15 @@ feature -- Initialisation
 
 			language := a_lang
 
+			dt_object_nodes.wipe_out
+			dt_attribute_nodes.wipe_out
+			c_attribute_completed.wipe_out
+			c_object_ignore.wipe_out
+
+			aom_profile := Void
+			archetype_parent_class := {BMM_DEFINITIONS}.any_type_name
+			archetype_data_value_parent_class := {BMM_DEFINITIONS}.any_type_name
+
 			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
 				if attached aom_profile.archetype_parent_class as aop_loc then
@@ -59,45 +68,53 @@ feature -- Visitor
 			-- enter an C_COMPLEX_OBJECT
 		local
 			prototype_value: DT_COMPLEX_OBJECT
+			node_id: STRING
 		do
 			if a_node.is_root or else not c_attribute_completed.item then
 				create prototype_value.make_anonymous
 				prototype_value.set_im_type_name (a_node.rm_type_name)
 
-				dt_object_nodes.extend (prototype_value)
-				add_locatable_attrs (prototype_value, a_node.node_id)
-
 				if a_node.is_root then
+					node_id := archetype_id.as_string
 					last_result := prototype_value
 				else
+					node_id := a_node.node_id
 					dt_attribute_nodes.item.put_child (prototype_value)
 				end
+				add_locatable_attrs (prototype_value, node_id)
+
+				dt_object_nodes.extend (prototype_value)
+			else
+				c_object_ignore.extend (True)
 			end
 		end
 
 	end_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- exit an C_COMPLEX_OBJECT
 		local
-			constrained_attrs: ARRAYED_LIST[STRING]
+			instantiated_attrs: ARRAYED_LIST[STRING]
 			bmm_class: BMM_CLASS
 			bmm_type_name: STRING
 			val: ANY
 		do
 			if a_node.is_root or else not c_attribute_completed.item then
-				create constrained_attrs.make (0)
-				constrained_attrs.compare_objects
+				create instantiated_attrs.make (0)
+				instantiated_attrs.compare_objects
 
 				-- find all the non-archetyped RM attributes, and for the mandatory ones, synthesise values
-				across a_node.attributes as c_attr_csr loop
-					constrained_attrs.extend (c_attr_csr.item.rm_attribute_name)
+				across dt_object_nodes.item.attributes as dt_attr_csr loop
+					instantiated_attrs.extend (dt_attr_csr.item.im_attr_name)
 				end
 
 				bmm_class := ref_model.class_definition (a_node.rm_type_name)
 				across bmm_class.properties as bmm_prop_csr loop
-					if not constrained_attrs.has (bmm_prop_csr.item.name) and not bmm_prop_csr.item.is_nullable and bmm_prop_csr.item.bmm_type.is_primitive then
+					if not instantiated_attrs.has (bmm_prop_csr.item.name) and bmm_prop_csr.item.bmm_type.is_primitive then
 						bmm_type_name := bmm_prop_csr.item.bmm_type.type_name
 						if bmm_type_name.is_case_insensitive_equal ("String") then
 							val := "some string"
+
+						elseif bmm_type_name.is_case_insensitive_equal ("Terminology_code") then
+							val := create {TERMINOLOGY_CODE}.make_from_string ("graphite::unknown-code")
 
 						elseif bmm_type_name.is_case_insensitive_equal ("Date") then
 							val := create {ISO8601_DATE}.make_date (create {DATE}.make_now)
@@ -121,10 +138,12 @@ feature -- Visitor
 
 				dt_object_nodes.remove
 
-				-- for single valued node, marke completed after one object node
+				-- for single valued node, mark completed after one object node
 				if attached a_node.parent as ca_parent and then ca_parent.is_single then
 					c_attribute_completed.replace (True)
 				end
+			else
+				c_object_ignore.remove
 			end
 		end
 
@@ -139,7 +158,7 @@ feature -- Visitor
 				add_locatable_attrs (prototype_value, a_node.node_id)
 
 				dt_object_nodes.extend (prototype_value)
-				dt_attribute_nodes.item.put_child (dt_object_nodes.item)
+				dt_attribute_nodes.item.put_child (prototype_value)
 			end
 		end
 
@@ -164,10 +183,10 @@ feature -- Visitor
 			if not c_attribute_completed.item then
 				create prototype_value.make_anonymous
 				prototype_value.set_im_type_name (a_node.rm_type_name)
-				add_locatable_attrs (prototype_value, a_node.node_id)
+				add_locatable_attrs (prototype_value, a_node.archetype_ref)
 
 				dt_object_nodes.extend (prototype_value)
-				dt_attribute_nodes.item.put_child (dt_object_nodes.item)
+				dt_attribute_nodes.item.put_child (prototype_value)
 			end
 		end
 
@@ -195,6 +214,7 @@ feature -- Visitor
 				add_locatable_attrs (prototype_value, a_node.node_id)
 
 				dt_object_nodes.extend (prototype_value)
+				dt_attribute_nodes.item.put_child (prototype_value)
 			end
 		end
 
@@ -216,29 +236,34 @@ feature -- Visitor
 		local
 			prototype_value: DT_ATTRIBUTE
 		do
-			if a_node.is_multiple then
-				create prototype_value.make_container (a_node.rm_attribute_name)
-			else
-				create prototype_value.make_single (a_node.rm_attribute_name)
+			if c_object_ignore.is_empty or else not c_object_ignore.item then
+				if a_node.is_multiple then
+					create prototype_value.make_container (a_node.rm_attribute_name)
+				else
+					create prototype_value.make_single (a_node.rm_attribute_name)
+				end
+				dt_object_nodes.item.put_attribute (prototype_value)
+
+				dt_attribute_nodes.extend (prototype_value)
+				c_attribute_completed.extend (False)
 			end
-
-			dt_attribute_nodes.extend(prototype_value)
-			c_attribute_completed.extend (False)
-
-			dt_object_nodes.item.put_attribute (dt_attribute_nodes.item)
 		end
 
 	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- exit a C_ATTRIBUTE
 		do
-			dt_attribute_nodes.remove
-			c_attribute_completed.remove
+			if c_object_ignore.is_empty or else not c_object_ignore.item then
+				dt_attribute_nodes.remove
+				c_attribute_completed.remove
+			end
 		end
 
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- enter an C_PRIMITIVE_OBJECT
 		do
-			dt_attribute_nodes.item.put_child (create {DT_PRIMITIVE_OBJECT}.make_anonymous (a_node.prototype_value))
+			if not c_attribute_completed.item then
+				dt_attribute_nodes.item.put_child (create {DT_PRIMITIVE_OBJECT}.make_anonymous (a_node.prototype_value))
+			end
 		end
 
 	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
@@ -274,6 +299,13 @@ feature {NONE} -- Implementation
 			create Result.make(0)
 		end
 
+	c_object_ignore: ARRAYED_STACK [BOOLEAN]
+			-- flag to ignore this object, to prevent ongoing processing
+			-- during descent passed a completed C_ATTRIBUTE
+		attribute
+			create Result.make(0)
+		end
+
 	ref_model: BMM_MODEL
 			-- set if this archetype has a valid package-class_name
 		do
@@ -289,12 +321,12 @@ feature {NONE} -- Implementation
 
 	archetype_parent_class: STRING
 		attribute
-			Result := {BMM_DEFINITIONS}.any_type_name
+			create Result.make_empty
 		end
 
 	archetype_data_value_parent_class: STRING
 		attribute
-			Result := {BMM_DEFINITIONS}.any_type_name
+			create Result.make_empty
 		end
 
 	archetype_id: ARCHETYPE_HRID

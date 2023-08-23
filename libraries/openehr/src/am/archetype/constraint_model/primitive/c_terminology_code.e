@@ -88,8 +88,15 @@ feature -- Access
 		end
 
 	prototype_value: TERMINOLOGY_CODE
+		local
+			value_set: ARRAYED_LIST [STRING]
 		do
-			create Result.make (Local_terminology_id, value_set_expanded.first)
+			value_set := value_set_expanded
+			if not value_set.is_empty then
+				create Result.make (Local_terminology_id, value_set.first)
+			else
+				create Result.make (Local_terminology_id, "(no-value-set-defined)")
+			end
 		end
 
 	assumed_value: detachable STRING
