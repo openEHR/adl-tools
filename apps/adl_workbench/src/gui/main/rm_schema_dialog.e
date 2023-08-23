@@ -387,7 +387,7 @@ feature {NONE} -- Implementation
 			path := save_dialog.file_name.as_string_8
 
 			if not path.is_empty then
-				schema_desc.export_schema (syntax_type_xml, path)
+				schema_desc.export_schema ({ODIN_DEFINITIONS}.syntax_type_xml, path)
 			end
 		end
 

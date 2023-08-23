@@ -212,7 +212,7 @@ feature -- Access
 
 	export_format: STRING
 		attribute
-			Result := syntax_type_odin
+			Result := {ODIN_DEFINITIONS}.syntax_type_odin
 		end
 
 	user_export_directory: STRING

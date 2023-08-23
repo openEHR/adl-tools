@@ -385,26 +385,26 @@ feature {NONE} -- Implementation
 		require
 			an_arch_tool.is_populated
 		do
-			if attached source as src then
+			if attached source then
 				Result :=
-					an_arch_tool.last_populate_timestamp < src.last_compile_attempt_timestamp or	-- source re-compiled more recently than last populate
-					an_arch_tool.last_populate_timestamp < src.last_modify_timestamp				-- source modified more recently than last populate
+					an_arch_tool.last_populate_timestamp < source.last_compile_attempt_timestamp or	-- source re-compiled more recently than last populate
+					an_arch_tool.last_populate_timestamp < source.last_modify_timestamp				-- source modified more recently than last populate
 			end
 		end
 
 	repopulate_tool (arch_tool: GUI_ARCHETYPE_TARGETTED_TOOL)
 			-- repopulate a tool
 		do
-			if attached source as src and attached selected_language as sel_lang then
+			if attached source as src and attached selected_language then
 				if tool_populate_required (arch_tool) then
-					if arch_tool.can_populate (src, [differential_view, sel_lang]) then
-						do_with_wait_cursor (ev_root_container, agent arch_tool.populate (src, [differential_view, sel_lang]))
+					if arch_tool.can_populate (src, [differential_view, selected_language]) then
+						do_with_wait_cursor (ev_root_container, agent arch_tool.populate (src, [differential_view, selected_language]))
 					else
 						arch_tool.clear
 					end
 				elseif arch_tool.can_repopulate then
-					if sel_lang /= arch_tool.selected_language then
-						do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate_with_language (sel_lang))
+					if selected_language /= arch_tool.selected_language then
+						do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate_with_language (selected_language))
 					elseif tool_repopulate_required (arch_tool) then
 						do_with_wait_cursor (ev_root_container, agent arch_tool.repopulate)
 					end

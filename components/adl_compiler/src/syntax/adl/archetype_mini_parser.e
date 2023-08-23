@@ -106,12 +106,12 @@ feature -- Commands
 			create key.make_empty
 			start_pos := adl_text.substring_index (Other_details_odin_name, 1) + Other_details_odin_name.count
 			if start_pos > 0 then
-				i := adl_text.index_of (Odin_left_delim, start_pos) + 1
+				i := adl_text.index_of ({ODIN_DEFINITIONS}.Odin_left_delim, start_pos) + 1
 				if i > 0 then
 					from odin_block_count := 1 until odin_block_count = 0 or i > adl_text.count loop
 						inspect adl_text.item (i)
-						when Odin_left_delim then -- consume chars between <>
-							rpos := adl_text.index_of (Odin_right_delim, i) - 1
+						when {ODIN_DEFINITIONS}.Odin_left_delim then -- consume chars between <>
+							rpos := adl_text.index_of ({ODIN_DEFINITIONS}.Odin_right_delim, i) - 1
 							if rpos >= i+1 then -- guard against empty <> as value
 								if adl_text.item (i+1) = Double_quote_char and adl_text.item (rpos) = Double_quote_char then
 									val := adl_text.substring (i+2, rpos-1)
@@ -121,10 +121,10 @@ feature -- Commands
 								Result.put (val, key)
 							end
 							i := rpos + 1
-						when Odin_right_delim then
+						when {ODIN_DEFINITIONS}.Odin_right_delim then
 							odin_block_count := odin_block_count - 1
-						when Odin_key_left_delim then -- consume chars between []
-							rpos := adl_text.index_of (Odin_key_right_delim, i) - 1
+						when {ODIN_DEFINITIONS}.Odin_key_left_delim then -- consume chars between []
+							rpos := adl_text.index_of ({ODIN_DEFINITIONS}.Odin_key_right_delim, i) - 1
 							if adl_text.item (i+1) = Double_quote_char and adl_text.item (rpos) = Double_quote_char then
 								key := adl_text.substring (i+2, rpos-1)
 							else

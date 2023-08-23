@@ -383,7 +383,7 @@ feature {GUI_TEST_TOOL} -- File Access
 		require
 			Archetype_valid: is_valid
 		do
-			file_mgr.save_differential_compiled (serialise_object (False, Syntax_type_odin))
+			file_mgr.save_differential_compiled (serialise_object (False, {ODIN_DEFINITIONS}.Syntax_type_odin))
 		end
 
 	compiled_differential: STRING

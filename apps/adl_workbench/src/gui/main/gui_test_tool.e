@@ -716,7 +716,7 @@ feature {NONE} -- Tests
 			if attached {ARCH_LIB_AUTHORED_ARCHETYPE} target as auth_target and then auth_target.is_valid then
 				auth_target.save_differential_compiled
 				orig_fname := file_system.basename (auth_target.source_file_path)
-				odin_fname := extension_replaced (orig_fname, File_ext_odin)
+				odin_fname := extension_replaced (orig_fname, {ODIN_DEFINITIONS}.File_ext_odin)
 
 				file_system.copy_file (auth_target.file_mgr.differential_compiled_path, file_system.pathname (odin_source_dir, odin_fname))
 				Result := test_passed

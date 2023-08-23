@@ -12,10 +12,6 @@ class ARCHETYPE_DEFINITIONS
 inherit
 	BASIC_DEFINITIONS
 
-	OG_DEFINITIONS
-
-	ODIN_DEFINITIONS
-
 	RESOURCE_DEFINITIONS
 
 feature -- Syntax Elements
@@ -87,10 +83,10 @@ feature -- Export Types
 		once
 			create Result.make (0)
 			Result.compare_objects
-			Result.extend (syntax_type_odin)
-			Result.extend (syntax_type_xml)
-			Result.extend (syntax_type_json)
-			Result.extend (syntax_type_yaml)
+			Result.extend ({ODIN_DEFINITIONS}.syntax_type_odin)
+			Result.extend ({ODIN_DEFINITIONS}.syntax_type_xml)
+			Result.extend ({ODIN_DEFINITIONS}.syntax_type_json)
+			Result.extend ({ODIN_DEFINITIONS}.syntax_type_yaml)
 		end
 
 feature -- Archetype identifiers

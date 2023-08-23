@@ -451,7 +451,7 @@ feature {GUI_TEST_TOOL} -- File Operations
 	differential_compiled_path: STRING
 			-- path to persisted compiled source form of archetype
 		do
-			Result := file_system.pathname (compiler_gen_source_directory, id.as_filename + File_ext_odin)
+			Result := file_system.pathname (compiler_gen_source_directory, id.as_filename + {ODIN_DEFINITIONS}.File_ext_odin)
 		end
 
 	save_legacy_to (a_full_path: STRING)
@@ -511,7 +511,7 @@ feature {NONE} -- Implementation
 	flat_compiled_path: STRING
 			-- path to persisted compiled flat form of archetype
 		do
-			 Result := file_system.pathname (compiler_gen_flat_directory, id.as_filename + File_ext_odin)
+			 Result := file_system.pathname (compiler_gen_flat_directory, id.as_filename + {ODIN_DEFINITIONS}.File_ext_odin)
 		end
 
 	legacy_flat_text_timestamp: INTEGER

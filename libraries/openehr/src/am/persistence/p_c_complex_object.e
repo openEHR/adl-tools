@@ -63,13 +63,13 @@ feature -- Factory
 			ca_tuple: C_ATTRIBUTE_TUPLE
 		do
 			precursor (a_c_o)
-			if attached attributes as attrs then
-				across attrs as attrs_csr loop
+			if attached attributes then
+				across attributes as attrs_csr loop
 					a_c_o.put_attribute (attrs_csr.item.create_c_attribute)
 				end
 
-				if attached attribute_tuples as attr_tuples then
-					across attr_tuples as ca_tuples_csr loop
+				if attached attribute_tuples then
+					across attribute_tuples as ca_tuples_csr loop
 						ca_tuple := ca_tuples_csr.item.create_c_attribute_tuple (a_c_o.attributes)
 						a_c_o.put_attribute_tuple (ca_tuple)
 						ca_tuple.rebuild
