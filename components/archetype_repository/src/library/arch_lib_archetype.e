@@ -1012,6 +1012,20 @@ feature -- Output
 			Result := archetype_serialise_engine.serialised
 		end
 
+	generate_instance (a_format: STRING): STRING
+			-- The serialised text of the flat form of the archetype
+		require
+			Archetype_valid: is_valid
+			Format_valid: has_dt_serialiser_format (a_format)
+		local
+			dt_arch: DT_COMPLEX_OBJECT
+		do
+			dt_arch := adl_2_engine.generate_instance (select_archetype (False, False), current_archetype_language)
+			archetype_serialise_engine.set_tree (dt_arch)
+			archetype_serialise_engine.serialise (a_format, True, True)
+			Result := archetype_serialise_engine.serialised
+		end
+
 feature {NONE}-- Output
 
 	persistent_type: P_ARCHETYPE

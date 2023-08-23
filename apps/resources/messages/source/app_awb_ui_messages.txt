@@ -644,7 +644,14 @@ templates = <
 		["serialised_tab_text"] = <"Serialised">
 		["serialised_diff_tab_text"] = <"Serialised (diff)">
 		["serialised_flat_tab_text"] = <"Serialised (flat)">
+
 		["source_tab_text"] = <"ADL">
+
+		["instance_tab_text"] = <"Instance">
+		["show_xml_instance_tooltip"] = <"Show XML $1 instance">
+		["show_json_instance_tooltip"] = <"Show JSON $1 instance">
+		["show_yaml_instance_tooltip"] = <"Show YAML $1 instance">
+
 		["validity_tab_text"] = <"Validity">
 		["stat_info_tab_text"] = <"Statistics">
 		["translation_tab_text"] = <"Translation">

@@ -68,6 +68,13 @@ feature {NONE}-- Initialization
 			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
 			tabs_index.put (serialisation_control.ev_root_container, Tool_tab_serialised)
 
+			-- instance control
+			create instance_control.make
+			ev_notebook.extend (instance_control.ev_root_container)
+			ev_notebook.set_item_text (instance_control.ev_root_container, Tool_tab_name (Tool_tab_instance))
+			ev_notebook.item_tab (instance_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/instance"))
+			tabs_index.put (instance_control.ev_root_container, Tool_tab_instance)
+
 			-- validity control
 			create validity_report_control.make
 			ev_notebook.extend (validity_report_control.ev_root_container)
@@ -200,6 +207,8 @@ feature {NONE} -- Implementation
 	statistical_information_control: GUI_ARCHETYPE_INFORMATION_TOOL
 
 	serialisation_control: GUI_SERIALISATION_CONTROL
+
+	instance_control: GUI_INSTANCE_CONTROL
 
 	set_differential_tab_texts
 			-- set text on tabs for differential form of archetype

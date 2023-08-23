@@ -200,15 +200,15 @@ feature -- Visitor
 			end_c_primitive_object (a_node, depth)
 		end
 
-	do_rm_class (a_bmm_class: BMM_CLASS; a_c_object: C_OBJECT; depth: INTEGER)
-			-- enter a BMM_CLASS_DEFINITION
-		do
-		end
+--	do_rm_class (a_bmm_class: BMM_CLASS; a_c_object: C_OBJECT; depth: INTEGER)
+--			-- enter a BMM_CLASS_DEFINITION
+--		do
+--		end
 
-	do_rm_property (a_bmm_prop: BMM_PROPERTY; a_c_object: C_OBJECT; depth: INTEGER)
-			-- enter a BMM_PROPERTY
-		do
-		end
+--	do_rm_property (a_bmm_prop: BMM_PROPERTY; a_c_object: C_OBJECT; depth: INTEGER)
+--			-- enter a BMM_PROPERTY
+--		do
+--		end
 
 feature -- Finalisation
 
@@ -245,9 +245,6 @@ feature {NONE} -- Implementation
 
 	differential_view: BOOLEAN
 			-- True if archetype is differential form
-
-invariant
-
 
 end
 

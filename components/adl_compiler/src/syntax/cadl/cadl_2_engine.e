@@ -38,6 +38,12 @@ feature -- Access
 	tree: detachable C_COMPLEX_OBJECT
 			-- Set if parse succeeded.
 
+	instance: DT_COMPLEX_OBJECT
+			-- The last result of calling `generate_instance`.
+		attribute
+			create Result.make_anonymous
+		end
+
 feature -- Commands
 
 	set_source (in_text: STRING; a_source_start_line: INTEGER; aca: ARCH_LIB_ARCHETYPE)
@@ -66,6 +72,24 @@ feature -- Commands
 			serialised_attached: attached serialised
 		end
 
+	generate_instance (an_archetype: ARCHETYPE; a_lang: STRING)
+			-- Generate a DT tree containing a synthesised instance of the archetype definition.
+		require
+			Language_valid: an_archetype.has_language (a_lang)
+		local
+			a_c_iterator: OG_CONTENT_ITERATOR
+		do
+			if attached tree as att_tree then
+				c_instance_generator.initialise (an_archetype, a_lang)
+				create a_c_iterator.make (att_tree.representation, c_instance_generator)
+				a_c_iterator.do_all
+				c_instance_generator.finalise
+				instance := c_instance_generator.last_result
+			end
+		ensure
+			instance_attached: attached instance
+		end
+
 feature {NONE} -- Implementation
 
 	assign_parser_result
@@ -91,6 +115,11 @@ feature {NONE} -- Implementation
 		note
 			option: stable
 		attribute
+		end
+
+	c_instance_generator: C_INSTANCE_GENERATOR
+		once
+			create Result
 		end
 
 end

@@ -55,21 +55,6 @@ feature -- Access
 			-- single constraint represented by this object; accommodates
 			-- single interval, multiple interval, list of single values, mixed values / intervals
 
-	prototype_value: G
-		do
-			if not constraint.is_empty then
-				if attached constraint.first.lower as l then
-					Result := l
-				elseif attached constraint.first.upper as u then
-					Result := u
-				else
-					create Result.default_create
-				end
-			else
-				create Result.default_create
-			end
-		end
-
 	assumed_value: detachable COMPARABLE
 
 	single_value: G

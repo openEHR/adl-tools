@@ -142,13 +142,6 @@ feature -- Access
 			end
 		end
 
-	prototype_value: ANY
-			-- 	generate a default value from this constraint object
-		do
-			-- FIXME: to be implemented
-			Result := "to be implemented"
-		end
-
 	comparable_attribute_tuple (a_tuple: C_ATTRIBUTE_TUPLE): C_ATTRIBUTE_TUPLE
 			-- Return the tuple in this object that could be compared to `a_tuple', i.e. constrains the same attributes
 			-- in the same order
@@ -219,11 +212,6 @@ feature -- Status Report
 			-- True if attribute `an_attr_name' is constrained by a tuple constraint in this object
 		do
 			Result := attached attribute_tuples as att_tuples and then across att_tuples as tuples_csr some tuples_csr.item.has_attribute (an_attr_name) end
-		end
-
-	valid_value (a_value: like prototype_value): BOOLEAN
-		do
-			-- FIXME: to be implemented
 		end
 
 	has_comparable_attribute_tuple (a_tuple: C_ATTRIBUTE_TUPLE): BOOLEAN

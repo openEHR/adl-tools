@@ -17,7 +17,7 @@ inherit
 		rename
 			set_constraint as set_comparable_constraint
 		redefine
-			c_value_conforms_to, c_value_congruent_to, assumed_value, prototype_value, any_allowed, valid_value, as_string
+			c_value_conforms_to, c_value_congruent_to, assumed_value, any_allowed, valid_value, as_string
 		end
 
 	C_DATE_TIME_ROUTINES

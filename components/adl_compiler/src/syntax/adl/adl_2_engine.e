@@ -532,6 +532,20 @@ feature -- Serialisation
 			Result := serialiser.last_result
 		end
 
+feature -- Conversion
+
+	generate_instance (an_archetype: ARCHETYPE; a_lang: STRING): DT_COMPLEX_OBJECT
+			-- serialise current archetype into any semantic multi-part format.
+		require
+			Language_valid: an_archetype.has_language (a_lang)
+		local
+		do
+			-- definition section
+			definition_context.set_tree (an_archetype.definition)
+			definition_context.generate_instance (an_archetype, a_lang)
+			Result := definition_context.instance
+		end
+
 feature {NONE} -- Implementation
 
 	adl_parser: ADL_2_PARSER

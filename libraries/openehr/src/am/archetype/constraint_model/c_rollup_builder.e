@@ -44,6 +44,11 @@ feature -- Initialisation
 
 feature -- Visitor
 
+	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
+			-- enter an C_COMPLEX_OBJECT
+		do
+		end
+
 	end_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- status of this node taking into consideration effective_specialisation_status of all sub-nodes.
 		local
@@ -54,6 +59,11 @@ feature -- Visitor
 				spec_sts := specialisation_dominant_status (spec_sts, attrs_csr.item.rolled_up_specialisation_status)
 			end
 			a_node.set_rolled_up_specialisation_status (spec_sts)
+		end
+
+	start_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
+			-- enter a C_ATTRIBUTE
+		do
 		end
 
 	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
@@ -72,16 +82,6 @@ feature -- Visitor
 			-- enter a C_LEAF_OBJECT
 		do
 			a_node.set_rolled_up_specialisation_status (a_node.specialisation_status)
-		end
-
-	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
-			-- enter an C_COMPLEX_OBJECT
-		do
-		end
-
-	start_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
-			-- enter a C_ATTRIBUTE
-		do
 		end
 
 	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)

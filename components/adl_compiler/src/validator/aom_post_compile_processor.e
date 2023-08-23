@@ -58,7 +58,6 @@ feature {NONE} -- Implementation
 			target.has_rules
 		local
 			ref_rm_type_name, tail_path: STRING
-			bmm_class: BMM_CLASS
 		do
 			across target.rules_index as ref_path_csr loop
 				-- get a matching path from archetype - has to be there, either exact or partial

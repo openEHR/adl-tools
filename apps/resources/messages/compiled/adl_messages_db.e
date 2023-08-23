@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (931)
+			create message_table.make (936)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -835,6 +835,10 @@ feature -- Initialisation
 			message_table.put ("Serialised (diff)", ec_serialised_diff_tab_text)
 			message_table.put ("Serialised (flat)", ec_serialised_flat_tab_text)
 			message_table.put ("ADL", ec_source_tab_text)
+			message_table.put ("Instance", ec_instance_tab_text)
+			message_table.put ("Show XML $1 instance", ec_show_xml_instance_tooltip)
+			message_table.put ("Show JSON $1 instance", ec_show_json_instance_tooltip)
+			message_table.put ("Show YAML $1 instance", ec_show_yaml_instance_tooltip)
 			message_table.put ("Validity", ec_validity_tab_text)
 			message_table.put ("Statistics", ec_stat_info_tab_text)
 			message_table.put ("Translation", ec_translation_tab_text)

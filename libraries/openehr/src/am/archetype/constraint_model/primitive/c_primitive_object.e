@@ -78,6 +78,11 @@ feature -- Access
 		deferred
 		end
 
+	prototype_value: ANY
+			-- Will never be used in a template
+		deferred
+		end
+
 feature -- Comparison
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
@@ -138,6 +143,10 @@ feature -- Status Report
 			-- or to override such a node with a particular constraint (the parent node-id must be mentioned)
 		do
 			Result := not node_id.is_equal (Primitive_node_id)
+		end
+
+	valid_value (a_value: ANY): BOOLEAN
+		deferred
 		end
 
 feature -- Modification

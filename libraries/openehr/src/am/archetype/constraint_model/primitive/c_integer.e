@@ -46,6 +46,25 @@ feature -- Access
     		end
     	end
 
+	prototype_value: INTEGER
+		do
+			if not constraint.is_empty then
+				if attached constraint.first.lower as l then
+					if attached constraint.first.upper as u then
+						Result := (l + u) // 2
+					else
+						Result := l
+					end
+				elseif attached constraint.first.upper as u then
+					Result := u
+				else
+					create Result.default_create
+				end
+			else
+				create Result.default_create
+			end
+		end
+
 feature -- Status Report
 
 	valid_assumed_value (a_value: INTEGER_REF): BOOLEAN

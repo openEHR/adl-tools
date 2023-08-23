@@ -12,7 +12,7 @@ class ARCH_LIB_TEMPLATE
 inherit
 	ARCH_LIB_AUTHORED_ARCHETYPE
 		redefine
-			errors, select_archetype, file_mgr, flat_archetype, differential_archetype, differential_serialised,
+			errors, validator_reset, select_archetype, file_mgr, flat_archetype, differential_archetype, differential_serialised,
 			serialise_object, select_serialised_archetype, signal_from_scratch, persistent_type, clear_cache
 		end
 
@@ -27,6 +27,17 @@ feature -- Definitions
 		end
 
 	Overlay_differential_not_available: STRING = "Overlay differential_serialised not generated for "
+
+feature -- Initialisation
+
+	validator_reset
+			-- initialise reporting variables
+		do
+			across overlays as ovl_csr loop
+				ovl_csr.item.validator_reset
+			end
+			precursor
+		end
 
 feature -- Access
 

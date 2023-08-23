@@ -15,21 +15,10 @@ deferred class C_DEFINED_OBJECT
 inherit
 	C_OBJECT
 
-feature -- Access
-
-	prototype_value: ANY
-			-- 	generate a default value from this constraint object
-		deferred
-		end
-
 feature -- Status Report
 
 	any_allowed: BOOLEAN
 			-- True if any value allowed - only type is constrained
-		deferred
-		end
-
-	valid_value (a_value: like prototype_value): BOOLEAN
 		deferred
 		end
 
