@@ -55,25 +55,25 @@ feature {NONE}-- Initialization
 
 			-- serialise radio buttons
 			create ev_serialise_adl_rb
-			create ev_serialise_odin_rb
-			create ev_serialise_xml_rb
 			create ev_serialise_json_rb
 			create ev_serialise_yaml_rb
+			create ev_serialise_xml_rb
+			create ev_serialise_odin_rb
 			ev_serialise_adl_rb.select_actions.extend (agent try_repopulate)
-			ev_serialise_odin_rb.select_actions.extend (agent try_repopulate)
-			ev_serialise_xml_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_json_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_yaml_rb.select_actions.extend (agent try_repopulate)
+			ev_serialise_xml_rb.select_actions.extend (agent try_repopulate)
+			ev_serialise_odin_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_rb_vbox.extend (ev_serialise_adl_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_odin_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_xml_rb)
 			ev_serialise_rb_vbox.extend (ev_serialise_json_rb)
 			ev_serialise_rb_vbox.extend (ev_serialise_yaml_rb)
+			ev_serialise_rb_vbox.extend (ev_serialise_xml_rb)
+			ev_serialise_rb_vbox.extend (ev_serialise_odin_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_adl_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_odin_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_xml_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_json_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_yaml_rb)
+			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_xml_rb)
+			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_odin_rb)
 
 			-- include RM check button
 			create ev_flatten_with_rm_cb
@@ -135,14 +135,14 @@ feature {NONE} -- Implementation
 			if ev_serialise_adl_rb.is_selected then
 				s := safe_source.select_serialised_archetype (differential_view, ev_flatten_with_rm_cb.is_selected)
 			else
-				if ev_serialise_odin_rb.is_selected then
-					syntax_type := {ARCHETYPE_DEFINITIONS}.Syntax_type_adl
-				elseif ev_serialise_xml_rb.is_selected then
-					syntax_type := {ODIN_DEFINITIONS}.Syntax_type_xml
-				elseif ev_serialise_json_rb.is_selected then
+				if ev_serialise_json_rb.is_selected then
 					syntax_type := {ODIN_DEFINITIONS}.Syntax_type_json
 				elseif ev_serialise_yaml_rb.is_selected then
 					syntax_type := {ODIN_DEFINITIONS}.Syntax_type_yaml
+				elseif ev_serialise_xml_rb.is_selected then
+					syntax_type := {ODIN_DEFINITIONS}.Syntax_type_xml
+				elseif ev_serialise_odin_rb.is_selected then
+					syntax_type := {ARCHETYPE_DEFINITIONS}.Syntax_type_adl
 				else
 					create syntax_type.make_empty
 				end
@@ -169,17 +169,17 @@ feature {NONE} -- Implementation
 			ev_serialise_adl_rb.set_text ({ARCHETYPE_DEFINITIONS}.syntax_type_adl.as_upper)
 			ev_serialise_adl_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_adl_serialisation_tooltip, <<latest_adl_version>>))
 
-			ev_serialise_odin_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_odin.as_upper)
-			ev_serialise_odin_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_dadl_serialisation_tooltip, <<latest_adl_version>>))
-
-			ev_serialise_xml_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_xml.as_upper)
-			ev_serialise_xml_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_xml_serialisation_tooltip, <<latest_adl_version>>))
-
 			ev_serialise_json_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_json.as_upper)
 			ev_serialise_json_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_json_serialisation_tooltip, <<latest_adl_version>>))
 
 			ev_serialise_yaml_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_yaml.as_upper)
 			ev_serialise_yaml_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_yaml_serialisation_tooltip, <<latest_adl_version>>))
+
+			ev_serialise_xml_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_xml.as_upper)
+			ev_serialise_xml_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_xml_serialisation_tooltip, <<latest_adl_version>>))
+
+			ev_serialise_odin_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_odin.as_upper)
+			ev_serialise_odin_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_dadl_serialisation_tooltip, <<latest_adl_version>>))
 		end
 
 end

@@ -27,8 +27,26 @@ feature {NONE}-- Initialization
 		do
 			-- create root widget
 			create ev_root_container
-			ev_root_container.set_border_width (Default_border_width)
-			ev_root_container.set_padding_width (Default_padding_width)
+--			create gui_controls.make (0)
+
+--			-- JSON tab
+--			create evx_json_editor.make_editable (agent json_text, agent save_json_text)
+--			ev_root_container.extend (evx_json_editor.ev_root_container)
+--			ev_root_container.set_item_text (evx_json_editor.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_json_instance_text))
+--			gui_controls.extend (evx_json_editor)
+
+--			-- YAML tab
+--			create evx_yaml_editor.make_editable (agent yaml_text, agent save_yaml_text)
+--			ev_root_container.extend (evx_yaml_editor.ev_root_container)
+--			ev_root_container.set_item_text (evx_yaml_editor.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_yaml_instance_text))
+--			gui_controls.extend (evx_yaml_editor)
+
+--			-- XML tab
+--			create evx_xml_editor.make_editable (agent xml_text, agent save_xml_text)
+--			ev_root_container.extend (evx_xml_editor.ev_root_container)
+--			ev_root_container.set_item_text (evx_xml_editor.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_xml_instance_text))
+--			gui_controls.extend (evx_xml_editor)
+
 
 			-- rich text
 			create ev_instance_rich_text
@@ -54,18 +72,18 @@ feature {NONE}-- Initialization
 			ev_instance_controls_frame.extend (ev_instance_rb_vbox)
 
 			-- serialise radio buttons
-			create ev_instance_xml_rb
 			create ev_instance_json_rb
 			create ev_instance_yaml_rb
-			ev_instance_xml_rb.select_actions.extend (agent try_repopulate)
+			create ev_instance_xml_rb
 			ev_instance_json_rb.select_actions.extend (agent try_repopulate)
 			ev_instance_yaml_rb.select_actions.extend (agent try_repopulate)
-			ev_instance_rb_vbox.extend (ev_instance_xml_rb)
+			ev_instance_xml_rb.select_actions.extend (agent try_repopulate)
 			ev_instance_rb_vbox.extend (ev_instance_json_rb)
 			ev_instance_rb_vbox.extend (ev_instance_yaml_rb)
-			ev_instance_rb_vbox.disable_item_expand (ev_instance_xml_rb)
+			ev_instance_rb_vbox.extend (ev_instance_xml_rb)
 			ev_instance_rb_vbox.disable_item_expand (ev_instance_json_rb)
 			ev_instance_rb_vbox.disable_item_expand (ev_instance_yaml_rb)
+			ev_instance_rb_vbox.disable_item_expand (ev_instance_xml_rb)
 
 			-- include RM check button
 			create ev_flatten_with_rm_cb
@@ -85,6 +103,11 @@ feature {NONE}-- Initialization
 			ev_instance_controls_vbox.extend (ev_line_numbers_cb)
 			ev_instance_controls_vbox.disable_item_expand (ev_line_numbers_cb)
 
+			-- save button
+--			ev_instance_controls_vbox.add_button (Void, Void, get_text ({ADL_MESSAGES_IDS}.ec_save_instance_as_button_text),
+--				get_msg ({ADL_MESSAGES_IDS}.ec_save_instance_as_button_tooltip, <<latest_adl_version>>), agent save_instance_as, Void)
+--			gui_controls.extend (evx_adl_serialised_editor)
+
 			-- bottom padding cell
 			create ev_instance_padding_cell
 			ev_instance_controls_vbox.extend (ev_instance_padding_cell)
@@ -99,8 +122,36 @@ feature {NONE}-- Initialization
 feature -- Access
 
 	ev_root_container: EV_HORIZONTAL_BOX
+--	ev_root_container: EV_NOTEBOOK
 
 feature {NONE} -- Implementation
+
+--	gui_controls: ARRAYED_LIST [EVX_CONTROL_SHELL]
+
+--	evx_json_editor: EVX_TEXT_EDITOR_CONTROL
+
+--	json_text: detachable STRING
+--		do
+--			Result := safe_source.generate_instance ({ODIN_DEFINITIONS}.Syntax_type_json)
+--		end
+
+--	evx_yaml_editor: EVX_TEXT_EDITOR_CONTROL
+
+--	yaml_text: detachable STRING
+--		do
+--			Result := safe_source.generate_instance ({ODIN_DEFINITIONS}.Syntax_type_yaml)
+--		end
+
+--	evx_xml_editor: EVX_TEXT_EDITOR_CONTROL
+
+--	xml_text: detachable STRING
+--		do
+--			Result := safe_source.generate_instance ({ODIN_DEFINITIONS}.Syntax_type_xml)
+--		end
+
+
+
+
 
 	ev_instance_rich_text: EV_RICH_TEXT
 
@@ -125,12 +176,12 @@ feature {NONE} -- Implementation
 			s: STRING
 		do
 			set_instance_control_texts
-			if ev_instance_xml_rb.is_selected then
-				syntax_type := {ODIN_DEFINITIONS}.Syntax_type_xml
-			elseif ev_instance_json_rb.is_selected then
+			if ev_instance_json_rb.is_selected then
 				syntax_type := {ODIN_DEFINITIONS}.Syntax_type_json
 			elseif ev_instance_yaml_rb.is_selected then
 				syntax_type := {ODIN_DEFINITIONS}.Syntax_type_yaml
+			elseif ev_instance_xml_rb.is_selected then
+				syntax_type := {ODIN_DEFINITIONS}.Syntax_type_xml
 			else
 				create syntax_type.make_empty
 			end
@@ -153,14 +204,19 @@ feature {NONE} -- Implementation
 
 	set_instance_control_texts
 		do
-			ev_instance_xml_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_xml.as_upper)
-			ev_instance_xml_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_xml_instance_tooltip, <<latest_adl_version>>))
-
 			ev_instance_json_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_json.as_upper)
 			ev_instance_json_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_json_instance_tooltip, <<latest_adl_version>>))
 
 			ev_instance_yaml_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_yaml.as_upper)
 			ev_instance_yaml_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_yaml_instance_tooltip, <<latest_adl_version>>))
+
+			ev_instance_xml_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_xml.as_upper)
+			ev_instance_xml_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_xml_instance_tooltip, <<latest_adl_version>>))
+		end
+
+	save_instance_as
+		do
+
 		end
 
 end

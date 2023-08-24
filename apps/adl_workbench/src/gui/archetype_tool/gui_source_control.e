@@ -32,38 +32,51 @@ feature {NONE}-- Initialization
 			create ev_root_container
 			create gui_controls.make (0)
 
+			--------------------------- ADL 1.4 source tab -----------------------
 			create evx_adl_14_source_editor.make_editable (agent adl_14_source_text, agent save_adl_14_source_editor_text)
 			ev_root_container.extend (evx_adl_14_source_editor.ev_root_container)
 			ev_root_container.set_item_text (evx_adl_14_source_editor.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_adl_14_source_tab_text))
 			gui_controls.extend (evx_adl_14_source_editor)
 
+			--------------------------- ADL 1.4 converted tab -----------------------
 			create evx_adl_14_converted_editor.make (agent adl_14_converted_text)
 			ev_root_container.extend (evx_adl_14_converted_editor.ev_root_container)
 			ev_root_container.set_item_text (evx_adl_14_converted_editor.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_adl_14_converted_tab_text))
 			gui_controls.extend (evx_adl_14_converted_editor)
 
+			--------------------------- ADL2 source tab -----------------------
 			create evx_adl_source_editor.make_editable (agent adl_source_text, agent save_adl_source_editor_text)
 			ev_root_container.extend (evx_adl_source_editor.ev_root_container)
 			ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_adl_source_tab_text))
 			gui_controls.extend (evx_adl_source_editor)
 
+			--------------------------- ADL2 converted tab -----------------------
 			create evx_adl_converted_editor.make (agent adl_converted_text)
 			ev_root_container.extend (evx_adl_converted_editor.ev_root_container)
 			ev_root_container.set_item_text (evx_adl_converted_editor.ev_root_container, get_msg ({ADL_MESSAGES_IDS}.ec_adl_converted_tab_text, <<Latest_adl_major_version>>))
+
+			-- save button
 			evx_adl_converted_editor.add_button (Void, Void, get_text ({ADL_MESSAGES_IDS}.ec_save_adl_converted_button_text),
 				get_msg ({ADL_MESSAGES_IDS}.ec_save_adl_converted_button_tooltip, <<latest_adl_version>>), agent save_adl_converted_source, Void)
+
 			gui_controls.extend (evx_adl_converted_editor)
 
+			--------------------------- ADL2 serialised tab -----------------------
 			create evx_adl_serialised_editor.make (agent adl_current_serialised_text)
 			ev_root_container.extend (evx_adl_serialised_editor.ev_root_container)
 			ev_root_container.set_item_text (evx_adl_serialised_editor.ev_root_container, get_msg ({ADL_MESSAGES_IDS}.ec_adl_serialised_tab_text, <<Latest_adl_major_version>>))
+
+			-- symbolic syntax
 			evx_adl_serialised_editor.set_text_filter (get_text ({ADL_MESSAGES_IDS}.ec_symbolic_text), get_text ({ADL_MESSAGES_IDS}.ec_symbolic_text_tooltip), agent symbolic_text)
+
+			-- save button
 			evx_adl_serialised_editor.add_button (Void, Void, get_text ({ADL_MESSAGES_IDS}.ec_save_adl_serialised_button_text),
 				get_msg ({ADL_MESSAGES_IDS}.ec_save_adl_serialised_button_tooltip, <<latest_adl_version>>), agent save_adl_serialised_source, Void)
+
 			gui_controls.extend (evx_adl_serialised_editor)
 
-			differential_view := True
 
+			differential_view := True
 			ev_root_container.set_data (Current)
 		end
 

@@ -145,7 +145,6 @@ feature {NONE} -- Implementation
 			create definition_control.make
 			create terminology_controls.make
 			create annotations_control.make
-			create serialisation_control.make
 		end
 
 	link_sub_tools
@@ -156,6 +155,7 @@ feature {NONE} -- Implementation
 			add_sub_tool (clients_suppliers_control)
 			add_sub_tool (source_control)
 			add_sub_tool (serialisation_control)
+			add_sub_tool (instance_control)
 			add_sub_tool (validity_report_control)
 			add_sub_tool (statistical_information_control)
 		end
@@ -170,6 +170,7 @@ feature {NONE} -- Implementation
 			statistical_information_control.clear
 			source_control.clear
 			serialisation_control.clear
+			instance_control.clear
 		end
 
 	do_populate

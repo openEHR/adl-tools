@@ -91,50 +91,9 @@ feature -- Visitor
 
 	end_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- exit an C_COMPLEX_OBJECT
-		local
-			instantiated_attrs: ARRAYED_LIST[STRING]
-			bmm_class: BMM_CLASS
-			bmm_type_name: STRING
-			val: ANY
 		do
 			if a_node.is_root or else not c_attribute_completed.item then
-				create instantiated_attrs.make (0)
-				instantiated_attrs.compare_objects
-
-				-- find all the non-archetyped RM attributes, and for the mandatory ones, synthesise values
-				across dt_object_nodes.item.attributes as dt_attr_csr loop
-					instantiated_attrs.extend (dt_attr_csr.item.im_attr_name)
-				end
-
-				bmm_class := ref_model.class_definition (a_node.rm_type_name)
-				across bmm_class.properties as bmm_prop_csr loop
-					if not instantiated_attrs.has (bmm_prop_csr.item.name) and bmm_prop_csr.item.bmm_type.is_primitive then
-						bmm_type_name := bmm_prop_csr.item.bmm_type.type_name
-						if bmm_type_name.is_case_insensitive_equal ("String") then
-							val := "some string"
-
-						elseif bmm_type_name.is_case_insensitive_equal ("Terminology_code") then
-							val := create {TERMINOLOGY_CODE}.make_from_string ("graphite::unknown-code")
-
-						elseif bmm_type_name.is_case_insensitive_equal ("Date") then
-							val := create {ISO8601_DATE}.make_date (create {DATE}.make_now)
-						elseif bmm_type_name.is_case_insensitive_equal ("Date_time") then
-							val := create {ISO8601_DATE_TIME}.make_date_time (create {DATE_TIME}.make_now)
-						elseif bmm_type_name.is_case_insensitive_equal ("Time") then
-							val := create {ISO8601_TIME}.make_time (create {TIME}.make_now)
-						elseif bmm_type_name.is_case_insensitive_equal ("Duration") then
-							val := create {ISO8601_DURATION}.make_from_string ("PT2H")
-
-						elseif bmm_type_name.is_case_insensitive_equal ("Integer") then
-							val := 4
-						elseif bmm_type_name.is_case_insensitive_equal ("Real") then
-							val := 8.0
-						else
-							val := "(other primitive value)"
-						end
-						add_dt_attribute (dt_object_nodes.item, bmm_prop_csr.item.name, val)
-					end
-				end
+				add_non_constrained_attrs (a_node)
 
 				dt_object_nodes.remove
 
@@ -181,6 +140,12 @@ feature -- Visitor
 			prototype_value: DT_COMPLEX_OBJECT
 		do
 			if not c_attribute_completed.item then
+				-- have to obtain the terminology from the main archetype directory because the archetype being serialised
+				-- here might be in differential form, and have no component_ontologies aet up
+				if attached {OPERATIONAL_TEMPLATE} archetype as opt and a_node.has_attributes then
+					terminologies.extend (opt.component_terminology (a_node.archetype_ref))
+				end
+
 				create prototype_value.make_anonymous
 				prototype_value.set_im_type_name (a_node.rm_type_name)
 				add_locatable_attrs (prototype_value, a_node.archetype_ref)
@@ -194,11 +159,18 @@ feature -- Visitor
 			-- exit a C_ARCHETYPE_ROOT
 		do
 			if not c_attribute_completed.item then
+				add_non_constrained_attrs (a_node)
+
 				dt_object_nodes.remove
 
 				-- for single valued node, marke completed after one object node
 				if attached a_node.parent as ca_parent and then ca_parent.is_single then
 					c_attribute_completed.replace (True)
+				end
+
+				-- pop terminology of current OPT off stack
+				if attached {OPERATIONAL_TEMPLATE} archetype as opt and a_node.has_attributes then
+					terminologies.remove
 				end
 			end
 		end
@@ -236,7 +208,7 @@ feature -- Visitor
 		local
 			prototype_value: DT_ATTRIBUTE
 		do
-			if c_object_ignore.is_empty or else not c_object_ignore.item then
+			if c_object_ignore.is_empty or else not c_object_ignore.item and a_node.has_children then
 				if a_node.is_multiple then
 					create prototype_value.make_container (a_node.rm_attribute_name)
 				else
@@ -252,7 +224,7 @@ feature -- Visitor
 	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- exit a C_ATTRIBUTE
 		do
-			if c_object_ignore.is_empty or else not c_object_ignore.item then
+			if c_object_ignore.is_empty or else not c_object_ignore.item and a_node.has_children then
 				dt_attribute_nodes.remove
 				c_attribute_completed.remove
 			end
@@ -356,6 +328,59 @@ feature {NONE} -- Implementation
 			create dt_attr.make_single (attr_name)
 			dt_attr.put_child (create {DT_PRIMITIVE_OBJECT}.make_anonymous (attr_val))
 			a_dt_object.put_attribute (dt_attr)
+		end
+
+	add_non_constrained_attrs (a_node: C_COMPLEX_OBJECT)
+			-- find all the non-archetyped RM attributes, and for the mandatory ones, synthesise values
+		local
+			instantiated_attrs: ARRAYED_LIST[STRING]
+			bmm_class: BMM_CLASS
+			bmm_type_name: STRING
+			val: ANY
+			iso_dt: ISO8601_DATE_TIME
+			iso_t: ISO8601_TIME
+		do
+			create instantiated_attrs.make (0)
+			instantiated_attrs.compare_objects
+
+			across dt_object_nodes.item.attributes as dt_attr_csr loop
+				instantiated_attrs.extend (dt_attr_csr.item.im_attr_name)
+			end
+
+			bmm_class := ref_model.class_definition (a_node.rm_type_name)
+			across bmm_class.flat_properties as bmm_prop_csr loop
+				if not instantiated_attrs.has (bmm_prop_csr.item.name) and bmm_prop_csr.item.bmm_type.is_primitive then
+					bmm_type_name := bmm_prop_csr.item.bmm_type.type_name
+					if bmm_type_name.is_case_insensitive_equal ("String") then
+						val := "some string"
+
+					elseif bmm_type_name.is_case_insensitive_equal ("Terminology_code") then
+						val := create {TERMINOLOGY_CODE}.make_from_string ("graphite::unknown-code")
+
+					elseif bmm_type_name.is_case_insensitive_equal ("Date") then
+						val := create {ISO8601_DATE}.make_date (create {DATE}.make_now)
+					elseif bmm_type_name.is_case_insensitive_equal ("Date_time") then
+						create iso_dt
+						iso_dt.clear_fractional_second
+						val := iso_dt
+					elseif bmm_type_name.is_case_insensitive_equal ("Time") then
+						create iso_t
+						iso_t.clear_fractional_second
+						val := iso_t
+
+					elseif bmm_type_name.is_case_insensitive_equal ("Duration") then
+						val := create {ISO8601_DURATION}.make_from_string ("PT2H")
+
+					elseif bmm_type_name.is_case_insensitive_equal ("Integer") then
+						val := 4
+					elseif bmm_type_name.is_case_insensitive_equal ("Real") then
+						val := 8.0
+					else
+						val := "(other primitive value)"
+					end
+					add_dt_attribute (dt_object_nodes.item, bmm_prop_csr.item.name, val)
+				end
+			end
 		end
 
 end
