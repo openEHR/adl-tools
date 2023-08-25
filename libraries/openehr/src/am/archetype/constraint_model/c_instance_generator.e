@@ -208,7 +208,7 @@ feature -- Visitor
 		local
 			prototype_value: DT_ATTRIBUTE
 		do
-			if c_object_ignore.is_empty or else not c_object_ignore.item and a_node.has_children then
+			if (c_object_ignore.is_empty or else not c_object_ignore.item) and not c_attribute_excluded (a_node) then
 				if a_node.is_multiple then
 					create prototype_value.make_container (a_node.rm_attribute_name)
 				else
@@ -224,7 +224,7 @@ feature -- Visitor
 	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- exit a C_ATTRIBUTE
 		do
-			if c_object_ignore.is_empty or else not c_object_ignore.item and a_node.has_children then
+			if (c_object_ignore.is_empty or else not c_object_ignore.item) and not c_attribute_excluded (a_node) then
 				dt_attribute_nodes.remove
 				c_attribute_completed.remove
 			end
@@ -381,6 +381,11 @@ feature {NONE} -- Implementation
 					add_dt_attribute (dt_object_nodes.item, bmm_prop_csr.item.name, val)
 				end
 			end
+		end
+
+	c_attribute_excluded (a_node: C_ATTRIBUTE): BOOLEAN
+		do
+			Result := not a_node.has_children or attached a_node.existence as ex and then ex.is_prohibited
 		end
 
 end

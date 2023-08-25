@@ -776,6 +776,10 @@ templates = <
 		["flatten_with_rm_cb_text"] = <"Include RM">
 		["flatten_with_rm_cb_tooltip"] = <"Include RM in flattening process, causing RM existence and cardinality to be included and occurrences to be generated">
 
+		-- GUI_INSTANCE_CONTROL
+		["save_instance_dialog_title"] = <"Save instance to file">
+		["save_instance_to_file_title"] = <"Save $1 file">
+
 		-- GUI_TRANSLATION_CONTROL
 		["translation_original_label_text"] = <"Original text">
 		["translation_translated_label_text"] = <"Translated text">

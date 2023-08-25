@@ -917,6 +917,8 @@ feature -- Definitions
 		ec_symbolic_text_tooltip: STRING = "symbolic_text_tooltip"
 		ec_flatten_with_rm_cb_text: STRING = "flatten_with_rm_cb_text"
 		ec_flatten_with_rm_cb_tooltip: STRING = "flatten_with_rm_cb_tooltip"
+		ec_save_instance_dialog_title: STRING = "save_instance_dialog_title"
+		ec_save_instance_to_file_title: STRING = "save_instance_to_file_title"
 		ec_translation_original_label_text: STRING = "translation_original_label_text"
 		ec_translation_translated_label_text: STRING = "translation_translated_label_text"
 		ec_translate_button_text: STRING = "translate_button_text"

@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (936)
+			create message_table.make (938)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -932,6 +932,8 @@ feature -- Initialisation
 			message_table.put ("Show text using symbols rather than text rendering", ec_symbolic_text_tooltip)
 			message_table.put ("Include RM", ec_flatten_with_rm_cb_text)
 			message_table.put ("Include RM in flattening process, causing RM existence and cardinality to be included and occurrences to be generated", ec_flatten_with_rm_cb_tooltip)
+			message_table.put ("Save instance to file", ec_save_instance_dialog_title)
+			message_table.put ("Save $1 file", ec_save_instance_to_file_title)
 			message_table.put ("Original text", ec_translation_original_label_text)
 			message_table.put ("Translated text", ec_translation_translated_label_text)
 			message_table.put ("Add", ec_translate_button_text)
