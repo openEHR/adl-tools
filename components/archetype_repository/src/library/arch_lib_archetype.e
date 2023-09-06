@@ -661,6 +661,7 @@ feature -- Compilation
 			else
 				compilation_state := cs_suppliers_invalid
 				add_error ({ADL_MESSAGES_IDS}.ec_compile_e2, <<suppliers_index.item_for_iteration.id.physical_id>>)
+				merge_errors_from_other (suppliers_index.item_for_iteration.errors, suppliers_index.item_for_iteration.id.physical_id)
 			end
 		ensure
 			Compilation_state_set: (<<Cs_ready_to_validate, cs_suppliers_invalid>>).has (compilation_state)
@@ -861,6 +862,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			status.prepend (errors.as_string_filtered (True, True, False))
 		ensure then
 			Compilation_state: (<<Cs_validated_phase_1, Cs_validated_phase_2, Cs_validate_failed>>).has (compilation_state)
+			Failure_implies_errors: compilation_state = Cs_validate_failed implies errors.has_errors
 		end
 
 	validate_flat
@@ -885,6 +887,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			status.prepend (errors.as_string_filtered (True, True, False))
 		ensure
 			Compilation_state: (<<Cs_validated, Cs_validate_failed>>).has (compilation_state)
+			Failure_implies_errors: compilation_state = Cs_validate_failed implies errors.has_errors
 		end
 
 	post_compile_actions

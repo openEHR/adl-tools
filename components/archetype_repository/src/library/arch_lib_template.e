@@ -12,7 +12,7 @@ class ARCH_LIB_TEMPLATE
 inherit
 	ARCH_LIB_AUTHORED_ARCHETYPE
 		redefine
-			errors, validator_reset, select_archetype, file_mgr, flat_archetype, differential_archetype, differential_serialised,
+			validator_reset, select_archetype, file_mgr, flat_archetype, differential_archetype, differential_serialised,
 			serialise_object, select_serialised_archetype, signal_from_scratch, persistent_type, clear_cache
 		end
 
@@ -39,22 +39,15 @@ feature -- Initialisation
 			precursor
 		end
 
-feature -- Access
+feature -- Compilation
 
-	errors: ERROR_ACCUMULATOR
-			-- error output of validator - including overlay errors
+	signal_from_scratch
+			-- signal rebuild from scratch; this rebuilds from existing differential
 		do
-			create Result.make
-			Result.append (precursor)
-			across overlays as ovl_csr loop
-				across ovl_csr.item.errors as ovl_errs_csr loop
-					Result.extend (create {ERROR_DESCRIPTOR}.make (ovl_errs_csr.item.code,
-																	ovl_errs_csr.item.severity,
-																	"[Overlay " + ovl_csr.item.id.as_string + "] " + ovl_errs_csr.item.message,
-																	ovl_errs_csr.item.location)
-					)
-				end
-			end
+			precursor
+			overlays.wipe_out
+		ensure then
+			Overlays_cleared: overlays.is_empty
 		end
 
 feature -- Artefacts
@@ -132,15 +125,6 @@ feature -- Artefacts
 			else
 				Result := adl_2_engine.serialise (operational_template, Syntax_type_adl, current_archetype_language)
 			end
-		end
-
-	signal_from_scratch
-			-- signal rebuild from scratch; this rebuilds from existing differential
-		do
-			precursor
-			overlays.wipe_out
-		ensure then
-			Overlays_cleared: overlays.is_empty
 		end
 
 feature -- Visualisation

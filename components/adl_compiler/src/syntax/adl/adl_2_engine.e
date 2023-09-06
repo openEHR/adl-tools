@@ -395,6 +395,8 @@ feature -- Validation
 			phase_1_validator.validate
 			validation_passed := phase_1_validator.passed
 			errors := phase_1_validator.errors
+		ensure
+			not validation_passed implies errors.has_errors
 		end
 
 	phase_2_validate (aca: ARCH_LIB_ARCHETYPE)
@@ -416,6 +418,8 @@ feature -- Validation
 			phase_2_validator.validate
 			validation_passed := phase_2_validator.passed
 			errors := phase_2_validator.errors
+		ensure
+			not validation_passed implies errors.has_errors
 		end
 
 	phase_3_validate (aca: ARCH_LIB_ARCHETYPE)
@@ -435,6 +439,8 @@ feature -- Validation
 			phase_3_validator.validate
 			validation_passed := phase_3_validator.passed
 			errors := phase_3_validator.errors
+		ensure
+			not validation_passed implies errors.has_errors
 		end
 
 	post_compile_process (aca: ARCH_LIB_ARCHETYPE)
