@@ -692,14 +692,12 @@ feature {NONE} -- Tools menu events
 			dialog.show_modal_to_window (Current)
 		end
 
-	on_toggle_view_all_classes (a_flag, save_resources_file_flag: BOOLEAN)
+	on_toggle_view_all_classes (a_flag: BOOLEAN)
 			-- the 'view all classes' setting says whether to display all RM classes in the
 			-- archetype explorer, or only those for which there are archetypes
 		do
 			set_show_entire_ontology (a_flag)
-			if save_resources_file_flag then
-				save_resources
-			end
+			save_resources
 			if has_current_library then
 				library_tool.populate (current_library)
 				if test_tool.ev_root_container.is_displayed then

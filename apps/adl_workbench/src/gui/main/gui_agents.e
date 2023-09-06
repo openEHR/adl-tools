@@ -52,7 +52,7 @@ feature {NONE} -- Access
 	close_test_tool_agent: detachable PROCEDURE [ANY, TUPLE]
 			-- agent to close test tool
 
-	on_toggle_view_all_classes_agent: detachable PROCEDURE [ANY, TUPLE[BOOLEAN, BOOLEAN]]
+	on_toggle_view_all_classes_agent: detachable PROCEDURE [ANY, TUPLE[BOOLEAN]]
 			-- agent to call when 'show all classes' UI option is toggled
 
 	save_resources_agent: detachable PROCEDURE [ANY, TUPLE]
@@ -190,10 +190,10 @@ feature -- Command
 			end
 		end
 
-	call_on_toggle_view_all_classes_agent (a_flag, save_options_file_flag: BOOLEAN)
+	call_on_toggle_view_all_classes_agent (a_flag: BOOLEAN)
 		do
 			if attached on_toggle_view_all_classes_agent as att_agt then
-				att_agt.call ([a_flag, save_options_file_flag])
+				att_agt.call ([a_flag])
 			end
 		end
 

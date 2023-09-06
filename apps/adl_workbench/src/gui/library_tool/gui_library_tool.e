@@ -352,7 +352,7 @@ feature -- Events
 	on_view_all_classes
 			-- toggle show all classes in RM in main grid area
 		do
-			gui_agents.call_on_toggle_view_all_classes_agent (not show_entire_ontology, True)
+			gui_agents.call_on_toggle_view_all_classes_agent (not show_entire_ontology)
 		end
 
 	update_explorers_and_select (ali_id: STRING)

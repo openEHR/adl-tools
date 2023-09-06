@@ -334,9 +334,8 @@ feature -- Events
 				set_show_flat_form (evx_show_flat_form.is_selected)
 				set_display_archetype_source (evx_display_source_cb.is_selected)
 
-				if evx_show_all_classes_cb.is_selected /= old_show_entire_ontology then
-					gui_agents.call_on_toggle_view_all_classes_agent (evx_show_all_classes_cb.is_selected, False)
-				end
+				gui_agents.call_on_toggle_view_all_classes_agent (evx_show_all_classes_cb.is_selected)
+
 				set_default_tool_tab (Tool_tab_reverse_index.item (evx_tool_tab_cob.data_control_text))
 
 				-- namespaces
@@ -376,9 +375,6 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
-
-	old_show_entire_ontology: BOOLEAN
-			-- value of show_entire_ontology prior to setting by option dialog
 
 	do_populate
 			-- Set the dialog widgets from shared settings.
