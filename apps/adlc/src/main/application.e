@@ -68,6 +68,11 @@ inherit
 			{NONE} all
 		end
 
+	ODIN_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -119,19 +124,19 @@ feature -- Commands
 				-- now process command line
 				if opts.show_config then
 					-- location of .cfg file
-					std_out.put_string (get_msg (ec_config_file_location, <<app_cfg.file_path>>))
+					std_out.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_config_file_location, <<app_cfg.file_path>>))
 
 					-- XML rules file
-					std_out.put_string (get_msg (ec_xml_rules_file_location, <<xml_rules_file_path>>))
+					std_out.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_xml_rules_file_location, <<xml_rules_file_path>>))
 
 					-- RM schemas info
-					std_out.put_string ("%N" + get_text (ec_rm_schemas_info_text))
+					std_out.put_string ("%N" + get_text ({ADL_MESSAGES_IDS}.ec_rm_schemas_info_text))
 					across bmm_models_access.bmm_models as loaded_rms_csr loop
 						std_out.put_string ("%T" + loaded_rms_csr.key.as_string_8 + "%N")
 					end
 
 					-- repository & library info
-					std_out.put_string ("%N" + get_text (ec_repos_info_text))
+					std_out.put_string ("%N" + get_text ({ADL_MESSAGES_IDS}.ec_repos_info_text))
 					across archetype_repository_interfaces as rep_interfaces_csr loop
 						std_out.put_string ("%T" + rep_interfaces_csr.item.local_directory + "%N")
 						across rep_interfaces_csr.item.library_interfaces as lib_interfaces_csr loop
@@ -158,7 +163,7 @@ feature -- Commands
 					if attached opts.rm_export_directory as xd then
 						export_dir := xd
 						if not file_system.directory_exists (export_dir) then
-							std_err.put_string (get_msg (ec_directory_does_not_exist, <<export_dir>>))
+							std_err.put_string (get_msg ({GENERAL_MESSAGES_IDS}.ec_directory_does_not_exist, <<export_dir>>))
 							finished := True
 						end
 					else
@@ -195,7 +200,7 @@ feature -- Commands
 								std_out.put_string ("Using library " + att_lib + "%N")
 							end
 						else
-							std_err.put_string (get_msg (ec_lib_does_not_exist_err, <<att_lib>>))
+							std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_lib_does_not_exist_err, <<att_lib>>))
 							finished := True
 						end
 					end
@@ -207,9 +212,9 @@ feature -- Commands
 					-- output archetype(s) in serialised format
 					elseif opts.display_archetypes then
 						user_friendly_list_output := True
-						std_out.put_string (get_msg (ec_archs_list_text, <<current_library_name>>))
+						std_out.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_archs_list_text, <<current_library_name>>))
 						current_library.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
-						std_out.put_string (get_text (ec_archs_list_text_end))
+						std_out.put_string (get_text ({ADL_MESSAGES_IDS}.ec_archs_list_text_end))
 
 					else
 						-- check if valid action specified
@@ -217,7 +222,7 @@ feature -- Commands
 							action := a
 						end
 						if not opts.Actions.has (action) then
-							std_err.put_string (get_msg (ec_invalid_action_err, <<action, opts.Actions_string>>))
+							std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_action_err, <<action, opts.Actions_string>>))
 						else
 							if not finished then
 								if valid_regex (opts.archetype_id_pattern) then
@@ -225,7 +230,7 @@ feature -- Commands
 									matched_archetype_ids := current_library.matching_ids (opts.archetype_id_pattern, Void, Void)
 									if matched_archetype_ids.is_empty then
 										if opts.is_verbose then
-											std_err.put_string (get_msg (ec_no_matching_ids_err, <<opts.archetype_id_pattern, current_library_name>>))
+											std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_no_matching_ids_err, <<opts.archetype_id_pattern, current_library_name>>))
 										end
 									else
 										if action.is_equal (opts.List_action) then
@@ -241,7 +246,7 @@ feature -- Commands
 												if has_serialiser_format (of) then
 													output_format := of
 												else
-													std_err.put_string (get_msg (ec_invalid_serialisation_format_err, <<of, archetype_all_serialiser_formats_string>>))
+													std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_serialisation_format_err, <<of, archetype_all_serialiser_formats_string>>))
 													finished := True
 												end
 											end
@@ -256,7 +261,7 @@ feature -- Commands
 												end
 												file_system.recursive_create_directory (full_output_dir)
 												if not file_system.directory_exists (full_output_dir) then
-													std_err.put_string (get_msg (ec_invalid_output_directory, <<full_output_dir>>))
+													std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_output_directory, <<full_output_dir>>))
 													finished := True
 												else
 													if opts.is_verbose then
@@ -305,10 +310,10 @@ feature -- Commands
 																	end
 																end
 															else
-																std_err.put_string (get_msg (ec_archetype_not_valid, <<alaa.id.as_string>>))
+																std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_not_valid, <<alaa.id.as_string>>))
 															end
 														else
-															std_err.put_string (get_msg (ec_invalid_action_err, <<action, opts.Actions_string>>))
+															std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_action_err, <<action, opts.Actions_string>>))
 														end
 													end
 												end
