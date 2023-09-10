@@ -315,7 +315,7 @@ feature -- File Access
 			if has_archetype_native_serialiser_format (a_format) and attached differential_archetype as da then
 				file_mgr.save_as (a_full_path, adl_2_engine.serialise (da, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
-				file_mgr.save_as (a_full_path, serialise_object (False, a_format))
+				file_mgr.save_as (a_full_path, serialise_object (False, False, a_format))
 			end
 			status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
@@ -332,7 +332,7 @@ feature -- File Access
 			elseif has_archetype_native_serialiser_format (a_format) then
 				file_mgr.save_as (a_full_path, adl_2_engine.serialise (flat_archetype, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
-				file_mgr.save_as (a_full_path, serialise_object (True, a_format))
+				file_mgr.save_as (a_full_path, serialise_object (True, False, a_format))
 			end
 			status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
@@ -391,7 +391,7 @@ feature {GUI_TEST_TOOL} -- File Access
 		require
 			Archetype_valid: is_valid
 		do
-			file_mgr.save_differential_compiled (serialise_object (False, {ODIN_DEFINITIONS}.Syntax_type_odin))
+			file_mgr.save_differential_compiled (serialise_object (False, False, {ODIN_DEFINITIONS}.Syntax_type_odin))
 		end
 
 	compiled_differential: STRING

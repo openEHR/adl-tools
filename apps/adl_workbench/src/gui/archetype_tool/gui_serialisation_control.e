@@ -84,6 +84,15 @@ feature {NONE}-- Initialization
 			ev_serialise_controls_vbox.extend (ev_flatten_with_rm_cb)
 			ev_serialise_controls_vbox.disable_item_expand (ev_flatten_with_rm_cb)
 
+			-- include type marking on check button
+			create ev_type_marking_cb
+			ev_type_marking_cb.set_text (get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_text, Void))
+			ev_type_marking_cb.select_actions.extend (agent do set_type_marking_on (ev_type_marking_cb.is_selected) end)
+			ev_type_marking_cb.select_actions.extend (agent try_repopulate)
+			ev_type_marking_cb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_tooltip, Void))
+			ev_serialise_controls_vbox.extend (ev_type_marking_cb)
+			ev_serialise_controls_vbox.disable_item_expand (ev_type_marking_cb)
+
 			-- line numbers check button
 			create ev_line_numbers_cb
 			ev_line_numbers_cb.set_text (get_msg ({EVX_MESSAGES_IDS}.ec_add_line_numbers_text, Void))
@@ -120,7 +129,7 @@ feature {NONE} -- Implementation
 
 	ev_serialise_adl_rb, ev_serialise_odin_rb, ev_serialise_xml_rb, ev_serialise_json_rb, ev_serialise_yaml_rb: EV_RADIO_BUTTON
 
-	ev_flatten_with_rm_cb, ev_line_numbers_cb: EV_CHECK_BUTTON
+	ev_flatten_with_rm_cb, ev_line_numbers_cb, ev_type_marking_cb: EV_CHECK_BUTTON
 
 	do_clear
 		do
@@ -146,7 +155,7 @@ feature {NONE} -- Implementation
 				else
 					create syntax_type.make_empty
 				end
-				s := safe_source.serialise_object (not differential_view, syntax_type)
+				s := safe_source.serialise_object (not differential_view, ev_type_marking_cb.is_selected, syntax_type)
 			end
 			populate_serialised_rich_text (s)
 		end

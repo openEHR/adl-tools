@@ -147,6 +147,11 @@ feature -- Definitions
 			create Result.make_from_string ("/compiler/rm_flattening")
 		end
 
+	Compiler_type_marking_resource_path: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("/compiler/type_marking")
+		end
+
 	File_system_aom_profile_user_directory_resource_path: IMMUTABLE_STRING_8
 		once
 			create Result.make_from_string ("/file_system/aom_profile_user_directory")
@@ -416,7 +421,7 @@ feature -- Application Switches
 		end
 
 	rm_flattening_on: BOOLEAN
-			-- Set RM flattening on?
+			-- Is RM flattening on?
 		do
 			Result := app_cfg.boolean_value (Compiler_rm_flattening_resource_path)
 		end
@@ -425,6 +430,18 @@ feature -- Application Switches
 			-- Set flag for RM flattening
 		do
 			app_cfg.put_boolean_value (Compiler_rm_flattening_resource_path, flag)
+		end
+
+	type_marking_on: BOOLEAN
+			-- Is type marking on?
+		do
+			Result := app_cfg.boolean_value (Compiler_type_marking_resource_path)
+		end
+
+	set_type_marking_on (flag: BOOLEAN)
+			-- Set flag for type marking in serialised formats
+		do
+			app_cfg.put_boolean_value (Compiler_type_marking_resource_path, flag)
 		end
 
 	aom_profile_directory: STRING

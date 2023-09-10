@@ -994,7 +994,7 @@ feature -- File Access
 
 feature -- Output
 
-	serialise_object (flat_flag: BOOLEAN; a_format: STRING): STRING
+	serialise_object (flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
 			-- serialise internal structure in a brute-force object way, using
 			-- format like ODIN, XML, JSON etc
 		require
@@ -1011,7 +1011,7 @@ feature -- Output
 
 			dt_object_converter.set_false_booleans_off_option
 			archetype_serialise_engine.set_tree (dt_arch.dt_representation)
-			archetype_serialise_engine.serialise (a_format, False, True)
+			archetype_serialise_engine.serialise (a_format, type_marking_flag, True)
 			Result := archetype_serialise_engine.serialised
 		end
 
