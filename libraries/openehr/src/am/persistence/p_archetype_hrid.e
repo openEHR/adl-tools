@@ -62,10 +62,10 @@ feature -- Access
 			-- The full numeric version of this archetype consisting of 3 parts, e.g. 1.8.2. The archetype_hrid
 			-- feature includes only the major version.
 
-	version_status: INTEGER
+	version_status: STRING
 			-- status of version: release candidate, released, build, unstable
 
-	build_count: INTEGER
+	build_count: STRING
 			-- Build count of this archetype. This is a number that advances from 1 and is reset for
 			-- each new value of release_version.
 

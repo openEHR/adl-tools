@@ -11,31 +11,25 @@ class VERSION_STATUSES
 
 feature -- Definitions
 
-	vs_unstable: INTEGER = -2
-			-- unstable version, i.e. unknown differences added to underlying release version
+	vs_alpha: STRING = "alpha"
+			-- alpha version, i.e. unknown differences added to underlying release version
 
-	vs_release_candidate: INTEGER = -1
+	vs_beta: STRING = "beta"
+			-- beta version, i.e. unknown differences added to underlying release version
+
+	vs_release_candidate: STRING = "rc"
 			-- version not guaranteed to satisfy underlying release definition but normally only slightly
 			-- different from it
 
-	vs_released: INTEGER = 0
+	vs_released: STRING = ""
 			-- definitive release
 
-	vs_build: INTEGER = 1
+	vs_build: STRING = "+"
 			-- additional build of release; doesn't change semantics
 
 feature -- Access
 
-	version_status_text (a_ver_status: INTEGER): STRING
-		require
-			valid_version_status (a_ver_status)
-		do
-			check attached version_status_texts.item (a_ver_status) as att_vs then
-				Result := att_vs
-			end
-		end
-
-	version_status_symbol_text (a_ver_status: INTEGER): STRING
+	version_status_symbol_text (a_ver_status: STRING): STRING
 		require
 			valid_version_status (a_ver_status)
 		do
@@ -46,41 +40,21 @@ feature -- Access
 
 feature -- Validity
 
-	valid_version_status (a_val: INTEGER): BOOLEAN
+	valid_version_status (a_val: STRING): BOOLEAN
 		do
-			Result := a_val >= vs_unstable and a_val <= vs_build
-		end
-
-	valid_version_status_symbol (a_str: STRING): BOOLEAN
-		do
-			Result := version_statuses.has (a_str)
+			Result := version_status_symbol_texts.has (a_val)
 		end
 
 feature {NONE} -- Implementation
 
-	version_status_texts: HASH_TABLE [STRING, INTEGER]
+	version_status_symbol_texts: HASH_TABLE [STRING, STRING]
 		once
 			create Result.make (0)
-			Result.put ("unstable", vs_unstable)
-			Result.put ("release candidate", vs_release_candidate)
-			Result.put ("released", vs_released)
-			Result.put ("build", vs_build)
-		end
-
-	version_status_symbol_texts: HASH_TABLE [STRING, INTEGER]
-		once
-			create Result.make (0)
-			Result.put ("-alpha.", vs_unstable)
-			Result.put ("-rc.", vs_release_candidate)
+			Result.put ("-" + vs_alpha + ".", vs_alpha)
+			Result.put ("-" + vs_beta + ".", vs_beta)
+			Result.put ("-" + vs_release_candidate + ".", vs_release_candidate)
 			Result.put ("", vs_released)
-			Result.put ("+", vs_build)
-		end
-
-	version_statuses: HASH_TABLE [INTEGER, STRING]
-		once
-			create Result.make (0)
-			Result.put (vs_unstable, "alpha")
-			Result.put (vs_release_candidate, "rc")
+			Result.put (vs_build, vs_build)
 		end
 
 end

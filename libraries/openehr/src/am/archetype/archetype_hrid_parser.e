@@ -57,10 +57,10 @@ feature -- Access
 			-- The full numeric version of this archetype consisting of 3 parts, e.g. 1.8.2. The archetype_hrid
 			-- feature includes only the major version.
 
-	version_status: INTEGER
+	version_status: STRING
 			-- status of version: release candidate, released, build, unstable
 
-	commit_number: INTEGER
+	build_count: STRING
 			-- Commit number of this archetype. This is a number that advances from 1 and is reset for
 			-- each new value of release_version.
 
@@ -125,19 +125,19 @@ feature -- Commands
 				start_pos := 1 + {ARCHETYPE_HRID}.Version_delimiter.count
 
 				-- case: -alpha.NNN
-				sym := version_status_symbol_text (vs_unstable)
+				sym := version_status_symbol_text (vs_alpha)
 				sym_pos := ver_str.substring_index (sym, start_pos)
 				if sym_pos > 0 then
 					end_pos := sym_pos - 1
-					commit_number := ver_str.substring (sym_pos + sym.count, ver_str.count).to_integer
-					version_status := vs_unstable
+					build_count := ver_str.substring (sym_pos + sym.count, ver_str.count)
+					version_status := vs_alpha
 				else
 					-- case: -rc.NNN
 					sym := version_status_symbol_text (vs_release_candidate)
 					sym_pos := ver_str.substring_index (sym, start_pos)
 					if sym_pos > 0 then
 						end_pos := sym_pos - 1
-						commit_number := ver_str.substring (sym_pos + sym.count, ver_str.count).to_integer
+						build_count := ver_str.substring (sym_pos + sym.count, ver_str.count)
 						version_status := vs_release_candidate
 					else
 						-- case: +NNN
@@ -145,7 +145,7 @@ feature -- Commands
 						sym_pos := ver_str.substring_index (sym, start_pos)
 						if sym_pos > 0 then
 							end_pos := sym_pos - 1
-							commit_number := ver_str.substring (sym_pos + sym.count, ver_str.count).to_integer
+							build_count := ver_str.substring (sym_pos + sym.count, ver_str.count)
 							version_status := vs_build
 						else
 							end_pos := ver_str.count
@@ -191,8 +191,8 @@ feature {NONE} -- Implementation
 			create rm_class.make_empty
 			create concept_id.make_empty
 			create release_version.make_empty
-			version_status := 0
-			commit_number := 0
+			create version_status.make_empty
+			build_count := "0"
 			is_adl14_id := False
 			is_adl2_id := False
 		end

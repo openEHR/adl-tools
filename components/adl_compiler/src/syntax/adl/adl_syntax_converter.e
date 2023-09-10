@@ -367,8 +367,8 @@ feature -- ADL 2 conversions
 							if rpos > 0 then
 								arch_id.set_release_version (rev_str.substring (1, rpos))
 								ver_sts_str := rev_str.substring (rpos + 2, rev_str.count)
-								if valid_version_status_symbol (ver_sts_str) then
-									arch_id.set_version_status (version_statuses.item (ver_sts_str))
+								if valid_adl14_version_status (ver_sts_str) then
+									arch_id.set_version_status (ver_sts_str)
 								end
 							else
 								arch_id.set_release_version (rev_str)
@@ -385,6 +385,21 @@ feature -- Error Reporting
 		once
 			create Result.make
 		end
+
+feature {NONE} -- Implementation
+
+	valid_adl14_version_status (a_str: STRING): BOOLEAN
+		do
+			Result := adl14_version_statuses.has (a_str)
+		end
+
+	adl14_version_statuses: HASH_TABLE [STRING, STRING]
+		once
+			create Result.make (0)
+			Result.put (vs_alpha, vs_alpha)
+			Result.put (vs_release_candidate, vs_release_candidate)
+		end
+
 
 end
 

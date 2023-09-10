@@ -148,13 +148,13 @@ feature -- Initialisation
 		require
 			Valid_version: a_version.is_integer
 		do
-			make (a_rm_publisher, a_rm_closure, a_rm_class, a_concept_id, a_version + ".0.0", vs_released, 0)
+			make (a_rm_publisher, a_rm_closure, a_rm_class, a_concept_id, a_version + ".0.0", vs_released, "0")
 			is_adl14_id := True
 		ensure
 			is_adl14_id
 		end
 
-	make_namespaced (a_namespace, a_rm_publisher, a_rm_closure, a_rm_class, a_concept_id, a_release_version: STRING; a_version_status, a_commit_number: INTEGER)
+	make_namespaced (a_namespace, a_rm_publisher, a_rm_closure, a_rm_class, a_concept_id, a_release_version, a_version_status, a_commit_number: STRING)
 			-- Create from namespace :: rm_publisher - rm_closure - rm_class . concept_id .v release_version [version_status_text commit_number]
 		require
 			Valid_namespace: valid_namespace (a_namespace)
@@ -165,7 +165,7 @@ feature -- Initialisation
 			not is_adl14_id
 		end
 
-	make (a_rm_publisher, a_rm_closure, a_rm_class, a_concept_id, a_release_version: STRING; a_version_status, a_commit_number: INTEGER)
+	make (a_rm_publisher, a_rm_closure, a_rm_class, a_concept_id, a_release_version, a_version_status, a_commit_number: STRING)
 			-- Create from rm_publisher - rm_closure - rm_class . concept_id .v release_version [version_status_text commit_number]
 		require
 			Valid_rm_publisher: valid_id_segment (a_rm_publisher)
@@ -174,7 +174,7 @@ feature -- Initialisation
 			Valid_concept_id: valid_id_segment (a_concept_id)
 			Valid_release_version: valid_release_version (a_release_version)
 			Valid_version_status: valid_version_status (a_version_status)
-			Valid_commit_number: a_commit_number >= 0
+			Valid_commit_number: a_commit_number.is_integer and then a_commit_number.to_integer >= 0
 		do
 			rm_publisher := a_rm_publisher
 			rm_package := a_rm_closure
@@ -201,7 +201,7 @@ feature -- Initialisation
 			concept_id := id_parser.concept_id
 			release_version := id_parser.release_version
 			version_status := id_parser.version_status
-			build_count := id_parser.commit_number
+			build_count := id_parser.build_count
 			is_adl14_id := id_parser.is_adl14_id
 		end
 
@@ -220,7 +220,7 @@ feature -- Initialisation
 			concept_id := id_parser.concept_id
 			release_version := id_parser.release_version
 			version_status := id_parser.version_status
-			build_count := id_parser.commit_number
+			build_count := id_parser.build_count
 		end
 
 	make_new (a_qualified_rm_class: STRING)
@@ -247,6 +247,8 @@ feature -- Initialisation
 			create rm_class.make_from_string (Default_rm_class)
 			create concept_id.make_from_string (Default_concept)
 			create release_version.make_from_string (Default_release_version)
+			create version_status.make_from_string (vs_released)
+			create build_count.make_from_string ("0")
 		end
 
 feature -- Access
@@ -365,10 +367,10 @@ feature -- Access
 			Result := release_version.substring (release_version.index_of (Axis_separator, p) + 1, release_version.count)
 		end
 
-	version_status: INTEGER
-			-- status of version: release candidate, released, build, unstable
+	version_status: STRING
+			-- status of version: release candidate, released, build, alpha, beta
 
-	build_count: INTEGER
+	build_count: STRING
 			-- Commit number of this archetype. This is a number that advances from 1 and is reset for
 			-- each new value of release_version.
 
@@ -394,10 +396,10 @@ feature -- Access
 		do
 			create Result.make_empty
 			Result.append (release_version)
-			if version_status /= vs_released then
+			if not version_status.is_equal (vs_released) then
 				Result.append (version_status_symbol_text (version_status))
-				if build_count > 0 then
-					Result.append (build_count.out)
+				if build_count.is_integer and then build_count.to_integer > 0 then
+					Result.append (build_count)
 				else
 					-- need to remove trailing '.'
 					Result.remove_tail (1)
@@ -483,7 +485,7 @@ feature -- Modification
 			semantic_id_cache := Void
 		end
 
-	set_version_status (a_version_status: INTEGER)
+	set_version_status (a_version_status: STRING)
 		require
 			valid_version_status (a_version_status)
 		do
@@ -592,7 +594,6 @@ invariant
 	Concept_id_validity: not concept_id.is_empty
 	Release_version_validity: not release_version.is_empty
 	Version_status_validity: valid_version_status (version_status)
-	Commit_number_validity: build_count > 0
 
 end
 
