@@ -40,6 +40,7 @@ feature {NONE} -- Initialization
 	make
 		do
 			default_create
+			export_flat := True
 		end
 
 	create_interface_objects
@@ -88,6 +89,13 @@ feature {NONE} -- Initialization
 				agent :BOOLEAN do Result := user_rm_flattening_on end, agent set_user_rm_flattening_on)
 			evx_input_frame.extend (evx_flatten_with_rm_cb.ev_data_control, True)
 			gui_controls.extend (evx_flatten_with_rm_cb)
+
+			-- type marking on: check box
+			create evx_type_marking_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_type_marking_cb_text), get_text ({ADL_MESSAGES_IDS}.ec_type_marking_cb_tooltip),
+				agent :BOOLEAN do Result := type_marking_on end, agent set_type_marking_on)
+			evx_input_frame.extend (evx_type_marking_cb.ev_data_control, True)
+			gui_controls.extend (evx_type_marking_cb)
+
 
 			-- compile all first: check box
 			evx_input_frame.add_row (False)
@@ -212,7 +220,7 @@ feature -- Access
 
 	export_format: STRING
 		attribute
-			Result := {ODIN_DEFINITIONS}.syntax_type_odin
+			Result := {ODIN_DEFINITIONS}.syntax_type_json
 		end
 
 	user_export_directory: STRING
@@ -420,7 +428,7 @@ feature {NONE} -- Implementation
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	evx_compile_first_cb, evx_flatten_with_rm_cb: EVX_CHECK_BOX_CONTROL
+	evx_compile_first_cb, evx_flatten_with_rm_cb, evx_type_marking_cb: EVX_CHECK_BOX_CONTROL
 
 	evx_dir_setter: EVX_DIRECTORY_SETTER
 

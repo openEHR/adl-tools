@@ -83,10 +83,10 @@ feature -- Export Types
 		once
 			create Result.make (0)
 			Result.compare_objects
-			Result.extend ({ODIN_DEFINITIONS}.syntax_type_odin)
-			Result.extend ({ODIN_DEFINITIONS}.syntax_type_xml)
 			Result.extend ({ODIN_DEFINITIONS}.syntax_type_json)
 			Result.extend ({ODIN_DEFINITIONS}.syntax_type_yaml)
+			Result.extend ({ODIN_DEFINITIONS}.syntax_type_xml)
+			Result.extend ({ODIN_DEFINITIONS}.syntax_type_odin)
 		end
 
 feature -- Archetype identifiers

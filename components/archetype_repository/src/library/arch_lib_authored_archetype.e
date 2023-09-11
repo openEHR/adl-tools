@@ -315,7 +315,7 @@ feature -- File Access
 			if has_archetype_native_serialiser_format (a_format) and attached differential_archetype as da then
 				file_mgr.save_as (a_full_path, adl_2_engine.serialise (da, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
-				file_mgr.save_as (a_full_path, serialise_object (False, False, a_format))
+				file_mgr.save_as (a_full_path, serialise_object (False, type_marking_on, a_format))
 			end
 			status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
@@ -332,7 +332,7 @@ feature -- File Access
 			elseif has_archetype_native_serialiser_format (a_format) then
 				file_mgr.save_as (a_full_path, adl_2_engine.serialise (flat_archetype, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
-				file_mgr.save_as (a_full_path, serialise_object (True, False, a_format))
+				file_mgr.save_as (a_full_path, serialise_object (True, type_marking_on, a_format))
 			end
 			status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
