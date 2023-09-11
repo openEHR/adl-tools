@@ -32,6 +32,7 @@ feature -- Initialisation
 			rules := an_archetype.rules
 			create terminology.make (an_archetype.terminology)
 			is_generated := an_archetype.is_generated
+			is_differential := an_archetype.is_differential
 		end
 
 feature -- Access
@@ -43,6 +44,8 @@ feature -- Access
 		end
 
 	archetype_id: detachable P_ARCHETYPE_HRID
+
+	is_differential: BOOLEAN
 
 	parent_archetype_id: detachable STRING
 			-- id of specialisation parent of this archetype

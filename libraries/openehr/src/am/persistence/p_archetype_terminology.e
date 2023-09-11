@@ -20,6 +20,8 @@ feature -- Initialisation
 		do
 			original_language := a_terminology.original_language.as_string
 
+			is_differential := a_terminology.is_differential
+			
 			term_definitions := a_terminology.term_definitions
 
 			if attached a_terminology.term_bindings then
@@ -45,6 +47,8 @@ feature -- Initialisation
 feature -- Access
 
 	original_language: STRING
+
+	is_differential: BOOLEAN
 
 	term_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
