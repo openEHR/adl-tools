@@ -435,7 +435,7 @@ feature -- Artefacts
 			end
 		end
 
-	differential_serialised: STRING
+	differential_serialised_native: STRING
 			-- serialise differential archetype to its file in its source form, even if not compiling
 			-- this might fail because the serialiser might try to do something that an invalid archetype
 			-- can't support
@@ -445,7 +445,7 @@ feature -- Artefacts
 			create Result.make_empty
 			if not exception_occurred then
 				if attached differential_archetype as da then
-					Result := adl_2_engine.serialise (da, Syntax_type_adl, current_archetype_language)
+					Result := adl_2_engine.serialise_native (da, Syntax_type_adl, current_archetype_language)
 				end
 			end
 		rescue
@@ -482,15 +482,15 @@ feature -- Artefacts
 			Result.is_flat
 		end
 
-	flat_serialised (include_rm: BOOLEAN): STRING
+	flat_serialised_native (include_rm: BOOLEAN): STRING
 			-- The serialised text of the flat form of the archetype
 		require
 			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
 		do
 			if include_rm then
-				Result := adl_2_engine.serialise (flat_archetype_with_rm, Syntax_type_adl, current_archetype_language)
+				Result := adl_2_engine.serialise_native (flat_archetype_with_rm, Syntax_type_adl, current_archetype_language)
 			else
-				Result := adl_2_engine.serialise (flat_archetype, Syntax_type_adl, current_archetype_language)
+				Result := adl_2_engine.serialise_native (flat_archetype, Syntax_type_adl, current_archetype_language)
 			end
 		end
 
@@ -965,15 +965,15 @@ feature -- Visualisation
 			end
 		end
 
-	select_serialised_archetype (differential_view, with_rm: BOOLEAN): STRING
+	select_native_serialised_archetype (differential_view, with_rm: BOOLEAN): STRING
 			-- return appropriate differential or flat version of archetype, depending on setting of `differential_view' and `with_rm'
 		require
 			is_valid
 		do
 			if differential_view then
-				Result := differential_serialised
+				Result := differential_serialised_native
 			else
-				Result := flat_serialised (with_rm)
+				Result := flat_serialised_native (with_rm)
 			end
 		end
 

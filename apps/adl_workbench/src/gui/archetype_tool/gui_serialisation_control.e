@@ -142,7 +142,7 @@ feature {NONE} -- Implementation
 		do
 			set_serialisation_control_texts
 			if ev_serialise_adl_rb.is_selected then
-				s := safe_source.select_serialised_archetype (differential_view, ev_flatten_with_rm_cb.is_selected)
+				s := safe_source.select_native_serialised_archetype (differential_view, ev_flatten_with_rm_cb.is_selected)
 			else
 				if ev_serialise_json_rb.is_selected then
 					syntax_type := {ODIN_DEFINITIONS}.Syntax_type_json

@@ -12,8 +12,8 @@ class ARCH_LIB_TEMPLATE
 inherit
 	ARCH_LIB_AUTHORED_ARCHETYPE
 		redefine
-			validator_reset, select_archetype, file_mgr, flat_archetype, differential_archetype, differential_serialised,
-			serialise_object, select_serialised_archetype, signal_from_scratch, persistent_type, clear_cache
+			validator_reset, select_archetype, file_mgr, flat_archetype, differential_archetype, differential_serialised_native,
+			serialise_object, select_native_serialised_archetype, signal_from_scratch, persistent_type, clear_cache
 		end
 
 create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
@@ -54,7 +54,7 @@ feature -- Artefacts
 
 	differential_archetype: detachable TEMPLATE
 
-	differential_serialised: STRING
+	differential_serialised_native: STRING
 			-- serialise differential archetype to its file in its source form, even if not compiling
 			-- this might fail because the serialiser might try to do something that an invalid archetype
 			-- can't support
@@ -64,12 +64,12 @@ feature -- Artefacts
 			create Result.make_empty
 			if not exception_occurred then
 				if attached differential_archetype as da then
-					Result := adl_2_engine.serialise (da, Syntax_type_adl, current_archetype_language)
+					Result := adl_2_engine.serialise_native (da, Syntax_type_adl, current_archetype_language)
 
 					-- append overlay texts
 					across overlays as overlays_csr loop
 						Result.append (Source_template_overlay_divider)
-						if attached overlays_csr.item.differential_serialised as ovl_str then
+						if attached overlays_csr.item.differential_serialised_native as ovl_str then
 							Result.append (ovl_str)
 						else
 							Result.append (Overlay_differential_not_available + overlays_csr.item.id.physical_id)
@@ -121,9 +121,9 @@ feature -- Artefacts
 			compilation_state = Cs_validated
 		do
 			if include_rm then
-				Result := adl_2_engine.serialise (operational_template_with_rm, Syntax_type_adl, current_archetype_language)
+				Result := adl_2_engine.serialise_native (operational_template_with_rm, Syntax_type_adl, current_archetype_language)
 			else
-				Result := adl_2_engine.serialise (operational_template, Syntax_type_adl, current_archetype_language)
+				Result := adl_2_engine.serialise_native (operational_template, Syntax_type_adl, current_archetype_language)
 			end
 		end
 
@@ -143,11 +143,11 @@ feature -- Visualisation
 			end
 		end
 
-	select_serialised_archetype (differential_view, with_rm: BOOLEAN): STRING
+	select_native_serialised_archetype (differential_view, with_rm: BOOLEAN): STRING
 			-- return appropriate differential or flat version of archetype, depending on setting of `differential_view' and `with_rm'
 		do
 			if differential_view then
-				Result := differential_serialised
+				Result := differential_serialised_native
 			else
 				Result := operational_template_serialised (with_rm)
 			end

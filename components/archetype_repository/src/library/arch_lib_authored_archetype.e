@@ -235,7 +235,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 					set_id (differential_archetype.archetype_id)
 
 					-- save text to diff file
-					ser_text := differential_serialised
+					ser_text := differential_serialised_native
 					if not ser_text.is_empty then
 						save_text_to_differential_file (ser_text)
 					end
@@ -298,7 +298,7 @@ feature -- File Access
 		local
 			ftext: STRING
 		do
-			ftext := differential_serialised
+			ftext := differential_serialised_native
 			if ftext.is_empty then
 				ftext := source_text
 			end
@@ -313,7 +313,7 @@ feature -- File Access
 			Serialise_format_valid: has_serialiser_format (a_format)
 		do
 			if has_archetype_native_serialiser_format (a_format) and attached differential_archetype as da then
-				file_mgr.save_as (a_full_path, adl_2_engine.serialise (da, a_format, current_archetype_language))
+				file_mgr.save_as (a_full_path, adl_2_engine.serialise_native (da, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
 				file_mgr.save_as (a_full_path, serialise_object (False, type_marking_on, a_format))
 			end
@@ -328,9 +328,9 @@ feature -- File Access
 			Serialise_format_valid: has_serialiser_format (a_format)
 		do
 			if a_format.same_string (Syntax_type_adl) then
-				file_mgr.save_as (a_full_path, flat_serialised (False))
+				file_mgr.save_as (a_full_path, flat_serialised_native (False))
 			elseif has_archetype_native_serialiser_format (a_format) then
-				file_mgr.save_as (a_full_path, adl_2_engine.serialise (flat_archetype, a_format, current_archetype_language))
+				file_mgr.save_as (a_full_path, adl_2_engine.serialise_native (flat_archetype, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
 				file_mgr.save_as (a_full_path, serialise_object (True, type_marking_on, a_format))
 			end
@@ -405,7 +405,7 @@ feature {GUI_TEST_TOOL} -- File Access
 					if attached {like persistent_type} att_tree.as_object (({like persistent_type}).type_id, Void) as p_archetype then
 						if attached {like differential_archetype} p_archetype.create_archetype as an_arch then
 							-- serialise into normal ADL format
-							Result := adl_2_engine.serialise (an_arch, Syntax_type_adl, current_archetype_language)
+							Result := adl_2_engine.serialise_native (an_arch, Syntax_type_adl, current_archetype_language)
 						end
 					end
 				end

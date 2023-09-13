@@ -164,7 +164,7 @@ feature {NONE} -- Implementation
 		do
 			if attached auth_source as att_source and then att_source.file_mgr.is_text_converted then
 				if attached att_source.differential_archetype then
-					Result := att_source.differential_serialised
+					Result := att_source.differential_serialised_native
 				elseif att_source.has_source_file then
 					Result := att_source.source_text
 				end
@@ -176,7 +176,7 @@ feature {NONE} -- Implementation
 	adl_current_serialised_text: detachable STRING
 		do
 			if safe_source.is_valid_differential then
-				 Result := safe_source.differential_serialised
+				 Result := safe_source.differential_serialised_native
 			end
 		end
 

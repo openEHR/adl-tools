@@ -458,7 +458,7 @@ feature -- Validation
 
 feature -- Serialisation
 
-	serialise (an_archetype: ARCHETYPE; a_format, a_lang: STRING): STRING
+	serialise_native (an_archetype: ARCHETYPE; a_format, a_lang: STRING): STRING
 			-- serialise current archetype into any semantic multi-part format.
 		require
 			Language_valid: an_archetype.has_language (a_lang)
