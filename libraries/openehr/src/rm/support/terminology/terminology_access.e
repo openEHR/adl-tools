@@ -39,9 +39,9 @@ feature -- Access
 	id: STRING
 			-- identifier of this terminology
 
-	all_codes: SET [CODE_PHRASE]
+	all_codes: SET [TERMINOLOGY_CODE]
 		do
-			create {ARRAYED_SET [CODE_PHRASE]} Result.make (0)
+			create {ARRAYED_SET [TERMINOLOGY_CODE]} Result.make (0)
 		end
 
 	all_group_ids: SET [STRING]
@@ -56,7 +56,7 @@ feature -- Access
 			Result := content_item (a_lang).item (a_value_set_name)
 		end
 
-	term (a_concept_id, a_lang: STRING): detachable DV_CODED_TEXT
+	term (a_concept_id, a_lang: STRING): detachable TERMINOLOGY_TERM
 			-- `a_concept_id' may be a plain code, or a standard http:// based terminology URI
 		require
 			has_concept_id_for_language (a_concept_id, a_lang)
@@ -129,7 +129,7 @@ feature -- Status Report
 			Result := content_tables.has (a_lang) and then content_item (a_lang).has (a_name)
 		end
 
-	has_code_for_value_set (a_value_set_name: STRING; a_code: CODE_PHRASE): BOOLEAN
+	has_code_for_value_set (a_value_set_name: STRING; a_code: TERMINOLOGY_CODE): BOOLEAN
 			-- True if ‘a_code’ is known in value set `a_value_set_name' in the openEHR terminology.
 		do
 			-- TODO: implement when new representation is created, based on SNOMED CT
@@ -163,10 +163,10 @@ feature -- Modification
 			Value_set_name_valid: not a_value_set_name.is_empty
 			Lang_valid: not a_lang.is_empty
 		local
-			new_term: DV_CODED_TEXT
-			terms: HASH_TABLE [DV_CODED_TEXT, STRING]
+			new_term: TERMINOLOGY_TERM
+			terms: HASH_TABLE [TERMINOLOGY_TERM, STRING]
 		do
-			create new_term.make (a_rubric, create {CODE_PHRASE}.make (id, a_concept_id))
+			create new_term.make (a_rubric, create {TERMINOLOGY_CODE}.make (id, a_concept_id))
 			if not has_value_set (a_value_set_name, a_lang) then
 				add_value_set (a_value_set_name, a_lang)
 			end
@@ -198,7 +198,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	term_index: HASH_TABLE [HASH_TABLE [DV_CODED_TEXT, STRING], STRING]
+	term_index: HASH_TABLE [HASH_TABLE [TERMINOLOGY_TERM, STRING], STRING]
 			-- terminology contents as tables of {{term, concept_id}, language}
 
 end

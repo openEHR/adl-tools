@@ -292,8 +292,8 @@ feature {NONE} -- Implementation
 
 						-- update term_definition meaning if possible
 						if ts.has_terminology (bindings_csr.key) and then ts.terminology (bindings_csr.key).has_concept_id_for_language (bindings_list_csr.item.value, orig_lang) then
-							new_text := ts.terminology (bindings_csr.key).term (bindings_list_csr.item.value, orig_lang).value
-							new_desc := ts.terminology (bindings_csr.key).term (bindings_list_csr.item.value, orig_lang).value
+							new_text := ts.terminology (bindings_csr.key).term (bindings_list_csr.item.value, orig_lang).text
+							new_desc := ts.terminology (bindings_csr.key).term (bindings_list_csr.item.value, orig_lang).text
 							target.terminology.replace_term_definition_item (orig_lang, new_at_code, {ARCHETYPE_TERM}.text_key, new_text)
 							target.terminology.replace_term_definition_item (orig_lang, new_at_code, {ARCHETYPE_TERM}.description_key, new_desc)
 
@@ -586,7 +586,7 @@ feature {NONE} -- Implementation
 	 			elseif attached c_obj.parent as p and then p.is_multiple then
 		 			target.terminology.create_added_id_definition (Synthesised_string, Synthesised_string)
 		 			id_code := target.terminology.last_new_definition_code
-		 			
+
 		 		-- single-valued parent - can add new id-code with no definition in terminology
 	 			else
 		 			id_code := target.create_new_id_code

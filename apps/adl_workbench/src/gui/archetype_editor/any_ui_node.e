@@ -235,7 +235,7 @@ feature {NONE} -- Implementation
 			-- generate a string of the form "[code|rubric|]" if in showing codes,
 			-- or else "rubric"
 		local
-			a_term: DV_CODED_TEXT
+			a_term: TERMINOLOGY_TERM
 		do
 			create Result.make_empty
 			if a_terminology_id.is_equal (Local_terminology_id) then
@@ -253,7 +253,7 @@ feature {NONE} -- Implementation
 				if display_settings.show_codes then
 					Result.append (a_term.as_string)
 				else
-					Result.append (a_term.value)
+					Result.append (a_term.text)
 				end
 			else
 				Result.append (a_code)

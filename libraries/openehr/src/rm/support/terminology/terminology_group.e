@@ -32,7 +32,7 @@ feature -- Access
 	name: STRING
 			-- identifier of this terminology value set (group)
 
-	term (a_code: STRING): detachable DV_CODED_TEXT
+	term (a_code: STRING): detachable TERMINOLOGY_TERM
 		require
 			has_term (a_code)
 		do
@@ -49,16 +49,16 @@ feature -- Status Report
 
 feature -- Modification
 
-	add_term (a_term: DV_CODED_TEXT)
+	add_term (a_term: TERMINOLOGY_TERM)
 		require
-			not has_term (a_term.defining_code.code_string)
+			not has_term (a_term.concept.code_string)
 		do
-			terms.put (a_term, a_term.defining_code.code_string)
+			terms.put (a_term, a_term.concept.code_string)
 		end
 
 feature {NONE} -- mplementation
 
-	terms: HASH_TABLE [DV_CODED_TEXT, STRING]
+	terms: HASH_TABLE [TERMINOLOGY_TERM, STRING]
 			-- table of terms indexed by concept code
 
 

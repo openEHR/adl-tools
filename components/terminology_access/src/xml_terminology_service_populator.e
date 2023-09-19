@@ -22,23 +22,23 @@ create
 feature -- Initialization
 
 	make
-		-- Initialize `Current'.
-	local
-		value_set_processor: XML_VALUE_SET_PROCESSOR
-	do
-		-- for now we just make do with 'en' terminology
-		terminology_file_path := file_system.pathname (file_system.pathname (terminology_directory, "en"), terminology_filename)
-		if file_system.file_exists (terminology_file_path) then
-			xml_doc := deserialize_text (terminology_file_path)
-			if attached xml_doc as att_xml_doc then
-				create value_set_processor
-				att_xml_doc.process_children_recursive (value_set_processor)
+			-- Initialize `Current'.
+		local
+			value_set_processor: XML_VALUE_SET_PROCESSOR
+		do
+			-- for now we just make do with 'en' terminology
+			terminology_file_path := file_system.pathname (file_system.pathname (terminology_directory, "en"), terminology_filename)
+			if file_system.file_exists (terminology_file_path) then
+				xml_doc := deserialize_text (terminology_file_path)
+				if attached xml_doc as att_xml_doc then
+					create value_set_processor
+					att_xml_doc.process_children_recursive (value_set_processor)
+				end
+			else
+				init_failed := True
+				init_fail_reason := get_msg ({GENERAL_MESSAGES_IDS}.ec_file_does_not_exist, <<terminology_file_path>>)
 			end
-		else
-			init_failed := True
-			init_fail_reason := get_msg ({GENERAL_MESSAGES_IDS}.ec_file_does_not_exist, <<terminology_file_path>>)
 		end
-	end
 
 feature -- Access
 

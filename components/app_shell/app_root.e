@@ -65,22 +65,6 @@ feature -- Initialisation
 			add_custom_dt_dynamic_type_from_string (({C_STRING}).name, ({C_STRING}).type_id)
 			add_custom_dt_dynamic_type_from_string (({C_DATE}).name, ({C_DATE}).type_id)
 
-			-- add some converter agents for converting between native DT/ODIN types and AOM types
-			dt_object_converter.add_dt_to_obj_agent (
-				agent (a_tc: TERMINOLOGY_CODE): CODE_PHRASE
-					do
-						create Result.make (a_tc.terminology_id, a_tc.code_string)
-					end,
-				({TERMINOLOGY_CODE}).type_id
-			)
-			dt_object_converter.add_obj_to_dt_agent (
-				agent (a_tc: CODE_PHRASE): DT_PRIMITIVE_OBJECT
-					do
-						create Result.make_anonymous (a_tc.as_terminology_code)
-					end,
-				({CODE_PHRASE}).type_id
-			)
-
 			-- add in ADL error message DB to main message DB
 			message_db.add_table (create {ADL_MESSAGES_DB}.make)
 			message_db.add_table (create {DT_MESSAGES_DB}.make)

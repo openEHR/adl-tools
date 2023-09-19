@@ -56,7 +56,7 @@ feature -- Modification
 			translations := a_trans
 		end
 
-	set_original_language (a_lang: CODE_PHRASE)
+	set_original_language (a_lang: TERMINOLOGY_CODE)
 			--
 		do
 			original_language := a_lang
