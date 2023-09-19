@@ -355,7 +355,7 @@ feature -- Relationships
 			Result := attached parent_ref
 		end
 
-	has_slots: BOOLEAN
+	differential_has_slots: BOOLEAN
 			-- Does this archetype have any slots?
 		do
 			Result := compilation_state >= Cs_validated_phase_1 and then not slot_fillers_index.is_empty

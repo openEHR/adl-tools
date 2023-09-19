@@ -267,7 +267,7 @@ feature {NONE} -- Implementation
 					text.append (id_str)
 
 					-- slot icon
-					if aca.has_slots then
+					if aca.differential_has_slots then
 						text.append (Right_arrow_char_utf8)
 					end
 
@@ -369,7 +369,7 @@ feature {NONE} -- Implementation
 					text.append (id_str)
 
 					-- slot icon
-					if aca.has_slots then
+					if aca.differential_has_slots then
 						text.append (Right_arrow_char_utf8)
 					end
 

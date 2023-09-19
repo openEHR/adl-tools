@@ -754,7 +754,7 @@ feature {NONE} -- Statistical Report
 			if aca.is_specialised then
 				metrics_cache.force (metrics_cache.item (specialised_archetype_count) + 1, specialised_archetype_count)
 			end
-			if aca.has_slots then
+			if aca.differential_has_slots then
 				metrics_cache.force (metrics_cache.item (client_archetype_count) + 1, client_archetype_count)
 			end
 			if aca.is_supplier then
