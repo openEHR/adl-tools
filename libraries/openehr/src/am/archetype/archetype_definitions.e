@@ -243,19 +243,6 @@ feature -- Enumerations
 			Result := artefact_types.has (an_artefact_type)
 		end
 
---	c_object_constraint_types: HASH_TABLE [STRING, STRING]
---			-- C_OBJECT meanings keyed by class-names (meanings are message tags to be converted to
---			-- natural language via calls to get_text ())
---		once ("PROCESS")
---			create Result.make (0)
---			Result.put ("c_type_complex_object", bare_type_name (({C_COMPLEX_OBJECT}).name))
---			Result.put ("c_type_primitive_object", bare_type_name (({C_PRIMITIVE_OBJECT}).name))
---			Result.put ("c_type_internal_reference", bare_type_name (({C_COMPLEX_OBJECT_PROXY}).name))
---			Result.put ("c_type_archetype_reference", bare_type_name (({C_ARCHETYPE_ROOT}).name))
---			Result.put ("c_type_slot", bare_type_name (({ARCHETYPE_SLOT}).name))
---			Result.put ("c_type_code_phrase", bare_type_name (({C_TERMINOLOGY_CODE}).name))
---		end
-
 	c_primitive_subtypes: HASH_TABLE [STRING, STRING]
 			-- Table of assumed AOM type names keyed by upper-case RM primitive subtype
 		once ("PROCESS")
