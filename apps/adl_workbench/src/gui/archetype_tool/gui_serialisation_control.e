@@ -155,7 +155,7 @@ feature {NONE} -- Implementation
 				else
 					create syntax_type.make_empty
 				end
-				s := safe_source.serialise_object (not differential_view, ev_type_marking_cb.is_selected, syntax_type)
+				s := safe_source.serialise_object (False, not differential_view, ev_type_marking_cb.is_selected, syntax_type)
 			end
 			populate_serialised_rich_text (s)
 		end

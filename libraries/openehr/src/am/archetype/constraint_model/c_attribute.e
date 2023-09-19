@@ -807,6 +807,22 @@ end
 			create Result.make_single ("initial")
 		end
 
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	persistent_attributes: detachable ARRAYED_LIST [STRING]
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
+		once
+			create Result.make(0)
+			Result.compare_objects
+			Result.extend ("rm_attribute_name")
+			Result.extend ("cardinality")
+			Result.extend ("children")
+			Result.extend ("differential_path")
+			Result.extend ("existence")
+			Result.extend ("is_multiple")
+		end
+
 invariant
 	Rm_attribute_name_valid: not rm_attribute_name.is_empty
 	Any_allowed_validity: any_allowed xor not children.is_empty

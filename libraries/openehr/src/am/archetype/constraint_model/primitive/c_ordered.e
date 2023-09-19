@@ -180,10 +180,6 @@ feature {NONE} -- Implementation
 			Result := a_val.out
 		end
 
---	new_value (a_val_str: STRING): G
---		deferred
---		end
-
 end
 
 

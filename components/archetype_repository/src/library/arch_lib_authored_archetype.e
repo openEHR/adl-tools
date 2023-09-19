@@ -12,8 +12,8 @@ class ARCH_LIB_AUTHORED_ARCHETYPE
 inherit
 	ARCH_LIB_ARCHETYPE
 		redefine
-			file_mgr, initialise, post_parse_151_convert, create_compile_actions, compile_rescue, persistent_type,
-			differential_archetype
+			file_mgr, initialise, post_parse_151_convert, create_compile_actions, compile_rescue,
+			persistent_compact_type, differential_archetype
 		end
 
 create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
@@ -315,7 +315,7 @@ feature -- File Access
 			if has_archetype_native_serialiser_format (a_format) and attached differential_archetype as da then
 				file_mgr.save_as (a_full_path, adl_2_engine.serialise_native (da, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
-				file_mgr.save_as (a_full_path, serialise_object (False, type_marking_on, a_format))
+				file_mgr.save_as (a_full_path, serialise_object (False, False, type_marking_on, a_format))
 			end
 			status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
@@ -332,7 +332,7 @@ feature -- File Access
 			elseif has_archetype_native_serialiser_format (a_format) then
 				file_mgr.save_as (a_full_path, adl_2_engine.serialise_native (flat_archetype, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
-				file_mgr.save_as (a_full_path, serialise_object (True, type_marking_on, a_format))
+				file_mgr.save_as (a_full_path, serialise_object (False, True, type_marking_on, a_format))
 			end
 			status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
@@ -391,7 +391,7 @@ feature {GUI_TEST_TOOL} -- File Access
 		require
 			Archetype_valid: is_valid
 		do
-			file_mgr.save_differential_compiled (serialise_object (False, False, {ODIN_DEFINITIONS}.Syntax_type_odin))
+			file_mgr.save_differential_compiled (serialise_object (True, False, False, {ODIN_DEFINITIONS}.Syntax_type_odin))
 		end
 
 	compiled_differential: STRING
@@ -402,7 +402,7 @@ feature {GUI_TEST_TOOL} -- File Access
 				archetype_serialise_engine.set_source (odin_text, 1)
 				archetype_serialise_engine.parse
 				if archetype_serialise_engine.parse_succeeded and attached archetype_serialise_engine.tree as att_tree then
-					if attached {like persistent_type} att_tree.as_object (({like persistent_type}).type_id, Void) as p_archetype then
+					if attached {like persistent_compact_type} att_tree.as_object (({like persistent_compact_type}).type_id, Void) as p_archetype then
 						if attached {like differential_archetype} p_archetype.create_archetype as an_arch then
 							-- serialise into normal ADL format
 							Result := adl_2_engine.serialise_native (an_arch, Syntax_type_adl, current_archetype_language)
@@ -460,7 +460,7 @@ feature -- Editing
 
 feature {NONE} -- Output
 
-	persistent_type: P_AUTHORED_ARCHETYPE
+	persistent_compact_type: P_AUTHORED_ARCHETYPE
 		do
 			create Result.make_dt (Void)
 		end

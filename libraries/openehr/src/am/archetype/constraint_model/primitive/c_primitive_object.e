@@ -212,6 +212,25 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	persistent_attributes: detachable ARRAYED_LIST [STRING]
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
+		once
+			create Result.make(0)
+			Result.compare_objects
+			Result.extend ("rm_type_name")
+			Result.extend ("node_id")
+			Result.extend ("sibling_order")
+			Result.extend ("occurrences")
+			Result.extend ("is_deprecated")
+
+			Result.extend ("assumed_value")
+			Result.extend ("constraint")
+			Result.extend ("is_enumerated_type_constraint")
+		end
+
 invariant
 	Assumed_value_valid: attached assumed_value as av implies valid_value (av)
 

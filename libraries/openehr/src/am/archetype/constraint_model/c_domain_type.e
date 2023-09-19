@@ -17,19 +17,7 @@ deferred class C_DOMAIN_TYPE
 inherit
 	C_LEAF_OBJECT
 		redefine
-			enter_subtree, exit_subtree, node_id, rm_type_name
-		end
-
-	DT_CONVERTIBLE
-		redefine
-			finalise_dt
-		end
-
-feature -- Initialisation
-
-	make_dt (make_args: detachable ARRAY[ANY])
-			-- make used by DT_OBJECT_CONVERTER
-		do
+			enter_subtree, exit_subtree, node_id, rm_type_name, finalise_dt
 		end
 
 feature -- Finalisation

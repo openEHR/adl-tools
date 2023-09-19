@@ -12,7 +12,7 @@ class OPERATIONAL_TEMPLATE
 inherit
 	AUTHORED_ARCHETYPE
 		redefine
-			annotated_path
+			annotated_path, persistent_attributes
 		end
 
 create
@@ -103,6 +103,36 @@ feature -- Modification
 			Result := og_log_path.as_string
 		end
 
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	persistent_attributes: detachable ARRAYED_LIST [STRING]
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
+		once
+			create Result.make(0)
+			Result.compare_objects
+			Result.extend ("uid")
+			Result.extend ("rm_release")
+			Result.extend ("build_uid")
+			Result.extend ("adl_version")
+			Result.extend ("is_generated")
+			Result.extend ("original_language")
+			Result.extend ("translations")
+			Result.extend ("description")
+
+			Result.extend ("archetype_id")
+			Result.extend ("parent_archetype_id")
+			Result.extend ("is_differential")
+			Result.extend ("is_generated")
+			Result.extend ("definition")
+			Result.extend ("artefact_type")
+			Result.extend ("rules")
+			Result.extend ("terminology")
+
+			Result.extend ("annotations")
+
+			Result.extend ("component_terminologies")
+		end
 end
 
 

@@ -125,6 +125,14 @@ feature {NONE} -- Implementation
 			create Result.make_anonymous
 		end
 
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	persistent_attributes: detachable ARRAYED_LIST [STRING]
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
+		do
+		end
+
 end
 
 

@@ -358,7 +358,8 @@ feature -- Relationships
 	differential_has_slots: BOOLEAN
 			-- Does this archetype have any slots?
 		do
-			Result := compilation_state >= Cs_validated_phase_1 and then not slot_fillers_index.is_empty
+			Result := compilation_state >= Cs_validated_phase_1 and then -- slot_fillers_index.is_empty
+						not safe_differential_archetype.slot_index.is_empty
 		end
 
 	is_supplier: BOOLEAN
@@ -994,7 +995,7 @@ feature -- File Access
 
 feature -- Output
 
-	serialise_object (flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
+	serialise_object (compact_flag: BOOLEAN; flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
 			-- serialise internal structure in a brute-force object way, using
 			-- format like ODIN, XML, JSON etc
 		require
@@ -1003,10 +1004,14 @@ feature -- Output
 		local
 			dt_arch: DT_CONVERTIBLE
 		do
-			if flat_flag then
-				create {like persistent_type} dt_arch.make (flat_archetype)
+			if compact_flag then
+				if flat_flag then
+					create {like persistent_compact_type} dt_arch.make (flat_archetype)
+				else
+					create {like persistent_compact_type} dt_arch.make (safe_differential_archetype)
+				end
 			else
-				create {like persistent_type} dt_arch.make (safe_differential_archetype)
+				dt_arch := if flat_flag then flat_archetype else safe_differential_archetype end
 			end
 
 			dt_object_converter.set_false_booleans_off_option
@@ -1031,7 +1036,7 @@ feature -- Output
 
 feature {NONE}-- Output
 
-	persistent_type: P_ARCHETYPE
+	persistent_compact_type: P_ARCHETYPE
 		do
 			create Result.make_dt (Void)
 		end

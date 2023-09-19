@@ -10,6 +10,11 @@ note
 class ARCHETYPE
 
 inherit
+	DT_CONVERTIBLE
+		undefine
+			default_create
+		end
+
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all;
@@ -44,13 +49,19 @@ create {TEMPLATE_FLATTENER}
 	make_from_other
 
 create {ARCH_LIB_ARCHETYPE}
-	make_empty_differential, make_empty_differential_child
+	make_empty_differential, make_empty_differential_child, make_dt
 
 feature -- Initialisation
 
 	default_create
 		do
 			make_empty_differential (create {ARCHETYPE_HRID}.default_create, default_language)
+		end
+
+	make_dt (make_args: detachable ARRAY[ANY])
+			-- basic make routine to guarantee validity on creation
+		do
+			default_create
 		end
 
 	make (an_id: like archetype_id;
@@ -1197,6 +1208,24 @@ feature {NONE} -- Implementation
 			-- reduce languages to those in the supplied list
 		do
 			terminology.reduce_languages_to (a_langs)
+		end
+
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	persistent_attributes: detachable ARRAYED_LIST [STRING]
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
+		once
+			create Result.make(0)
+			Result.compare_objects
+			Result.extend ("archetype_id")
+			Result.extend ("parent_archetype_id")
+			Result.extend ("is_differential")
+			Result.extend ("is_generated")
+			Result.extend ("definition")
+			Result.extend ("artefact_type")
+			Result.extend ("rules")
+			Result.extend ("terminology")
 		end
 
 invariant

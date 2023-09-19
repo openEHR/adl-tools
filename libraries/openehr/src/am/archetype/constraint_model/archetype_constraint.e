@@ -20,6 +20,16 @@ inherit
 
 	HASHABLE
 
+	DT_CONVERTIBLE
+
+feature -- Initialisation
+
+	make_dt (make_args: detachable ARRAY[ANY])
+			-- basic make routine to guarantee validity on creation
+		do
+			default_create
+		end
+
 feature -- Access
 
 	parent: detachable ARCHETYPE_CONSTRAINT

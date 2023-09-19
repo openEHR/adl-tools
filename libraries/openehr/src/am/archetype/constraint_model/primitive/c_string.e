@@ -103,8 +103,10 @@ feature -- Access
 	prototype_value: STRING
 			-- 	generate a default value from this constraint object
 		do
-			if is_regex_string (constraint.first) then
-				create Result.make_empty
+			if any_allowed then
+				Result := "any value allowed here"
+			elseif is_regex_string (constraint.first) then
+				Result := "(matches regex " + constraint.first + ")"
 				-- FIXME - what is default from regexp?
 			else
 				create Result.make_from_string (constraint.first)

@@ -41,6 +41,11 @@ inherit
 			default_create
 		end
 
+	DT_CONVERTIBLE
+		undefine
+			is_equal, default_create
+		end
+
 create
 	make, make_adl14, make_namespaced,
 	make_from_string, make_from_string_reference,
@@ -142,6 +147,11 @@ feature -- Definitions
 		end
 
 feature -- Initialisation
+
+	make_dt (make_args: detachable ARRAY [ANY])
+		do
+			default_create
+		end
 
 	make_adl14 (a_rm_publisher, a_rm_closure, a_rm_class, a_concept_id, a_version: STRING)
 			-- Create from rm_publisher - rm_closure - rm_class . concept_id .v N
@@ -586,6 +596,24 @@ feature {NONE} -- Implementation
 	physical_id_cache: detachable IMMUTABLE_STRING_8
 
 	semantic_id_cache: detachable IMMUTABLE_STRING_8
+
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	persistent_attributes: detachable ARRAYED_LIST [STRING]
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
+		once
+			create Result.make(0)
+			Result.compare_objects
+			Result.extend ("namespace")
+			Result.extend ("rm_publisher")
+			Result.extend ("rm_package")
+			Result.extend ("rm_class")
+			Result.extend ("concept_id")
+			Result.extend ("release_version")
+			Result.extend ("version_status")
+			Result.extend ("build_count")
+		end
 
 invariant
 	Rm_publisher_validity: not rm_publisher.is_empty
