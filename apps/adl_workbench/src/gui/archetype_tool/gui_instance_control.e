@@ -23,9 +23,9 @@ feature {NONE}-- Initialization
 
 	make
 		do
-			create json_text_cache.make_empty
-			create yaml_text_cache.make_empty
-			create xml_text_cache.make_empty
+			create json_text_cache.make(20000)
+			create yaml_text_cache.make(20000)
+			create xml_text_cache.make(20000)
 
 			-- create root widget
 			create ev_root_container
@@ -103,7 +103,7 @@ feature {NONE} -- Implementation
 	json_text: STRING
 		do
 			if json_text_cache.is_empty then
-				json_text_cache := safe_source.generate_instance ({ODIN_DEFINITIONS}.Syntax_type_json)
+				json_text_cache.append (safe_source.generate_instance ({ODIN_DEFINITIONS}.Syntax_type_json))
 			end
 			Result := json_text_cache
 		end
@@ -118,7 +118,7 @@ feature {NONE} -- Implementation
 	yaml_text: STRING
 		do
 			if yaml_text_cache.is_empty then
-				yaml_text_cache := safe_source.generate_instance ({ODIN_DEFINITIONS}.Syntax_type_yaml)
+				yaml_text_cache.append (safe_source.generate_instance ({ODIN_DEFINITIONS}.Syntax_type_yaml))
 			end
 			Result := yaml_text_cache
 		end
@@ -133,7 +133,7 @@ feature {NONE} -- Implementation
 	xml_text: STRING
 		do
 			if xml_text_cache.is_empty then
-				xml_text_cache := safe_source.generate_instance ({ODIN_DEFINITIONS}.Syntax_type_xml)
+				xml_text_cache.append (safe_source.generate_instance ({ODIN_DEFINITIONS}.Syntax_type_xml))
 			end
 			Result := xml_text_cache
 		end
