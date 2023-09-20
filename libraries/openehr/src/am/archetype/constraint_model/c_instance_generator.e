@@ -394,8 +394,8 @@ feature {NONE} -- Implementation
 			across bmm_class.flat_properties as bmm_prop_csr loop
 				prop_name := bmm_prop_csr.item.name
 				if not instantiated_attrs.has (prop_name)
-					and not is_ignored (a_node.rm_type_name, prop_name)
-					or is_required (a_node.rm_type_name, prop_name)
+					and (not is_ignored (a_node.rm_type_name, prop_name)
+					or is_required (a_node.rm_type_name, prop_name))
 				then
 					prop_type := bmm_prop_csr.item.bmm_type.type_name
 
