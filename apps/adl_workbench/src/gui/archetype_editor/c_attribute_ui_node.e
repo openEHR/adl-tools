@@ -523,6 +523,7 @@ feature {ANY_UI_NODE} -- Implementation
 					att_aom_profile.has_aom_primitive_type_mapping_for_rm_type (rm_type_name)
 				then
 					aom_type := att_aom_profile.aom_primitive_type_mapping_for_rm_type (rm_type_name)
+					
 				-- else use standard RM prim type => AOM type mapping
 				elseif attached c_primitive_subtypes.item (rm_type_name.as_upper) as att_aom_type then
 					aom_type := att_aom_type

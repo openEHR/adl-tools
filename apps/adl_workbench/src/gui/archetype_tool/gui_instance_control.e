@@ -180,7 +180,7 @@ feature {NONE} -- Implementation
 			path := save_dialog.file_name.as_string_8
 
 			if not path.is_empty and then attached {ARCH_LIB_AUTHORED_ARCHETYPE} safe_source as arch_src then
-				arch_src.save_instance_to_file (path, a_text)
+				arch_src.save_text_to_file (path, a_text)
 				gui_agents.call_console_tool_append_agent (get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<path, ext>>))
 			end
 		end

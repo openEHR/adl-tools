@@ -352,7 +352,7 @@ feature -- File Access
 			file_mgr.save_text_to_differential_file (a_text)
 		end
 
-	save_instance_to_file (a_full_path, a_text: STRING)
+	save_text_to_file (a_full_path, a_text: STRING)
 			-- Save instance to a file
 		require
 			path_valid: not a_full_path.is_empty
