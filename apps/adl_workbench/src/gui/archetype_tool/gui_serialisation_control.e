@@ -12,6 +12,9 @@ class
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
+		redefine
+			enable_edit, disable_edit, can_populate, can_repopulate
+		end
 
 	STRING_UTILITIES
 		export
@@ -25,89 +28,113 @@ feature {NONE}-- Initialization
 
 	make
 		do
-			-- create root widget
+			create adl_text_cache.make(20000)
+			create json_text_cache.make(20000)
+			create yaml_text_cache.make(20000)
+			create xml_text_cache.make(20000)
+			create odin_text_cache.make(20000)
+
+			-- create root Notebook
 			create ev_root_container
-			ev_root_container.set_border_width (Default_border_width)
-			ev_root_container.set_padding_width (Default_padding_width)
+			create gui_controls.make (0)
 
-			-- rich text
-			create ev_serialised_rich_text
-			ev_serialised_rich_text.disable_edit
-			ev_serialised_rich_text.set_tab_width ((ev_serialised_rich_text.tab_width/2).floor.max (1))  -- this is in pixels, and assumes 7-pixel wide chars
-			ev_root_container.extend (ev_serialised_rich_text)
+			--------------------------- ADL text tab -----------------------
+			create evx_adl_text_editor.make (agent adl_text)
+			ev_root_container.extend (evx_adl_text_editor.ev_root_container)
+			ev_root_container.set_item_text (evx_adl_text_editor.ev_root_container, {ARCHETYPE_DEFINITIONS}.syntax_type_adl.as_upper)
 
-			-- serialise controls VBOX
-			create ev_serialise_controls_vbox
-			ev_root_container.extend (ev_serialise_controls_vbox)
-			ev_root_container.disable_item_expand (ev_serialise_controls_vbox)
+			-- symbolic syntax
+--			evx_adl_text_editor.set_text_filter (get_text ({ADL_MESSAGES_IDS}.ec_symbolic_text), get_text ({ADL_MESSAGES_IDS}.ec_symbolic_text_tooltip), agent symbolic_text)
 
-			-- serialise controls frame
-			create ev_serialise_controls_frame
-			ev_serialise_controls_frame.set_text (get_msg ({ADL_MESSAGES_IDS}.ec_serialise_frame_text, Void))
-			ev_serialise_controls_frame.set_minimum_width (125)
-			ev_serialise_controls_vbox.extend (ev_serialise_controls_frame)
-			ev_serialise_controls_vbox.disable_item_expand (ev_serialise_controls_frame)
+			-- save button
+			evx_adl_text_editor.add_button (Void, Void, get_text ({EVX_MESSAGES_IDS}.ec_save_button_text),
+				get_text ({EVX_MESSAGES_IDS}.ec_save_button_tooltip), agent save_adl_text_as, Void)
 
-			-- serialise radio button VBOX
-			create ev_serialise_rb_vbox
-			ev_serialise_rb_vbox.set_border_width (Default_border_width)
-			ev_serialise_controls_frame.extend (ev_serialise_rb_vbox)
+			gui_controls.extend (evx_adl_text_editor)
 
-			-- serialise radio buttons
-			create ev_serialise_adl_rb
-			create ev_serialise_json_rb
-			create ev_serialise_yaml_rb
-			create ev_serialise_xml_rb
-			create ev_serialise_odin_rb
-			ev_serialise_adl_rb.select_actions.extend (agent try_repopulate)
-			ev_serialise_json_rb.select_actions.extend (agent try_repopulate)
-			ev_serialise_yaml_rb.select_actions.extend (agent try_repopulate)
-			ev_serialise_xml_rb.select_actions.extend (agent try_repopulate)
-			ev_serialise_odin_rb.select_actions.extend (agent try_repopulate)
-			ev_serialise_rb_vbox.extend (ev_serialise_adl_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_json_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_yaml_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_xml_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_odin_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_adl_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_json_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_yaml_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_xml_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_odin_rb)
+			--------------------------- JSON text tab -----------------------
+			create evx_json_text_editor.make (agent json_text)
+			ev_root_container.extend (evx_json_text_editor.ev_root_container)
+			ev_root_container.set_item_text (evx_json_text_editor.ev_root_container, {ODIN_DEFINITIONS}.syntax_type_json.as_upper)
 
 			-- include RM check button
-			create ev_flatten_with_rm_cb
-			ev_flatten_with_rm_cb.set_text (get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text, Void))
-			ev_flatten_with_rm_cb.select_actions.extend (agent do set_rm_flattening_on (ev_flatten_with_rm_cb.is_selected) end)
-			ev_flatten_with_rm_cb.select_actions.extend (agent try_repopulate)
-			ev_flatten_with_rm_cb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip, Void))
-			ev_serialise_controls_vbox.extend (ev_flatten_with_rm_cb)
-			ev_serialise_controls_vbox.disable_item_expand (ev_flatten_with_rm_cb)
+			evx_json_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip, Void),
+				agent rm_flattening_on,
+				agent (cb_selected: BOOLEAN) do set_rm_flattening_on (cb_selected); try_repopulate end)
 
 			-- include type marking on check button
-			create ev_type_marking_cb
-			ev_type_marking_cb.set_text (get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_text, Void))
-			ev_type_marking_cb.select_actions.extend (agent do set_type_marking_on (ev_type_marking_cb.is_selected) end)
-			ev_type_marking_cb.select_actions.extend (agent try_repopulate)
-			ev_type_marking_cb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_tooltip, Void))
-			ev_serialise_controls_vbox.extend (ev_type_marking_cb)
-			ev_serialise_controls_vbox.disable_item_expand (ev_type_marking_cb)
+			evx_json_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_tooltip, Void),
+				agent type_marking_on,
+				agent (cb_selected: BOOLEAN) do set_type_marking_on (cb_selected); try_repopulate end)
 
-			-- line numbers check button
-			create ev_line_numbers_cb
-			ev_line_numbers_cb.set_text (get_msg ({EVX_MESSAGES_IDS}.ec_add_line_numbers_text, Void))
-			ev_line_numbers_cb.set_tooltip (get_msg ({EVX_MESSAGES_IDS}.ec_add_line_numbers_tooltip, Void))
-			ev_line_numbers_cb.select_actions.extend (agent do set_show_line_numbers (ev_line_numbers_cb.is_selected) end)
-			ev_line_numbers_cb.select_actions.extend (agent try_repopulate)
-			ev_serialise_controls_vbox.extend (ev_line_numbers_cb)
-			ev_serialise_controls_vbox.disable_item_expand (ev_line_numbers_cb)
+			-- save button
+			evx_json_text_editor.add_button (Void, Void, get_text ({EVX_MESSAGES_IDS}.ec_save_button_text),
+				get_text ({EVX_MESSAGES_IDS}.ec_save_button_tooltip), agent save_json_text_as, Void)
 
-			-- bottom padding cell
-			create ev_serialise_padding_cell
-			ev_serialise_controls_vbox.extend (ev_serialise_padding_cell)
+			gui_controls.extend (evx_json_text_editor)
+
+			--------------------------- YAML text tab -----------------------
+			create evx_yaml_text_editor.make (agent yaml_text)
+			ev_root_container.extend (evx_yaml_text_editor.ev_root_container)
+			ev_root_container.set_item_text (evx_yaml_text_editor.ev_root_container, {ODIN_DEFINITIONS}.syntax_type_yaml.as_upper)
+
+			-- include RM check button
+			evx_yaml_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip, Void),
+				agent rm_flattening_on,
+				agent (cb_selected: BOOLEAN) do set_rm_flattening_on (cb_selected); try_repopulate end)
+
+			-- include type marking on check button
+			evx_yaml_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_tooltip, Void),
+				agent type_marking_on,
+				agent (cb_selected: BOOLEAN) do set_type_marking_on (cb_selected); try_repopulate end)
+
+			-- save button
+			evx_yaml_text_editor.add_button (Void, Void, get_text ({EVX_MESSAGES_IDS}.ec_save_button_text),
+				get_text ({EVX_MESSAGES_IDS}.ec_save_button_tooltip), agent save_yaml_text_as, Void)
+
+			gui_controls.extend (evx_yaml_text_editor)
+
+			--------------------------- XML text tab -----------------------
+			create evx_xml_text_editor.make (agent xml_text)
+			ev_root_container.extend (evx_xml_text_editor.ev_root_container)
+			ev_root_container.set_item_text (evx_xml_text_editor.ev_root_container, {ODIN_DEFINITIONS}.syntax_type_xml.as_upper)
+
+			-- include RM check button
+			evx_xml_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip, Void),
+				agent rm_flattening_on,
+				agent (cb_selected: BOOLEAN) do set_rm_flattening_on (cb_selected); try_repopulate end)
+
+			-- include type marking on check button
+			evx_xml_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_tooltip, Void),
+				agent type_marking_on,
+				agent (cb_selected: BOOLEAN) do set_type_marking_on (cb_selected); try_repopulate end)
+
+			-- save button
+			evx_xml_text_editor.add_button (Void, Void, get_text ({EVX_MESSAGES_IDS}.ec_save_button_text),
+				get_text ({EVX_MESSAGES_IDS}.ec_save_button_tooltip), agent save_xml_text_as, Void)
+
+			gui_controls.extend (evx_xml_text_editor)
+
+			--------------------------- ODIN text tab -----------------------
+			create evx_odin_text_editor.make (agent odin_text)
+			ev_root_container.extend (evx_odin_text_editor.ev_root_container)
+			ev_root_container.set_item_text (evx_odin_text_editor.ev_root_container, {ODIN_DEFINITIONS}.syntax_type_odin.as_upper)
+
+			gui_controls.extend (evx_odin_text_editor)
 
 			-- set initial visual characteristics
-			set_serialisation_control_texts
 			differential_view := True
 
 			ev_root_container.set_data (Current)
@@ -115,81 +142,178 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	ev_root_container: EV_HORIZONTAL_BOX
+	ev_root_container: EV_NOTEBOOK
+
+feature -- Status Report
+
+	can_populate (a_source: attached like source; a_params: TUPLE [diff_view: BOOLEAN; a_lang: STRING]): BOOLEAN
+		do
+			Result := True
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated
+		end
+
+feature -- Commands
+
+	enable_edit
+			-- enable editing
+		do
+			precursor
+			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.enable_editable end)
+		end
+
+	disable_edit
+			-- disable editing
+		do
+			precursor
+			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.disable_editable end)
+		end
 
 feature {NONE} -- Implementation
 
-	ev_serialised_rich_text: EV_RICH_TEXT
+	gui_controls: ARRAYED_LIST [EVX_CONTROL_SHELL]
 
-	ev_serialise_rb_vbox, ev_serialise_controls_vbox: EV_VERTICAL_BOX
+	evx_adl_text_editor: EVX_TEXT_EDITOR_CONTROL
 
-	ev_serialise_padding_cell: EV_CELL
+	adl_text: STRING
+		do
+			if adl_text_cache.is_empty then
+				adl_text_cache.append (safe_source.select_native_serialised_archetype (differential_view, rm_flattening_on))
+			end
+			Result := adl_text_cache
+		end
 
-	ev_serialise_controls_frame: EV_FRAME
+	save_adl_text_as
+		do
+			do_save_text (adl_text, {ARCHETYPE_DEFINITIONS}.syntax_type_adl, {ARCHETYPE_DEFINITIONS}.File_ext_opt2)
+		end
 
-	ev_serialise_adl_rb, ev_serialise_odin_rb, ev_serialise_xml_rb, ev_serialise_json_rb, ev_serialise_yaml_rb: EV_RADIO_BUTTON
+	evx_json_text_editor: EVX_TEXT_EDITOR_CONTROL
 
-	ev_flatten_with_rm_cb, ev_line_numbers_cb, ev_type_marking_cb: EV_CHECK_BUTTON
+	json_text: STRING
+		do
+			if json_text_cache.is_empty then
+				json_text_cache.append (safe_source.serialise_object (False, not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_json))
+			end
+			Result := json_text_cache
+		end
+
+	save_json_text_as
+		do
+			do_save_text (json_text, {ODIN_DEFINITIONS}.Syntax_type_json, {ODIN_DEFINITIONS}.File_ext_json_default)
+		end
+
+
+	evx_yaml_text_editor: EVX_TEXT_EDITOR_CONTROL
+
+	yaml_text: STRING
+		do
+			if yaml_text_cache.is_empty then
+				yaml_text_cache.append (safe_source.serialise_object (False, not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_yaml))
+			end
+			Result := yaml_text_cache
+		end
+
+	save_yaml_text_as
+		do
+			do_save_text (yaml_text, {ODIN_DEFINITIONS}.Syntax_type_yaml, {ODIN_DEFINITIONS}.File_ext_yaml_default)
+		end
+
+
+	evx_xml_text_editor: EVX_TEXT_EDITOR_CONTROL
+
+	xml_text: STRING
+		do
+			if xml_text_cache.is_empty then
+				xml_text_cache.append (safe_source.serialise_object (False, not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_xml))
+			end
+			Result := xml_text_cache
+		end
+
+	save_xml_text_as
+		do
+			do_save_text (xml_text, {ODIN_DEFINITIONS}.Syntax_type_xml, {ODIN_DEFINITIONS}.File_ext_xml_default)
+		end
+
+
+	evx_odin_text_editor: EVX_TEXT_EDITOR_CONTROL
+
+	odin_text: STRING
+		do
+			if odin_text_cache.is_empty then
+				odin_text_cache.append (safe_source.serialise_object (False, not differential_view, type_marking_on, {ARCHETYPE_DEFINITIONS}.Syntax_type_adl))
+			end
+			Result := odin_text_cache
+		end
+
+	save_odin_text_as
+		do
+			do_save_text (odin_text, {ODIN_DEFINITIONS}.Syntax_type_odin, {ODIN_DEFINITIONS}.File_ext_odin)
+		end
 
 	do_clear
 		do
-			ev_serialised_rich_text.remove_text
+			clear_cache
+			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.clear end)
 		end
 
 	do_populate
 		local
-			s, syntax_type: STRING
+			sel_tab: detachable EV_NOTEBOOK_TAB
 		do
-			set_serialisation_control_texts
-			if ev_serialise_adl_rb.is_selected then
-				s := safe_source.select_native_serialised_archetype (differential_view, ev_flatten_with_rm_cb.is_selected)
-			else
-				if ev_serialise_json_rb.is_selected then
-					syntax_type := {ODIN_DEFINITIONS}.Syntax_type_json
-				elseif ev_serialise_yaml_rb.is_selected then
-					syntax_type := {ODIN_DEFINITIONS}.Syntax_type_yaml
-				elseif ev_serialise_xml_rb.is_selected then
-					syntax_type := {ODIN_DEFINITIONS}.Syntax_type_xml
-				elseif ev_serialise_odin_rb.is_selected then
-					syntax_type := {ARCHETYPE_DEFINITIONS}.Syntax_type_adl
-				else
-					create syntax_type.make_empty
-				end
-				s := safe_source.serialise_object (False, not differential_view, ev_type_marking_cb.is_selected, syntax_type)
+			clear_cache
+
+			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.populate end)
+
+			-- select the most recent active tab
+			if attached sel_tab as att_sel_tab then
+				att_sel_tab.enable_select
 			end
-			populate_serialised_rich_text (s)
 		end
 
-	populate_serialised_rich_text (text: attached STRING)
-			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
+	do_save_text (a_text: STRING; format, ext: STRING)
+			-- export model as XML and allow saving
 		local
-			s: STRING
+			path: STRING
+			save_dialog: EV_FILE_SAVE_DIALOG
 		do
-			if show_line_numbers then
-				s := add_line_numbers (text, 4, " ")
-			else
-				s := text
+			create save_dialog
+			save_dialog.set_title (get_text ({ADL_MESSAGES_IDS}.ec_save_instance_dialog_title))
+			save_dialog.set_file_name (safe_source.id.as_string + ext)
+			save_dialog.set_start_directory (export_directory)
+			save_dialog.filters.extend (["*" + ext, get_msg ({ADL_MESSAGES_IDS}.ec_save_instance_to_file_title, <<format.as_upper>>)])
+			check attached proximate_ev_window (ev_root_container) as prox_win then
+				save_dialog.show_modal_to_window (prox_win)
 			end
-			ev_serialised_rich_text.set_text (utf8_to_utf32 (s))
+			path := save_dialog.file_name.as_string_8
+
+			if not path.is_empty and then attached {ARCH_LIB_AUTHORED_ARCHETYPE} safe_source as arch_src then
+				arch_src.save_text_to_file (path, a_text)
+				gui_agents.call_console_tool_append_agent (get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<path, ext>>))
+			end
 		end
 
-	set_serialisation_control_texts
+	clear_cache
 		do
-			ev_serialise_adl_rb.set_text ({ARCHETYPE_DEFINITIONS}.syntax_type_adl.as_upper)
-			ev_serialise_adl_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_adl_serialisation_tooltip, <<latest_adl_version>>))
-
-			ev_serialise_json_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_json.as_upper)
-			ev_serialise_json_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_json_serialisation_tooltip, <<latest_adl_version>>))
-
-			ev_serialise_yaml_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_yaml.as_upper)
-			ev_serialise_yaml_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_yaml_serialisation_tooltip, <<latest_adl_version>>))
-
-			ev_serialise_xml_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_xml.as_upper)
-			ev_serialise_xml_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_xml_serialisation_tooltip, <<latest_adl_version>>))
-
-			ev_serialise_odin_rb.set_text ({ODIN_DEFINITIONS}.syntax_type_odin.as_upper)
-			ev_serialise_odin_rb.set_tooltip (get_msg ({ADL_MESSAGES_IDS}.ec_show_dadl_serialisation_tooltip, <<latest_adl_version>>))
+			adl_text_cache.wipe_out
+			json_text_cache.wipe_out
+			yaml_text_cache.wipe_out
+			xml_text_cache.wipe_out
+			odin_text_cache.wipe_out
 		end
+
+	adl_text_cache: STRING
+
+	json_text_cache: STRING
+
+	yaml_text_cache: STRING
+
+	xml_text_cache: STRING
+
+	odin_text_cache: STRING
 
 end
 

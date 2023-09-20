@@ -46,7 +46,10 @@ feature -- File and artefact types
 			-- Extension for legacy flat form archetype files in ADL 1.4 syntax
 
 	File_ext_archetype_flat: STRING = ".adlf"
-			-- Extension for legacy flat form archetype files in ADL syntax
+			-- Extension for flat form archetype files in ADL syntax
+
+	File_ext_opt2: STRING = ".opt2"
+			-- Extension for OPT files in ADL syntax
 
 	File_ext_archetype_source: STRING = ".adls"
 			-- Extension for source form (differential) archetype files in ADL 1.5 syntax
