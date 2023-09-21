@@ -26,7 +26,7 @@ create
 
 feature {NONE}-- Initialization
 
-	make
+	make (a_visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
 		do
 			create adl_text_cache.make(20000)
 			create json_text_cache.make(20000)
@@ -37,6 +37,8 @@ feature {NONE}-- Initialization
 			-- create root Notebook
 			create ev_root_container
 			create gui_controls.make (0)
+
+			visual_update_action := a_visual_update_action
 
 			--------------------------- ADL text tab -----------------------
 			create evx_adl_text_editor.make (agent adl_text)
@@ -172,6 +174,11 @@ feature -- Commands
 			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.disable_editable end)
 		end
 
+feature -- UI Feedback
+
+	visual_update_action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]]
+			-- Called after processing each archetype (to perform GUI updates during processing).
+
 feature {NONE} -- Implementation
 
 	gui_controls: ARRAYED_LIST [EVX_CONTROL_SHELL]
@@ -258,6 +265,9 @@ feature {NONE} -- Implementation
 		do
 			clear_cache
 			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.clear end)
+			if is_populated then
+				call_visual_update_action (safe_source)
+			end
 		end
 
 	do_populate
@@ -272,6 +282,8 @@ feature {NONE} -- Implementation
 			if attached sel_tab as att_sel_tab then
 				att_sel_tab.enable_select
 			end
+
+			call_visual_update_action (safe_source)
 		end
 
 	do_save_text (a_text: STRING; format, ext: STRING)
@@ -293,6 +305,14 @@ feature {NONE} -- Implementation
 			if not path.is_empty and then attached {ARCH_LIB_AUTHORED_ARCHETYPE} safe_source as arch_src then
 				arch_src.save_text_to_file (path, a_text)
 				gui_agents.call_console_tool_append_agent (get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<path, ext>>))
+			end
+		end
+
+	call_visual_update_action (an_artefact: ARCH_LIB_ARCHETYPE)
+			-- Call `visual_update_action', if it is attached.
+		do
+			if attached visual_update_action then
+				visual_update_action.call ([an_artefact])
 			end
 		end
 

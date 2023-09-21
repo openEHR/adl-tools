@@ -62,7 +62,7 @@ feature {NONE}-- Initialization
 			tabs_index.put (source_control.ev_root_container, Tool_tab_source)
 
 			-- serialisation control
-			create serialisation_control.make
+			create serialisation_control.make (agent update_serialisation_tab_label)
 			ev_notebook.extend (serialisation_control.ev_root_container)
 			ev_notebook.set_item_text (serialisation_control.ev_root_container, Tool_tab_name (Tool_tab_serialised))
 			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
@@ -101,6 +101,13 @@ feature -- UI Feedback
 			-- On the Slots tab, indicate the numbers of slots and used-by's.
 		do
 			ev_notebook.set_item_text (slot_map_control.ev_root_container, Tool_tab_name (Tool_tab_slots) + " (" + slots_count.out + "/" + used_by_count.out + ")")
+		end
+
+	update_serialisation_tab_label (an_artefact: ARCH_LIB_ARCHETYPE)
+		do
+			ev_notebook.set_item_text (serialisation_control.ev_root_container,
+				if an_artefact.artefact_type.is_equal (aft_template) then "OPT"
+					else Tool_tab_name (tool_tab_serialised) end)
 		end
 
 	update_clients_suppliers_tab_label (suppliers_count, clients_count: INTEGER)
