@@ -440,10 +440,14 @@ feature {ANY_UI_NODE} -- Implementation
 				create {C_BOOLEAN_UI_NODE} Result.make (create {C_BOOLEAN}.make_example, ui_graph_state)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_INTEGER}).name)) then
-				create c_int.make_example
 				if ui_graph_state.ref_model.is_enumerated_type (co_create_params.rm_type) then
+					check attached {BMM_ENUMERATION_INTEGER} rm_type_spec as rm_enum then
+						create c_int.make_value_list (rm_enum.item_value_literals)
+					end
 					c_int.set_enumerated_type_constraint
 					c_int.set_rm_type_name (co_create_params.rm_type)
+				else
+					create c_int.make_example
 				end
 				create {C_INTEGER_UI_NODE} Result.make (c_int, ui_graph_state)
 
@@ -463,10 +467,15 @@ feature {ANY_UI_NODE} -- Implementation
 				create {C_DURATION_UI_NODE} Result.make (create {C_DURATION}.make_example, ui_graph_state)
 
 			elseif co_create_params.aom_type.is_equal (bare_type_name(({C_STRING}).name)) then
-				create c_str.make_example
 				if ui_graph_state.ref_model.is_enumerated_type (co_create_params.rm_type) then
+					check attached {BMM_ENUMERATION_STRING} rm_type_spec as rm_enum then
+						create c_str.make_value_list (rm_enum.item_value_literals)
+					end
+
 					c_str.set_enumerated_type_constraint
 					c_str.set_rm_type_name (co_create_params.rm_type)
+				else
+					create c_str.make_example
 				end
 				create {C_STRING_UI_NODE} Result.make (c_str, ui_graph_state)
 
@@ -523,7 +532,7 @@ feature {ANY_UI_NODE} -- Implementation
 					att_aom_profile.has_aom_primitive_type_mapping_for_rm_type (rm_type_name)
 				then
 					aom_type := att_aom_profile.aom_primitive_type_mapping_for_rm_type (rm_type_name)
-					
+
 				-- else use standard RM prim type => AOM type mapping
 				elseif attached c_primitive_subtypes.item (rm_type_name.as_upper) as att_aom_type then
 					aom_type := att_aom_type
@@ -562,8 +571,9 @@ feature {ANY_UI_NODE} -- Implementation
 				end
 
 			-- see if it's an enumerated type
-			elseif attached {BMM_SIMPLE_TYPE} a_bmm_type as a_simple_type and then  attached {BMM_ENUMERATION_INTEGER} a_simple_type.defining_class then
+			elseif attached {BMM_SIMPLE_TYPE} a_bmm_type as a_simple_type and then attached {BMM_ENUMERATION_INTEGER} a_simple_type.defining_class then
 				create {C_INTEGER_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
+
 			elseif attached {BMM_SIMPLE_TYPE} a_bmm_type as a_simple_type and then attached {BMM_ENUMERATION_STRING} a_simple_type.defining_class then
 				create {C_STRING_UI_NODE} Result.make_rm (a_bmm_type, ui_graph_state)
 

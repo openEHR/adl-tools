@@ -79,12 +79,24 @@ feature -- Output
 			-- whose keys are enumeration values in string form
 		do
 			create Result.make (0)
-			across enumeration_values as vals_csr loop
-				check attached enum_map.item (vals_csr.item.out) as enum_item_name then
-					Result.append (enum_item_name)
+
+			if any_allowed then
+				across enum_map as enum_csr loop
+					Result.append (enum_csr.item)
+					if not enum_csr.is_last then
+						Result.append (", ")
+					end
 				end
-				if not vals_csr.is_last then
-					Result.append (", ")
+			else
+				across constraint as vals_csr loop
+					if attached enum_map.item (vals_csr.item.out) as enum_item_name then
+						Result.append (enum_item_name)
+					else
+						Result.append ("Bad constraint val: " + vals_csr.item.out)
+					end
+					if not vals_csr.is_last then
+						Result.append (", ")
+					end
 				end
 			end
 		end

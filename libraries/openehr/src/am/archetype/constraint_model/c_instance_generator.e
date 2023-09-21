@@ -418,6 +418,11 @@ feature {NONE} -- Implementation
 						create {INTERNET_ID} val
 						add_complex_dt_attribute (dt_object_nodes.item, prop_name, val)
 
+					-- deal with enumerations
+					elseif attached {BMM_ENUMERATION} bmm_prop_csr.item.bmm_type as bmm_enum then
+						val := bmm_enum.item_values.first
+						add_primitive_dt_attribute (dt_object_nodes.item, prop_name, val)
+
 					-- deal with true primitive types
 					elseif bmm_prop_csr.item.bmm_type.is_primitive then
 						-- date/times
