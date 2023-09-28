@@ -6,7 +6,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ICON_RM_GRAPHITE_INTERVAL_EVENT32X32
+class ICON_RM_S2_INTERVAL_EVENT32X32
 
 inherit
 	ICON_SOURCE
@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization
 		do
-			key := "rm/graphite/interval_event32x32"
+			key := "rm/s2/interval_event32x32"
 			make_with_size (32, 32)
 			fill_memory
 		end

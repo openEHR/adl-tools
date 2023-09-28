@@ -6,7 +6,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ICON_RM_GRAPHITE_INDIRECT_OBSERVATION
+class ICON_RM_S2_INDIRECT_OBSERVATION
 
 inherit
 	ICON_SOURCE
@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization
 		do
-			key := "rm/graphite/indirect_observation"
+			key := "rm/s2/indirect_observation"
 			make_with_size (16, 16)
 			fill_memory
 		end

@@ -6,7 +6,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ICON_RM_GRAPHITE_CONTACT
+class ICON_RM_S2_CONTACT
 
 inherit
 	ICON_SOURCE
@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization
 		do
-			key := "rm/graphite/contact"
+			key := "rm/s2/contact"
 			make_with_size (16, 16)
 			fill_memory
 		end

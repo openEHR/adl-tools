@@ -6,7 +6,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ICON_RM_GRAPHITE_LAB_RESULT_REFERENCE
+class ICON_RM_S2_LAB_RESULT_REFERENCE
 
 inherit
 	ICON_SOURCE
@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization
 		do
-			key := "rm/graphite/lab_result_reference"
+			key := "rm/s2/lab_result_reference"
 			make_with_size (16, 16)
 			fill_memory
 		end

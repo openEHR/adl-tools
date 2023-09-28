@@ -6,7 +6,7 @@ note
 	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ICON_RM_GRAPHITE_CONDITION_BRANCH
+class ICON_RM_S2_CONDITION_BRANCH
 
 inherit
 	ICON_SOURCE
@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization
 		do
-			key := "rm/graphite/condition_branch"
+			key := "rm/s2/condition_branch"
 			make_with_size (16, 16)
 			fill_memory
 		end
