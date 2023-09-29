@@ -301,12 +301,12 @@ feature -- Commands
 																else
 																	if output_format.same_string (Syntax_type_adl) then
 																		if use_flat_source then
-																			std_out.put_string (alaa.flat_serialised (False))
+																			std_out.put_string (alaa.flat_serialised_native (False))
 																		else
-																			std_out.put_string (alaa.differential_serialised)
+																			std_out.put_string (alaa.differential_serialised_native)
 																		end
 																	else
-																		std_out.put_string (alaa.serialise_object (use_flat_source, output_format) + "%N")
+																		std_out.put_string (alaa.serialise_object (False, use_flat_source, True, output_format) + "%N")
 																	end
 																end
 															else
