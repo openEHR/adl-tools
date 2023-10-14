@@ -15,7 +15,7 @@ profile_name = <"S2">
 -- This is used to match the 'schema_id' generated in BMM_SCHEMA class based on model 
 -- publisher, model name, model release as defined in .bmm files.
 --
-rm_schema_pattern = <"s2_ehr_.*", "s2_entity_.*">
+rm_schema_pattern = <"s2_.*">
 
 ----------------------------------------------------------------------------------------
 -- id of terminologies and code sets to use
