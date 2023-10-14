@@ -57,6 +57,7 @@ feature {NONE} -- Implementation
 			Result.put("annotations",	SYM_ANNOTATIONS)
 			Result.put("component_terminologies",	SYM_COMPONENT_TERMINOLOGIES)
 			Result.put("uid",	SYM_UID)
+			Result.put("build_uid",	SYM_BUILD_UID)
 		end
 
 end
