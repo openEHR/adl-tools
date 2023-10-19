@@ -58,9 +58,13 @@ feature {NONE} -- Implementation
 		end
 
 	do_populate
+		local
+			stats_reports: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
 		do
+			create stats_reports.make (0)
+			stats_reports.put (source.statistical_analyser.stats, source.ref_model.model_id)
 			source.generate_statistics (differential_view)
-			report_controls.populate (source.statistical_analyser.stats, differential_view)
+			report_controls.populate (stats_reports, differential_view)
 		end
 
 end

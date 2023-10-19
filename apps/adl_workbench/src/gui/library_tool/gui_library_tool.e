@@ -327,9 +327,7 @@ feature -- Events
 					end
 				elseif att_data = stats_viewer then
 					if src.can_build_statistics then
-						across src.statistics as stats_csr loop
-							stats_viewer.populate (stats_csr.item, True)
-						end
+						stats_viewer.populate (src.statistics, True)
 					end
 				end
 			end

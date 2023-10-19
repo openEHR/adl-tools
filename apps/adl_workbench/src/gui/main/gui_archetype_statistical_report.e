@@ -53,7 +53,7 @@ feature -- Access
 
 	ev_root_container: EV_NOTEBOOK
 
-	source: detachable ARCHETYPE_STATISTICAL_REPORT
+	source: detachable HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
 			-- stats being visualised
 
 	tool_artefact_id: STRING
@@ -70,10 +70,10 @@ feature -- Status Report
 
 feature -- Commands
 
-	populate (a_stat_report: ARCHETYPE_STATISTICAL_REPORT; diff_flag: BOOLEAN)
+	populate (a_stat_reports: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]; diff_flag: BOOLEAN)
 		do
 			differential_view := diff_flag
-			populate_gui_tool (a_stat_report)
+			populate_gui_tool (a_stat_reports)
 		end
 
 feature {NONE} -- Implementation
@@ -84,6 +84,13 @@ feature {NONE} -- Implementation
 		end
 
 	do_populate
+		do
+			across source as stats_csr loop
+				do_populate_model (stats_csr.item)
+			end
+		end
+
+	do_populate_model (a_stat_report: ARCHETYPE_STATISTICAL_REPORT)
 		local
 			ev_rm_vbox: EV_VERTICAL_BOX
 			ev_arch_stats_frame, ev_rm_breakdown_frame: EV_FRAME
@@ -114,7 +121,7 @@ feature {NONE} -- Implementation
 			ev_rm_vbox.extend (ev_rm_breakdown_frame)
 
 			ev_root_container.extend (ev_rm_vbox)
-			ev_root_container.set_item_text (ev_rm_vbox, source.ref_model.model_id)
+			ev_root_container.set_item_text (ev_rm_vbox, a_stat_report.ref_model.model_id)
 
 			-----------------------------------
 			-- populate data
@@ -129,11 +136,11 @@ feature {NONE} -- Implementation
 
 			-- archetype metrics list
 			ev_arch_stats_list.set_column_titles (Summary_table_col_titles)
-			populate_ev_multi_list_from_hash_list (ev_arch_stats_list, source.archetype_metrics_list)
+			populate_ev_multi_list_from_hash_list (ev_arch_stats_list, a_stat_report.archetype_metrics_list)
 			ev_arch_stats_frame.set_minimum_height ((ev_arch_stats_list.count + 3) * ev_arch_stats_list.row_height)
 
 			-- breakdown grid
-			if attached source as src then
+			if attached a_stat_report as src then
 				across src.rm_grouped_class_table as class_table_csr loop
 					-- populate RM breakdown notebook tabs
 					create ev_rm_grid
