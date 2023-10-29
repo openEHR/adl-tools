@@ -18,10 +18,10 @@ feature -- Initialisation
 		local
 			tb_p_ont: HASH_TABLE [STRING, STRING]
 		do
-			original_language := a_terminology.original_language.as_string
+			original_language := a_terminology.original_language
 
 			is_differential := a_terminology.is_differential
-			
+
 			term_definitions := a_terminology.term_definitions
 
 			if attached a_terminology.term_bindings then
@@ -46,7 +46,10 @@ feature -- Initialisation
 
 feature -- Access
 
-	original_language: STRING
+	original_language: TERMINOLOGY_CODE
+		attribute
+			create Result.default_create
+		end
 
 	is_differential: BOOLEAN
 
@@ -74,7 +77,7 @@ feature -- Factory
 			tb_ont_code_table: HASH_TABLE [URI, STRING]
 			tb_p_ont: HASH_TABLE [STRING, STRING]
 		do
-			a_terminology.set_original_language (create {TERMINOLOGY_CODE}.make_from_string (original_language))
+			a_terminology.set_original_language (original_language)
 			a_terminology.set_term_definitions (term_definitions)
 
 			if attached term_bindings as att_tb then

@@ -189,24 +189,16 @@ feature {NONE} -- Flattening
 
 feature -- Output
 
-	serialise_object (compact_flag: BOOLEAN; flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
+	serialise_object (flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
 			-- serialise internal structure in a brute-force object way, using
 			-- format like ODIN, XML, JSON etc
 		local
 			dt_arch: DT_CONVERTIBLE
 		do
-			if compact_flag then
-				if flat_flag then
-					create {P_OPERATIONAL_TEMPLATE} dt_arch.make (operational_template)
-				else
-					create {like persistent_compact_type} dt_arch.make (safe_differential_archetype)
-				end
+			if flat_flag then
+				create {P_OPERATIONAL_TEMPLATE} dt_arch.make (operational_template)
 			else
-				if flat_flag then
-					dt_arch := operational_template
-				else
-					dt_arch := safe_differential_archetype
-				end
+				create {like persistent_compact_type} dt_arch.make (safe_differential_archetype)
 			end
 
 			dt_object_converter.set_false_booleans_off_option

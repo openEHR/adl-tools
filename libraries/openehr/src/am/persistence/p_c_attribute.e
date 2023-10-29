@@ -28,9 +28,10 @@ feature -- Initialisation
 			if attached a_ca.existence as att_ex then
 				existence := att_ex.as_string
 			end
-			if attached a_ca.cardinality as att_card then
-				cardinality := att_card.as_string
-			end
+--			if attached a_ca.cardinality as att_card then
+--				cardinality := att_card.as_string
+--			end
+			cardinality := a_ca.cardinality
 			if attached a_ca.children as att_children then
 				create p_c_objs.make (0)
 				children := p_c_objs
@@ -76,7 +77,7 @@ feature -- Access
 
 	existence: detachable STRING
 
-	cardinality: detachable STRING
+	cardinality: detachable CARDINALITY
 
 feature -- Status Report
 
@@ -94,10 +95,7 @@ feature -- Factory
 				create ex.make_from_string (att_ex)
 			end
 			if is_multiple then
-				if attached cardinality as att_card then
-					create card.make_from_string (att_card)
-				end
-				create Result.make_multiple (rm_attribute_name, ex, card)
+				create Result.make_multiple (rm_attribute_name, ex, cardinality)
 			else
 				create Result.make_single (rm_attribute_name, ex)
 			end

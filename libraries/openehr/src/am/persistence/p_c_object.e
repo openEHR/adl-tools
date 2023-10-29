@@ -28,9 +28,10 @@ feature -- Initialisation
 		do
 			rm_type_name := a_co.rm_type_name
 			node_id := a_co.node_id
-			if attached a_co.occurrences as att_occ then
-				occurrences := att_occ.as_string
-			end
+--			if attached a_co.occurrences as att_occ then
+--				occurrences := att_occ.as_string
+--			end
+			occurrences := a_co.occurrences
 			sibling_order := a_co.sibling_order
 			is_deprecated := a_co.is_deprecated
 		end
@@ -45,7 +46,7 @@ feature -- Access
 			create Result.make_from_string (unknown_value)
 		end
 
-	occurrences: detachable STRING
+	occurrences: detachable MULTIPLICITY_INTERVAL
 
 	sibling_order: detachable SIBLING_ORDER
 			-- set if this node should be ordered with respect to an inherited sibling; only settable
@@ -62,7 +63,7 @@ feature -- Factory
 		do
 			a_co.set_root_node_id (node_id)
 			if attached occurrences as occ then
-				a_co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_from_string (occ))
+				a_co.set_occurrences (occ)
 			end
 			if attached sibling_order as so then
 				a_co.set_sibling_order (so)

@@ -14,7 +14,7 @@ feature {P_AUTHORED_ARCHETYPE} -- Initialisation
 	make (an_auth_res: AUTHORED_RESOURCE)
 		do
 			is_controlled := an_auth_res.is_controlled
-			original_language := an_auth_res.original_language.as_string
+			original_language := an_auth_res.original_language
 			if attached an_auth_res.uid as att_uid then
 				uid := att_uid.as_string
 			end
@@ -28,9 +28,9 @@ feature -- Access
 
 	uid: detachable STRING
 
-	original_language: STRING
+	original_language: TERMINOLOGY_CODE
 		attribute
-			create Result.make_empty
+			create Result.default_create
 		end
 
 	translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]

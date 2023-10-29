@@ -25,7 +25,7 @@ create {ADL_2_ENGINE, P_ARCHETYPE}
 	make_all
 
 create {ARCH_LIB_ARCHETYPE}
-	make_empty_differential, make_empty_differential_child, make_dt
+	make_empty_differential, make_empty_differential_child
 
 feature -- Access
 

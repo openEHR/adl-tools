@@ -20,7 +20,7 @@ inherit
 			has_language, languages_available, has_matching_language_tag, original_language
 		redefine
 			default_create, make_from_other, overlay_differential, set_original_language,
-			reduce_languages_to, add_language, set_is_valid, persistent_attributes
+			reduce_languages_to, add_language, set_is_valid
 		end
 
 	AUTHORED_RESOURCE
@@ -40,7 +40,7 @@ create {ADL_2_ENGINE, ADL_14_ENGINE, P_ARCHETYPE}
 	make_all
 
 create {ARCH_LIB_ARCHETYPE}
-	make_empty_differential, make_empty_differential_child, make_dt
+	make_empty_differential, make_empty_differential_child
 
 feature -- Initialisation
 
@@ -312,35 +312,6 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 					description := diff_desc.deep_twin
 				end
 			end
-		end
-
-feature {DT_OBJECT_CONVERTER} -- Conversion
-
-	persistent_attributes: detachable ARRAYED_LIST [STRING]
-			-- list of attribute names to persist as DT structure
-			-- empty structure means all attributes
-		once
-			create Result.make(0)
-			Result.compare_objects
-			Result.extend ("uid")
-			Result.extend ("rm_release")
-			Result.extend ("build_uid")
-			Result.extend ("is_generated")
-			Result.extend ("adl_version")
-			Result.extend ("original_language")
-			Result.extend ("translations")
-			Result.extend ("description")
-
-			Result.extend ("archetype_id")
-			Result.extend ("parent_archetype_id")
-			Result.extend ("is_differential")
-			Result.extend ("is_generated")
-			Result.extend ("definition")
-			Result.extend ("artefact_type")
-			Result.extend ("rules")
-			Result.extend ("terminology")
-
-			Result.extend ("annotations")
 		end
 
 end

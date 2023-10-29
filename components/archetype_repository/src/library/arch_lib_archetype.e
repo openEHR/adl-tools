@@ -995,7 +995,7 @@ feature -- File Access
 
 feature -- Output
 
-	serialise_object (compact_flag: BOOLEAN; flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
+	serialise_object (flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
 			-- serialise internal structure in a brute-force object way, using
 			-- format like ODIN, XML, JSON etc
 		require
@@ -1004,14 +1004,10 @@ feature -- Output
 		local
 			dt_arch: DT_CONVERTIBLE
 		do
-			if compact_flag then
-				if flat_flag then
-					create {like persistent_compact_type} dt_arch.make (flat_archetype)
-				else
-					create {like persistent_compact_type} dt_arch.make (safe_differential_archetype)
-				end
+			if flat_flag then
+				create {like persistent_compact_type} dt_arch.make (flat_archetype)
 			else
-				dt_arch := if flat_flag then flat_archetype else safe_differential_archetype end
+				create {like persistent_compact_type} dt_arch.make (safe_differential_archetype)
 			end
 
 			dt_object_converter.set_false_booleans_off_option

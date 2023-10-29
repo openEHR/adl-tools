@@ -109,22 +109,6 @@ feature {NONE} -- Implementation
 			create Result.make ("id1", "/")
 		end
 
-feature {DT_OBJECT_CONVERTER} -- Conversion
-
-	persistent_attributes: detachable ARRAYED_LIST [STRING]
-			-- list of attribute names to persist as DT structure
-			-- empty structure means all attributes
-		once
-			create Result.make(0)
-			Result.compare_objects
-			Result.extend ("rm_type_name")
-			Result.extend ("node_id")
-			Result.extend ("sibling_order")
-			Result.extend ("occurrences")
-			Result.extend ("is_deprecated")
-			Result.extend ("target_path")
-		end
-
 end
 
 

@@ -17,20 +17,7 @@ deferred class C_DOMAIN_TYPE
 inherit
 	C_LEAF_OBJECT
 		redefine
-			enter_subtree, exit_subtree, node_id, rm_type_name, finalise_dt
-		end
-
-feature -- Finalisation
-
-	finalise_dt
-			-- used by DT_OBJECT_CONVERTER
-		do
-			if attached node_id as nid and then not nid.is_empty then
-				create representation_cache.make (nid)
-			else
-				create representation_cache.make_anonymous
-			end
-			representation.set_content (Current)
+			enter_subtree, exit_subtree, node_id, rm_type_name
 		end
 
 feature -- Access

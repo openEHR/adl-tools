@@ -294,6 +294,13 @@ feature -- Modification
 			end
 		end
 
+feature {TEMPLATE_FLATTENER} -- Modification
+
+	set_template_node_id (an_archetype_hrid: ARCHETYPE_HRID)
+		do
+			representation.set_node_id (an_archetype_hrid.as_string)
+		end
+
 feature -- Output
 
 	out: STRING
@@ -340,23 +347,6 @@ feature -- Representation
 			-- create a reasonable `representation' instance
 		do
 			create Result.make_anonymous
-		end
-
-feature {DT_OBJECT_CONVERTER} -- Conversion
-
-	persistent_attributes: detachable ARRAYED_LIST [STRING]
-			-- list of attribute names to persist as DT structure
-			-- empty structure means all attributes
-		once
-			create Result.make(0)
-			Result.compare_objects
-			Result.extend ("rm_type_name")
-			Result.extend ("node_id")
-			Result.extend ("sibling_order")
-			Result.extend ("occurrences")
-			Result.extend ("is_deprecated")
-			Result.extend ("attributes")
-			Result.extend ("attribute_tuples")
 		end
 
 invariant

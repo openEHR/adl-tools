@@ -17,7 +17,7 @@ inherit
 		rename
 			make as cco_make
 		redefine
-			c_congruent_to, out, enter_subtree, exit_subtree, overlay_differential, persistent_attributes
+			c_congruent_to, out, enter_subtree, exit_subtree, overlay_differential
 		end
 
 create
@@ -112,24 +112,6 @@ feature -- Visitor
 			-- perform action at end of block for this node
 		do
 			visitor.end_c_archetype_root (Current, depth)
-		end
-
-feature {DT_OBJECT_CONVERTER} -- Conversion
-
-	persistent_attributes: detachable ARRAYED_LIST [STRING]
-			-- list of attribute names to persist as DT structure
-			-- empty structure means all attributes
-		once
-			create Result.make(0)
-			Result.compare_objects
-			Result.extend ("rm_type_name")
-			Result.extend ("node_id")
-			Result.extend ("archetype_ref")
-			Result.extend ("sibling_order")
-			Result.extend ("occurrences")
-			Result.extend ("is_deprecated")
-			Result.extend ("attributes")
-			Result.extend ("attribute_tuples")
 		end
 
 end

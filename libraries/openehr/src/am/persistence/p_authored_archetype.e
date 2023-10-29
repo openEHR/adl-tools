@@ -67,7 +67,6 @@ feature -- Factory
 			o_archetype_id: detachable ARCHETYPE_HRID
 			arch_terminology: ARCHETYPE_TERMINOLOGY
 			o_uid, o_build_uid: detachable HIER_OBJECT_ID
-			o_original_language: TERMINOLOGY_CODE
 		do
 			if attached archetype_id as att_aid
 				and attached description as o_description
@@ -82,8 +81,7 @@ feature -- Factory
 					create o_build_uid.make_from_string (att_uid)
 				end
 
-				create o_original_language.make_from_string (original_language)
-				create arch_terminology.make_differential (o_original_language.code_string, o_definition.node_id)
+				create arch_terminology.make_differential (original_language.code_string, o_definition.node_id)
 				p_terminology.populate_terminology (arch_terminology)
 				arch_terminology.finalise_dt
 
@@ -96,7 +94,7 @@ feature -- Factory
 					o_uid,
 					o_build_uid,
 					other_metadata,
-					o_original_language,
+					original_language,
 					translations,
 					o_description,
 					o_definition.create_c_complex_object,

@@ -251,15 +251,19 @@ feature -- Visitor
 		end
 
 	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
-			-- enter a C_LEAF_OBJECT
+			-- enter a C_LEAF_OBJECTT
 		do
 		end
 
 	start_c_terminology_code (a_node: C_TERMINOLOGY_CODE; depth: INTEGER)
 			-- enter a C_TERMINOLOGY_CODE
+		local
+			dt_obj: DT_COMPLEX_OBJECT
 		do
 			if not c_attribute_completed.item then
-				dt_attribute_nodes.item.put_child (dt_object_converter.object_to_dt (a_node.prototype_value))
+				dt_obj := dt_object_converter.object_to_dt (a_node.prototype_value)
+				dt_obj.set_im_type_name (case_corrected (dt_obj.im_type_name))
+				dt_attribute_nodes.item.put_child (dt_obj)
 			end
 		end
 
@@ -530,6 +534,13 @@ feature {NONE} -- Implementation
 			attrs_list.compare_objects
 			attrs_list.extend ("code")
 			Result.put (attrs_list, "Element")
+		end
+
+	case_corrected (a_class_name: STRING): STRING
+			-- convert class name case to correct form for BMM model
+			-- TODO: build in class name style to BMM schemas
+		do
+			Result := a_class_name.item (1).out + a_class_name.substring (2, a_class_name.count).as_lower
 		end
 
 end
