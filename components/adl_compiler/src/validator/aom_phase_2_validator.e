@@ -484,17 +484,23 @@ end
 											if attached {C_INTEGER} co as c_int and attached {BMM_ENUMERATION_INTEGER} bmm_enum as bmm_enum_int then
 												c_int.set_rm_type_name (rm_attr_type)
 												c_int.set_enumerated_type_constraint
-												if not across c_int.enumeration_values as int_vals_csr all bmm_enum_int.has_value (int_vals_csr.item) end then
+												from c_int.enumeration_values.start until c_int.enumeration_values.off or not bmm_enum_int.has_value (c_int.enumeration_values.item) loop
+													c_int.enumeration_values.forth
+												end
+												if not c_int.enumeration_values.off then
 													add_error ({ADL_MESSAGES_IDS}.ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
-														rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_int.single_value.out>>)
+														rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_int.enumeration_values.item.out>>)
 												end
 
 											elseif attached {C_STRING} co as c_str and attached {BMM_ENUMERATION_STRING} bmm_enum as bmm_enum_str then
 												c_str.set_rm_type_name (rm_attr_type)
 												c_str.set_enumerated_type_constraint
-												if not across c_str.constraint as str_vals_csr all bmm_enum_str.has_value (str_vals_csr.item) end then
+												from c_str.constraint.start until c_str.constraint.off or not bmm_enum_str.has_value (c_str.constraint.item) loop
+													c_str.constraint.forth
+												end
+												if not c_str.constraint.off then
 													add_error ({ADL_MESSAGES_IDS}.ec_VCORMENV, <<co.rm_type_name, arch_diff_child.annotated_path (co.path, display_language, True),
-														rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_str.single_value>>)
+														rm_attr_type, attr_rm_type_in_flat_anc, att_parent_ca.rm_attribute_name, c_str.constraint.item>>)
 												end
 
 											else
