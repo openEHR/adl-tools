@@ -36,12 +36,13 @@ create
 
 feature -- Definitions
 
-	row_filter_names: ARRAYED_LIST [STRING]
+	row_filters: STRING_TABLE [FUNCTION[ANY, TUPLE[], ARRAYED_LIST [STRING]]]
 			-- names of row filters of path control
 		once
 			create Result.make (0)
-			Result.compare_objects
-			Result.fill (<<"All", "Leaf">>)
+			Result.put (agent data_value_paths, "Data Value")
+			Result.put (agent all_paths, "All")
+			Result.put (agent primitive_paths, "Primitive")
 		end
 
 	path_column_names: ARRAY [STRING]
@@ -65,7 +66,7 @@ feature {NONE} -- Initialisation
 			create gui_controls.make (0)
 
 			-- ================================== ADL 2 paths =======================================
-			create evx_adl_2_tab.make (on_path_map_key_press_agent, agent path_column_names, agent path_list, agent row_filter_names, agent adl_2_path_row)
+			create evx_adl_2_tab.make (on_path_map_key_press_agent, agent path_column_names, agent path_list, agent row_filter_keys, agent adl_2_path_row)
 			evx_adl_2_tab.add_boolean_filter (get_text ({ADL_MESSAGES_IDS}.ec_nat_lang_checkbox_text), get_text ({ADL_MESSAGES_IDS}.ec_nat_lang_paths_tooltip),
 				agent :BOOLEAN do Result := show_natural_language end, agent update_show_natural_language)
 			ev_root_container.extend (evx_adl_2_tab.ev_root_container)
@@ -73,7 +74,7 @@ feature {NONE} -- Initialisation
 			gui_controls.extend (evx_adl_2_tab)
 
 			-- ================================== ADL 1.4 paths =======================================
-			create evx_adl_14_tab.make (on_path_map_key_press_agent, agent path_column_names, agent path_list, agent row_filter_names, agent adl_14_path_row)
+			create evx_adl_14_tab.make (on_path_map_key_press_agent, agent path_column_names, agent path_list, agent row_filter_keys, agent adl_14_path_row)
 			evx_adl_14_tab.add_boolean_filter (get_text ({ADL_MESSAGES_IDS}.ec_nat_lang_checkbox_text), get_text ({ADL_MESSAGES_IDS}.ec_nat_lang_paths_tooltip),
 				agent :BOOLEAN do Result := show_natural_language end, agent update_show_natural_language)
 			ev_root_container.extend (evx_adl_14_tab.ev_root_container)
@@ -81,7 +82,7 @@ feature {NONE} -- Initialisation
 			gui_controls.extend (evx_adl_14_tab)
 
 			-- ================================== ADL interface tags =======================================
-			create evx_interface_tab.make (on_path_map_key_press_agent, agent interface_column_names, agent path_list, agent row_filter_names, agent interface_row)
+			create evx_interface_tab.make (on_path_map_key_press_agent, agent interface_column_names, agent path_list, agent row_filter_keys, agent interface_row)
 			ev_root_container.extend (evx_interface_tab.ev_root_container)
 			ev_root_container.set_item_text (evx_interface_tab.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_adl_interface_tab_text))
 			gui_controls.extend (evx_interface_tab)
@@ -161,16 +162,18 @@ feature {NONE} -- Implementation
 			-- wipe out content from controls
 		do
 			all_paths_cache := Void
-			leaf_paths_cache := Void
+			primitive_paths_cache := Void
 			interface_paths_cache := Void
+			data_value_paths_cache := Void
 			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.clear end)
 		end
 
 	do_populate
 		do
 			all_paths_cache := Void
-			leaf_paths_cache := Void
+			primitive_paths_cache := Void
 			interface_paths_cache := Void
+			data_value_paths_cache := Void
 			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do if an_item.is_displayed then an_item.populate end end)
 
 			evx_adl_2_tab.resize_columns_proportional
@@ -203,7 +206,8 @@ feature {NONE} -- Implementation
 
 			-- first column: path
 			if show_natural_language then
-				path_str := safe_source.flat_archetype.annotated_path (a_path, selected_language, True)
+				path_str := source_archetype.annotated_path (a_path, selected_language, True)
+			--	path_str := safe_source.flat_archetype.annotated_path (a_path, selected_language, True)
 			else
 				path_str := a_path
 			end
@@ -260,7 +264,7 @@ feature {NONE} -- Implementation
 						Result.extend ("")
 					end
 				else
-					Result.extend ("")
+					Result.extend ("Path " + a_path + " not found")
 					Result.extend ("")
 				end
 			end
@@ -268,10 +272,8 @@ feature {NONE} -- Implementation
 
 	path_list (a_row_filter: STRING): ARRAYED_LIST [STRING]
 		do
-			if a_row_filter.is_equal (row_filter_names.i_th (1)) then
-				Result := all_paths
-			else
-				Result := leaf_paths
+			check row_filters.has(a_row_filter) and then attached row_filters.item(a_row_filter) as f then
+				Result := f.item([])
 			end
 		end
 
@@ -285,13 +287,37 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	leaf_paths: ARRAYED_LIST[STRING]
+	data_value_paths: ARRAYED_LIST[STRING]
+		local
+			aom_profile: AOM_PROFILE
+			dv_class_name: STRING
 		do
-			if attached leaf_paths_cache as att_cache then
+			if attached data_value_paths_cache as att_cache then
 				Result := att_cache
 			else
-				Result := source_archetype.leaf_paths
-				leaf_paths_cache := Result
+				ref_model := safe_source.ref_model
+
+				dv_class_name := ref_model.any_type_name
+
+				if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
+					aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
+					if attached aom_profile.archetype_data_value_parent_class as advpc then
+						dv_class_name := advpc
+					end
+				end
+
+				Result := source_archetype.data_value_paths (agent ref_model.type_conforms_to (?, dv_class_name))
+				data_value_paths_cache := Result
+			end
+		end
+
+	primitive_paths: ARRAYED_LIST[STRING]
+		do
+			if attached primitive_paths_cache as att_cache then
+				Result := att_cache
+			else
+				Result := source_archetype.primitive_paths
+				primitive_paths_cache := Result
 			end
 		end
 
@@ -308,10 +334,23 @@ feature {NONE} -- Implementation
 
 	all_paths_cache: detachable ARRAYED_LIST[STRING]
 
-	leaf_paths_cache: detachable ARRAYED_LIST[STRING]
+	data_value_paths_cache: detachable ARRAYED_LIST[STRING]
+
+	primitive_paths_cache: detachable ARRAYED_LIST[STRING]
 
 	interface_paths_cache: detachable HASH_TABLE [STRING, STRING]
 
+	ref_model: BMM_MODEL
+		attribute
+			create Result.default_create
+		end
+
+	row_filter_keys: ARRAYED_LIST[STRING]
+		do
+			create Result.make(0)
+			across row_filters as rf_csr loop
+				Result.extend (rf_csr.key.to_string_8)
+			end
+		end
+
 end
-
-

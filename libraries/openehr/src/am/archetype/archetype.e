@@ -243,20 +243,38 @@ feature -- Paths
 			Result.object_comparison
 		end
 
-	leaf_paths: ARRAYED_LIST [STRING]
+	data_value_paths (a_bmm_is_data_value_agent: FUNCTION [ANY, TUPLE [STRING], BOOLEAN]): ARRAYED_LIST [STRING]
 			-- paths from definition structure C_PRIMITIVE_OBJECTs only
 		do
-			Result := all_paths_filtered (agent (ac: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := attached {C_ATTRIBUTE} ac as ca and then ca.is_leaf_parent end)
+			Result := all_paths_filtered (
+				agent (ac: ARCHETYPE_CONSTRAINT; bmm_is_data_value_agent: FUNCTION [ANY, TUPLE [STRING], BOOLEAN]): BOOLEAN
+					do
+						Result := attached {C_COMPLEX_OBJECT} ac as cco and then bmm_is_data_value_agent.item ([cco.rm_type_name])
+					end (?, a_bmm_is_data_value_agent)
+			)
 		ensure
 			Result.object_comparison
 		end
 
-	leaf_paths_annotated (a_lang: STRING): ARRAYED_LIST [STRING]
+	primitive_paths: ARRAYED_LIST [STRING]
+			-- paths from definition structure C_PRIMITIVE_OBJECTs only
+		do
+			Result := all_paths_filtered (
+				agent (ac: ARCHETYPE_CONSTRAINT): BOOLEAN
+					do
+						Result := attached {C_ATTRIBUTE} ac as ca and then ca.is_leaf_parent
+					end
+			)
+		ensure
+			Result.object_comparison
+		end
+
+	primitive_paths_annotated (a_lang: STRING): ARRAYED_LIST [STRING]
 			-- paths from definition structure C_PRIMITIVE_OBJECTs only; annotated from terminology
 		do
 			create Result.make (0)
 			Result.compare_objects
-			across leaf_paths as paths_csr loop
+			across primitive_paths as paths_csr loop
 				Result.extend (annotated_path (paths_csr.item, a_lang, True))
 			end
 		ensure
@@ -302,41 +320,12 @@ feature -- Paths
 		require
 			a_lang_valid: not a_language.is_empty
 		local
-			og_phys_path, og_log_path: OG_PATH
-			tag_path, tag, id_code: STRING
-			an_arch_id: ARCHETYPE_HRID
+			og_log_path: OG_PATH
+			tag_path, tag: STRING
 		do
 			create Result.make (0)
 			across path_set as path_csr loop
-				create og_phys_path.make_from_string (path_csr.item)
-				create og_log_path.make_from_other (og_phys_path)
-
-				-- generate a human-readable path from the physical path
-				from
-					og_phys_path.start
-					og_log_path.start
-				until
-					og_phys_path.off
-				loop
-					if og_phys_path.item.is_addressable then
-						id_code := og_phys_path.item.object_id
-
-						-- only use the object address if it is valid (it could be an archetype id) and
-						-- b) in the terminology (for objects under single-valued attributes, this is optional)
-						if is_valid_id_code (id_code) and then terminology.has_id_code (id_code) then
-							og_log_path.item.set_object_id (terminology.term_definition (a_language, id_code).text)
-						elseif archetype_id.valid_id (id_code) then
-							create an_arch_id.make_from_string (id_code)
-							og_log_path.item.set_object_id (an_arch_id.concept_id)
-						else
-							og_log_path.item.clear_object_id
-						end
-					else
-						og_log_path.item.clear_object_id
-					end
-					og_phys_path.forth
-					og_log_path.forth
-				end
+				og_log_path := semantic_path (path_csr.item, a_language)
 
 				-- create a string from from the structured form of the path
 				create tag_path.make (200)
@@ -367,7 +356,7 @@ feature -- Paths
 
 				-- Add the path to the result, unless it is the root, which is not useful in a set of interface tags
 				if not tag.is_empty then
-					Result.put (tag, og_phys_path.as_string)
+					Result.put (tag, path_csr.item)
 				end
 			end
 		end
@@ -448,13 +437,17 @@ feature -- Paths
 			loop
 				if og_phys_path.item.is_addressable then
 					id_code := og_phys_path.item.object_id
-					if is_valid_id_code (id_code) and then terminology.has_id_code (id_code) then
-						if with_codes then
-							log_str := annotated_code (id_code, terminology.term_definition (a_language, id_code).text, "")
+					if is_valid_id_code (id_code) then
+						if terminology.has_id_code (id_code) then
+							if with_codes then
+								log_str := annotated_code (id_code, terminology.term_definition (a_language, id_code).text, "")
+							else
+								log_str := terminology.term_definition (a_language, id_code).text
+							end
+							og_log_path.item.set_object_id (log_str)
 						else
-							log_str := terminology.term_definition (a_language, id_code).text
+							og_log_path.item.set_object_id (id_code)
 						end
-						og_log_path.item.set_object_id (log_str)
 					else
 						og_log_path.item.set_object_id (id_code)
 					end
@@ -464,6 +457,50 @@ feature -- Paths
 			end
 
 			Result := og_log_path.as_string
+		end
+
+	semantic_path (a_phys_path, a_language: STRING): OG_PATH
+			-- generate a logical path in 'a_language' from a physical path
+			-- if `with_code' then generate annotated form of each code, i.e. "code|text|"
+		local
+			id_code: STRING
+			og_phys_path: OG_PATH
+			an_arch_id: ARCHETYPE_HRID
+		do
+			create og_phys_path.make_from_string (a_phys_path)
+			create Result.make_from_other (og_phys_path)
+
+			-- generate a human-readable path from the physical path
+			from
+				og_phys_path.start
+				Result.start
+			until
+				og_phys_path.off
+			loop
+				if og_phys_path.item.is_addressable then
+					id_code := og_phys_path.item.object_id
+
+					-- only use the object address if it is valid (it could be an archetype id) and
+					-- b) in the terminology (for objects under single-valued attributes, this is optional)
+					if is_valid_id_code (id_code) then
+						-- it's a code of a child node of a container attribute, so must be in terminology
+						if terminology.has_id_code (id_code) then
+							Result.item.set_object_id (terminology.term_definition (a_language, id_code).text)
+						else
+							Result.item.clear_object_id
+						end
+					elseif archetype_id.valid_id (id_code) then
+						create an_arch_id.make_from_string (id_code)
+						Result.item.set_object_id (an_arch_id.concept_id)
+					else
+						Result.item.clear_object_id
+					end
+				else
+					Result.item.clear_object_id
+				end
+				og_phys_path.forth
+				Result.forth
+			end
 		end
 
 feature -- Status Report

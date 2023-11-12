@@ -299,7 +299,7 @@ feature {NONE} -- Implementation
 				across codes_csr.item as ac_csr loop
 					if code_spec_depth > arch_depth then
 						add_error ({ADL_MESSAGES_IDS}.ec_VTSD, <<codes_csr.key>>)
-					elseif attached {C_OBJECT} ac_csr.item as co and then (co.is_root or else attached co.parent as parent_ca and then parent_ca.is_multiple) then
+					elseif attached {C_OBJECT} ac_csr.item as co and then (co.is_root or else attached co.parent as parent_ca and then parent_ca.is_constraint_multiple) then
 						if code_spec_depth < arch_depth and not arch_flat_parent.terminology.has_id_code (codes_csr.key) or else
 							code_spec_depth = arch_depth and not terminology.has_id_code (codes_csr.key)
 						then
