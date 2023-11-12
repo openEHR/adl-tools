@@ -290,33 +290,18 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 			if attached arch_node then
-				-- it must be a C_ARCHETYPE_ROOT in a template structure
-				if attached {C_ARCHETYPE_ROOT} arch_node as car then
-					if display_settings.show_technical_view then
-						Result := (create {ARCHETYPE_HRID}.make_from_string (car.archetype_ref)).concept_id
-					else
-						check attached parent as ca_ui and then attached ca_ui.parent as parent_co_ui then
-							Result := parent_co_ui.ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text
-						end
-					end
-					if display_settings.show_codes then
-						Result := annotated_code (arch_node.node_id, Result, " ")
-					end
-				-- normal archetype node
-				else
-					if is_id_code (arch_node.node_id) then
-						if not arch_node.node_id.is_equal (Primitive_node_id) then
-							if ui_graph_state.flat_terminology.has_id_code (arch_node.node_id) then
-								Result := ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text
-								if display_settings.show_codes then
-									Result := annotated_code (arch_node.node_id, Result, " ")
-								end
-							elseif display_settings.show_codes then
-								Result := arch_node.node_id
+				if is_id_code (arch_node.node_id) then
+					if not arch_node.node_id.is_equal (Primitive_node_id) then
+						if ui_graph_state.flat_terminology.has_id_code (arch_node.node_id) then
+							Result := ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text
+							if display_settings.show_codes then
+								Result := annotated_code (arch_node.node_id, Result, " ")
 							end
-						else
-							-- nothing special to do
+						elseif display_settings.show_codes then
+							Result := arch_node.node_id
 						end
+					else
+						-- nothing special to do
 					end
 				end
 			end

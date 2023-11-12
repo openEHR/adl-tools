@@ -303,7 +303,7 @@ feature -- Visitor
 			-- have to obtain the terminology from the main archetype directory because the archetype being serialised
 			-- here might be in differential form, and have no component_ontologies aet up
 			if attached {OPERATIONAL_TEMPLATE} archetype as opt and a_node.has_attributes then
-				terminologies.extend (opt.component_terminology (a_node.archetype_ref))
+				terminologies.extend (opt.component_terminology (a_node.node_id))
 			else
 				last_result.append (apply_style (symbol (SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item (FMT_SPACE))
 			end

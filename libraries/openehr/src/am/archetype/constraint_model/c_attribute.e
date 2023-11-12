@@ -707,11 +707,6 @@ feature -- Modification
 			-- have to do the object overlay first, so it detects any difference in node id
 			old_flat_id := a_flat_obj.node_id.twin
 			a_flat_obj.overlay_differential (diff_obj)
-
-			-- now fix the node id
-			if not old_flat_id.is_equal (diff_obj.node_id) then
-				representation.replace_node_id (old_flat_id, diff_obj.node_id)
-			end
 		end
 
 feature -- Validation

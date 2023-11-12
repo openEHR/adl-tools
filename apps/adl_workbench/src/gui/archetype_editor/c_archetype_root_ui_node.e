@@ -13,7 +13,7 @@ inherit
 	C_COMPLEX_OBJECT_UI_NODE
 		redefine
 			arch_node, rm_properties, display_constraint, c_pixmap, build_context_menu,
-			attach_other_ui_node_agents
+			attach_other_ui_node_agents, node_id_text
 		end
 
 create
@@ -53,6 +53,43 @@ feature {NONE} -- Implementation
 				end
 			else
 				Result := precursor
+			end
+		end
+
+	node_id_text: STRING
+			-- For C_ARCHETYPE_ROOT in a source template,
+			--     archetype_ref carries the filler archetype ref
+			-- For C_ARCHETYPE_ROOT in an OPT,
+			-- 	   node_id carries the resolved filler archetype id
+		local
+			arch_hrid: ARCHETYPE_HRID
+		do
+			create Result.make_empty
+			if attached arch_node then
+				create arch_hrid
+
+				-- OPT case
+				if arch_hrid.valid_id (arch_node.node_id) then
+					if display_settings.show_technical_view then
+						Result := arch_node.node_id
+					else
+						Result := (create {ARCHETYPE_HRID}.make_from_string (arch_node.node_id)).concept_id
+					end
+
+				-- source template case
+				else
+					if display_settings.show_technical_view then
+						Result := (create {ARCHETYPE_HRID}.make_from_string (arch_node.archetype_ref)).concept_id
+					else
+						-- we go back up to the owning C_OBJECT, to access the correct flat terminology
+						check attached parent as ca_ui and then attached ca_ui.parent as parent_co_ui then
+							Result := parent_co_ui.ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text
+						end
+					end
+				end
+				if display_settings.show_codes then
+					Result := annotated_code (arch_node.node_id, Result, " ")
+				end
 			end
 		end
 

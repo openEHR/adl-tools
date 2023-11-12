@@ -17,7 +17,7 @@ inherit
 		rename
 			make as cco_make
 		redefine
-			c_congruent_to, out, enter_subtree, exit_subtree, overlay_differential
+			c_congruent_to, out, enter_subtree, exit_subtree, overlay_differential, is_valid_node_id_code
 		end
 
 create
@@ -52,6 +52,17 @@ feature -- Access
 			Result := an_og_path.as_string
 		end
 
+feature -- Status Report
+
+	is_valid_node_id_code (a_code: STRING): BOOLEAN
+			-- Is `a_code' a valid "node_id" code?
+		local
+			archetype_id: ARCHETYPE_HRID
+		do
+			create archetype_id
+			Result := is_valid_id_code (a_code) or archetype_id.valid_id(a_code)
+		end
+
 feature -- Comparison
 
 	c_congruent_to (other: like Current): BOOLEAN
@@ -69,8 +80,9 @@ feature -- Modification
 			-- and also write the RM class name from `a_matched_archetype_id' into `rm_type_name',
 			-- since it might be different.
 		do
-			archetype_ref := a_matched_archetype_id.physical_id
+		--	archetype_ref := a_matched_archetype_id.physical_id
 			set_rm_type_name (a_matched_archetype_id.rm_class)
+			set_node_id (a_matched_archetype_id.physical_id)
 		end
 
 feature {C_ATTRIBUTE} -- Modification

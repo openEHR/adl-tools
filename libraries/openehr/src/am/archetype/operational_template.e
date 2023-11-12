@@ -12,7 +12,7 @@ class OPERATIONAL_TEMPLATE
 inherit
 	AUTHORED_ARCHETYPE
 		redefine
-			annotated_path
+			annotated_path, semantic_path
 		end
 
 create
@@ -61,7 +61,7 @@ feature -- Modification
 			component_terminologies.merge (other_opt.component_terminologies)
 		end
 
-feature -- Modification
+feature -- Paths
 
 	annotated_path (a_phys_path, a_language: STRING; with_codes: BOOLEAN): STRING
 			-- generate a logical path in 'a_language' from a physical path
@@ -82,16 +82,27 @@ feature -- Modification
 			loop
 				if og_phys_path.item.is_addressable then
 					id_code := og_phys_path.item.object_id
-					if is_valid_id_code (id_code) and then ref_terminology.has_id_code (id_code) then
-						if with_codes then
-							log_str := annotated_code (id_code, ref_terminology.term_definition (a_language, id_code).text, "")
+
+					-- id-code
+					if is_valid_id_code (id_code) then
+						-- id-code of object under container attribute: will be in terminology
+						if ref_terminology.has_id_code (id_code) then
+							if with_codes then
+								log_str := annotated_code (id_code, ref_terminology.term_definition (a_language, id_code).text, "")
+							else
+								log_str := ref_terminology.term_definition (a_language, id_code).text
+							end
+							og_log_path.item.set_object_id (log_str)
+
+						-- id-code of single-valued attribute - no terminology entry
 						else
-							log_str := ref_terminology.term_definition (a_language, id_code).text
+							og_log_path.item.set_object_id (id_code)
 						end
-						og_log_path.item.set_object_id (log_str)
+
+					-- assume it is a OPT root point archetype id
 					else
 						og_log_path.item.set_object_id (id_code)
-						if component_terminologies.has (og_phys_path.item.object_id) and then attached component_terminologies.item (og_phys_path.item.object_id) as att_ct then
+						check component_terminologies.has (id_code) and then attached component_terminologies.item (id_code) as att_ct then
 							ref_terminology := att_ct
 						end
 					end
@@ -101,6 +112,55 @@ feature -- Modification
 			end
 
 			Result := og_log_path.as_string
+		end
+
+	semantic_path (a_phys_path, a_language: STRING): OG_PATH
+			-- generate a logical path in 'a_language' from a physical path
+			-- if `with_code' then generate annotated form of each code, i.e. "code|text|"
+		local
+			id_code, log_str: STRING
+			og_phys_path: OG_PATH
+			ref_terminology: ARCHETYPE_TERMINOLOGY
+			an_arch_id: ARCHETYPE_HRID
+		do
+			ref_terminology := terminology
+			create og_phys_path.make_from_string (a_phys_path)
+			create Result.make_from_other (og_phys_path)
+
+			-- generate a human-readable path from the physical path
+			from
+				og_phys_path.start
+				Result.start
+			until
+				og_phys_path.off
+			loop
+				if og_phys_path.item.is_addressable then
+					id_code := og_phys_path.item.object_id
+
+					-- only use the object address if it is valid (it could be an archetype id) and
+					-- b) in the terminology (for objects under single-valued attributes, this is optional)
+					if is_valid_id_code (id_code) then
+						-- it's a code of a child node of a container attribute, so must be in terminology
+						if ref_terminology.has_id_code (id_code) then
+							Result.item.set_object_id (ref_terminology.term_definition (a_language, id_code).text)
+						else
+							Result.item.clear_object_id
+						end
+					elseif archetype_id.valid_id (id_code) then
+						create an_arch_id.make_from_string (id_code)
+						Result.item.set_object_id (an_arch_id.concept_id)
+						check component_terminologies.has (id_code) and then attached component_terminologies.item (id_code) as att_ct then
+							ref_terminology := att_ct
+						end
+					else
+						Result.item.clear_object_id
+					end
+				else
+					Result.item.clear_object_id
+				end
+				og_phys_path.forth
+				Result.forth
+			end
 		end
 
 end

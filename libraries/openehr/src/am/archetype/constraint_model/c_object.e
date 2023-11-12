@@ -88,6 +88,12 @@ feature -- Status report
 	is_deprecated: BOOLEAN
 			-- True if this node is deprecated within its model
 
+	is_valid_node_id_code (a_code: STRING): BOOLEAN
+			-- Is `a_code' a valid "node_id" code?
+		do
+			Result := is_valid_id_code (a_code)
+		end
+
 feature -- Comparison
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
@@ -216,7 +222,7 @@ feature -- Modification
 
 	set_node_id (an_object_id: STRING)
 		require
-			Object_id_valid: is_valid_id_code (an_object_id)
+			Object_id_valid: is_valid_node_id_code (an_object_id)
 		do
 			representation.set_node_id (an_object_id)
 		end
@@ -239,8 +245,6 @@ feature {C_ATTRIBUTE} -- Modification
 			-- 	overridden rm_type_name
 			-- 	occurrences
 			-- Current is assumed to be in a flat archetype
-			-- Should always be called from C_ATTRIBUTE.overlay_differential() since the
-			-- if the node_id changes, the keyed list in the parent needs to be updated
 		do
 			if not other.node_id.is_equal (node_id) then
 				set_node_id (other.node_id.twin)
@@ -264,8 +268,6 @@ feature {ARCHETYPE_FLATTENER} -- Modification
 			-- 	overridden rm_type_name
 			-- 	occurrences
 			-- Current is assumed to be in a flat archetype
-			-- Should always be called from C_ATTRIBUTE.overlay_differential() since the
-			-- if the node_id changes, the keyed list in the parent needs to be updated
 		require
 			Current.is_root and other.is_root
 		do
