@@ -306,7 +306,7 @@ feature -- Commands
 																			std_out.put_string (alaa.differential_serialised_native)
 																		end
 																	else
-																		std_out.put_string (alaa.serialise_object (False, use_flat_source, True, output_format) + "%N")
+																		std_out.put_string (alaa.serialise_object (use_flat_source, True, output_format) + "%N")
 																	end
 																end
 															else
