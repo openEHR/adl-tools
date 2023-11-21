@@ -151,12 +151,12 @@ feature -- Visitor
 				-- have to obtain the terminology from the main archetype directory because the archetype being serialised
 				-- here might be in differential form, and have no component_ontologies aet up
 				if attached {OPERATIONAL_TEMPLATE} archetype as opt and a_node.has_attributes then
-					terminologies.extend (opt.component_terminology (a_node.archetype_ref))
+					terminologies.extend (opt.component_terminology (a_node.node_id))
 				end
 
 				create prototype_value.make_anonymous
 				prototype_value.set_im_type_name (a_node.rm_type_name)
-				add_locatable_attrs (prototype_value, a_node.archetype_ref)
+				add_locatable_attrs (prototype_value, a_node.node_id)
 
 				dt_object_nodes.extend (prototype_value)
 				dt_attribute_nodes.item.put_child (prototype_value)
@@ -406,6 +406,7 @@ feature {NONE} -- Implementation
 					if prop_type.is_case_insensitive_equal ("Terminology_code") then
 						val := create {TERMINOLOGY_CODE}.make_from_string ("snomed::11111111")
 						add_complex_dt_attribute (dt_object_nodes.item, prop_name, val)
+						
 					elseif prop_type.is_case_insensitive_equal ("Terminology_term") then
 						val := create {TERMINOLOGY_TERM}.make_from_string ("loinc::22222|serum sodium|")
 						add_complex_dt_attribute (dt_object_nodes.item, prop_name, val)
