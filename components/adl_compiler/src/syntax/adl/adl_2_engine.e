@@ -517,11 +517,11 @@ feature -- Serialisation
 
 				-- cause the removal of the superfluous 'component_terminologies = <>' wrapper, since the section name
 				-- gives us that
-				if dt_comp_terms.has_attribute ("component_terminologies") and then
-					attached dt_comp_terms.attribute_node ("component_terminologies") as dt_attr
-				then
-					dt_attr.set_nested_container
-				end
+--				if dt_comp_terms.has_attribute ("component_terminologies") and then
+--					attached dt_comp_terms.attribute_node ("component_terminologies") as dt_attr
+--				then
+--					dt_attr.set_nested_container
+--				end
 				terminology_context.set_tree (dt_comp_terms)
 				terminology_context.serialise (a_format, False, False)
 				comp_terms_serialised := terminology_context.serialised
