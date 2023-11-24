@@ -304,13 +304,16 @@ feature -- Visitor
 			-- here might be in differential form, and have no component_ontologies aet up
 			if attached {OPERATIONAL_TEMPLATE} archetype as opt and a_node.has_attributes then
 				terminologies.extend (opt.component_terminology (a_node.node_id))
-			else
-				last_result.append (apply_style (symbol (SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item (FMT_SPACE))
-			end
 
-			-- output '%Tuse_archetype TYPE[node_id, archetype_id] <occurrences>%N'
-			last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
-			last_result.append (apply_style ("[" + a_node.node_id + ", " + a_node.archetype_ref + "]", STYLE_TERM_REF))
+				-- output TYPE[node_id]%N'
+				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
+				last_result.append (apply_style ("[" + a_node.node_id + "]", STYLE_TERM_REF))
+			else
+				-- output '%Tuse_archetype TYPE[node_id, archetype_id]%N'
+				last_result.append (apply_style (symbol (SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item (FMT_SPACE))
+				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
+				last_result.append (apply_style ("[" + a_node.node_id + ", " + a_node.archetype_ref + "]", STYLE_TERM_REF))
+			end
 
 			last_result.append (format_item (FMT_SPACE))
 			serialise_occurrences(a_node, depth)

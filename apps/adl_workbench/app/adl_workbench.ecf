@@ -54,10 +54,12 @@
 		<setting name="inlining" value="false"/>
 		<setting name="inlining_size" value="4"/>
 		<setting name="line_generation" value="false"/>
+
 		<capability>
 			<concurrency support="thread" use="thread"/>
 			<void_safety support="initialization" use="initialization"/>
 		</capability>
+
 		<library name="eomf_app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
 		<library name="eomf_basic" location="$EOMF\library\basic\eomf_basic.ecf"/>
 		<library name="eomf_bmm" location="$EOMF\library\bmm\eomf_bmm.ecf">
