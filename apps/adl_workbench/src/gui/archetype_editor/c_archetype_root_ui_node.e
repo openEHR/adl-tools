@@ -60,20 +60,16 @@ feature {NONE} -- Implementation
 			-- For C_ARCHETYPE_ROOT in a source template,
 			--     archetype_ref carries the filler archetype ref
 			-- For C_ARCHETYPE_ROOT in an OPT,
-			-- 	   node_id carries the resolved filler archetype id
-		local
-			arch_hrid: ARCHETYPE_HRID
+			-- 	   archetype_ref carries the resolved filler archetype id
 		do
 			create Result.make_empty
 			if attached arch_node then
-				create arch_hrid
-
 				-- OPT case
-				if arch_hrid.valid_id (arch_node.node_id) then
+				if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype as opt then
 					if display_settings.show_technical_view then
-						Result := arch_node.node_id
+						Result := arch_node.archetype_id
 					else
-						Result := (create {ARCHETYPE_HRID}.make_from_string (arch_node.node_id)).concept_id
+						Result := (create {ARCHETYPE_HRID}.make_from_string (arch_node.archetype_id)).concept_id
 					end
 
 				-- source template case
@@ -87,6 +83,7 @@ feature {NONE} -- Implementation
 						end
 					end
 				end
+
 				if display_settings.show_codes then
 					Result := annotated_code (arch_node.node_id, Result, " ")
 				end

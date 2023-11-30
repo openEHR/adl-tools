@@ -88,12 +88,6 @@ feature -- Status report
 	is_deprecated: BOOLEAN
 			-- True if this node is deprecated within its model
 
-	is_valid_node_id_code (a_code: STRING): BOOLEAN
-			-- Is `a_code' a valid "node_id" code?
-		do
-			Result := is_valid_id_code (a_code)
-		end
-
 feature -- Comparison
 
 	c_conforms_to (other: like Current; rm_type_conformance_checker: FUNCTION [ANY, TUPLE [STRING, STRING], BOOLEAN]): BOOLEAN
@@ -222,7 +216,7 @@ feature -- Modification
 
 	set_node_id (an_object_id: STRING)
 		require
-			Object_id_valid: is_valid_node_id_code (an_object_id)
+			Object_id_valid: is_valid_id_code (an_object_id)
 		do
 			representation.set_node_id (an_object_id)
 		end

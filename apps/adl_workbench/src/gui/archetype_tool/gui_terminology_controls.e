@@ -253,8 +253,8 @@ feature {NONE} -- Implementation
 				end
 
 			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car and attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
-				populate_c_archetype_root_row_data (car.node_id)
-				terminology_stack.extend (opt.component_terminology (car.node_id))
+				populate_c_archetype_root_row_data (car.archetype_id)
+				terminology_stack.extend (opt.component_terminology (car.archetype_id))
 
 				check attached evx_id_terms_grid.last_row as lr then
 					ev_parent_rows.extend (lr)
