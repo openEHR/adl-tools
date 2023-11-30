@@ -151,7 +151,7 @@ feature -- Visitor
 				-- have to obtain the terminology from the main archetype directory because the archetype being serialised
 				-- here might be in differential form, and have no component_ontologies aet up
 				if attached {OPERATIONAL_TEMPLATE} archetype as opt and a_node.has_attributes then
-					terminologies.extend (opt.component_terminology (a_node.archetype_id))
+					terminologies.extend (opt.component_terminology (a_node.archetype_ref))
 				end
 
 				create prototype_value.make_anonymous

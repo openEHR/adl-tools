@@ -67,9 +67,9 @@ feature {NONE} -- Implementation
 				-- OPT case
 				if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype as opt then
 					if display_settings.show_technical_view then
-						Result := arch_node.archetype_id
+						Result := arch_node.archetype_ref
 					else
-						Result := (create {ARCHETYPE_HRID}.make_from_string (arch_node.archetype_id)).concept_id
+						Result := (create {ARCHETYPE_HRID}.make_from_string (arch_node.archetype_ref)).concept_id
 					end
 
 				-- source template case

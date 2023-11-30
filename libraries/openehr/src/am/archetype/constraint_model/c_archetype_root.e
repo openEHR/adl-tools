@@ -42,17 +42,6 @@ feature -- Access
 			-- an archetype reference, which could occasionally be a full archetype ID, but is normally
 			-- only a reference down to the major version.
 
-	archetype_id: STRING
-			-- matched archetype id, within an OPT.
-		require
-			is_templated
-		do
-			create Result.make_empty
-			if attached matched_archetype_id as aid then
-				Result.append (aid)
-			end
-		end
-
 	flat_path: STRING
 			-- generate the flattened path to the filling node, using an_archetype_ref
 		local
@@ -61,25 +50,6 @@ feature -- Access
 			an_og_path := og_path
 			an_og_path.last.set_object_id (archetype_ref)
 			Result := an_og_path.as_string
-		end
-
-	c_archetype_root_ref: STRING
-			-- return the form of archetype reference appropriate to source or templated form, i.e.
-			-- in source form, archetype_ref
-			-- in templated form, archetype_id
-		do
-			if attached matched_archetype_id as aid then
-				Result := aid
-			else
-				Result := archetype_ref
-			end
-		end
-
-feature -- Status Report
-
-	is_templated: BOOLEAN
-		do
-			Result := attached matched_archetype_id
 		end
 
 feature -- Comparison
@@ -99,7 +69,7 @@ feature -- Modification
 			-- and also write the RM class name from `a_matched_archetype_id' into `rm_type_name',
 			-- since it might be different.
 		do
-			matched_archetype_id := a_matched_archetype_id.physical_id
+			archetype_ref := a_matched_archetype_id.physical_id
 			set_rm_type_name (a_matched_archetype_id.rm_class)
 		end
 
@@ -124,7 +94,7 @@ feature -- Output
 			-- stringify for GUI use
 		do
 			create Result.make(0)
-			Result.append (rm_type_name + "[" + node_id + ", " + c_archetype_root_ref + "] ")
+			Result.append (rm_type_name + "[" + node_id + ", " + archetype_ref + "] ")
 			if attached occurrences as occ then
 				Result.append (occ.as_string)
 			end
@@ -143,12 +113,6 @@ feature -- Visitor
 		do
 			visitor.end_c_archetype_root (Current, depth)
 		end
-
-feature {NONE} -- Implementation
-
-	matched_archetype_id: detachable STRING
-			-- matched archetype id, within an OPT.
-
 
 end
 

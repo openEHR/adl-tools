@@ -93,7 +93,7 @@ feature -- Visitor
 			-- C_ARCHETYPE_ROOT will be expanded, rather than just a reference
 			if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype as opt then
 				new_ui_graph_state := ui_graph_state.twin
-				new_ui_graph_state.set_flat_terminology (opt.component_terminology (a_node.archetype_id))
+				new_ui_graph_state.set_flat_terminology (opt.component_terminology (a_node.archetype_ref))
 				ui_graph_state_stack.extend (new_ui_graph_state)
 			end
 			create ui_node.make (a_node, ui_graph_state)
