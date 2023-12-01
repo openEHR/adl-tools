@@ -177,6 +177,20 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 		end
 
+	terminology_bindings_cols: STRING_TABLE[INTEGER]
+			-- cross-ref of terminology names to col positions
+			-- regenerated for each archetype or template
+		attribute
+			create Result.make (0)
+		end
+
+	terminology_bindings_col (a_col_name:STRING): INTEGER
+		do
+			if terminology_bindings_cols.has (a_col_name) then
+				Result := terminology_bindings_cols.item (a_col_name)
+			end
+		end
+
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
 	do_clear
@@ -192,8 +206,6 @@ feature {NONE} -- Implementation
 			check attached selected_language end
 
 			terminology_stack.extend (source_archetype.terminology)
-
-			terminologies := terminology.terminologies_available
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			do_populate_id_terms
@@ -210,18 +222,38 @@ feature {NONE} -- Implementation
 			evx_id_terms_grid.wipe_out
 			ev_parent_rows.wipe_out
 
+			-- calculate col titles
+			create col_titles.make (0)
+			col_titles.compare_objects
+			col_titles.append (Id_terms_grid_col_names.linear_representation)
+
+			-- add binding terminology names
+			terminology_bindings_cols.wipe_out
+			across terminologies as terminologies_csr loop
+				col_titles.extend (terminologies_csr.item)
+				terminology_bindings_cols.put (col_titles.count, terminologies_csr.item)
+			end
+
+			if attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
+				across opt.component_terminologies as terminologies_csr loop
+					across terminologies_csr.item.terminologies_available as bindings_csr loop
+						if not col_titles.has (bindings_csr.item) then
+							col_titles.extend (bindings_csr.item)
+							terminology_bindings_cols.put (col_titles.count, bindings_csr.item)
+						end
+					end
+				end
+			end
+
+			-- populate rows
 			evx_id_terms_grid.ev_grid.lock_update
 			check attached selected_language end
 			create def_it.make (source_archetype.definition)
 			def_it.do_all (agent populate_id_term_row_enter, agent populate_id_term_row_exit)
 			evx_id_terms_grid.ev_grid.unlock_update
 
-			-- set grid titles
-			create col_titles.make (0)
-			col_titles.append (Id_terms_grid_col_names.linear_representation)
-			across terminologies as terminologies_csr loop
-				col_titles.extend (terminologies_csr.item)
-			end
+
+			-- set the columns
 			evx_id_terms_grid.set_column_titles (col_titles)
 
 			evx_id_terms_grid.expand_tree
@@ -233,9 +265,6 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 			Result.extend (Id_terms_grid_col_code)
 			Result.extend (Id_terms_grid_col_text)
-			across terminologies as terminologies_csr loop
-				Result.extend (id_terms_grid_col_max + terminologies.count)
-			end
 		end
 
 	populate_id_term_row_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
@@ -316,7 +345,7 @@ feature {NONE} -- Implementation
 				else
 					create binding_str.make_empty
 				end
-				evx_id_terms_grid.set_last_row_label_col (id_terms_grid_col_max + terminologies_csr.cursor_index, binding_str, Void, Void, Binding_color, Void)
+				evx_id_terms_grid.set_last_row_label_col (terminology_bindings_col (terminologies_csr.item), binding_str, Void, Void, Binding_color, Void)
 			end
 		end
 
@@ -357,14 +386,69 @@ feature {NONE} -- Implementation
 
 	do_populate_values
 		local
-			ev_last_row: EV_GRID_ROW
 			col_titles: ARRAYED_LIST [STRING]
-			term_color: EV_COLOR
 		do
 			evx_values_grid.wipe_out
-
 			evx_values_grid.ev_grid.lock_update
 
+			-- calculate grid titles
+			create col_titles.make (0)
+			col_titles.compare_objects
+			col_titles.append (Value_sets_grid_col_names.linear_representation)
+
+			-- add binding terminology names
+			terminology_bindings_cols.wipe_out
+			across terminologies as terminologies_csr loop
+				col_titles.extend (terminologies_csr.item)
+				terminology_bindings_cols.put (col_titles.count, terminologies_csr.item)
+			end
+
+			if attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
+				across opt.component_terminologies as terminologies_csr loop
+					across terminologies_csr.item.terminologies_available as bindings_csr loop
+						if not col_titles.has (bindings_csr.item) then
+							col_titles.extend (bindings_csr.item)
+							terminology_bindings_cols.put (col_titles.count, bindings_csr.item)
+						end
+					end
+				end
+			end
+
+			-- populate values for each terminology
+			populate_values_for_terminology
+
+			if attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
+				across opt.component_terminologies as terminologies_csr loop
+					terminology_stack.extend (terminologies_csr.item)
+
+					-- add a row for the relevant terminology
+					evx_values_grid.add_row (terminologies_csr.key)
+					evx_values_grid.set_last_row_label_col (Value_sets_grid_col_code, terminologies_csr.key, Void, Void, Id_code_color, get_icon_pixmap ("archetype/term_rel_part_of"))
+
+					populate_values_for_terminology
+					terminology_stack.remove
+				end
+			end
+
+			evx_values_grid.ev_grid.unlock_update
+
+			-- set col titles
+			evx_values_grid.set_column_titles (col_titles)
+			evx_values_grid.resize_columns_to_content_and_fit (Value_grid_fixed_cols)
+		end
+
+	Value_grid_fixed_cols: ARRAYED_LIST [INTEGER]
+		do
+			create Result.make (0)
+			Result.extend (Value_sets_grid_col_code)
+		end
+
+	populate_values_for_terminology
+			-- populate values for current terminology on stack
+		local
+			ev_last_row: EV_GRID_ROW
+			term_color: EV_COLOR
+		do
 			-- value sets
 			across terminology.value_sets as vsets_csr loop
 				evx_values_grid.add_row (vsets_csr.item)
@@ -418,26 +502,6 @@ feature {NONE} -- Implementation
 					populate_value_row (at_codes_csr.item, term_color)
 				end
 			end
-
-			evx_values_grid.ev_grid.unlock_update
-
-			-- set grid titles
-			create col_titles.make (0)
-			col_titles.append (Value_sets_grid_col_names.linear_representation)
-			across terminologies as terminologies_csr loop
-				col_titles.extend (terminologies_csr.item)
-			end
-			evx_values_grid.set_column_titles (col_titles)
-			evx_values_grid.resize_columns_to_content_and_fit (Value_grid_fixed_cols)
-		end
-
-	Value_grid_fixed_cols: ARRAYED_LIST [INTEGER]
-		do
-			create Result.make (0)
-			Result.extend (Value_sets_grid_col_code)
-			across terminologies as terminologies_csr loop
-				Result.extend (Value_sets_grid_col_max + terminologies.count)
-			end
 		end
 
 	populate_value_row (a_code: STRING; key_item_colour: EV_COLOR)
@@ -448,12 +512,12 @@ feature {NONE} -- Implementation
 		do
 			check attached selected_language end
 
-			term_def := safe_source.flat_archetype.terminology.term_definition (selected_language, a_code)
+			term_def := terminology.term_definition (selected_language, a_code)
 			evx_values_grid.set_last_row_label_col (Value_sets_grid_col_code, a_code, Void, Void, key_item_colour, Void)
 			check attached evx_values_grid.last_row as lr then
 				ev_row := lr
 			end
-			if editing_enabled and specialisation_depth_from_code (a_code) = source_archetype.specialisation_depth then
+			if editing_enabled and specialisation_depth_from_code (a_code) = terminology.specialisation_depth then
 				evx_values_grid.set_last_row_label_col_editable (Value_sets_grid_col_text, term_def.text, Void, Void, Void, Void, agent update_term_text (a_code, ev_row))
 				evx_values_grid.set_last_row_label_col_editable (Value_sets_grid_col_description, term_def.description, Void, Void, Void, Void, agent update_term_description (a_code, ev_row))
 			else
@@ -468,31 +532,13 @@ feature {NONE} -- Implementation
 				else
 					create binding_str.make_empty
 				end
-				evx_values_grid.set_last_row_label_col (Value_sets_grid_col_description + terminologies_csr.cursor_index, binding_str, Void, Void, Binding_color, Void)
+				evx_id_terms_grid.set_last_row_label_col (terminology_bindings_col (terminologies_csr.item), binding_str, Void, Void, Binding_color, Void)
 			end
 		end
 
 	terminologies: ARRAYED_SET [STRING]
-		attribute
-			create Result.make (0)
-		end
-
-	term_definition_header: ARRAY [STRING]
-			-- generate a set of heading strings for terminology table in ontology viewer
-		local
-			al: ARRAYED_LIST [STRING]
 		do
-			-- populate column titles
-			create al.make (3)
-			al.extend ("code")
-
-			-- term attribute names - text and description
-			al.append (archetype_term_keys)
-
-			-- terminology names
-			al.append (terminologies)
-
-			Result := al.to_array
+			Result := terminology.terminologies_available
 		end
 
 	do_display
