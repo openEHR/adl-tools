@@ -64,28 +64,19 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 			if attached arch_node then
-				-- OPT case
-				if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype as opt then
-					if display_settings.show_technical_view then
-						Result := arch_node.archetype_ref
-					else
-						Result := (create {ARCHETYPE_HRID}.make_from_string (arch_node.archetype_ref)).concept_id
-					end
 
-				-- source template case
-				else
-					if display_settings.show_technical_view then
-						Result := (create {ARCHETYPE_HRID}.make_from_string (arch_node.archetype_ref)).concept_id
-					else
-						-- we go back up to the owning C_OBJECT, to access the correct flat terminology
-						check attached parent as ca_ui and then attached ca_ui.parent as parent_co_ui then
-							Result := parent_co_ui.ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text
-						end
-					end
+				-- Get the text for the id-code on this node, which is defined in the terminology of the C_OBJECT one level back up
+				-- so - we go back up to the owning C_OBJECT, to access the correct flat terminology
+				check attached parent as ca_ui and then attached ca_ui.parent as parent_co_ui then
+					Result := parent_co_ui.ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text.twin
 				end
 
 				if display_settings.show_codes then
 					Result := annotated_code (arch_node.node_id, Result, " ")
+				end
+
+				if display_settings.show_technical_view then
+					Result.append (" [" + arch_node.archetype_ref + "]")
 				end
 			end
 		end

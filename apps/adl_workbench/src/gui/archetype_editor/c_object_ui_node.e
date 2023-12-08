@@ -290,19 +290,17 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 			if attached arch_node then
-				if is_id_code (arch_node.node_id) then
-					if not arch_node.node_id.is_equal (Primitive_node_id) then
-						if ui_graph_state.flat_terminology.has_id_code (arch_node.node_id) then
-							Result := ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text
-							if display_settings.show_codes then
-								Result := annotated_code (arch_node.node_id, Result, " ")
-							end
-						elseif display_settings.show_codes then
-							Result := arch_node.node_id
+				if not arch_node.node_id.is_equal (Primitive_node_id) then
+					if ui_graph_state.flat_terminology.has_id_code (arch_node.node_id) then
+						Result := ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text.twin
+						if display_settings.show_codes then
+							Result := annotated_code (arch_node.node_id, Result, " ")
 						end
-					else
-						-- nothing special to do
+					elseif display_settings.show_codes then
+						Result := arch_node.node_id
 					end
+				else
+					-- nothing special to do
 				end
 			end
 		end
