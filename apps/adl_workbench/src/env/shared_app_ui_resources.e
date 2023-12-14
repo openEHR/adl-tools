@@ -207,6 +207,13 @@ feature -- Definitions: Resource paths
 
 feature -- Definitions: Colours
 
+	archetype_default_color: EV_COLOR
+			-- foreground colour for inherited RM attributes and typenames in the UI
+			-- BLACK
+		once
+			create Result.make_with_8_bit_rgb (0x0, 0x0, 0x0)
+		end
+
 	archetype_rm_type_inherited_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
 			-- LIGHT GREY
@@ -226,6 +233,13 @@ feature -- Definitions: Colours
 			-- VERY DARK BLUE
 		once
 			create Result.make_with_8_bit_rgb (0, 0, 0x99)
+		end
+
+	archetype_generated_color: EV_COLOR
+			-- foreground colour for generated archetypes in the explorer
+			-- DARK GREY
+		once
+			create Result.make_with_8_bit_rgb (0x64, 0x64, 0x64)
 		end
 
 	archetyped_attribute_color: EV_COLOR

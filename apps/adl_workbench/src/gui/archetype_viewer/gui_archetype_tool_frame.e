@@ -326,10 +326,12 @@ feature {NONE} -- Implementation
 	populate_primary_source_indicator
 			-- populate primary source button, which is the inverse of the is_generated flag
 		do
-			if attached auth_source as att_source and then att_source.file_mgr.is_source_generated then
-				tool_bar.deactivate_tool_bar_button (ev_primary_source_button)
-			else
-				tool_bar.activate_tool_bar_button (ev_primary_source_button)
+			if attached auth_source as att_source then
+				if att_source.is_generated then
+					tool_bar.deactivate_tool_bar_button (ev_primary_source_button)
+				else
+					tool_bar.activate_tool_bar_button (ev_primary_source_button)
+				end
 			end
 		end
 

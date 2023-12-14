@@ -152,6 +152,15 @@ feature -- Identification
 			Id_set: id = an_id
 		end
 
+	is_generated: BOOLEAN
+		do
+			Result := if attached differential_archetype as arch then
+				arch.is_generated
+			else
+				file_mgr.is_source_generated
+			end
+		end
+
 feature {ARCH_LIB_ARCHETYPE} -- Compilation
 
 	compile_actions: HASH_TABLE [PROCEDURE [ARCH_LIB_ARCHETYPE, TUPLE], INTEGER]

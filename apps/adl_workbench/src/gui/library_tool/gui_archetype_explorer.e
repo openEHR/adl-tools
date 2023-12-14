@@ -252,6 +252,9 @@ feature {NONE} -- Implementation
 				create tooltip.make_empty
 
 				if attached {ARCH_LIB_ARCHETYPE} aci as aca then -- archetype / template node
+					-- set default colour to black
+					col := archetype_default_color
+
 					-- text
 					id_str := aca.semantic_id
 					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} aca as auth_aca then
@@ -282,6 +285,11 @@ feature {NONE} -- Implementation
 						-- colour reference archetypes using RM colours
 						if auth_aca.file_mgr.is_reference_archetype then
 							col := archetype_rm_type_color
+						end
+
+						-- colour generated differently
+						if auth_aca.is_generated then
+							col := archetype_generated_color
 						end
 					end
 
