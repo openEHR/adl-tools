@@ -23,12 +23,9 @@ create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
 
 feature -- Definitions
 
-	Source_template_overlay_divider: IMMUTABLE_STRING_8
-		once
-			create Result.make_from_string ("-------------------------------------------------------------%N")
-		end
+	Source_template_overlay_divider: IMMUTABLE_STRING_8 = "-------------------------------------------------------------%N"
 
-	Overlay_differential_not_available: STRING = "Overlay differential_serialised not generated for "
+	Overlay_differential_not_available: IMMUTABLE_STRING_8 = "Overlay differential_serialised not generated for "
 
 feature -- Initialisation
 
