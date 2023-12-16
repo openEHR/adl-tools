@@ -168,6 +168,10 @@ feature -- Commands
 			execution_state = es_initial
 		end
 
+	build_artefact (ara: ARCH_LIB_ARCHETYPE)
+		deferred
+		end
+
 feature {NONE} -- Commands
 
 	do_setup_build (args: like build_args_type)

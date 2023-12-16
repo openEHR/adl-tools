@@ -538,7 +538,7 @@ feature {NONE} -- Tests
 
 			Result := test_failed
 			if not target.compile_attempted then
-				archetype_compiler.build_lineage (target, 0)
+				archetype_compiler.build_artefact (target)
 			end
 			if target.is_valid then
 				Result := test_passed

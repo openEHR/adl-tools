@@ -951,7 +951,7 @@ feature -- Archetype viewers
 
 	display_archetype (aca: ARCH_LIB_ARCHETYPE)
 		do
-			do_with_wait_cursor (Current, agent archetype_compiler.build_lineage (aca, 0))
+			do_with_wait_cursor (Current, agent archetype_compiler.build_artefact (aca))
 			archetype_viewers.populate_active_tool (aca)
 			archetype_viewers.active_tool.on_select_notebook
 		end

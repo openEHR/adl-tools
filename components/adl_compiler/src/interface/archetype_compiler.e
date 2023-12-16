@@ -78,25 +78,22 @@ feature -- Notifications
 
 feature -- Commands
 
-	build_lineage (ara: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
-			-- Build the archetypes in the lineage containing `ara', except those that seem to be built already.
-			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
-			-- dependency depth indicates how many dependency relationships away from original artefact
-		local
-			prev_state: INTEGER
+	build_artefact (ara: ARCH_LIB_ARCHETYPE)
 		do
-			prev_state := execution_state
-			change_state_to (es_building)
-			current_library.do_archetype_lineage (ara, agent check_file_system_currency (?))
-			current_library.do_archetype_lineage (ara, agent build_archetype (?, dependency_depth))
-			change_state_to (prev_state)
-			notify_build_activity
+			run_list.wipe_out
+			build_lineage (ara, 0)
 		end
 
 feature {NONE} -- Build State
 
 	from_scratch: BOOLEAN
 			-- build parameter indicating to rebuild all archetypes from scratch
+
+	run_list: ARRAYED_SET[ARCH_LIB_ARCHETYPE]
+			-- list of archetypes attempted in the current compile run
+		attribute
+			create Result.make (0)
+		end
 
 feature {NONE} -- Commands
 
@@ -160,6 +157,21 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	build_lineage (ara: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
+			-- Build the archetypes in the lineage containing `ara', except those that seem to be built already.
+			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
+			-- dependency depth indicates how many dependency relationships away from original artefact
+		local
+			prev_state: INTEGER
+		do
+			prev_state := execution_state
+			change_state_to (es_building)
+			current_library.do_archetype_lineage (ara, agent check_file_system_currency (?))
+			current_library.do_archetype_lineage (ara, agent build_archetype (?, dependency_depth))
+			change_state_to (prev_state)
+			notify_build_activity
+		end
+
 	build_archetype (ara: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
 			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
 		local
@@ -167,6 +179,8 @@ feature {NONE} -- Implementation
 			build_status, exc_trace_str: STRING
 		do
 			create build_status.make_empty
+			run_list.extend (ara)
+
 			if dependency_depth <= max_dependency_depth then
 				if not is_interrupted then
 					if not exception_encountered then
@@ -188,8 +202,8 @@ feature {NONE} -- Implementation
 							-- external references) to compile first
 							if ara.compilation_state = Cs_suppliers_known then
 								across ara.suppliers_index as suppliers_csr loop
-									-- allow supplier loops, so avoid cycling back into current archetype
-									if suppliers_csr.item /= ara then
+									-- avoid recompiling same artefacts again due to cycles in dependency graph
+									if not run_list.has (suppliers_csr.item) then
 										build_lineage (suppliers_csr.item, dependency_depth + 1)
 									end
 								end

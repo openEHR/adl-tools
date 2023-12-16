@@ -51,6 +51,13 @@ feature {NONE} -- Initialisation
 		do
 		end
 
+feature -- Commands
+
+	build_artefact (ara: ARCH_LIB_ARCHETYPE)
+		do
+			export_archetype (ara)
+		end
+
 feature {NONE} -- Commands
 
 	do_setup_build (args: like build_args_type)
