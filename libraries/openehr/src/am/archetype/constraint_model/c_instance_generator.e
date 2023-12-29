@@ -431,18 +431,18 @@ feature {NONE} -- Implementation
 					-- deal with true primitive types
 					elseif bmm_prop_csr.item.bmm_type.is_primitive then
 						-- date/times
-						if prop_type.is_case_insensitive_equal ("Date") or a_node.rm_type_name.is_case_insensitive_equal ("Date_value") then
+						if prop_type.is_case_insensitive_equal ("Date") then
 							val := create {ISO8601_DATE}.make_date (create {DATE}.make_now)
-						elseif prop_type.is_case_insensitive_equal ("Date_time") or a_node.rm_type_name.is_case_insensitive_equal ("Date_time_value") then
+						elseif prop_type.is_case_insensitive_equal ("Date_time") then
 							create iso_dt
 							iso_dt.clear_fractional_second
 							val := iso_dt
-						elseif prop_type.is_case_insensitive_equal ("Time") or a_node.rm_type_name.is_case_insensitive_equal ("Time_value")  then
+						elseif prop_type.is_case_insensitive_equal ("Time") then
 							create iso_t
 							iso_t.clear_fractional_second
 							val := iso_t
 
-						elseif prop_type.is_case_insensitive_equal ("Duration") or a_node.rm_type_name.is_case_insensitive_equal ("Duration_value")  then
+						elseif prop_type.is_case_insensitive_equal ("Duration") then
 							val := create {ISO8601_DURATION}.make_from_string ("PT2H")
 
 						-- Strings
@@ -534,6 +534,7 @@ feature {NONE} -- Implementation
 			create attrs_list.make(0)
 			attrs_list.compare_objects
 			attrs_list.extend ("code")
+			attrs_list.extend ("result_time")
 			Result.put (attrs_list, "Element")
 		end
 
