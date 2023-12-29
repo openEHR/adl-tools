@@ -515,12 +515,13 @@ templates = <
 		["annotations_text"] = <"Annotations">
 		["inheritance_status_text"] = <"Inheritance status: ">
 
-		["definition_grid_col_meaning_text"] = <"Meaning">
 		["definition_grid_col_rm_name_text"] = <"RM name">
+		["definition_grid_col_meaning_text"] = <"Meaning">
+		["definition_grid_col_constraint_text"] = <"Constraint">
 		["definition_grid_col_existence_text"] = <"Existence">
 		["definition_grid_col_card_occ_text"] = <"Card/Occ">
 		["definition_grid_col_sibling_order_text"] = <"Order">
-		["definition_grid_col_constraint_text"] = <"Constraint">
+		["definition_grid_col_loinc_text"] = <"LOINC">
 
 		["rules_grid_col_expr_type_text"] = <"Expression tree">
 		["rules_grid_col_expr_value_text"] = <"Expression value">

@@ -151,6 +151,12 @@ feature -- Display
 						s.append ("%N" + local_term_string (arch_node.sibling_order.sibling_node_id))
 						evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, Void, c_constraint_colour, Void)
 					end
+
+					-- LOINC column
+					if ui_graph_state.flat_terminology.has_term_binding (Loinc_terminology_id, arch_node.node_id) then
+						s := ui_graph_state.flat_terminology.term_binding (Loinc_terminology_id, arch_node.node_id).as_string
+						evx_grid.set_last_row_label_col (Definition_grid_col_loinc, s, Void, Void, Binding_color, Void)
+					end
 				else
 					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, Void, Void, Void, Void, rm_type_pixmap (rm_type, not display_settings.show_technical_view))
 				end

@@ -62,9 +62,10 @@ feature -- Definitions: Archetype viewer
 	Definition_grid_col_existence: INTEGER = 4
 	Definition_grid_col_card_occ: INTEGER = 5
 	Definition_grid_col_sibling_order: INTEGER = 6
+	Definition_grid_col_loinc: INTEGER = 7
 	Definition_grid_col_max: INTEGER
 		once ("PROCESS")
-			Result := Definition_grid_col_sibling_order
+			Result := Definition_grid_col_loinc
 		end
 
 	Definition_grid_col_names: HASH_TABLE [STRING, INTEGER]
@@ -76,6 +77,7 @@ feature -- Definitions: Archetype viewer
 			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_definition_grid_col_existence_text), Definition_grid_col_existence)
 			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_definition_grid_col_card_occ_text), Definition_grid_col_card_occ)
 			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_definition_grid_col_sibling_order_text), Definition_grid_col_sibling_order)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_definition_grid_col_loinc_text), Definition_grid_col_loinc)
 		end
 
 	Rules_grid_col_expr_type: INTEGER = 1

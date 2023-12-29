@@ -18,6 +18,8 @@ feature -- Definitions
 			-- predefined id of terminology to indicate it is local to
 			-- the knowledge resource in which it occurs, e.g. an archetype
 
+	Loinc_terminology_id: STRING = "LOINC"
+
 	Locatable_node_attribute: STRING = "archetype_node_id"
 			-- name of RM attribute that carries the node id from an archetype node
 

@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (940)
+			create message_table.make (941)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -731,12 +731,13 @@ feature -- Initialisation
 			message_table.put ("(REMOVED)", ec_occurrences_removed_text)
 			message_table.put ("Annotations", ec_annotations_text)
 			message_table.put ("Inheritance status: ", ec_inheritance_status_text)
-			message_table.put ("Meaning", ec_definition_grid_col_meaning_text)
 			message_table.put ("RM name", ec_definition_grid_col_rm_name_text)
+			message_table.put ("Meaning", ec_definition_grid_col_meaning_text)
+			message_table.put ("Constraint", ec_definition_grid_col_constraint_text)
 			message_table.put ("Existence", ec_definition_grid_col_existence_text)
 			message_table.put ("Card/Occ", ec_definition_grid_col_card_occ_text)
 			message_table.put ("Order", ec_definition_grid_col_sibling_order_text)
-			message_table.put ("Constraint", ec_definition_grid_col_constraint_text)
+			message_table.put ("LOINC", ec_definition_grid_col_loinc_text)
 			message_table.put ("Expression tree", ec_rules_grid_col_expr_type_text)
 			message_table.put ("Expression value", ec_rules_grid_col_expr_value_text)
 			message_table.put ("Assumed", ec_assumed_text)
