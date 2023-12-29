@@ -108,7 +108,7 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 
 \[{ADL_14_AC_CODE}\] {
 		out_buffer.append_character ('[')
-		output_new_at_ac_code (text_substring (2, text_count - 1))
+		output_new_value_set_code (text_substring (2, text_count - 1))
 		out_buffer.append_character (']')
 	}
 
@@ -155,7 +155,7 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 
 	\[local::{ADL_14_AT_CODE}\] {						-- ADL codes
 		out_buffer.append ("[local::")
-		output_new_at_ac_code (text_substring (9, text_count-1))
+		output_new_value_code (text_substring (9, text_count-1))
 		out_buffer.append_character (']')
 	}
 
@@ -199,7 +199,7 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 -- single line version
 \[local::{ADL_14_AT_CODE}\] {						-- ADL codes
 	out_buffer.append ("[local::")
-	output_new_at_ac_code (text_substring (9, text_count-1))
+	output_new_value_code (text_substring (9, text_count-1))
 	out_buffer.append_character (']')
 }
 
@@ -210,7 +210,7 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 
 <IN_ADL_VALUE_SET_DEF> {
 	{ADL_14_AT_CODE} { -- match second last line with ';' termination (assumed value)
-		output_new_at_ac_code (text)
+		output_new_value_code (text)
 	}
 
 	[ \n\t,;]+	out_buffer.append (text)
@@ -345,7 +345,7 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 ----------/* strings */ -------------------------------------------------
 \"{ADL_14_AT_CODE}\" {			-- can occur in some string data
 		out_buffer.append_character ('"')
-		output_new_at_ac_code (text_substring (2, text_count - 1))
+		output_new_value_code (text_substring (2, text_count - 1))
 		out_buffer.append_character ('"')
 	}
 
@@ -455,27 +455,43 @@ feature {NONE} -- Implementation
 			if converted_codes.has (an_old_code) and then attached converted_codes.item (an_old_code) as nc then
 				new_code := nc
 			else
-				new_code := adl_14_id_code_converted (an_old_code)
+				new_code := adl_14_id_code_upgraded (an_old_code)
 				converted_codes.put (new_code, an_old_code)
 			end
 			out_buffer.append (new_code)
 		end
 
-	output_new_at_ac_code (an_old_code: STRING)
+	output_new_value_code (an_old_code: STRING)
 		local
 			new_code: STRING
 		do
 			if converted_codes.has (an_old_code) and then attached converted_codes.item (an_old_code) as nc then
 				new_code := nc
 			else
-				new_code := adl_14_code_renumbered (an_old_code)
+				new_code := adl_14_value_code_upgraded (an_old_code)
 				converted_codes.put (new_code, an_old_code)
 			end
 
 			out_buffer.append (new_code)
 		end
 
-	output_converted_code_dt_key (an_old_code: STRING)
+	output_new_value_set_code (an_old_code: STRING)
+		local
+			new_code: STRING
+		do
+			if converted_codes.has (an_old_code) and then attached converted_codes.item (an_old_code) as nc then
+				new_code := nc
+			else
+				new_code := adl_14_value_set_code_upgraded (an_old_code)
+				converted_codes.put (new_code, an_old_code)
+			end
+
+			out_buffer.append (new_code)
+		end
+
+	output_converted_code_dt_key (an_old_code: STRING; )
+			-- code should exist in converted_codes list; if not, output an invalid code, which will
+			-- cause later compilation to fail
 		local
 			new_code: STRING
 		do
@@ -484,8 +500,7 @@ feature {NONE} -- Implementation
 			if converted_codes.has (an_old_code) and then attached converted_codes.item (an_old_code) as nc then
 				new_code := nc
 			else
-				new_code := adl_14_code_renumbered (an_old_code)
-				converted_codes.put (new_code, an_old_code)
+				new_code := an_old_code + " not found in definition"
 			end
 			out_buffer.append (new_code)
 			out_buffer.append_character ('"')

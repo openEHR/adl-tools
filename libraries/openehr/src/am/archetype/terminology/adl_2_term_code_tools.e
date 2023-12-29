@@ -571,12 +571,12 @@ feature -- Conversion
 			Result.append_character (Annotated_code_text_delimiter)
 		end
 
-	adl_14_id_code_converted (an_adl_14_code: STRING): STRING
+	adl_14_id_code_upgraded (an_adl_14_code: STRING): STRING
 			-- convert the lead numeric part of an ADL 1.4 at-code that has a level 0 part,
 			-- and is being used as an id-code. Convert via `adl_14_code_renumbered' and then
 			-- change leader from `at' to `id'; this adds 1 to the top part of the code
 		do
-			Result := adl_14_code_renumbered (an_adl_14_code)
+			Result := adl_14_code_upgraded (an_adl_14_code, True)
 			Result.replace_substring (Id_code_leader, 1, 2)
 		end
 
@@ -598,7 +598,7 @@ feature -- Conversion
 					rpos := text_lpos
 				end
 				at_code := an_adl_14_path.substring (lpos+1, rpos-1)
-				Result.replace_substring_all (at_code, adl_14_id_code_converted (at_code))
+				Result.replace_substring_all (at_code, adl_14_id_code_upgraded (at_code))
 				lpos := an_adl_14_path.index_of ('[', rpos)
 			end
 		end
@@ -622,38 +622,33 @@ feature -- Conversion
 					rpos := text_lpos
 				end
 				at_code := an_adl_2_path.substring (lpos+1, rpos-1)
-				Result.replace_substring_all (at_code, adl_15_id_code_converted (at_code))
+				Result.replace_substring_all (at_code, adl_15_id_code_down_converted (at_code))
 				lpos := an_adl_2_path.index_of ('[', rpos)
 			end
 		end
 
-	adl_14_code_renumbered (an_adl_14_code: STRING): STRING
-			-- convert the lead numeric part of an ADL 1.4 code that has a level 0 part, by:
-			--
+	adl_14_value_code_upgraded (an_adl_14_code: STRING): STRING
+			-- convert the lead numeric part of an ADL 1.4 at-code that is used as a value code
 			-- removing leading '0's in top level code part ('0001' in at0001.3.1), if applicable
-			-- renumbering to be 1 higher (at0001.3.1 => at2.3.1)
-		local
-			dot_pos: INTEGER
-			level_0_numeric_part: STRING
+			-- do not renumber
 		do
-			dot_pos := an_adl_14_code.index_of ('.', 3)
-			if dot_pos = 0 or dot_pos > 6 then
-				level_0_numeric_part := (an_adl_14_code.substring (3, 6).to_integer_32 + 1).out
-				create Result.make_from_string (an_adl_14_code.substring (1,2))
-				Result.append (level_0_numeric_part)
-				if an_adl_14_code.count > 6 then
-					Result.append (an_adl_14_code.substring (7, an_adl_14_code.count))
-				end
-			else
-				create Result.make_from_string (an_adl_14_code)
-			end
+			Result := adl_14_code_upgraded (an_adl_14_code, False)
 		end
 
-	adl_15_id_code_converted (an_adl_15_code: STRING): STRING
+	adl_14_value_set_code_upgraded (an_adl_14_code: STRING): STRING
+			-- convert the lead numeric part of an ADL 1.4 ac-code that has a level 0 part, by:
+			--
+			-- removing leading '0's in top level code part ('0001' in at0001.3.1), if applicable
+			-- add 1 to the code value
+		do
+			Result := adl_14_code_upgraded (an_adl_14_code, True)
+		end
+
+	adl_15_id_code_down_converted (an_adl_15_code: STRING): STRING
 			-- convert the lead numeric part of an ADL 1.5 code to an ADL 1.4 at-code
 		local
 			end_pos, dot_pos, level_0_numeric_part: INTEGER
-			packed_level_0_numeric, level_0_numeric_part_str: STRING
+			packed_level_0_numeric, level_0_numeric_part_str, code_leader: STRING
 		do
 			if an_adl_15_code.item (3) = '0' then
 				create Result.make_from_string (an_adl_15_code)
@@ -662,7 +657,12 @@ feature -- Conversion
 				dot_pos := an_adl_15_code.index_of ('.', 3)
 				end_pos := if dot_pos = 0 then an_adl_15_code.count else dot_pos - 1 end
 				level_0_numeric_part := an_adl_15_code.substring (3, end_pos).to_integer_32
-				level_0_numeric_part := level_0_numeric_part - 1
+				code_leader := an_adl_15_code.substring (1, 2)
+
+				-- if it's not an at-code, i.e. it's an id- or ac-code, subtract 1 from the code value
+				if not code_leader.is_equal (Value_code_leader) then
+					level_0_numeric_part := level_0_numeric_part - 1
+				end
 				level_0_numeric_part_str := level_0_numeric_part.out
 				create packed_level_0_numeric.make_filled ('0', 4 - level_0_numeric_part_str.count)
 				packed_level_0_numeric.append (level_0_numeric_part_str)
@@ -744,6 +744,28 @@ feature {NONE} -- Implementation
 				i := i + 1
 			end
 			Result.append ((a_highest_code + 1).out)
+		end
+
+	adl_14_code_upgraded (an_adl_14_code: STRING; add_one: BOOLEAN): STRING
+			-- convert the lead numeric part of an ADL 1.4 code that has a level 0 part, by:
+			--
+			-- removing leading '0's in top level code part ('0001' in at0001.3.1), if applicable
+			-- if `add_one`, renumbering to be 1 higher (at0001.3.1 => at2.3.1)
+		local
+			dot_pos: INTEGER
+			level_0_numeric_part: STRING
+		do
+			dot_pos := an_adl_14_code.index_of ('.', 3)
+			if dot_pos = 0 or dot_pos > 6 then
+				level_0_numeric_part := (an_adl_14_code.substring (3, 6).to_integer_32 + if add_one then 1 else 0 end).out
+				create Result.make_from_string (an_adl_14_code.substring (1,2))
+				Result.append (level_0_numeric_part)
+				if an_adl_14_code.count > 6 then
+					Result.append (an_adl_14_code.substring (7, an_adl_14_code.count))
+				end
+			else
+				create Result.make_from_string (an_adl_14_code)
+			end
 		end
 
 end
