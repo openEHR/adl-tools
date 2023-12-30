@@ -79,6 +79,7 @@ feature -- Notifications
 feature -- Commands
 
 	build_artefact (ara: ARCH_LIB_ARCHETYPE)
+			-- top entry point into a compile run
 		do
 			run_list.wipe_out
 			build_lineage (ara, 0)
@@ -173,7 +174,7 @@ feature {NONE} -- Implementation
 		end
 
 	build_archetype (ara: ARCH_LIB_ARCHETYPE; dependency_depth: INTEGER)
-			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
+			-- Build `ara' if `from_scratch' is true, or if it is has changed since it was last successfully built.
 		local
 			exception_encountered: BOOLEAN
 			build_status, exc_trace_str: STRING
@@ -212,6 +213,8 @@ feature {NONE} -- Implementation
 								-- that the archetype was not already compiled due to being in a supplier lineage
 								if ara.compilation_state /= cs_validated then
 									ara.signal_suppliers_compiled
+
+									-- Now complete compilation steps after state Cs_suppliers_known
 									ara.compile
 								end
 							end

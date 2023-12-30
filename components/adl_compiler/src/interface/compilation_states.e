@@ -11,6 +11,7 @@ class COMPILATION_STATES
 
 feature -- Definitions
 
+	-- Non-terminal states
 	Cs_unread: INTEGER = 0
 	Cs_lineage_known: INTEGER = 10
 	Cs_ready_to_parse: INTEGER = 20
@@ -20,7 +21,11 @@ feature -- Definitions
 	Cs_ready_to_validate: INTEGER = 40
 	Cs_validated_phase_1: INTEGER = 51
 	Cs_validated_phase_2: INTEGER = 52
+
+	-- Terminal success states
 	Cs_validated: INTEGER = 53
+
+	-- Terminal fail states
 	Cs_invalid: INTEGER = -1
 	Cs_lineage_invalid: INTEGER = -10
 	Cs_supplier_loop: INTEGER = -15
