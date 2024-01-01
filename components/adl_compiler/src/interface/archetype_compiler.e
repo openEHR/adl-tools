@@ -125,6 +125,7 @@ feature {NONE} -- Commands
 	do_build_all
 			-- Build the whole system, but not artefacts that seem to be built already.
 		do
+			run_list.wipe_out
 			current_library.do_all_archetypes (agent check_file_system_currency (?))
 			current_library.do_all_archetypes (agent build_archetype (?, 0))
 		end
@@ -191,7 +192,7 @@ feature {NONE} -- Implementation
 								call_console_update_agent (get_msg_line ({ADL_MESSAGES_IDS}.ec_compiler_compiling_archetype, <<ara.artefact_type.as_upper, ara.id.physical_id>>))
 							end
 
-							-- first phase
+							-- first phase: compile self; populate suppliers list
 							ara.compile
 
 							-- check for id change due to compilation of ADL 1.4 archetype
@@ -200,8 +201,8 @@ feature {NONE} -- Implementation
 							end
 
 							-- second phase - needed if there are suppliers (i.e. slot-fillers or plain
-							-- external references) to compile first
-							if ara.compilation_state = Cs_suppliers_known then
+							-- external references) to compile
+							if ara.compilation_state = Cs_validated_self then
 								across ara.suppliers_index as suppliers_csr loop
 									-- avoid recompiling same artefacts again due to cycles in dependency graph
 									if not run_list.has (suppliers_csr.item) then
@@ -209,14 +210,8 @@ feature {NONE} -- Implementation
 									end
 								end
 
-								-- continue compilation - remaining steps after suppliers compilation; we check
-								-- that the archetype was not already compiled due to being in a supplier lineage
-								if ara.compilation_state /= cs_validated then
-									ara.signal_suppliers_compiled
-
-									-- Now complete compilation steps after state Cs_suppliers_known
-									ara.compile
-								end
+								-- determine if we get to final validation state, depending on situation with supplier compilation
+								ara.signal_suppliers_compiled
 							end
 
 							call_archetype_visual_update_agent (ara)

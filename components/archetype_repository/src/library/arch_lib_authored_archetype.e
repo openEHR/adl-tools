@@ -87,7 +87,7 @@ feature {NONE} -- Initialisation
 			differential_archetype := a_diff_arch
 
 			reset
-			compilation_state := Cs_validated
+			compilation_state := cs_validated_closure
 			save_differential_text
 		ensure
 			id_set: id = an_id
@@ -121,7 +121,7 @@ feature {NONE} -- Initialisation
 			parent_ref := a_parent.archetype_id.semantic_id
 
 			reset
-			compilation_state := Cs_validated
+			compilation_state := cs_validated_closure
 			save_differential_text
 		ensure
 			Is_specialised: is_specialised

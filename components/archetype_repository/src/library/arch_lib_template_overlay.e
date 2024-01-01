@@ -71,12 +71,12 @@ feature {NONE} -- Initialisation
 			create file_mgr.make (id, alt.file_mgr)
 
 			reset
-			compilation_state := Cs_validated
+			compilation_state := cs_validated_closure
 			template := alt
 		ensure
 			Id_set: id = an_id
 			Archetype_attached: attached differential_archetype
-			Compilation_state: compilation_state = Cs_validated
+			Compilation_state: compilation_state = cs_validated_closure
 		end
 
 feature -- Artefacts

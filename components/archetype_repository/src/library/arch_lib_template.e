@@ -91,7 +91,7 @@ feature -- Artefacts
 	operational_template: OPERATIONAL_TEMPLATE
 			-- inheritance-flattened form of archetype
 		require
-			compilation_state = Cs_validated
+			compilation_state = cs_validated_closure
 		do
 			if operational_template_cache = Void or last_include_rm then
 				expand (False)
@@ -104,7 +104,7 @@ feature -- Artefacts
 	operational_template_with_rm: OPERATIONAL_TEMPLATE
 			-- inheritance-flattened form of archetype
 		require
-			compilation_state = Cs_validated
+			compilation_state = cs_validated_closure
 		do
 			if operational_template_cache = Void or not last_include_rm then
 				expand (True)
@@ -117,7 +117,7 @@ feature -- Artefacts
 	operational_template_serialised (include_rm: BOOLEAN): STRING
 			-- The serialised text of the flat form of the archetype
 		require
-			compilation_state = Cs_validated
+			compilation_state = cs_validated_closure
 		do
 			if include_rm then
 				Result := adl_2_engine.serialise_native (operational_template_with_rm, Syntax_type_adl, current_archetype_language)

@@ -17,13 +17,13 @@ feature -- Definitions
 	Cs_ready_to_parse: INTEGER = 20
 	Cs_ready_to_parse_legacy: INTEGER = 21
 	Cs_parsed: INTEGER = 22
-	Cs_suppliers_known: INTEGER = 30
 	Cs_ready_to_validate: INTEGER = 40
 	Cs_validated_phase_1: INTEGER = 51
 	Cs_validated_phase_2: INTEGER = 52
 
 	-- Terminal success states
-	Cs_validated: INTEGER = 53
+	cs_validated_self: INTEGER = 53
+	cs_validated_closure: INTEGER = 54
 
 	-- Terminal fail states
 	Cs_invalid: INTEGER = -1
@@ -45,11 +45,13 @@ feature -- Access
 			Result.put("Ready to parse", Cs_ready_to_parse)
 			Result.put("Ready to parse (legacy .adl archetype)", cs_ready_to_parse_legacy)
 			Result.put("Parsed", Cs_parsed)
-			Result.put("Suppliers known", Cs_suppliers_known)
 			Result.put("Ready to validate", Cs_ready_to_validate)
+			
 			Result.put("Validated phase 1", Cs_validated_phase_1)
 			Result.put("Validated phase 2", Cs_validated_phase_2)
-			Result.put("Validated", Cs_validated)
+			Result.put("Validated (self)", cs_validated_self)
+			Result.put("Validated (closure)", cs_validated_closure)
+
 			Result.put("Invalid", Cs_invalid)
 			Result.put("Supplier loop", Cs_supplier_loop)
 			Result.put("Lineage invalid", Cs_lineage_invalid)
@@ -71,7 +73,8 @@ feature -- Access
 			Result.extend(Cs_convert_legacy_failed)
 			Result.extend(cs_suppliers_invalid)
 			Result.extend(Cs_validate_failed)
-			Result.extend(Cs_validated)
+
+			Result.extend(cs_validated_closure)
 		end
 
 	Cs_initial_states: ARRAYED_LIST [INTEGER]
@@ -82,7 +85,7 @@ feature -- Access
 			Result.extend(Cs_ready_to_parse)
 			Result.extend(Cs_ready_to_parse_legacy)
 			Result.extend(Cs_ready_to_validate) -- possible for template overlays
-			Result.extend(Cs_validated) -- possible due to new in-memory creation
+			Result.extend(cs_validated_closure) -- possible due to new in-memory creation
 		end
 
 feature -- Status Report
