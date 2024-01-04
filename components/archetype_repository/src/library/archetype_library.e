@@ -481,7 +481,7 @@ feature -- Modification
 
 			if aca.is_adhoc then
 				library_access.adhoc_source.remove_archetype (aca.id.physical_id)
-			else
+			elseif library_access.source.has_archetype_with_id (aca.id.physical_id) then
 				library_access.source.remove_archetype (aca.id.physical_id)
 			end
 		ensure
