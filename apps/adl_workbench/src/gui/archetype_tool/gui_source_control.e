@@ -45,7 +45,7 @@ feature {NONE}-- Initialization
 			gui_controls.extend (evx_adl_14_converted_editor)
 
 			--------------------------- ADL2 source tab -----------------------
-			create evx_adl_source_editor.make_editable (agent adl_source_text, agent save_adl_source_editor_text)
+			create evx_adl_source_editor.make_editable (agent adl_source_text, agent save_adl2_source_editor_text)
 			ev_root_container.extend (evx_adl_source_editor.ev_root_container)
 			ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_adl_source_tab_text))
 			gui_controls.extend (evx_adl_source_editor)
@@ -268,7 +268,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	save_adl_source_editor_text (a_text: STRING)
+	save_adl2_source_editor_text (a_text: STRING)
 			-- save what is in a 1.5/1.5.1 editor pane to the differential file
 			-- and then select the archetype in the catalogue to force a recompile
 		do
