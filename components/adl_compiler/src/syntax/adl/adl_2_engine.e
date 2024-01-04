@@ -219,31 +219,27 @@ feature -- Parsing
 					then
 						arch_diff_terminology := tobj
 
-						-- build either a full archetype or an overlay
+						-- build a full archetype
 						if attached orig_lang_trans and attached res_desc then
 							new_auth_arch := build_authored_archetype (res_desc, orig_lang_trans, definition, rules_context.tree, arch_diff_terminology, annots)
 
-							-- if it is a template, iterate on the overlays, and create descriptors for those that don't already have them
+							-- if it is a template, iterate on the overlays, and create descriptors in the library
 							-- (from previous compilation)
 							if attached {TEMPLATE} new_auth_arch as tpl and attached {ARCH_LIB_TEMPLATE} aca as tpl_aca then
 								tpl_aca.clear_overlays
-								tpl.clear_overlays
 								create amp
 								across adl_parser.overlay_adl_texts as overlay_texts_csr loop -- or errors.has_errors loop								
 									-- need to do a small amount of parsing on the top of each overlay to get the archetype id and parent id
 									amp.parse_from_text (overlay_texts_csr.item, tpl_aca.id.physical_id + " @overlay " + overlay_texts_csr.target_index.out)
 									if not amp.has_errors and then attached amp.last_archetype as arch_thumbnail then
 										-- now create a descriptor for this overlay
-										if not current_library.has_archetype_with_id (arch_thumbnail.archetype_id.physical_id) then
-											if attached arch_thumbnail.parent_archetype_id as att_parent_id and then current_library.has_archetype_matching_ref (att_parent_id) then
-												create arch_lib_tpl_ovl.make (arch_thumbnail.archetype_id, att_parent_id, tpl_aca)
-												current_library.put_new_archetype (arch_lib_tpl_ovl)
-												tpl_aca.add_overlay (arch_lib_tpl_ovl, overlay_texts_csr.item, arch_thumbnail.archetype_id.physical_id)
-											else
-												errors.add_error ({ADL_MESSAGES_IDS}.ec_VTPIOV, <<tpl_aca.id.physical_id, arch_thumbnail.archetype_id.physical_id>>, generator + ".parse")
-											end
+										check not current_library.has_archetype_with_id (arch_thumbnail.archetype_id.physical_id) end
+										if attached arch_thumbnail.parent_archetype_id as att_parent_id and then current_library.has_archetype_matching_ref (att_parent_id) then
+											create arch_lib_tpl_ovl.make (arch_thumbnail.archetype_id, att_parent_id, tpl_aca)
+											current_library.put_new_archetype (arch_lib_tpl_ovl)
+											tpl_aca.add_overlay (arch_lib_tpl_ovl, overlay_texts_csr.item, arch_thumbnail.archetype_id.physical_id)
 										else
-											-- possibly check if the parent has changed
+											errors.add_error ({ADL_MESSAGES_IDS}.ec_VTPIOV, <<tpl_aca.id.physical_id, arch_thumbnail.archetype_id.physical_id>>, generator + ".parse")
 										end
 									else
 										errors.add_error ({ADL_MESSAGES_IDS}.ec_STOV, Void, generator + ".parse")
@@ -253,9 +249,13 @@ feature -- Parsing
 							if not errors.has_errors then
 								Result := new_auth_arch
 							end
+
+						-- build an overlay
 						else
 							Result := build_overlay (definition, rules_context.tree, arch_diff_terminology)
 						end
+
+					-- Terminology failed to parse
 					else
 						errors.add_error ({ADL_MESSAGES_IDS}.ec_SAON, Void, generator + ".parse")
 						errors.append (dt_object_converter.errors)
@@ -443,6 +443,27 @@ feature -- Validation
 			not validation_passed implies errors.has_errors
 		end
 
+	phase_4_validate (aca: ARCH_LIB_TEMPLATE)
+		local
+			flat_parent: detachable ARCHETYPE
+		do
+			validation_passed := False
+			if attached aca.specialisation_parent then
+				flat_parent := aca.specialisation_parent.flat_archetype
+ 			end
+
+			if attached phase_4_validator then
+				phase_4_validator.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
+			else
+				create phase_4_validator.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
+			end
+			phase_4_validator.validate
+			validation_passed := phase_4_validator.passed
+			errors := phase_4_validator.errors
+		ensure
+			not validation_passed implies errors.has_errors
+		end
+
 	post_compile_process (aca: ARCH_LIB_ARCHETYPE)
 		do
 			if attached post_compile_processor then
@@ -596,6 +617,12 @@ feature {NONE} -- Implementation
 		end
 
 	phase_3_validator: detachable AOM_PHASE_3_VALIDATOR
+		note
+			option: stable
+		attribute
+		end
+
+	phase_4_validator: detachable AOM_PHASE_4_VALIDATOR
 		note
 			option: stable
 		attribute

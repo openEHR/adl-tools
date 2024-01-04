@@ -40,10 +40,6 @@ feature -- Validation
 			reset
 			validate_c_object_proxy_references
 			validate_occurrences
-
-			if attached {TEMPLATE} target_flat as tpl then
-				validate_template_fillers
-			end
 		end
 
 feature {NONE} -- Implementation
@@ -68,12 +64,6 @@ feature {NONE} -- Implementation
 			def_it.do_all (agent do_validate_occ_enter, agent do_validate_occ_exit)
 		end
 
-	validate_template_fillers
-			-- validate template fillers as being consistent for flattenin
-		do
-			do_all_template_fillers (target_flat, 0, agent do_validate_template_filler)
-		end
-
 feature {NONE} -- Implementation
 
 	do_validate_occ_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
@@ -91,42 +81,6 @@ feature {NONE} -- Implementation
 
 	do_validate_occ_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		do
-		end
-
-	do_validate_template_filler (an_arch: ARCHETYPE)
-			-- validate a template filler as being consistent for flattening
-		do
-			-- check that there the original language of the root archetype
-			-- is among the languages of the filler
-			if not an_arch.has_language (target_flat.original_language.code_string) then
-				add_error ({ADL_MESSAGES_IDS}.ec_VTPL, <<target_flat.archetype_id.physical_id, an_arch.archetype_id.physical_id, target_flat.original_language.code_string>>)
-			end
-		end
-
-	do_all_template_fillers (a_flat_arch: ARCHETYPE; depth: INTEGER; agt: PROCEDURE [ANY, TUPLE[ARCHETYPE]])
-			-- check if fillers can be overlaid, e.g. if there is a common language etc
-		require
-			a_flat_arch.is_flat
-		local
-			matched_arch: ARCHETYPE
-		do
-			-- limit depth in case of recursive inclusion
-			if depth <= Max_template_overlay_depth then
-				across a_flat_arch.suppliers_index as xref_idx_csr loop
-					-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
-					check attached current_library.archetype_matching_ref (xref_idx_csr.key) as att_ala then
-						matched_arch := att_ala.flat_archetype
-					end
-
-					-- call the agent
-					agt (matched_arch)
-
-					-- prevent cycling due to inclusion of current archetype (FIXME: won't catch indirect recursion)
-					if not matched_arch.archetype_id.physical_id.is_equal (target_flat.archetype_id.physical_id) then
-						do_all_template_fillers (matched_arch, depth + 1, agt)
-					end
-				end
-			end
 		end
 
 end

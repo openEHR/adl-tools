@@ -228,7 +228,7 @@ feature -- Identification
 			Result.append (artefact_type)
 
 			inspect compilation_state
-			when cs_validated_closure then
+			when cs_validated then
 				if not errors.has_warnings then
 					Result.append("_valid")
 				else
@@ -456,7 +456,7 @@ feature -- Artefacts
 	flat_archetype: AUTHORED_ARCHETYPE
 			-- inheritance-flattened form of archetype
 		require
-			compilation_state = Cs_validated_phase_2 or compilation_state = cs_validated_closure
+			compilation_state >= Cs_validated_phase_2
 		do
 			if flat_archetype_cache = Void or last_include_rm then
 				flatten (False)
@@ -471,7 +471,7 @@ feature -- Artefacts
 	flat_archetype_with_rm: like flat_archetype
 			-- inheritance-flattened form of archetype
 		require
-			compilation_state = Cs_validated_phase_2 or compilation_state = cs_validated_closure
+			compilation_state >= Cs_validated_phase_2
 		do
 			if flat_archetype_cache = Void or not last_include_rm then
 				flatten (True)
@@ -486,7 +486,7 @@ feature -- Artefacts
 	flat_serialised_native (include_rm: BOOLEAN): STRING
 			-- The serialised text of the flat form of the archetype
 		require
-			compilation_state = Cs_validated_phase_2 or compilation_state = cs_validated_closure
+			compilation_state >= Cs_validated_phase_2
 		do
 			if include_rm then
 				Result := adl_2_engine.serialise_native (flat_archetype_with_rm, Syntax_type_adl, current_archetype_language)
@@ -516,7 +516,7 @@ feature -- Compilation
 			-- generate value from COMPILER_ERROR_TYPES as index for error classification elsewhere
 		do
 			inspect compilation_state
-			when cs_validated_closure then
+			when cs_validated then
 				if errors.is_empty then
 					Result := Err_type_valid
 				else
@@ -549,7 +549,7 @@ feature -- Compilation
 			-- actually been compiled and is available in memory. This is useful for specialised archetypes because
 			-- you want to know if the parent has been compiled (up the lineage) before you can compile the current one
 		do
-			Result := compilation_state = cs_validated_closure
+			Result := compilation_state = cs_validated
 		end
 
 	is_valid_differential: BOOLEAN
@@ -631,6 +631,7 @@ feature -- Compilation
 		ensure
 			Differential_archetype_cleared: differential_archetype = Void
 			Compiler_state_set: compilation_state = Cs_unread
+			Compile_time_reset: last_compile_attempt_timestamp = Time_epoch
 		end
 
 	signal_source_edited
@@ -647,7 +648,7 @@ feature -- Compilation
 			end
 			signal_from_scratch
 		ensure
-			Compiler_state_set: (<<Cs_unread, Cs_invalid>>).has (compilation_state)
+			Compiler_state_set: compilation_state = Cs_unread
 		end
 
 	signal_suppliers_compiled
@@ -657,7 +658,7 @@ feature -- Compilation
 		require
 			compilation_state = Cs_validated_self
 		do
-			from suppliers_index.start until suppliers_index.off or not (<<Cs_validated_self, Cs_validated_closure>>).has (suppliers_index.item_for_iteration.compilation_state) loop
+			from suppliers_index.start until suppliers_index.off or suppliers_index.item_for_iteration.compilation_state < Cs_validated_self loop
 				suppliers_index.forth
 			end
 			if suppliers_index.off then
@@ -692,13 +693,21 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 	create_compile_actions: HASH_TABLE [PROCEDURE [ARCH_LIB_ARCHETYPE, TUPLE], INTEGER]
 		do
 			create Result.make (0)
+
+			------------ first phase up till validated flat ----------
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.initialise,           Cs_unread)
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.evaluate_lineage,     Cs_lineage_known)
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.evaluate_suppliers,   Cs_parsed)
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.parse,                Cs_ready_to_parse)
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.validate,             Cs_ready_to_validate)
 			Result.put (agent {ARCH_LIB_ARCHETYPE}.validate_flat,        Cs_validated_phase_2)
-			Result.put (agent {ARCH_LIB_ARCHETYPE}.post_compile_actions, Cs_validated_closure)
+			Result.put (agent {ARCH_LIB_ARCHETYPE}.end_compile_phase,    Cs_validated_self)
+
+			------------ wait for signal_suppliers_compiler to be called ---------
+
+			------------ second phase to completion ----------
+			Result.put (agent {ARCH_LIB_ARCHETYPE}.validate_closure,     Cs_validated_closure)
+			Result.put (agent {ARCH_LIB_ARCHETYPE}.end_compile_phase,    Cs_validated)
 		end
 
 	initialise
@@ -715,7 +724,7 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 				end
 			-- newly created in memory
 			elseif attached differential_archetype then
-				compilation_state := cs_validated_closure
+				compilation_state := cs_validated
 			end
 		ensure
 			compilation_state_set: Cs_initial_states.has (compilation_state)
@@ -886,8 +895,6 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			if adl_2_engine.validation_passed then
 				add_info ({ADL_MESSAGES_IDS}.ec_parse_archetype_i2, <<id.physical_id>>)
 				compilation_state := Cs_validated_self
-				-- not yet in use
-				--	adl_2_engine.post_compile_process (Current)
 			else
 				compilation_state := Cs_validate_failed
 			end
@@ -897,9 +904,23 @@ feature {ARCH_LIB_ARCHETYPE} -- Compilation
 			Failure_implies_errors: compilation_state = Cs_validate_failed implies errors.has_errors
 		end
 
-	post_compile_actions
+	validate_closure
+			-- Perform validation on `flat_archetype' with closure
+			-- Compilation state change:
+			--	validated succeeded: Cs_validated_closure --> Cs_validated
+			--	validate failed: Cs_validated_closure --> Cs_validate_failed
 		require
 			compilation_state = Cs_validated_closure
+		do
+			compilation_state := Cs_validated
+		ensure
+			Compilation_state: (<<Cs_validated, Cs_validate_failed>>).has (compilation_state)
+			Failure_implies_errors: compilation_state = Cs_validate_failed implies errors.has_errors
+		end
+
+	end_compile_phase
+			-- call this when a phase of compilation is completed, usually when some
+			-- other external action has to be done, before the next phase can be entered
 		do
 			compile_finished := True
 		end

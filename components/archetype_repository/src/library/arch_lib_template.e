@@ -15,7 +15,7 @@ inherit
 			validator_reset, select_archetype, file_mgr, flat_archetype, differential_archetype,
 			differential_serialised_native,
 			serialise_object, select_native_serialised_archetype, signal_from_scratch,
-			persistent_compact_type, clear_cache
+			persistent_compact_type, clear_cache, validate_closure
 		end
 
 create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
@@ -41,11 +41,24 @@ feature -- Initialisation
 feature -- Compilation
 
 	signal_from_scratch
-			-- signal rebuild from scratch; this rebuilds from existing differential
 		do
 			precursor
+			clear_overlays
+		end
+
+	clear_overlays
+			-- remove all overlays for this template
+		do
+			across overlays as ovls_csr loop
+				current_library.remove_archetype (ovls_csr.item)
+			end
+
+			file_mgr.clear_overlays
 			overlays.wipe_out
-		ensure then
+			if attached differential_archetype as tpl then
+				tpl.clear_overlays
+			end
+		ensure
 			Overlays_cleared: overlays.is_empty
 		end
 
@@ -91,7 +104,7 @@ feature -- Artefacts
 	operational_template: OPERATIONAL_TEMPLATE
 			-- inheritance-flattened form of archetype
 		require
-			compilation_state = cs_validated_closure
+			compilation_state = Cs_validated
 		do
 			if operational_template_cache = Void or last_include_rm then
 				expand (False)
@@ -104,7 +117,7 @@ feature -- Artefacts
 	operational_template_with_rm: OPERATIONAL_TEMPLATE
 			-- inheritance-flattened form of archetype
 		require
-			compilation_state = cs_validated_closure
+			compilation_state = Cs_validated
 		do
 			if operational_template_cache = Void or not last_include_rm then
 				expand (True)
@@ -117,7 +130,7 @@ feature -- Artefacts
 	operational_template_serialised (include_rm: BOOLEAN): STRING
 			-- The serialised text of the flat form of the archetype
 		require
-			compilation_state = cs_validated_closure
+			compilation_state = Cs_validated
 		do
 			if include_rm then
 				Result := adl_2_engine.serialise_native (operational_template_with_rm, Syntax_type_adl, current_archetype_language)
@@ -152,15 +165,25 @@ feature -- Visualisation
 			end
 		end
 
+feature {ARCH_LIB_ARCHETYPE} -- Compilation
+
+	validate_closure
+		do
+			-- phase 4: validate flattened archetype with closure
+			adl_2_engine.phase_4_validate (Current)
+			merge_errors (adl_2_engine.errors)
+			if adl_2_engine.validation_passed then
+				compilation_state := Cs_validated
+				add_info ({ADL_MESSAGES_IDS}.ec_parse_archetype_i2, <<id.physical_id>>)
+			else
+				compilation_state := Cs_validate_failed
+			end
+			status.prepend (errors.as_string_filtered (True, True, False))
+		end
+
 feature -- File Access
 
 	file_mgr: TEMPLATE_PERSISTENCE_MGR
-
-	clear_overlays
-		do
-			file_mgr.clear_overlays
-			overlays.wipe_out
-		end
 
 	add_overlay (an_overlay_descriptor: ARCH_LIB_TEMPLATE_OVERLAY; an_ovl_adl_text, an_archetype_id: STRING)
 		do

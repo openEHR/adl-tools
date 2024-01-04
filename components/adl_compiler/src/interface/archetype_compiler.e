@@ -212,6 +212,12 @@ feature {NONE} -- Implementation
 
 								-- determine if we get to final validation state, depending on situation with supplier compilation
 								ara.signal_suppliers_compiled
+
+								-- if we are validated, then all suppliers are valid;
+								-- Now go and perform operations that can only be done when the suppliers are successfully compiled
+								if ara.compilation_state = Cs_validated_closure then
+									ara.compile
+								end
 							end
 
 							call_archetype_visual_update_agent (ara)
