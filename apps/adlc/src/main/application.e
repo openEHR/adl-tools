@@ -277,7 +277,7 @@ feature -- Commands
 
 														-- process action
 														std_err.put_string ("--------- " + alaa.id.as_string + " ---------%N")
-														archetype_compiler.build_lineage (alaa, 0)
+														archetype_compiler.build_artefact (alaa)
 
 														if action.is_equal (opts.Validate_action) then
 															-- no need to do anything; gui output agent will generate errors
