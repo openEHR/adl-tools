@@ -83,8 +83,12 @@ feature {NONE} -- Implementation
 
 	display_constraint
 		do
-			if attached arch_node and not attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype then
-				evx_grid.set_last_row_label_col (Definition_grid_col_constraint, arch_node.archetype_ref, Void, Void, c_constraint_colour, Void)
+			if attached arch_node then
+				if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype then
+					evx_grid.set_last_row_label_col (Definition_grid_col_constraint, arch_node.archetype_ref, Void, Void, c_object_colour, Void)
+				else
+					evx_grid.set_last_row_label_col (Definition_grid_col_constraint, arch_node.archetype_ref, Void, Void, c_constraint_colour, Void)
+				end
 			end
 		end
 
