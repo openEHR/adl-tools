@@ -13,9 +13,9 @@ inherit
 	ARCH_LIB_AUTHORED_ARCHETYPE
 		redefine
 			validator_reset, select_archetype, file_mgr, flat_archetype, differential_archetype,
-			differential_serialised_native,
-			serialise_object, select_native_serialised_archetype, signal_from_scratch,
-			persistent_compact_type, clear_cache, validate_closure
+			differential_serialised_native, persistent_compact_type,
+			flat_for_serialisation, select_native_serialised_archetype, signal_from_scratch,
+			clear_cache, validate_closure
 		end
 
 create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
@@ -106,8 +106,8 @@ feature -- Artefacts
 		require
 			compilation_state = Cs_validated
 		do
-			if operational_template_cache = Void or last_include_rm then
-				expand (False)
+			if operational_template_cache = Void then
+				operational_template_cache := template_expanded (False)
 			end
 			check attached operational_template_cache as fac then
 				Result := fac
@@ -115,16 +115,11 @@ feature -- Artefacts
 		end
 
 	operational_template_with_rm: OPERATIONAL_TEMPLATE
-			-- inheritance-flattened form of archetype
+			-- inheritance-flattened form of archetype with RM multiplicities
 		require
 			compilation_state = Cs_validated
 		do
-			if operational_template_cache = Void or not last_include_rm then
-				expand (True)
-			end
-			check attached operational_template_cache as fac then
-				Result := fac
-			end
+			Result := template_expanded (True)
 		end
 
 	operational_template_serialised (include_rm: BOOLEAN): STRING
@@ -193,39 +188,17 @@ feature -- File Access
 
 feature {NONE} -- Flattening
 
-	expand (include_rm: BOOLEAN)
+	template_expanded (include_rm: BOOLEAN): OPERATIONAL_TEMPLATE
 			-- expand by substitution of all references with their structures
 		local
 			opt_generator: TEMPLATE_FLATTENER
 		do
 			create opt_generator
-			opt_generator.execute (if include_rm then flat_archetype_with_rm else flat_archetype end)
-			operational_template_cache := opt_generator.opt
-
-			last_include_rm := include_rm
+			opt_generator.execute (if include_rm then flat_archetype_with_rm else flat_archetype end, include_rm)
+			Result := opt_generator.opt
 		end
 
 	operational_template_cache: detachable OPERATIONAL_TEMPLATE
-
-feature -- Output
-
-	serialise_object (flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
-			-- serialise internal structure in a brute-force object way, using
-			-- format like ODIN, XML, JSON etc
-		local
-			dt_arch: DT_CONVERTIBLE
-		do
-			if flat_flag then
-				create {P_OPERATIONAL_TEMPLATE} dt_arch.make (operational_template)
-			else
-				create {like persistent_compact_type} dt_arch.make (safe_differential_archetype)
-			end
-
-			dt_object_converter.set_false_booleans_off_option
-			archetype_serialise_engine.set_tree (dt_arch.dt_representation)
-			archetype_serialise_engine.serialise (a_format, type_marking_flag, True)
-			Result := archetype_serialise_engine.serialised
-		end
 
 feature {NONE} -- Editing
 
@@ -236,6 +209,15 @@ feature {NONE} -- Editing
 		end
 
 feature {NONE} -- Output
+
+	flat_for_serialisation (flat_flag: BOOLEAN): P_AUTHORED_ARCHETYPE
+		do
+			if flat_flag then
+				create {P_OPERATIONAL_TEMPLATE} Result.make (operational_template)
+			else
+				create {P_TEMPLATE} Result.make (safe_differential_archetype)
+			end
+		end
 
 	persistent_compact_type: P_TEMPLATE
 		do

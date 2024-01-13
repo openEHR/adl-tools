@@ -48,6 +48,13 @@ feature {NONE}-- Initialization
 			-- symbolic syntax
 --			evx_adl_text_editor.set_text_filter (get_text ({ADL_MESSAGES_IDS}.ec_symbolic_text), get_text ({ADL_MESSAGES_IDS}.ec_symbolic_text_tooltip), agent symbolic_text)
 
+			-- include RM check button
+			evx_adl_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip, Void),
+				agent rm_flattening_on,
+				agent (cb_selected: BOOLEAN) do set_rm_flattening_on (cb_selected); try_repopulate end)
+
 			-- save button
 			evx_adl_text_editor.add_button (Void, Void, get_text ({EVX_MESSAGES_IDS}.ec_save_button_text),
 				get_text ({EVX_MESSAGES_IDS}.ec_save_button_tooltip), agent save_adl_text_as, Void)

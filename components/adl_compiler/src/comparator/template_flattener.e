@@ -25,7 +25,7 @@ feature -- Access
 
 feature -- Commands
 
-	execute (a_template: TEMPLATE)
+	execute (a_template: TEMPLATE; include_rm: BOOLEAN)
 			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
 		require
 			Template_valid: a_template.is_valid and then a_template.is_flat
@@ -33,13 +33,13 @@ feature -- Commands
 			create opt.make_from_other (a_template)
 
 			fillers_on_current_path.wipe_out
-			overlay_filler_definitions (opt, 0)
+			overlay_filler_definitions (opt, include_rm, 0)
 			opt.rebuild
 		end
 
 feature {NONE} -- Implementation
 
-	overlay_filler_definitions (a_flat_arch: ARCHETYPE; depth: INTEGER)
+	overlay_filler_definitions (a_flat_arch: ARCHETYPE; include_rm: BOOLEAN; depth: INTEGER)
 			-- process `template.suppliers_index' to overlay target definitions.
 		require
 			a_flat_arch.is_flat
@@ -56,7 +56,7 @@ end
 			across a_flat_arch.suppliers_index as xrefs_csr loop
 				-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
 				check attached current_library.archetype_matching_ref (xrefs_csr.key) as att_ala then
-					matched_arch := att_ala.flat_archetype
+					matched_arch := if include_rm then att_ala.flat_archetype_with_rm else att_ala.flat_archetype end
 				end
 
 				-- make a copy of the supplier archetype (or template)
@@ -86,7 +86,7 @@ end
 						-- it is empty and needs to be replaced with the supplier structure
 						if not c_arch_roots_csr.item.has_attributes and not c_arch_roots_csr.item.is_prohibited then
 							-- perform overlays on supplier archetype first
-							overlay_filler_definitions (supp_flat_arch, depth + 1)
+							overlay_filler_definitions (supp_flat_arch, include_rm, depth + 1)
 debug ("overlay")
 	io.put_string ("%T node at " + c_arch_roots_csr.item.path +
 	" with " + xrefs_csr.key + "%N")

@@ -126,7 +126,7 @@ feature -- Editing
 --			create last_modify_timestamp.make_now
 
 			-- regenerate flat form
-			flatten (False)
+			flatten
 
 			-- set revision appropriately
 		end
