@@ -404,6 +404,7 @@ feature {GUI_TEST_TOOL} -- File Access
 		end
 
 	compiled_differential: STRING
+			-- round-trip from ODIN-serialised file to AOM2 to ODIN
 		do
 			create Result.make_empty
 			if attached file_mgr.compiled_differential as odin_text then
