@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-3371924E9783">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-3371924E9783">
 	<target name="adl_workbench">
 		<root class="GUI_APP_ROOT" feature="make_and_launch"/>
 		<file_rule>
 			<exclude>/\.git$</exclude>
 			<exclude>/\.svn$</exclude>
 		</file_rule>
-		<option trace="false" profile="false" debug="false" warning="warning" full_class_checking="true" is_attached_by_default="true" is_obsolete_routine_type="true" is_obsolete_iteration="true" syntax="standard" namespace="openehr">
+		<option trace="false" profile="false" debug="false" warning="warning" full_class_checking="true" is_attached_by_default="true" is_obsolete_iteration="true" is_obsolete_routine_type="true" syntax="standard" namespace="openehr">
 			<debug name="__unnamed_debug__" enabled="false"/>
 			<debug name="adl_invariant" enabled="false"/>
 			<debug name="adl_parse" enabled="false"/>
@@ -48,18 +48,16 @@
 		<setting name="automatic_backup" value="true"/>
 		<setting name="check_vape" value="true"/>
 		<setting name="console_application" value="false"/>
-		<setting name="dead_code_removal" value="all"/>
 		<setting name="dynamic_runtime" value="false"/>
 		<setting name="exception_trace" value="true"/>
-		<setting name="inlining" value="false"/>
 		<setting name="inlining_size" value="4"/>
 		<setting name="line_generation" value="false"/>
-
+		<setting name="total_order_on_reals" value="false"/>
+		<setting name="dead_code_removal" value="feature"/>
 		<capability>
-			<concurrency support="thread" use="thread"/>
-			<void_safety support="initialization" use="initialization"/>
+			<concurrency support="thread"/>
+			<void_safety support="initialization"/>
 		</capability>
-
 		<library name="eomf_app_support" location="$EOMF\library\app_support\eomf_app_support.ecf"/>
 		<library name="eomf_basic" location="$EOMF\library\basic\eomf_basic.ecf"/>
 		<library name="eomf_bmm" location="$EOMF\library\bmm\eomf_bmm.ecf">
