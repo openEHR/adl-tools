@@ -30,9 +30,12 @@ feature -- Initialisation
 			ref_model := an_rm
 			archetype := aca.select_archetype (differential_view_flag, False)
 			flat_archetype := source.flat_archetype
-			flat_terminology := source.flat_archetype.terminology
+			flat_terminology := flat_archetype.terminology
 			if aom_profiles_access.has_profile_for_rm_schema (an_rm.model_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (an_rm.model_id)
+				archetype_parent_class := aom_profile.archetype_parent_class
+				archetype_data_value_parent_class := aom_profile.archetype_data_value_parent_class
+				archetype_visualise_descendants_of := aom_profile.archetype_visualise_descendants_of
 			end
 		end
 
