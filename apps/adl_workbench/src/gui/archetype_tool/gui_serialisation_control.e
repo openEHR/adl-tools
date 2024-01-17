@@ -30,6 +30,7 @@ feature {NONE}-- Initialization
 		do
 			create adl_text_cache.make(20000)
 			create json_text_cache.make(20000)
+			create ejson_text_cache.make(20000)
 			create yaml_text_cache.make(20000)
 			create xml_text_cache.make(20000)
 			create odin_text_cache.make(20000)
@@ -85,6 +86,31 @@ feature {NONE}-- Initialization
 				get_text ({EVX_MESSAGES_IDS}.ec_save_button_tooltip), agent save_json_text_as, Void)
 
 			gui_controls.extend (evx_json_text_editor)
+
+			--------------------------- eiffel-JSON text tab ---------------------------
+			create evx_ejson_text_editor.make (agent ejson_text)
+			ev_root_container.extend (evx_ejson_text_editor.ev_root_container)
+			ev_root_container.set_item_text (evx_ejson_text_editor.ev_root_container, "eJSON")
+
+			-- include RM check button
+			evx_ejson_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip, Void),
+				agent rm_flattening_on,
+				agent (cb_selected: BOOLEAN) do set_rm_flattening_on (cb_selected); try_repopulate end)
+
+			-- include type marking on check button
+			evx_ejson_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_tooltip, Void),
+				agent type_marking_on,
+				agent (cb_selected: BOOLEAN) do set_type_marking_on (cb_selected); try_repopulate end)
+
+			-- save button
+			evx_ejson_text_editor.add_button (Void, Void, get_text ({EVX_MESSAGES_IDS}.ec_save_button_text),
+				get_text ({EVX_MESSAGES_IDS}.ec_save_button_tooltip), agent save_json_text_as, Void)
+
+			gui_controls.extend (evx_ejson_text_editor)
 
 			--------------------------- YAML text tab -----------------------
 			create evx_yaml_text_editor.make (agent yaml_text)
@@ -221,6 +247,22 @@ feature {NONE} -- Implementation
 		end
 
 
+	evx_ejson_text_editor: EVX_TEXT_EDITOR_CONTROL
+
+	ejson_text: STRING
+		do
+			if ejson_text_cache.is_empty then
+				ejson_text_cache.append (safe_source.serialise_object_ejson (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_json))
+			end
+			Result := ejson_text_cache
+		end
+
+	save_ejson_text_as
+		do
+			do_save_text (ejson_text, {ODIN_DEFINITIONS}.Syntax_type_json, {ODIN_DEFINITIONS}.File_ext_json_default)
+		end
+
+
 	evx_yaml_text_editor: EVX_TEXT_EDITOR_CONTROL
 
 	yaml_text: STRING
@@ -327,6 +369,7 @@ feature {NONE} -- Implementation
 		do
 			adl_text_cache.wipe_out
 			json_text_cache.wipe_out
+			ejson_text_cache.wipe_out
 			yaml_text_cache.wipe_out
 			xml_text_cache.wipe_out
 			odin_text_cache.wipe_out
@@ -335,6 +378,8 @@ feature {NONE} -- Implementation
 	adl_text_cache: STRING
 
 	json_text_cache: STRING
+
+	ejson_text_cache: STRING
 
 	yaml_text_cache: STRING
 

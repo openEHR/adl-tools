@@ -1037,6 +1037,29 @@ feature -- Output
 			Result := archetype_serialise_engine.serialised
 		end
 
+	serialise_object_ejson (flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
+			-- serialise internal structure in a brute-force object way, using
+			-- format like ODIN, XML, JSON etc
+		require
+			Archetype_valid: is_valid
+			Format_valid: has_dt_serialiser_format (a_format)
+		local
+			dt_arch: DT_CONVERTIBLE
+			fac: JSON_SERIALIZATION_FACTORY
+			conv: JSON_SERIALIZATION
+		do
+			dt_arch := flat_for_serialisation (flat_flag)
+
+			conv := fac.smart_serialization
+			conv.set_pretty_printing
+
+			if attached conv.to_json_string (dt_arch) as s then
+				Result := s
+			else
+				Result := "Conversion failed"
+			end
+		end
+
 	generate_instance (a_format: STRING): STRING
 			-- The serialised text of the flat form of the archetype
 		require
