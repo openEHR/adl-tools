@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-16-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-16-0 http://www.eiffel.com/developers/xml/configuration-1-16-0.xsd" name="adlc" uuid="552D673F-533D-455B-AD69-B1B8B047D52D">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-23-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-23-0 http://www.eiffel.com/developers/xml/configuration-1-23-0.xsd" name="adlc" uuid="552D673F-533D-455B-AD69-B1B8B047D52D">
 	<target name="adlc">
 		<root class="APPLICATION" feature="make"/>
 		<file_rule>
@@ -7,7 +7,7 @@
 			<exclude>/\.svn$</exclude>
 		</file_rule>
 		
-		<option trace="false" profile="false" debug="false" warning="true" full_class_checking="true" is_attached_by_default="true" is_obsolete_routine_type="true" syntax="standard" namespace="openehr">
+		<option trace="false" profile="false" debug="false" warning="warning" full_class_checking="true" is_attached_by_default="true" is_obsolete_iteration="true" is_obsolete_routine_type="true" syntax="standard" namespace="openehr">
 
 			<debug name="dt" enabled="false"/>
 			<assertions precondition="true" postcondition="true" check="true" supplier_precondition="true"/>
@@ -21,7 +21,7 @@
 		<setting name="array_optimization" value="false"/>
 		<setting name="automatic_backup" value="true"/>
 		<setting name="check_vape" value="true"/>
-		<setting name="dead_code_removal" value="true"/>
+		<setting name="dead_code_removal" value="feature"/>
 		<setting name="dynamic_runtime" value="false"/>
 		<setting name="exception_trace" value="true"/>
 		<setting name="inlining" value="false"/>
@@ -29,8 +29,8 @@
 		<setting name="line_generation" value="false"/>
 
 		<capability>
-			<concurrency support="thread" use="thread"/>
-			<void_safety support="initialization" use="initialization"/>
+			<concurrency support="thread"/>
+			<void_safety support="initialization"/>
 		</capability>
 
 		<library name="argument_parser" location="$ISE_LIBRARY\library\argument_parser\argument_parser.ecf"/>
@@ -66,6 +66,9 @@
 
 		<library name="iso8601" location="$EIFFEL_HUB\iso8601\src\iso8601.ecf"/>
 		<library name="error_message" location="$EIFFEL_HUB\error_message\src\error_message.ecf"/>
+		<library name="json" location="$ISE_LIBRARY\contrib\library\text\parser\json\library\json.ecf">
+			<option warning="none"/>
+		</library>
 
 		<cluster name="app" location="..\src\main\" recursive="true"/>
 		<cluster name="app_env" location="..\src\env\" recursive="true"/>
