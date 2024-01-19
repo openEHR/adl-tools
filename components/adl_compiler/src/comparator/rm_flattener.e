@@ -66,7 +66,7 @@ feature {NONE} -- Implementation
 						raise ("rm_node_flatten_enter location #1")
 					end
 				end
-			elseif attached {C_OBJECT} a_c_node as co then
+			elseif attached {C_OBJECT} a_c_node as co and not (attached {ARCHETYPE_SLOT} a_c_node as slot and then slot.is_closed) then
 				-- here the logic is a bit trickier: there is no such thing as 'occurrences' in the reference model
 				-- so it is set from the enclosing attribute cardinality if a container, or set to RM existence if not a container
 				if not attached co.occurrences then
