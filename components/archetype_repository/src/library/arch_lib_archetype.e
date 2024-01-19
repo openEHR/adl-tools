@@ -1081,7 +1081,7 @@ feature {NONE}-- Output
 			create Result.make_dt (Void)
 		end
 
-	flat_for_serialisation (flat_flag: BOOLEAN): P_ARCHETYPE
+	flat_for_serialisation (flat_flag: BOOLEAN): like persistent_compact_type
 		do
 			if flat_flag then
 				create Result.make (flat_archetype)
