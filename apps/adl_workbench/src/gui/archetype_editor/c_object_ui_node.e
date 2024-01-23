@@ -153,8 +153,8 @@ feature -- Display
 					end
 
 					-- LOINC column
-					if ui_graph_state.flat_terminology.has_term_binding (Loinc_terminology_id, arch_node.node_id) then
-						s := ui_graph_state.flat_terminology.term_binding (Loinc_terminology_id, arch_node.node_id).as_string
+					s := loinc_code
+					if not s.is_empty then
 						evx_grid.set_last_row_label_col (Definition_grid_col_loinc, s, Void, Void, Binding_color, Void)
 					end
 				else
@@ -375,6 +375,14 @@ feature {NONE} -- Implementation
 				Result := get_icon_pixmap (pixmap_key)
 			else
 				create Result.default_create
+			end
+		end
+
+	loinc_code: STRING
+		do
+			Create Result.make(0)
+			if ui_graph_state.flat_terminology.has_term_binding (Loinc_terminology_id, arch_node.node_id) then
+				Result := ui_graph_state.flat_terminology.term_binding (Loinc_terminology_id, arch_node.node_id).as_string
 			end
 		end
 

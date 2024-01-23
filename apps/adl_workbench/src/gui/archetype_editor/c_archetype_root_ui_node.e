@@ -13,7 +13,7 @@ inherit
 	C_COMPLEX_OBJECT_UI_NODE
 		redefine
 			arch_node, rm_properties, display_constraint, c_pixmap, build_context_menu,
-			attach_other_ui_node_agents, node_id_text
+			attach_other_ui_node_agents, node_id_text, loinc_code
 		end
 
 create
@@ -65,11 +65,7 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 			if attached arch_node then
 
-				-- Get the text for the id-code on this node, which is defined in the terminology of the C_OBJECT one level back up
-				-- so - we go back up to the owning C_OBJECT, to access the correct flat terminology
-				check attached parent as ca_ui and then attached ca_ui.parent as parent_co_ui then
-					Result := parent_co_ui.ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text.twin
-				end
+				Result := owning_archetype_flat_terminology.term_definition (display_settings.language, arch_node.node_id).text.twin
 
 				if display_settings.show_codes then
 					Result := annotated_code (arch_node.node_id, Result, " ")
@@ -89,6 +85,21 @@ feature {NONE} -- Implementation
 				else
 					evx_grid.set_last_row_label_col (Definition_grid_col_constraint, arch_node.archetype_ref, Void, Void, c_constraint_colour, Void)
 				end
+			end
+		end
+
+	loinc_code: STRING
+		do
+			Create Result.make(0)
+			-- First see if there is a LOINC code on the original node in the parent archetype; if there is,
+			-- it will be the more specific one;
+			if owning_archetype_flat_terminology.has_term_binding (Loinc_terminology_id, arch_node.node_id) then
+				Result := owning_archetype_flat_terminology.term_binding (Loinc_terminology_id, arch_node.node_id).as_string
+
+			-- otherwise we look for the LOINC code for the defining concept & root node of the referenced archetype
+			-- In this case, the id-code is the id1, id1.1 etc code from the included archetype
+			elseif ui_graph_state.flat_terminology.has_term_binding (Loinc_terminology_id, ui_graph_state.flat_terminology.concept_code) then
+				Result := ui_graph_state.flat_terminology.term_binding (Loinc_terminology_id, ui_graph_state.flat_terminology.concept_code).as_string
 			end
 		end
 
@@ -146,6 +157,21 @@ feature {NONE} -- Implementation
 				-- now do the prepare and display
 				prepare_children_display_in_grid (att_evx_grid)
 				display_in_grid (display_settings)
+			end
+		end
+
+	owning_archetype_flat_terminology: ARCHETYPE_TERMINOLOGY
+			-- For C_ARCHETYPE_ROOT in a source template,
+			--     use the directly attached terminology, which is from the owner archetype
+			-- For C_ARCHETYPE_ROOT in an OPT,
+			-- 	   use the terminology from the owning object, which is from the owner archetype
+		do
+			if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype then
+				check attached parent as ca_ui and then attached ca_ui.parent as parent_co_ui then
+					Result := parent_co_ui.ui_graph_state.flat_terminology
+				end
+			else
+				Result := ui_graph_state.flat_terminology
 			end
 		end
 
