@@ -209,7 +209,7 @@ feature -- Commands
 					if opts.list_archetypes then
 						current_library.do_all_semantic (agent node_lister_enter, agent node_lister_exit)
 
-					-- output archetype(s) in serialised format
+					-- output archetype id(s) in serialised format
 					elseif opts.display_archetypes then
 						user_friendly_list_output := True
 						std_out.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_archs_list_text, <<current_library_name>>))
@@ -275,10 +275,11 @@ feature -- Commands
 												across matched_archetype_ids as arch_ids_csr loop
 													if attached {ARCH_LIB_AUTHORED_ARCHETYPE} current_library.archetype_with_id (arch_ids_csr.item) as alaa then
 
-														-- process action
+														-- First, compile the artefact
 														std_err.put_string ("--------- " + alaa.id.as_string + " ---------%N")
 														archetype_compiler.build_artefact (alaa)
 
+														-- Now execute the action
 														if action.is_equal (opts.Validate_action) then
 															-- no need to do anything; gui output agent will generate errors
 															-- std_err.put_string (alaa.status)
@@ -288,7 +289,7 @@ feature -- Commands
 																-- write to file system
 																if opts.write_to_file_system then
 																	check attached archetype_file_extensions.item (output_format) as file_ext then
-																		full_path := file_system.pathname (full_output_dir, arch_ids_csr.item) + "." + file_ext
+																		full_path := file_system.pathname (full_output_dir, arch_ids_csr.item) + file_ext
 																	end
 
 																	if use_flat_source then
