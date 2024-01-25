@@ -163,6 +163,7 @@ feature -- Commands
 		require
 			execution_state > es_initial
 		do
+			do_finalise_build
 			change_state_to (es_initial)
 		ensure
 			execution_state = es_initial
@@ -186,6 +187,10 @@ feature {NONE} -- Commands
 
 	do_build_all
 		deferred
+		end
+
+	do_finalise_build
+		do
 		end
 
 	console_start_progress_message: STRING

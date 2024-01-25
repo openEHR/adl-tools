@@ -61,6 +61,14 @@ feature -- File and artefact types
 			-- also we don't want users to get confused about what kind of files
 			-- these are
 
+	Syntax_type_csv: STRING = "csv"
+			-- Name of CSV syntax type.
+
+	File_ext_csv: STRING = ".csv"
+			-- Name of CSV syntax type.
+
+	Csv_default_delimiter: STRING = ","
+
 	Aom_profile_file_match_regex: STRING
 		once ("PROCESS")
 			Result :=  ".*\" + Aom_profile_file_extension + "$"
@@ -90,6 +98,24 @@ feature -- Export Types
 			Result.extend ({ODIN_DEFINITIONS}.syntax_type_yaml)
 			Result.extend ({ODIN_DEFINITIONS}.syntax_type_xml)
 			Result.extend ({ODIN_DEFINITIONS}.syntax_type_odin)
+		end
+
+	report_formats: ARRAYED_SET [STRING]
+		once
+			create Result.make (0)
+			Result.compare_objects
+			Result.extend ({ODIN_DEFINITIONS}.syntax_type_json)
+			Result.extend (Syntax_type_csv)
+		end
+
+	reporting_file_extensions: HASH_TABLE [STRING, STRING]
+			-- File extensions for logical serialisation formats.
+		once ("PROCESS")
+			create Result.make (0)
+			Result.put ({ODIN_DEFINITIONS}.file_ext_json_default, {ODIN_DEFINITIONS}.syntax_type_json)
+			Result.put (File_ext_csv, Syntax_type_csv)
+		ensure
+			not_empty: not Result.is_empty
 		end
 
 feature -- Archetype identifiers

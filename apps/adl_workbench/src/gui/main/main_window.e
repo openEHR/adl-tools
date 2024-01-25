@@ -160,6 +160,8 @@ feature {NONE} -- Initialization
 			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_export_library_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_export_library_text), Void, agent export_library)
 			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_report_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_export_report_text), Void, agent export_library_report)
 			evx_menu_bar.add_menu_separator
+			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_reporting_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_reporting_text), Void, agent generate_report)
+			evx_menu_bar.add_menu_separator
 			evx_menu_bar.add_menu_item_disabled (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_interrupt_build_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_interrupt_text), Void, agent interrupt_build)
 			evx_menu_bar.add_menu_item (get_text ({ADL_MESSAGES_IDS}.ec_menu_archetypes_refresh_key), get_text ({ADL_MESSAGES_IDS}.ec_archetypes_menu_refresh_text), Void, agent refresh_directory)
 			evx_menu_bar.add_menu_separator
@@ -612,6 +614,17 @@ feature {NONE} -- Library events
 			export_dialog.show_modal_to_window (Current)
 
 			-- repopulate library tool, since export dialog may have caused a compilation
+			library_tool.repopulate
+		end
+
+	generate_report
+			-- Generate reports and save onto file system
+		local
+			dialog: REPORT_DIALOG
+		do
+			create dialog.make
+			dialog.show_modal_to_window (Current)
+
 			library_tool.repopulate
 		end
 

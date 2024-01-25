@@ -98,8 +98,8 @@ feature {NONE} -- Implementation
 
 			-- otherwise we look for the LOINC code for the defining concept & root node of the referenced archetype
 			-- In this case, the id-code is the id1, id1.1 etc code from the included archetype
-			elseif ui_graph_state.flat_terminology.has_term_binding (Loinc_terminology_id, ui_graph_state.flat_terminology.concept_code) then
-				Result := ui_graph_state.flat_terminology.term_binding (Loinc_terminology_id, ui_graph_state.flat_terminology.concept_code).as_string
+			else
+				Result := ui_graph_state.flat_terminology.term_binding_for_concept_code (Loinc_terminology_id)
 			end
 		end
 

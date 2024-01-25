@@ -274,12 +274,12 @@ feature -- Access (computed)
 		end
 
 	term_bindings_for_terminology (a_terminology: STRING): HASH_TABLE [URI, STRING]
-			-- retrieve the term bindings for a particular terminology
-		require
-			Terminology_valid: term_bindings.has (a_terminology)
+			-- retrieve the term bindings for a particular terminology; empty if none
 		do
-			check attached term_bindings.item (a_terminology) as tbs then
+			if attached term_bindings.item (a_terminology) as tbs then
 				Result := tbs
+			else
+				create Result.make (0)
 			end
 		end
 
@@ -301,6 +301,16 @@ feature -- Access (computed)
 		do
 			check attached term_binding_map.item (a_terminology.as_lower) as att_map and then attached att_map.item (a_code) as att_code then
 				Result := att_code
+			end
+		end
+
+	term_binding_for_concept_code (a_terminology: STRING): STRING
+			-- retrieve any binding for the terminology concept code i.e. root archetype code,
+			-- for a given terminology
+		do
+			Create Result.make(0)
+			if has_term_binding (a_terminology, concept_code) then
+				Result := term_binding (a_terminology, concept_code).as_string
 			end
 		end
 
@@ -708,9 +718,7 @@ feature {ARCHETYPE, AOM_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Modification
 			create terminologies.make_from_array (term_bindings.current_keys)
 			if has_any_term_binding (a_code) then
 				across terminologies as terminologies_csr loop
-					if term_bindings.has (terminologies_csr.item) and then
-						term_bindings_for_terminology (terminologies_csr.item).has (a_code)
-					then
+					if term_bindings_for_terminology (terminologies_csr.item).has (a_code) then
 						remove_term_binding (a_code, terminologies_csr.item)
 					end
 				end

@@ -319,7 +319,8 @@ templates = <
 		["menu_archetypes_build_all_key"] = <"Archetypes>Build All">
 		["menu_archetypes_rebuild_all_key"] = <"Archetypes>Rebuild All">
 		["menu_archetypes_export_library_key"] = <"Archetypes>Export Library">
-		["menu_archetypes_report_key"] = <"Archetypes>Library Report">
+		["menu_archetypes_report_key"] = <"Archetypes>Compilation Report">
+		["menu_archetypes_reporting_key"] = <"Archetypes>Reports">
 		["menu_archetypes_interrupt_build_key"] = <"Archetypes>Interrupt Build">
 		["menu_archetypes_refresh_key"] = <"Archetypes>Refresh">
 		["menu_archetypes_configure_key"] = <"Archetypes>Configure">
@@ -373,7 +374,8 @@ templates = <
 		["archetypes_menu_interrupt_text"] = <"&Interrupt Build">
 		["archetypes_menu_refresh_text"] = <"Re&fresh Library">
 		["archetypes_menu_export_library_text"] = <"Export &Library ...">
-		["archetypes_menu_export_report_text"] = <"Export Library &Report...">
+		["archetypes_menu_export_report_text"] = <"Export Compilation &Report...">
+		["archetypes_menu_reporting_text"] = <"Reports...">
 		["archetypes_menu_configure_text"] = <"&Configure Repositories...">
 
 		["rm_schemas_menu_text"] = <"&RM Schemas">
@@ -402,7 +404,7 @@ templates = <
 
 		-- MAIN_WINDOW - titles
 		["main_window_title"] = <"Archetype Definition Language $1 Workbench">
-		["export_report_dialog_title"] = <"Export Library Report">
+		["export_report_dialog_title"] = <"Export Compilation Report">
 		["export_bmm_schema_dialog_title"] = <"Export BMM Schema">
 		["about_awb_dialog_title"] = <"About ADL Workbench">
 		["reference_models_docking_area_title"] = <"Reference Models">
@@ -427,6 +429,7 @@ templates = <
 		["export_library_report_replace_err"] = <"Failed to export report to $1">
 		["export_question"] = <"Only successfully built archetypes can be exported to $1.%N%NDo you want to build each archetype before exporting it?">
 		["export_description"] = <"Export archetypes in a specific format to the file system">
+		["report_description"] = <"Generate reports on archetypes and save in a specific format">
 		["edit_which_file_question"] = <"Edit which file?%N%NDifferential: $1%N%NFlat (legacy): $2">
 		["edit_legacy_file_info"] = <"The Differential (.adls) file is not available.%N%NOpening the legacy flat file: $1%N">
 		["build_and_export_all"] = <"Yes, Build and Export All">
@@ -435,13 +438,15 @@ templates = <
 		["compile_before_serialising"] = <"Must compile before serialising">
 		["export_compile_first_text"] = <"Compile all archetypes first?">
 		["export_compile_first_tooltip"] = <"Select to force full compile before export; otherwise, %Nonly currently compiled archetypes will be exported">
-		["export_format_text"] = <"Export format: ">
-		["export_format_tooltip"] = <"Select export format">
+		["output_format_text"] = <"Output format: ">
+		["output_format_tooltip"] = <"Select output format">
 		["export_directory"] = <"Export directory: ">
 
 		["export_differential_text"] = <"Differential">
 		["export_flat_text"] = <"Flat">
 		["export_button_text"] = <"Export">
+
+		["run_report_button_text"] = <"Run">
 
 		["export_input_settings"] = <"Input Settings">
 		["export_output_settings"] = <"Output Settings">

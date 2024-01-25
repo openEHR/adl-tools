@@ -1,7 +1,7 @@
 note
 	component:   "openEHR ADL Tools"
 	description: "[
-				 Archetype exporter interface. This object knows how to export a system of archetypes
+				 Archetype reporting interface. This object knows how to generate reports on a system of archetypes
 				 found in the current ARCHETYPE_LIBRARY.
 				 ]"
 	keywords:    "export, archetype, ADL"
@@ -10,12 +10,12 @@ note
 	copyright:   "Copyright (c) 2015- Ocean Informatics Pty Ltd"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCHETYPE_EXPORTER
+class ARCHETYPE_REPORTER
 
 inherit
 	BUILD_MANAGER
 		redefine
-			valid_setup_args, build_args_type
+			valid_setup_args, build_args_type, do_finalise_build
 		end
 
 	SHARED_ARCHETYPE_LIBRARIES
@@ -45,6 +45,10 @@ inherit
 create
 	make
 
+feature -- Definitions
+
+	Report_name: STRING = "Loinc_archetype_id_map"
+
 feature {NONE} -- Initialisation
 
 	make
@@ -65,10 +69,43 @@ feature {NONE} -- Commands
 		do
 			output_dir := args.export_dir
 			syntax := args.syntax
-			export_flat := args.export_flat
-			export_with_rm := args.export_with_rm
 
 			artefact_count := current_library.archetype_count
+
+			across reports as rpts_csr loop
+				rpts_csr.item.initialise
+			end
+		end
+
+	do_finalise_build
+		local
+			col_vals: STRING
+			output_filename: STRING
+		do
+			across reports as rpts_csr loop
+				check attached reporting_file_extensions.item(syntax) as fmt then
+					output_filename := file_system.pathname (output_dir, rpts_csr.key) + fmt
+				end
+
+				if attached file_system.new_output_file (output_filename) as fd then
+					fd.open_write
+
+					-- process rows
+					across rpts_csr.item.output_table as row_csr loop
+						create col_vals.make_empty
+						across row_csr.item as cols_csr loop
+							check attached {STRING} cols_csr.item as s then
+								col_vals.append (s)
+								if not cols_csr.is_last then
+									col_vals.append (Csv_default_delimiter)
+								end
+							end
+						end
+						fd.put_string (row_csr.key + Csv_default_delimiter + col_vals + "%N")
+					end
+					fd.close
+				end
+			end
 		end
 
 	console_start_progress_message: STRING
@@ -86,8 +123,6 @@ feature {NONE} -- Commands
 			Result := get_text ({ADL_MESSAGES_IDS}.ec_compiler_interrupted)
 		end
 
-feature {NONE} -- Commands
-
 	do_build_all
 			-- Generate `syntax' serialisation of archetypes under `an_export_dir' from all archetypes that have already been built.
 		do
@@ -99,13 +134,21 @@ feature {NONE} -- Commands
 			if not directory_exists (args.export_dir) then
 				file_system.recursive_create_directory (args.export_dir)
 			end
-			Result := has_serialiser_format (args.syntax) and directory_exists (args.export_dir)
+			Result := reporting_file_extensions.has(args.syntax) and directory_exists (args.export_dir)
 		end
 
 feature {NONE} -- Build State
 
+	reports: HASH_TABLE [ARCHETYPE_LIBRARY_REPORT, STRING]
+		local
+			report1: LOINC_ARCHETYPE_MAP_REPORT
+		once
+			create Result.make(0)
+			create report1.make
+			Result.put (report1, report1.title)
+		end
+
 	output_dir: STRING
-			-- export directory
 		attribute
 			create Result.make_empty
 		end
@@ -116,31 +159,26 @@ feature {NONE} -- Build State
 			create Result.make_empty
 		end
 
-	export_flat: BOOLEAN
-		-- true if exporting flat form archetypes
-
-	export_with_rm: BOOLEAN
-		-- True if exporting flat form with RM included
-
 feature {NONE} -- Implementation
 
 	process_archetype (ara: ARCH_LIB_ARCHETYPE)
 			-- Generate serialised output under `output_dir' from `ara', optionally building it first if necessary.
+		do
+			across reports as rpts_csr loop
+				report_process_archetype (rpts_csr.item, ara)
+			end
+		end
+
+	report_process_archetype (report: ARCHETYPE_LIBRARY_REPORT; ara: ARCH_LIB_ARCHETYPE)
+			-- Generate serialised output under `output_dir' from `ara', optionally building it first if necessary.
 		local
-			filename, exc_trace_str: STRING
+			exc_trace_str: STRING
 			exception_encountered: BOOLEAN
 		do
 			if not exception_encountered then
 				if not is_interrupted then
 					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} ara as auth_ara and then auth_ara.is_valid then
-						check attached archetype_file_extensions.item (syntax) as ext then
-							filename := file_system.pathname (output_dir, ara.id.as_filename) + ext
-						end
-						if export_flat then
-							auth_ara.save_flat_as (filename, syntax)
-						else
-							auth_ara.save_differential_as (filename, syntax)
-						end
+						report.process_archetype (auth_ara)
 						update_progress
 					end
 				end
@@ -156,7 +194,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	build_args_type: TUPLE [export_dir, syntax: STRING; export_flat, export_with_rm: BOOLEAN]
+	build_args_type: TUPLE [export_dir, syntax: STRING]
 		do
 			create Result
 		end

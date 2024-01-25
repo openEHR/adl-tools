@@ -503,12 +503,17 @@ feature -- Application Switches
 	export_generation_directory (an_export_format: STRING; export_flat_flag: BOOLEAN): STRING
 			-- generate an export path of the form
 			-- 	export_dir_root/format/diff_or_flat
-			--	e.g.
-			--	
 		do
 			Result := file_system.pathname (
 				file_system.pathname (file_system.pathname (export_directory, current_library_name), an_export_format),
 				if export_flat_flag then "flat" else "differential" end)
+		end
+
+	report_generation_directory: STRING
+			-- generate a path of the form
+			-- 	dir_root/format/diff_or_flat
+		do
+			Result := file_system.pathname (file_system.pathname (export_directory, current_library_name), "reports")
 		end
 
 	html_export_directory: STRING

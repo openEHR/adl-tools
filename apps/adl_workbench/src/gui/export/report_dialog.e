@@ -8,7 +8,7 @@ note
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class
-	EXPORT_DIALOG
+	REPORT_DIALOG
 
 inherit
 	EV_DIALOG
@@ -40,7 +40,6 @@ feature {NONE} -- Initialization
 	make
 		do
 			default_create
-			export_flat := True
 		end
 
 	create_interface_objects
@@ -62,7 +61,7 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (ev_cell_1)
 
 			create ev_label_1
-			ev_label_1.set_text (get_text ({ADL_MESSAGES_IDS}.ec_export_description))
+			ev_label_1.set_text (get_text ({ADL_MESSAGES_IDS}.ec_report_description))
 			ev_root_container.extend (ev_label_1)
 			ev_root_container.disable_item_expand (ev_label_1)
 
@@ -75,27 +74,6 @@ feature {NONE} -- Initialization
 			create evx_input_frame.make (get_text ({ADL_MESSAGES_IDS}.ec_export_input_settings), True)
 			ev_root_container.extend (evx_input_frame.ev_root_container)
 			ev_root_container.disable_item_expand (evx_input_frame.ev_root_container)
-
-			-- differential or flat: 2 x radio buttons
-			create evx_diff_flat_rb.make (get_text ({ADL_MESSAGES_IDS}.ec_export_differential_text), get_text ({ADL_MESSAGES_IDS}.ec_export_flat_text),
-				Void, Void,
-				agent :BOOLEAN do Result := not export_flat end,
-				agent update_export_flat, 0, 0, True)
-			evx_input_frame.extend (evx_diff_flat_rb.ev_root_container, False)
-			gui_controls.extend (evx_diff_flat_rb)
-
-			-- flatten with RM: check box
-			create evx_flatten_with_rm_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text), get_text ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip),
-				agent :BOOLEAN do Result := user_rm_flattening_on end, agent set_user_rm_flattening_on)
-			evx_input_frame.extend (evx_flatten_with_rm_cb.ev_data_control, True)
-			gui_controls.extend (evx_flatten_with_rm_cb)
-
-			-- type marking on: check box
-			create evx_type_marking_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_type_marking_cb_text), get_text ({ADL_MESSAGES_IDS}.ec_type_marking_cb_tooltip),
-				agent :BOOLEAN do Result := type_marking_on end, agent set_type_marking_on)
-			evx_input_frame.extend (evx_type_marking_cb.ev_data_control, True)
-			gui_controls.extend (evx_type_marking_cb)
-
 
 			-- compile all first: check box
 			evx_input_frame.add_row (False)
@@ -112,7 +90,7 @@ feature {NONE} -- Initialization
 
 			-- file format combo			
 			create evx_format_cob.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_output_format_text), get_text ({ADL_MESSAGES_IDS}.ec_output_format_tooltip),
-				agent :STRING do Result := output_format end, export_formats, agent set_output_format, Void, Void, 15)
+				agent :STRING do Result := output_format end, report_formats, agent set_output_format, Void, Void, 15)
 			evx_output_frame.extend (evx_format_cob.ev_root_container, False)
 			gui_controls.extend (evx_format_cob)
 
@@ -140,7 +118,7 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (ev_bottom_row_hb)
 
 			-- execution button
-			create evx_run_button.make (get_text ({ADL_MESSAGES_IDS}.ec_export_button_text), get_text ({ADL_MESSAGES_IDS}.ec_export_button_text), Void,
+			create evx_run_button.make (get_text ({ADL_MESSAGES_IDS}.ec_run_report_button_text), get_text ({ADL_MESSAGES_IDS}.ec_run_report_button_text), Void,
 				agent :BOOLEAN do Result := is_running end, agent do_export, 0, 0)
 			evx_run_button.set_pixmaps (get_icon_pixmap ("tool/compile"), get_icon_pixmap ("tool/pause"))
 			ev_bottom_row_hb.extend (evx_run_button.ev_data_control)
@@ -180,9 +158,6 @@ feature {NONE} -- Initialization
 			builder.set_progress_agents (agent initialise_progress_bar, agent set_progress_bar_current_value)
 			builder.set_new_state_change_listener (agent evx_run_button.populate)
 			builder.set_console_update_agent (agent update_console)
-
-			-- any other setup
-			user_rm_flattening_on := rm_flattening_on
 
 			-- set up form for display
 			enable_edit
@@ -228,7 +203,7 @@ feature -- Access
 			if attached custom_output_directory as att_user_dir then
 				Result := att_user_dir
 			else
-				Result := export_generation_directory (output_format, export_flat)
+				Result := report_generation_directory
 			end
 		end
 
@@ -236,10 +211,6 @@ feature -- Access
 			-- True if user has changed export dir
 
 	compile_all_first: BOOLEAN
-
-	export_flat: BOOLEAN
-
-	user_rm_flattening_on: BOOLEAN
 
 	is_running: BOOLEAN
 		do
@@ -257,16 +228,6 @@ feature -- Commands
 
 feature -- Events
 
-	update_export_flat (a_flag: BOOLEAN)
-		do
-			export_flat := not a_flag
-			if not export_flat and user_rm_flattening_on then
-				user_rm_flattening_on := False
-			end
-			execution_state := es_initial
-			do_populate
-		end
-
 	set_compile_all_first (val: BOOLEAN)
 		do
 			compile_all_first := val
@@ -276,16 +237,6 @@ feature -- Events
 				evx_run_button.set_labels (get_text ({ADL_MESSAGES_IDS}.ec_export_button_text), get_text ({ADL_MESSAGES_IDS}.ec_export_button_text))
 			end
 			evx_run_button.populate
-		end
-
-	set_user_rm_flattening_on (a_flag: BOOLEAN)
-		do
-			user_rm_flattening_on := a_flag
-			if user_rm_flattening_on and not export_flat then
-				export_flat := True
-			end
-			execution_state := es_initial
-			do_populate
 		end
 
 	set_output_directory (a_dir: STRING)
@@ -346,7 +297,7 @@ feature {NONE} -- Implementation
 					else
 						execution_state := es_ready_to_export
 					end
-					builder.setup_build ([output_directory, evx_format_cob.data_control_text, export_flat, evx_flatten_with_rm_cb.is_selected])
+					builder.setup_build ([output_directory, evx_format_cob.data_control_text])
 
 				-- start compilation
 				elseif execution_state = es_ready_to_compile then
@@ -428,15 +379,13 @@ feature {NONE} -- Implementation
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	evx_compile_first_cb, evx_flatten_with_rm_cb, evx_type_marking_cb: EVX_CHECK_BOX_CONTROL
+	evx_compile_first_cb: EVX_CHECK_BOX_CONTROL
 
 	evx_dir_setter: EVX_DIRECTORY_SETTER
 
 	evx_format_cob: EVX_COMBO_TEXT_SELECTOR_CONTROL
 
 	ev_progress_bar: EV_HORIZONTAL_PROGRESS_BAR
-
-	evx_diff_flat_rb: EVX_BOOLEAN_RADIO_CONTROL
 
 	ev_bottom_row_hb: EV_HORIZONTAL_BOX
 
@@ -448,7 +397,7 @@ feature {NONE} -- Implementation
 
 	ev_console: EV_TEXT
 
-	builder: ARCHETYPE_EXPORTER
+	builder: ARCHETYPE_REPORTER
 		once
 			create Result.make
 		end
