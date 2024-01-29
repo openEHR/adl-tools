@@ -84,8 +84,6 @@ feature {NONE} -- Implementation
 		local
 			arch_rm_type_name, ref_rm_type_name, arch_path: detachable STRING
 			tail_path: STRING
-			bmm_class: BMM_CLASS
-			og_tail_path: OG_PATH
 			object_at_matching_path: detachable C_OBJECT
 		do
 			if arch_diff_child.has_rules then
