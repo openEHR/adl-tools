@@ -303,7 +303,8 @@ feature -- File Access
 		end
 
 	save_differential_text
-			-- Save converted differential archetype to its file in its source form, even if not compiling
+			-- Serialise differential archetype to its source file; if not compiling, write current
+			-- source text
 		local
 			ftext: STRING
 		do
