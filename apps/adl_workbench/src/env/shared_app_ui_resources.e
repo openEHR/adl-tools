@@ -916,7 +916,7 @@ feature {NONE} -- Implementation
 			Result.buffered_append (" Contributors: ", Bold_char_fmt); Result.buffered_append ("Peter Gummer, Ian McNicoll MD (FreshEHR),%N", Normal_char_fmt)
 			Result.buffered_append ("                          Patrick Langford (Intermountain Healthcare),%N", Normal_char_fmt)
 			Result.buffered_append ("                          Harold Solbrig (Mayo Clinic)%N", Normal_char_fmt)
-			Result.buffered_append ("          Funding: ", Bold_char_fmt); Result.buffered_append ("Ars Semantica, Ocean Informatics %N", Normal_char_fmt)
+			Result.buffered_append ("          Funding: ", Bold_char_fmt); Result.buffered_append ("Graphite Health, Ars Semantica, Ocean Informatics %N", Normal_char_fmt)
 			Result.buffered_append ("Issue tracker: ", Bold_char_fmt); Result.buffered_append (Bug_reporter_url + "%N", Normal_url_char_fmt)
 			Result.buffered_append ("%N", Normal_char_fmt)
 			Result.buffered_append ("Acknowledgements:%N", Bold_char_fmt)
