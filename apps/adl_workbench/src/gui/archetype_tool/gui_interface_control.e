@@ -282,7 +282,7 @@ feature {NONE} -- Implementation
 			if attached all_paths_cache as att_cache then
 				Result := att_cache
 			else
-				Result := source_archetype.all_paths
+				Result := source.all_paths (differential_view, editing_enabled)
 				all_paths_cache := Result
 			end
 		end
@@ -295,18 +295,7 @@ feature {NONE} -- Implementation
 			if attached data_value_paths_cache as att_cache then
 				Result := att_cache
 			else
-				ref_model := safe_source.ref_model
-
-				dv_class_name := ref_model.any_type_name
-
-				if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
-					aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
-					if attached aom_profile.archetype_data_value_parent_class as advpc then
-						dv_class_name := advpc
-					end
-				end
-
-				Result := source_archetype.data_value_paths (agent ref_model.type_conforms_to (?, dv_class_name))
+				Result := source.data_value_paths (differential_view, editing_enabled)
 				data_value_paths_cache := Result
 			end
 		end
@@ -316,7 +305,7 @@ feature {NONE} -- Implementation
 			if attached primitive_paths_cache as att_cache then
 				Result := att_cache
 			else
-				Result := source_archetype.primitive_paths
+				Result := source.primitive_paths (differential_view, editing_enabled)
 				primitive_paths_cache := Result
 			end
 		end
@@ -327,7 +316,7 @@ feature {NONE} -- Implementation
 				Result := att_cache
 			else
 				check attached selected_language end
-				Result := source_archetype.all_interface_tags (selected_language)
+				Result := source.interface_paths (differential_view, editing_enabled, selected_language)
 				interface_paths_cache := Result
 			end
 		end
