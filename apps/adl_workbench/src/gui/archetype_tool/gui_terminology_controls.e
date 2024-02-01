@@ -234,6 +234,7 @@ feature {NONE} -- Implementation
 				terminology_bindings_cols.put (col_titles.count, terminologies_csr.item)
 			end
 
+			-- find any other terminologies within OPT
 			if attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
 				across opt.component_terminologies as terminologies_csr loop
 					across terminologies_csr.item.terminologies_available as bindings_csr loop
@@ -532,7 +533,7 @@ feature {NONE} -- Implementation
 				else
 					create binding_str.make_empty
 				end
-				evx_id_terms_grid.set_last_row_label_col (terminology_bindings_col (terminologies_csr.item), binding_str, Void, Void, Binding_color, Void)
+				evx_values_grid.set_last_row_label_col (terminology_bindings_col (terminologies_csr.item), binding_str, Void, Void, Binding_color, Void)
 			end
 		end
 
