@@ -177,19 +177,41 @@ feature -- Access
 			Regex_valid: not a_regex.is_empty
 			Rm_type_valid: attached an_rm_type as att_rm_type implies not att_rm_type.is_empty
 			Rm_closure_valid: attached an_rm_package as att_rm_closure implies not att_rm_closure.is_empty
-		local
-			arch_id: ARCHETYPE_HRID
-			is_candidate: BOOLEAN
-			rm_type, rm_closure: detachable STRING
 		do
 			create Result.make (0)
 			Result.compare_objects
+			across matching_archetypes (a_regex, an_rm_type, an_rm_package) as archs_csr loop
+				Result.extend (archs_csr.key.to_string_8)
+			end
+
+			if Result.count = 0 then
+				regex_matcher.compile (a_regex)
+				if not regex_matcher.is_compiled then
+					Result.extend (get_msg_line (ec_regex_e1, <<a_regex>>))
+				end
+			end
+		end
+
+	matching_archetypes (a_regex: STRING; an_rm_type, an_rm_package: detachable STRING): STRING_TABLE [ARCH_LIB_ARCHETYPE]
+			-- generate list of archetype ids that lexically match the regex pattern and optional rm_type. If rm_type is supplied,
+			-- we assume that the regex itself does not contain an rm type. Matching using `an_rm_type' and
+			-- `an_rm_package' is done in lower case. Any case may be supplied for these two
+		require
+			Regex_valid: not a_regex.is_empty
+			Rm_type_valid: attached an_rm_type as att_rm_type implies not att_rm_type.is_empty
+			Rm_closure_valid: attached an_rm_package as att_rm_closure implies not att_rm_closure.is_empty
+		local
+			arch_id: ARCHETYPE_HRID
+			is_candidate: BOOLEAN
+			rm_type, rm_package: detachable STRING
+		do
+			create Result.make (0)
 
 			if attached an_rm_type as rm_t then
 				rm_type := rm_t.as_lower
 			end
-			if attached an_rm_package as rm_cl then
-				rm_closure := rm_cl.as_lower
+			if attached an_rm_package as rm_pkg then
+				rm_package := rm_pkg.as_lower
 			end
 
 			regex_matcher.compile (a_regex)
@@ -199,19 +221,17 @@ feature -- Access
 						arch_id := ala.id
 						if attached rm_type as rmt then
 							is_candidate := rmt.is_equal (arch_id.rm_class.as_lower)
-							if is_candidate and attached rm_closure as rmc then
+							if is_candidate and attached rm_package as rmc then
 								is_candidate := rmc.is_equal (arch_id.rm_package.as_lower)
 							end
 						else
 							is_candidate := True
 						end
 						if is_candidate then
-							Result.extend (arch_id.physical_id)
+							Result.put (ala, arch_id.physical_id)
 						end
 					end
 				end
-			else
-				Result.extend (get_msg_line (ec_regex_e1, <<a_regex>>))
 			end
 		end
 

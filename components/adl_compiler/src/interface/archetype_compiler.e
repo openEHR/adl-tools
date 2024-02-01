@@ -85,6 +85,24 @@ feature -- Commands
 			build_lineage (ara, 0)
 		end
 
+	build_matching_artefacts (id_regex: STRING)
+			-- top entry point into a compile run for archetypes matching an id regex
+ 		local
+ 			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+ 		do
+ 			create regex_matcher.make
+ 			regex_matcher.set_case_insensitive (True)
+ 			regex_matcher.compile (id_regex)
+ 			if regex_matcher.is_compiled then
+				run_list.wipe_out
+				across current_library.matching_archetypes (id_regex, Void, Void) as aras_csr loop
+					build_lineage (aras_csr.item, 0)
+				end
+			else
+				call_console_update_agent (get_msg_line ({ADL_MESSAGES_IDS}.ec_regex_e1, <<id_regex>>))
+			end
+		end
+
 feature {NONE} -- Build State
 
 	from_scratch: BOOLEAN
