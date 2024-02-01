@@ -61,14 +61,6 @@ feature -- File and artefact types
 			-- also we don't want users to get confused about what kind of files
 			-- these are
 
-	Syntax_type_csv: STRING = "csv"
-			-- Name of CSV syntax type.
-
-	File_ext_csv: STRING = ".csv"
-			-- Name of CSV syntax type.
-
-	Csv_default_delimiter: STRING = ","
-
 	Aom_profile_file_match_regex: STRING
 		once ("PROCESS")
 			Result :=  ".*\" + Aom_profile_file_extension + "$"
@@ -88,6 +80,16 @@ feature -- File and artefact types
 			create Result.make_from_string ("templates")
 		end
 
+	Syntax_type_csv: STRING = "csv"
+			-- Name of CSV syntax type.
+
+	File_ext_csv: STRING = ".csv"
+			-- Name of CSV syntax type.
+
+	Csv_default_delimiter: CHARACTER = ','
+
+	Csv_default_quote: STRING = "%""
+
 feature -- Export Types
 
 	export_formats: ARRAYED_SET [STRING]
@@ -104,7 +106,7 @@ feature -- Export Types
 		once
 			create Result.make (0)
 			Result.compare_objects
-			Result.extend ({ODIN_DEFINITIONS}.syntax_type_json)
+	--		Result.extend ({ODIN_DEFINITIONS}.syntax_type_json)
 			Result.extend (Syntax_type_csv)
 		end
 
@@ -116,6 +118,29 @@ feature -- Export Types
 			Result.put (File_ext_csv, Syntax_type_csv)
 		ensure
 			not_empty: not Result.is_empty
+		end
+
+	text_quoting_agents: HASH_TABLE [FUNCTION [ANY, TUPLE[STRING], STRING], STRING]
+		once
+			create Result.make(0)
+			Result.put (agent json_quote_text, {ODIN_DEFINITIONS}.syntax_type_json)
+			Result.put (agent csv_quote_text, Syntax_type_csv)
+		end
+
+	json_quote_text (s: STRING): STRING
+			-- TODO
+		do
+			Result := s
+		end
+
+	csv_quote_text (s: STRING): STRING
+		do
+			Result := Csv_default_quote + s + Csv_default_quote
+		end
+
+	default_text_quoting_agent: FUNCTION [ANY, TUPLE[STRING], STRING]
+		once
+			Result := agent csv_quote_text
 		end
 
 feature -- Archetype identifiers

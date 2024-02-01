@@ -24,6 +24,10 @@ inherit
 
 feature -- Definitions
 
+	Text_field_delimiter: STRING = "/"
+
+feature -- Access
+
 	id: STRING
 		deferred
 		end
@@ -32,7 +36,7 @@ feature -- Definitions
 		deferred
 		end
 
-	output_table: HASH_TABLE[TUPLE, STRING]
+	output_table: ARRAYED_LIST[TUPLE]
 		once
 			create Result.make(0)
 		end
@@ -45,8 +49,10 @@ feature {NONE} -- Initialisation
 
 feature {ARCHETYPE_REPORTER} -- Processing
 
-	initialise
+	initialise (a_text_quote_agent: like text_quote_agent)
 		do
+			output_table.wipe_out
+			text_quote_agent := a_text_quote_agent
 		end
 
 	finalise
@@ -57,6 +63,14 @@ feature {ARCHETYPE_REPORTER} -- Processing
 		require
 			auth_ara.is_valid
 		deferred
+		end
+
+feature {NONE}
+
+	text_quote_agent: FUNCTION [ANY, TUPLE[STRING], STRING]
+			-- function to use to quote output format
+		attribute
+			Result := default_text_quoting_agent
 		end
 
 end

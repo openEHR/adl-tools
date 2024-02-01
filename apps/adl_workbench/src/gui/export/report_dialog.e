@@ -31,10 +31,6 @@ feature -- Definitions
 
 	Min_width_in_chars: INTEGER = 160
 
-	Flat_path_segment_name: STRING = "flat"
-
-	Differential_path_segment_name: STRING = "differential"
-
 feature {NONE} -- Initialization
 
 	make
@@ -44,6 +40,8 @@ feature {NONE} -- Initialization
 
 	create_interface_objects
 			-- Initialize `Current'.
+		local
+			title_label: STRING
 		do
 			create gui_controls.make (0)
 
@@ -61,7 +59,11 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (ev_cell_1)
 
 			create ev_label_1
-			ev_label_1.set_text (get_text ({ADL_MESSAGES_IDS}.ec_report_description))
+			create title_label.make_from_string (get_text ({ADL_MESSAGES_IDS}.ec_report_description) + "%N")
+			across builder.reports as rpts_csr loop
+				title_label.append (rpts_csr.item.title + "%N")
+			end
+			ev_label_1.set_text (title_label)
 			ev_root_container.extend (ev_label_1)
 			ev_root_container.disable_item_expand (ev_label_1)
 

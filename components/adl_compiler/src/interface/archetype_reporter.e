@@ -55,6 +55,25 @@ feature {NONE} -- Initialisation
 		do
 		end
 
+feature -- Access
+
+	reports: HASH_TABLE [ARCHETYPE_LIBRARY_REPORT, STRING]
+		local
+			report1: LOINC_ARCHETYPE_MAP_REPORT
+			report2: ID_CODE_REPORT
+			report3: ARCH_ID_TO_TPL_ID_REPORT
+		once
+			create Result.make(0)
+			create report1.make
+			Result.put (report1, report1.title)
+
+			create report2.make
+			Result.put (report2, report2.title)
+
+			create report3.make
+			Result.put (report3, report3.title)
+		end
+
 feature -- Commands
 
 	build_artefact (ara: ARCH_LIB_ARCHETYPE)
@@ -69,11 +88,14 @@ feature {NONE} -- Commands
 		do
 			output_dir := args.export_dir
 			syntax := args.syntax
+			if attached text_quoting_agents.item (syntax) as agt then
+				text_quote_agent := agt
+			end
 
 			artefact_count := current_library.archetype_count
 
 			across reports as rpts_csr loop
-				rpts_csr.item.initialise
+				rpts_csr.item.initialise (text_quote_agent)
 			end
 		end
 
@@ -84,7 +106,7 @@ feature {NONE} -- Commands
 		do
 			across reports as rpts_csr loop
 				check attached reporting_file_extensions.item(syntax) as fmt then
-					output_filename := file_system.pathname (output_dir, rpts_csr.key) + fmt
+					output_filename := file_system.pathname (output_dir, rpts_csr.item.id) + fmt
 				end
 
 				if attached file_system.new_output_file (output_filename) as fd then
@@ -97,11 +119,11 @@ feature {NONE} -- Commands
 							check attached {STRING} cols_csr.item as s then
 								col_vals.append (s)
 								if not cols_csr.is_last then
-									col_vals.append (Csv_default_delimiter)
+									col_vals.append_character (Csv_default_delimiter)
 								end
 							end
 						end
-						fd.put_string (row_csr.key + Csv_default_delimiter + col_vals + "%N")
+						fd.put_string (col_vals + "%N")
 					end
 					fd.close
 				end
@@ -138,15 +160,6 @@ feature {NONE} -- Commands
 		end
 
 feature {NONE} -- Build State
-
-	reports: HASH_TABLE [ARCHETYPE_LIBRARY_REPORT, STRING]
-		local
-			report1: LOINC_ARCHETYPE_MAP_REPORT
-		once
-			create Result.make(0)
-			create report1.make
-			Result.put (report1, report1.title)
-		end
 
 	output_dir: STRING
 		attribute
@@ -197,6 +210,12 @@ feature {NONE} -- Implementation
 	build_args_type: TUPLE [export_dir, syntax: STRING]
 		do
 			create Result
+		end
+
+	text_quote_agent: FUNCTION [ANY, TUPLE[STRING], STRING]
+			-- function to use to quote output format
+		attribute
+			Result := default_text_quoting_agent
 		end
 
 end
