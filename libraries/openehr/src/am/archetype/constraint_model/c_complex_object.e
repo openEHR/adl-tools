@@ -132,7 +132,7 @@ feature -- Access
 		end
 
 	path_map: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
-			-- All paths below this point, including this node
+			-- All nodes below this point, including this node, keyed by path
 		do
 			create Result.make (0)
 			across representation.path_map as paths_csr loop

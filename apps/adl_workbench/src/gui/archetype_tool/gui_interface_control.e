@@ -316,7 +316,7 @@ feature {NONE} -- Implementation
 				Result := att_cache
 			else
 				check attached selected_language end
-				Result := source.interface_paths (differential_view, editing_enabled, selected_language)
+				Result := source.interface_paths (differential_view, editing_enabled, selected_language, "_")
 				interface_paths_cache := Result
 			end
 		end

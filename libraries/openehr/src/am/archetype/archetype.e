@@ -243,14 +243,14 @@ feature -- Paths
 			Result.object_comparison
 		end
 
-	data_value_paths (a_bmm_is_data_value_agent: FUNCTION [ANY, TUPLE [STRING], BOOLEAN]): ARRAYED_LIST [STRING]
+	paths_matching_rm_type (a_bmm_type_matcher_agent: FUNCTION [ANY, TUPLE [STRING], BOOLEAN]): ARRAYED_LIST [STRING]
 			-- paths from definition structure C_PRIMITIVE_OBJECTs only
 		do
 			Result := all_paths_filtered (
-				agent (ac: ARCHETYPE_CONSTRAINT; bmm_is_data_value_agent: FUNCTION [ANY, TUPLE [STRING], BOOLEAN]): BOOLEAN
+				agent (ac: ARCHETYPE_CONSTRAINT; bmm_type_matcher_agent: FUNCTION [ANY, TUPLE [STRING], BOOLEAN]): BOOLEAN
 					do
-						Result := attached {C_COMPLEX_OBJECT} ac as cco and then bmm_is_data_value_agent.item ([cco.rm_type_name])
-					end (?, a_bmm_is_data_value_agent)
+						Result := attached {C_COMPLEX_OBJECT} ac as cco and then bmm_type_matcher_agent.item ([cco.rm_type_name])
+					end (?, a_bmm_type_matcher_agent)
 			)
 		ensure
 			Result.object_comparison
@@ -308,15 +308,56 @@ feature -- Paths
 			Result.object_comparison
 		end
 
-	all_interface_tags (a_language: STRING): HASH_TABLE [STRING, STRING]
+	all_interface_tags (a_language, a_segment_delimiter: STRING): HASH_TABLE [STRING, STRING]
 			-- generate a table of tags suitable for use in XSD, programming languages,
 			-- keyed by physical path
 		do
-			Result := interface_tags (a_language, all_paths)
+			Result := interface_tags (a_language, all_paths, a_segment_delimiter)
 		end
 
-	interface_tags (a_language: STRING; path_set: ARRAYED_LIST [STRING]): HASH_TABLE [STRING, STRING]
+	locatable_descriptions (a_language, a_segment_delimiter: STRING; a_bmm_type_matcher_agent: FUNCTION [ANY, TUPLE [STRING], BOOLEAN]): HASH_TABLE [STRING, STRING]
+			-- generate a table of path meanings, for paths to objects matching `a_bmm_type_matcher_agent` condition
+			-- keyed by physical path
+		do
+			Result := interface_descriptions (a_language, paths_matching_rm_type (a_bmm_type_matcher_agent), a_segment_delimiter)
+		end
+
+	interface_tags (a_language: STRING; path_set: ARRAYED_LIST [STRING]; delim: STRING): HASH_TABLE [STRING, STRING]
 			-- convert `path_set' to a hash of interface tags, keyed by path
+			-- delim is something like "_", "-", or empty, to control the lexical style of the identifier
+		require
+			a_lang_valid: not a_language.is_empty
+		local
+			og_log_path: OG_PATH
+			tag_path, tag: STRING
+		do
+			Result := interface_descriptions (a_language, path_set, delim)
+
+			-- perform character-by-character replacements to make an identifier acceptable in
+			-- most programming languages
+			across Result as path_csr loop
+				tag_path := path_csr.item
+				create tag.make (tag_path.count)
+				across tag_path as char_csr loop
+					if Adl_tag_remove_characters.has (char_csr.item) then
+						-- do nothing
+					elseif Adl_tag_underscore_characters.has (char_csr.item)  then
+						tag.append (delim)
+					elseif Adl_tag_character_replacements.has (char_csr.item) and then attached Adl_tag_character_replacements.item (char_csr.item) as rep_str then
+						tag.append (rep_str)
+					else
+						tag.append_character (char_csr.item)
+					end
+				end
+
+				-- Replace description with tag
+				tag_path.wipe_out
+				tag_path.append (tag)
+			end
+		end
+
+	interface_descriptions (a_language: STRING; path_set: ARRAYED_LIST [STRING]; delim: STRING): HASH_TABLE [STRING, STRING]
+			-- convert `path_set' to a hash of interface descriptions, keyed by path
 		require
 			a_lang_valid: not a_language.is_empty
 		local
@@ -336,27 +377,13 @@ feature -- Paths
 						tag_path.append (path_seg_csr.item.attr_name)
 					end
 					if not path_seg_csr.is_last then
-						tag_path.append_character ('_')
-					end
-				end
-
-				-- perform character-by-character replacements
-				create tag.make (tag_path.count)
-				across tag_path as char_csr loop
-					if Adl_tag_remove_characters.has (char_csr.item) then
-						-- do nothing
-					elseif Adl_tag_underscore_characters.has (char_csr.item)  then
-						tag.append_character ('_')
-					elseif Adl_tag_character_replacements.has (char_csr.item) and then attached Adl_tag_character_replacements.item (char_csr.item) as rep_str then
-						tag.append (rep_str)
-					else
-						tag.append_character (char_csr.item)
+						tag_path.append (delim)
 					end
 				end
 
 				-- Add the path to the result, unless it is the root, which is not useful in a set of interface tags
-				if not tag.is_empty then
-					Result.put (tag, path_csr.item)
+				if not tag_path.is_empty then
+					Result.put (tag_path, path_csr.item)
 				end
 			end
 		end
@@ -489,6 +516,9 @@ feature -- Paths
 						else
 							Result.item.clear_object_id
 						end
+
+					-- TODO: doesn't apply anymore, with obsoleting of use of archetype id in node_id attribute
+					-- of C_ARCHETYPE_ROOT
 					elseif archetype_id.valid_id (id_code) then
 						create an_arch_id.make_from_string (id_code)
 						Result.item.set_object_id (an_arch_id.concept_id)

@@ -512,23 +512,23 @@ feature -- Artefacts
 					leaf_class_name := advpc
 				end
 			end
-			Result := select_archetype (differential_view, editing_enabled).data_value_paths (agent ref_model.type_conforms_to (?, leaf_class_name))
+			Result := select_archetype (differential_view, editing_enabled).paths_matching_rm_type (agent ref_model.type_conforms_to (?, leaf_class_name))
 		end
 
-	identified_paths (differential_view, editing_enabled: BOOLEAN): ARRAYED_LIST[STRING]
-			-- paths down to named Node / element level of tree
+	locatable_paths (differential_view, editing_enabled: BOOLEAN): ARRAYED_LIST[STRING]
+			-- all paths to Locatable objects
 		local
 			aom_profile: AOM_PROFILE
-			leaf_class_name: STRING
+			locatable_class_name: STRING
 		do
-			leaf_class_name := ref_model.any_type_name
+			locatable_class_name := ref_model.any_type_name
 			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
 				if attached aom_profile.archetype_parent_class as advpc then
-					leaf_class_name := advpc
+					locatable_class_name := advpc
 				end
 			end
-			Result := select_archetype (differential_view, editing_enabled).data_value_paths (agent ref_model.type_conforms_to (?, leaf_class_name))
+			Result := select_archetype (differential_view, editing_enabled).paths_matching_rm_type (agent ref_model.type_conforms_to (?, locatable_class_name))
 		end
 
 	primitive_paths (differential_view, editing_enabled: BOOLEAN): ARRAYED_LIST[STRING]
@@ -537,9 +537,26 @@ feature -- Artefacts
 			Result := select_archetype (differential_view, editing_enabled).primitive_paths
 		end
 
-	interface_paths (differential_view, editing_enabled: BOOLEAN; selected_language: STRING): HASH_TABLE [STRING, STRING]
+	interface_paths (differential_view, editing_enabled: BOOLEAN; a_language, a_segment_delimiter: STRING): HASH_TABLE [STRING, STRING]
+			-- path tags, keyed by path
 		do
-			Result := select_archetype (differential_view, editing_enabled).all_interface_tags (selected_language)
+			Result := select_archetype (differential_view, editing_enabled).all_interface_tags (a_language, a_segment_delimiter)
+		end
+
+	locatable_descriptions (differential_view, editing_enabled: BOOLEAN; a_language, a_segment_delimiter: STRING): HASH_TABLE [STRING, STRING]
+			-- tags for all paths to Locatable objects
+		local
+			aom_profile: AOM_PROFILE
+			locatable_class_name: STRING
+		do
+			locatable_class_name := ref_model.any_type_name
+			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
+				if attached aom_profile.archetype_parent_class as advpc then
+					locatable_class_name := advpc
+				end
+			end
+			Result := select_archetype (differential_view, editing_enabled).locatable_descriptions (a_language, a_segment_delimiter, agent ref_model.type_conforms_to (?, locatable_class_name))
 		end
 
 feature -- Compilation
