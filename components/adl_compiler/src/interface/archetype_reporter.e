@@ -62,8 +62,10 @@ feature -- Access
 			report1: LOINC_ARCHETYPE_MAP_REPORT
 			report2: ID_CODE_REPORT
 			report3: ARCH_ID_TO_TPL_ID_REPORT
+			report4: VALUE_SETS_REPORT
 		once
 			create Result.make(0)
+
 			create report1.make
 			Result.put (report1, report1.title)
 
@@ -72,6 +74,12 @@ feature -- Access
 
 			create report3.make
 			Result.put (report3, report3.title)
+
+			create report3.make
+			Result.put (report3, report3.title)
+
+			create report4.make
+			Result.put (report4, report4.title)
 		end
 
 feature -- Commands
@@ -101,30 +109,33 @@ feature {NONE} -- Commands
 
 	do_finalise_build
 		local
-			col_vals: STRING
-			output_filename: STRING
+			col_vals, output_filename, file_ext: STRING
 		do
 			across reports as rpts_csr loop
-				check attached reporting_file_extensions.item(syntax) as fmt then
-					output_filename := file_system.pathname (output_dir, rpts_csr.item.id) + fmt
+				-- use CSV for table
+				if not rpts_csr.item.output_table.is_empty then
+					file_ext := file_ext_csv
+				-- and JSON for tree
+				elseif rpts_csr.item.output_tree.is_identified then
+					file_ext := {ODIN_DEFINITIONS}.file_ext_json_default
+				else
+					file_ext := file_ext_csv
 				end
+
+				output_filename := file_system.pathname (output_dir, rpts_csr.item.id) + file_ext
 
 				if attached file_system.new_output_file (output_filename) as fd then
 					fd.open_write
 
-					-- process rows
-					across rpts_csr.item.output_table as row_csr loop
-						create col_vals.make_empty
-						across row_csr.item as cols_csr loop
-							check attached {STRING} cols_csr.item as s then
-								col_vals.append (s)
-								if not cols_csr.is_last then
-									col_vals.append_character (Csv_default_delimiter)
-								end
-							end
-						end
-						fd.put_string (col_vals + "%N")
+					-- process to CSV
+					if file_ext.is_equal (file_ext_csv) then
+						output_to_csv (rpts_csr.item, fd)
+
+					-- process to JSON
+					elseif file_ext.is_equal ({ODIN_DEFINITIONS}.file_ext_json_default) then
+						output_to_json (rpts_csr.item, fd)
 					end
+
 					fd.close
 				end
 			end
@@ -216,6 +227,37 @@ feature {NONE} -- Implementation
 			-- function to use to quote output format
 		attribute
 			Result := default_text_quoting_agent
+		end
+
+	output_to_csv (rpt: ARCHETYPE_LIBRARY_REPORT; fd: KI_TEXT_OUTPUT_FILE)
+		local
+			col_vals: STRING
+		do
+			across rpt.output_table as row_csr loop
+				create col_vals.make_empty
+				across row_csr.item as cols_csr loop
+					check attached {STRING} cols_csr.item as s then
+						col_vals.append (s)
+						if not cols_csr.is_last then
+							col_vals.append_character (Csv_default_delimiter)
+						end
+					end
+				end
+				fd.put_string (col_vals + "%N")
+			end
+		end
+
+	output_to_json (rpt: ARCHETYPE_LIBRARY_REPORT; fd: KI_TEXT_OUTPUT_FILE)
+		local
+			fac: JSON_SERIALIZATION_FACTORY
+			conv: JSON_SERIALIZATION
+		do
+			conv := fac.smart_serialization
+			conv.set_pretty_printing
+
+			if attached conv.to_json_string (rpt.output_tree) as s then
+				fd.put_string (s)
+			end
 		end
 
 end

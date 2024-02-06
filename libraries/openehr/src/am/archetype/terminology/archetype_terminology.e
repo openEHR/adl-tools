@@ -46,7 +46,7 @@ inherit
 		end
 
 create
-	make_differential, make_differential_empty, make_dt
+	make_default, make_differential, make_differential_empty, make_dt
 
 feature -- Initialisation
 
@@ -102,6 +102,11 @@ feature -- Initialisation
 					is_differential := differential_flag
 				end
 			end
+		end
+
+	make_default
+		do
+			make_differential_empty (default_language, 0)
 		end
 
 feature -- Access (Stored)

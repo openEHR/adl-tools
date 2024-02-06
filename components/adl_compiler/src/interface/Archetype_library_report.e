@@ -41,6 +41,11 @@ feature -- Access
 			create Result.make(0)
 		end
 
+	output_tree: REPORT_DATA
+		once
+			create Result
+		end
+
 feature {NONE} -- Initialisation
 
 	make

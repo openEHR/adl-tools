@@ -106,7 +106,7 @@ feature -- Export Types
 		once
 			create Result.make (0)
 			Result.compare_objects
-	--		Result.extend ({ODIN_DEFINITIONS}.syntax_type_json)
+			Result.extend ({ODIN_DEFINITIONS}.syntax_type_json)
 			Result.extend (Syntax_type_csv)
 		end
 

@@ -197,7 +197,7 @@ feature -- Access
 
 	output_format: STRING
 		attribute
-			Result := {ODIN_DEFINITIONS}.syntax_type_json
+			Result := Syntax_type_csv
 		end
 
 	output_directory: STRING
