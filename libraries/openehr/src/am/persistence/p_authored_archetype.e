@@ -83,6 +83,10 @@ feature -- Factory
 
 				create arch_terminology.make_differential (original_language.code_string, o_definition.node_id)
 				p_terminology.populate_terminology (arch_terminology)
+
+				-- adjust original_language in Terminology since it is only a string, and doesn't 
+				-- know its code-set, whereas the one in Archetype does
+				arch_terminology.set_original_language (original_language.deep_twin)
 				arch_terminology.finalise_dt
 
 				create Result.make_all (

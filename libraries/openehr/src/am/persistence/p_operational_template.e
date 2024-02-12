@@ -48,7 +48,7 @@ feature -- Factory
 		do
 			if attached precursor as att_arch and attached component_terminologies as att_terminologies then
 				across att_terminologies as terminologies_csr loop
-					create arch_terminology.make_differential (terminologies_csr.item.original_language.as_string, att_arch.definition.node_id)
+					create arch_terminology.make_differential (terminologies_csr.item.original_language, att_arch.definition.node_id)
 					terminologies_csr.item.populate_terminology (arch_terminology)
 					arch_terminology.finalise_dt
 					att_arch.add_component_terminology (arch_terminology, terminologies_csr.key)
