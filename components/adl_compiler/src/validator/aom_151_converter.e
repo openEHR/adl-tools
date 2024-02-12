@@ -622,8 +622,8 @@ feature {NONE} -- Implementation
 						rule_path.i_th (og_path.count).set_object_id (id_code)
 						rule_path_str := rule_path.as_string
 						across rules_idx_csr.item as rules_csr loop
-							if rules_csr.item.reference_type = {EXPR_LEAF}.Ref_type_attribute then
-								rules_csr.item.make_archetype_definition_ref (rule_path_str)
+							if attached {EXPR_ARCHETYPE_REF} rules_csr.item as aref and then aref.is_archetype_definition_ref then
+								aref.set_path (rule_path_str)
 							end
 						end
 					end

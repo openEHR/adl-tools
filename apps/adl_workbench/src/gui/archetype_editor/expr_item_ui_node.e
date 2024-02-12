@@ -17,7 +17,7 @@ inherit
 
 feature -- Access
 
-	arch_node: detachable EXPR_ITEM
+	arch_node: detachable EXPRESSION
 			-- assertion item being edited
 
 	parent: detachable RULE_ELEMENT_UI_NODE

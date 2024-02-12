@@ -15,7 +15,7 @@ inherit
 		export
 			{NONE} all
 		end
-	EXPR_ITEM
+	EXPRESSION
 
 feature -- Initialisation
 

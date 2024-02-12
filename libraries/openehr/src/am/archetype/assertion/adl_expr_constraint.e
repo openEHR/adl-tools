@@ -19,21 +19,17 @@ feature -- Access
 	eval_result: ANY
 			-- constraint on result of evaluation of an expression
 
-	expression: EXPR_ITEM
+	expression: EXPRESSION
 			-- constraint expressed in the form of an expression
 
 feature -- Modification
 
 	set_eval_result(v:ANY)
-		require
-			Exists: v /= Void
 		do
 			eval_result := v
 		end
 
-	set_expression(e: EXPR_ITEM)
-		require
-			Exists: e /= Void
+	set_expression(e: EXPRESSION)
 		do
 			expression := e
 		end

@@ -20,7 +20,7 @@ create
 
 feature -- Initialisation
 
-	make (an_op: OPERATOR_KIND; a_left_item, a_right_item: EXPR_ITEM)
+	make (an_op: OPERATOR_KIND; a_left_item, a_right_item: EXPRESSION)
    		do
 			make_operator (an_op)
 			left_operand := a_left_item
@@ -31,19 +31,19 @@ feature -- Initialisation
 
 feature -- Access
 
-	left_operand: EXPR_ITEM
+	left_operand: EXPRESSION
 
-	right_operand: EXPR_ITEM
+	right_operand: EXPRESSION
 
 feature -- Modification
 
-	set_left_operand (an_item: EXPR_ITEM)
+	set_left_operand (an_item: EXPRESSION)
 		do
 			left_operand := an_item
 			an_item.set_parent (Current)
 		end
 
-	set_right_operand (an_item: EXPR_ITEM)
+	set_right_operand (an_item: EXPRESSION)
 		do
 			right_operand := an_item
 			an_item.set_parent (Current)

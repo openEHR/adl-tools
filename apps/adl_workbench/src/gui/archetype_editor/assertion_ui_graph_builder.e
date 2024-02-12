@@ -92,7 +92,7 @@ feature {NONE} -- Implementation
 
 	expr_stack: ARRAYED_STACK [EXPR_ITEM_UI_NODE]
 
-	attach_to_tree (a_node: EXPR_ITEM; an_ed_node: EXPR_ITEM_UI_NODE)
+	attach_to_tree (a_node: EXPRESSION; an_ed_node: EXPR_ITEM_UI_NODE)
 		do
 			if expr_stack.is_empty then
 				check attached root_node as att_rn then

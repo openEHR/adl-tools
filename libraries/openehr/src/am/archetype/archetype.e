@@ -808,8 +808,8 @@ feature -- Validation
 					end (?, ?, Result))
 		end
 
-	rules_index: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING]
-			-- table of {list<EXPR_LEAF>, target_path}
+	rules_index: HASH_TABLE [ARRAYED_LIST [EXPR_ARCHETYPE_REF], STRING]
+			-- table of {list<EXPR_ARCHETYPE_REF>, target_path}
 			-- i.e. <list of invariant leaf nodes> keyed by path they point to
 		local
 			def_it: EXPR_ITERATOR
@@ -819,12 +819,12 @@ feature -- Validation
 				across att_rules as inv_csr loop
 					create def_it.make (inv_csr.item)
 					def_it.do_all (
-						agent (a_node: RULE_ELEMENT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING])
+						agent (a_node: RULE_ELEMENT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [EXPR_ARCHETYPE_REF], STRING])
 							local
-								al_exleaf: ARRAYED_LIST[EXPR_LEAF]
+								al_exleaf: ARRAYED_LIST[EXPR_ARCHETYPE_REF]
 							do
-								if attached {EXPR_LEAF} a_node as el then
-									if el.is_archetype_definition_ref and attached {STRING} el.item as tgt_path then
+								if attached {EXPR_ARCHETYPE_REF} a_node as el then
+									if el.is_archetype_definition_ref and attached {STRING} el.path as tgt_path then
 										if attached idx.item (tgt_path) as att_al_exleaf then
 											al_exleaf := att_al_exleaf
 										else

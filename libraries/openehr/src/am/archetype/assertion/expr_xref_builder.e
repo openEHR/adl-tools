@@ -12,7 +12,7 @@ class EXPR_XREF_BUILDER
 inherit
 	EXPR_VISITOR
 		redefine
-			start_expr_leaf
+			start_expr_archetype_ref
 		end
 
 feature {NONE} -- Initialisation
@@ -25,12 +25,12 @@ feature {NONE} -- Initialisation
 
 feature -- Visitor
 
-	start_expr_leaf (a_node: EXPR_LEAF; depth: INTEGER)
-			-- enter an EXPR_LEAF
+	start_expr_archetype_ref (a_node: EXPR_ARCHETYPE_REF; depth: INTEGER)
+			-- enter an EXPR_ARCHETYPE_REF
 		do
 			if a_node.is_archetype_definition_ref and attached {STRING} a_node.item as tgt_path then
 				if not archetype.rules_index.has (tgt_path) then
-					archetype.rules_index.put (create {ARRAYED_LIST[EXPR_LEAF]}.make(0), tgt_path)
+					archetype.rules_index.put (create {ARRAYED_LIST[EXPR_ARCHETYPE_REF]}.make(0), tgt_path)
 				end
 				archetype.rules_index.item (tgt_path).extend (a_node)
 			end

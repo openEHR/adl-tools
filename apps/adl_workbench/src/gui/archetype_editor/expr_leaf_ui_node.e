@@ -47,14 +47,14 @@ feature {NONE} -- Implementation
 			-- generate useful string representation for meaning column
 		do
 			create Result.make_empty
-			if attached arch_node as a_n then
-				if a_n.is_archetype_definition_ref then
-					if attached ui_graph_state.flat_terminology.deepest_definition_for_path (a_n.item.out, display_settings.language) as att_term_def then
+			if attached {EXPR_LEAF} arch_node as a_n then
+				if attached {EXPR_ARCHETYPE_REF} a_n as aref and then aref.is_archetype_definition_ref then
+					if attached ui_graph_state.flat_terminology.deepest_definition_for_path (aref.path, display_settings.language) as att_term_def then
 						Result.append (att_term_def.text)
 					else
-						Result.append (a_n.item.out)
+						Result.append (aref.path)
 					end
-				elseif a_n.is_constraint and attached {C_TERMINOLOGY_CODE} a_n.item as c_cp then
+				elseif attached {EXPR_CONSTRAINT} a_n as acon and then attached {C_TERMINOLOGY_CODE} acon.item as c_cp then
 					Result.append (c_terminology_code_str (c_cp))
 				else
 					Result.append (a_n.as_string)

@@ -24,7 +24,7 @@ create
 
 feature -- Initialisation
 
-	make (an_expr: EXPR_ITEM)
+	make (an_expr: EXPRESSION)
 			-- make assertion with an expression and an optional tag
    		do
 			expression := an_expr
@@ -32,7 +32,7 @@ feature -- Initialisation
 			type := op_type_boolean
 		end
 
-	make_with_tag (an_expr: EXPR_ITEM; a_tag: STRING)
+	make_with_tag (an_expr: EXPRESSION; a_tag: STRING)
 			-- make assertion with an expression and an optional tag
 		require
 			Tag_valid: not a_tag.is_empty
@@ -48,14 +48,14 @@ feature -- Access
 	tag: detachable STRING
 			-- tag name of assertion
 
-	expression: EXPR_ITEM
+	expression: EXPRESSION
 
 	regex_constraint: detachable C_STRING
 			-- extract regex from assertion of form:
 			-- 'id matches {/regex/}'
 		do
-			if attached {EXPR_BINARY_OPERATOR} expression as bin_op and then bin_op.operator.value = op_matches and then
-				attached {EXPR_LEAF} bin_op.right_operand as rhs and then
+			if attached {EXPR_BINARY_OPERATOR} expression as bin_op and then
+				attached {EXPR_CONSTRAINT} bin_op.right_operand as rhs and then
 				attached {C_STRING} rhs.item as c_str
 			then
 				Result := c_str

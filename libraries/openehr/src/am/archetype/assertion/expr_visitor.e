@@ -51,6 +51,36 @@ feature -- Visitor
 		do
 		end
 
+	start_expr_archetype_ref (a_node: EXPR_ARCHETYPE_REF; depth: INTEGER)
+			-- enter an EXPR_ARCHETYPE_REF
+		do
+		end
+
+	end_expr_archetype_ref (a_node: EXPR_ARCHETYPE_REF; depth: INTEGER)
+			-- exit an EXPR_ARCHETYPE_REF
+		do
+		end
+
+	start_expr_literal (a_node: EXPR_LITERAL; depth: INTEGER)
+			-- enter an EXPR_LITERAL
+		do
+		end
+
+	end_expr_literal (a_node: EXPR_LITERAL; depth: INTEGER)
+			-- exit an EXPR_LITERAL
+		do
+		end
+
+	start_expr_constraint (a_node: EXPR_CONSTRAINT; depth: INTEGER)
+			-- enter an EXPR_CONSTRAINT
+		do
+		end
+
+	end_expr_constraint (a_node: EXPR_CONSTRAINT; depth: INTEGER)
+			-- exit an EXPR_CONSTRAINT
+		do
+		end
+
 feature -- Finalisation
 
 	finalise
