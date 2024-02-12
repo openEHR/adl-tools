@@ -114,20 +114,22 @@ feature -- Visitor
 
 			serialise_type_node_id (a_node, depth)
 
-			-- output occurrences
-			serialise_occurrences (a_node, depth)
 
 			if a_node.is_closed then
 				-- output 'closed ' or 'closed -- comment'
 				last_result.append (apply_style(symbol(SYM_CLOSED), STYLE_KEYWORD) + format_item(FMT_SPACE))
 				serialise_comment (a_node)
+			else
+				-- output occurrences
+				serialise_occurrences (a_node, depth)
 
-			elseif not a_node.any_allowed then
-				-- 'matches { -- comment%N' or 'matches {%N'
-				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				last_result.append (symbol(SYM_START_CBLOCK))
-				serialise_comment (a_node)
-				last_result.append (format_item(FMT_NEWLINE))
+				if not a_node.any_allowed then
+					-- 'matches { -- comment%N' or 'matches {%N'
+					last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
+					last_result.append (symbol(SYM_START_CBLOCK))
+					serialise_comment (a_node)
+					last_result.append (format_item(FMT_NEWLINE))
+				end
 			end
 		end
 
