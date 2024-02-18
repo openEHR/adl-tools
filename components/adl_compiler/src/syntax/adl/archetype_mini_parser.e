@@ -164,7 +164,6 @@ feature {NONE} -- Implementation
 			-- specialisation status and if specialised, specialisation parent
 		local
 			id_bad: BOOLEAN
-			arch_id_is_old_style, arch_parent_id_is_old_style: BOOLEAN
 			arch_artefact_type_name, archetype_id_str, adl_ver: STRING
 			parent_id_str: detachable STRING
 			lpos, rpos: INTEGER
@@ -200,10 +199,12 @@ feature {NONE} -- Implementation
 			if valid_artefact_type (arch_artefact_type_name) then
 
 				-- get line 2 - should be archetype id
-				if archetype_id_checker.valid_id (lines[2]) then
+				if archetype_id_checker.valid_adl2_archetype_id (lines[2]) then
 					 -- ok
-				elseif old_archetype_id_pattern_regex.matches (lines[2]) then
-					arch_id_is_old_style := True
+
+				elseif archetype_id_checker.valid_adl14_archetype_id (lines[2]) then
+					 -- ok
+
 				else -- something wrong with the id
 					id_bad := True
 					add_error ({ADL_MESSAGES_IDS}.ec_parse_archetype_e8, <<source_id, lines[2]>>)
@@ -214,21 +215,19 @@ feature {NONE} -- Implementation
 
 					-- get line 3 - should be either 'specialise' / 'specialize' or 'concept'
 					if lines[3].is_equal ("specialise") or lines[3].is_equal("specialize") then
-						if archetype_id_parser.valid_id_reference (lines[4]) then
+						if archetype_id_parser.valid_adl2_archetype_ref (lines[4]) then
 							parent_id_str := lines[4].twin
-						elseif old_archetype_id_pattern_regex.matches (lines[4]) then
-							parent_id_str := lines[4].twin
-							arch_parent_id_is_old_style := True
+
 						else
 							-- something wrong with the parent id
 							add_error ({ADL_MESSAGES_IDS}.ec_parse_archetype_e10, <<source_id, lines[4]>>)
 						end
 					end
 
-					create arch_tn.make (adl_ver, archetype_id_str, arch_id_is_old_style, arch_artefact_type_name, arch_is_differential, is_generated)
+					create arch_tn.make (adl_ver, archetype_id_str, arch_artefact_type_name, arch_is_differential, is_generated)
 					last_archetype := arch_tn
 					if attached parent_id_str as pid_str then
-						arch_tn.set_parent_archetype_id (parent_id_str, arch_parent_id_is_old_style)
+						arch_tn.set_parent_archetype_id (parent_id_str)
 					end
 				end
 			else

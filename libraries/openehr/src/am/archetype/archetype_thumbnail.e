@@ -25,15 +25,19 @@ create
 
 feature -- Initialisation
 
-	make (an_adl_version, an_id: STRING; id_is_old_style_flag: BOOLEAN; artefact_type_str: IMMUTABLE_STRING_8; is_differential_flag, is_generated_flag: BOOLEAN)
+	make (an_adl_version, an_id: STRING; artefact_type_str: IMMUTABLE_STRING_8; is_differential_flag, is_generated_flag: BOOLEAN)
 		do
 			if valid_standard_version (an_adl_version) then
 				adl_version := an_adl_version
 			else
 				adl_version := adl_14_version
 			end
-			create archetype_id.make_from_string (an_id)
-			archetype_id_is_old_style := id_is_old_style_flag
+
+			if Is_adl_14_version (adl_version) then
+				create archetype_id.make_adl14_from_string (an_id)
+			else
+				create archetype_id.make_from_string (an_id)
+			end
 			artefact_type := artefact_type_str
 			is_differential := is_differential_flag
 			is_generated := is_generated_flag
@@ -79,12 +83,6 @@ feature -- Status Report
 			Result := adl_version.is_equal (adl_14_version)
 		end
 
-	archetype_id_is_old_style: BOOLEAN
-			-- True if the id has an old-style non-conformant form, e.g. with 'draft' in the version id part
-
-	parent_archetype_id_is_old_style: BOOLEAN
-			-- True if the parent_id has an old-style non-conformant form, e.g. with 'draft' in the version id part
-
 	differential_generated: BOOLEAN
 			-- True if the differential form was generated
 		do
@@ -93,10 +91,9 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_parent_archetype_id (an_id: STRING; id_is_old_style_flag: BOOLEAN)
+	set_parent_archetype_id (an_id: STRING)
 		do
 			parent_archetype_id := an_id
-			parent_archetype_id_is_old_style := id_is_old_style_flag
 		end
 
 	set_other_details (an_other_details: HASH_TABLE [STRING, STRING])
