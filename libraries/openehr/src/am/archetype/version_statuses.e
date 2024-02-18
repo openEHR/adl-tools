@@ -42,7 +42,7 @@ feature -- Validity
 
 	valid_version_status (a_val: STRING): BOOLEAN
 		do
-			Result := version_status_symbol_texts.has (a_val)
+			Result := a_val.is_empty or else version_status_symbol_texts.has (a_val)
 		end
 
 feature {NONE} -- Implementation
@@ -50,9 +50,9 @@ feature {NONE} -- Implementation
 	version_status_symbol_texts: HASH_TABLE [STRING, STRING]
 		once
 			create Result.make (0)
-			Result.put ("-" + vs_alpha + ".", vs_alpha)
-			Result.put ("-" + vs_beta + ".", vs_beta)
-			Result.put ("-" + vs_release_candidate + ".", vs_release_candidate)
+			Result.put ({ARCHETYPE_HRID}.Version_status_separator.out + vs_alpha + ".", vs_alpha)
+			Result.put ({ARCHETYPE_HRID}.Version_status_separator.out + vs_beta + ".", vs_beta)
+			Result.put ({ARCHETYPE_HRID}.Version_status_separator.out + vs_release_candidate + ".", vs_release_candidate)
 			Result.put ("", vs_released)
 			Result.put (vs_build, vs_build)
 		end
