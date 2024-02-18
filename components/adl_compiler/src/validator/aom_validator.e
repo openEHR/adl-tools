@@ -83,10 +83,10 @@ feature {NONE} -- Implementation
 			Result := attached aom_profile as aom_p and then aom_p.has_rm_aom_primitive_type_mapping (an_rm_type, an_aom_type)
 		end
 
-	archetype_id_matches_slot (an_id: STRING; a_slot: ARCHETYPE_SLOT): BOOLEAN
+	archetype_ref_matches_slot (a_ref: STRING; a_slot: ARCHETYPE_SLOT): BOOLEAN
 			-- test an archetype id against slot spec (it might pass, even if no archetypes matching the slot were found)
 		require
-			Archetype_id_valid: not an_id.is_empty
+			Archetype_ref_valid: not a_ref.is_empty
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
 			regex_matcher: RX_PCRE_REGULAR_EXPRESSION
@@ -101,7 +101,7 @@ feature {NONE} -- Implementation
 						regex_matcher.set_case_insensitive (True)
 						regex_matcher.compile (a_regex)
 						if regex_matcher.is_compiled then
-							Result := regex_matcher.recognizes (an_id)
+							Result := regex_matcher.recognizes (a_ref)
 						end
 					end
 					includes.forth
@@ -113,7 +113,7 @@ feature {NONE} -- Implementation
 						regex_matcher.set_case_insensitive (True)
 						regex_matcher.compile (a_regex)
 						if regex_matcher.is_compiled then
-							Result := not regex_matcher.recognizes (an_id)
+							Result := not regex_matcher.recognizes (a_ref)
 						end
 					end
 					excludes.forth

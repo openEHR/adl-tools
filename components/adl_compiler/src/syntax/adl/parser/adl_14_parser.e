@@ -230,7 +230,7 @@ end
 
 			yyvs2.item (yyvsp2 - 1).right_adjust
 			create artefact_type.make_from_type_name (yyvs2.item (yyvsp2 - 1))
-			if archetype_id_parser.valid_id (yyvs2.item (yyvsp2)) then
+			if archetype_id_parser.valid_adl14_archetype_id (yyvs2.item (yyvsp2)) then
 				create archetype_id.make_from_string (yyvs2.item (yyvsp2))
 			else
 				abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)
@@ -511,7 +511,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_14_parser.y' at line 171")
 end
 
-			if archetype_id_parser.valid_id_reference (yyvs2.item (yyvsp2)) then
+			if archetype_id_parser.valid_adl14_archetype_ref (yyvs2.item (yyvsp2)) then
 				parent_archetype_id := yyvs2.item (yyvsp2)
 			else
 				abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)

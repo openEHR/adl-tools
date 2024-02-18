@@ -50,8 +50,8 @@ feature -- Access
 				Result := "V_ID_CODE"
 			when V_ID_CODE_STR then
 				Result := "V_ID_CODE_STR"
-			when V_EXT_REF then
-				Result := "V_EXT_REF"
+			when V_ARCHETYPE_OPEN_REF then
+				Result := "V_ARCHETYPE_OPEN_REF"
 			when V_VALUE_SET_REF then
 				Result := "V_VALUE_SET_REF"
 			when V_VALUE_DEF then
@@ -202,7 +202,7 @@ feature -- Token codes
 	V_ROOT_ID_CODE: INTEGER = 266
 	V_ID_CODE: INTEGER = 267
 	V_ID_CODE_STR: INTEGER = 268
-	V_EXT_REF: INTEGER = 269
+	V_ARCHETYPE_OPEN_REF: INTEGER = 269
 	V_VALUE_SET_REF: INTEGER = 270
 	V_VALUE_DEF: INTEGER = 271
 	V_VALUE_SET_REF_ASSUMED: INTEGER = 272

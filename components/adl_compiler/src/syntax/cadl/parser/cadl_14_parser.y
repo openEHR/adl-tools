@@ -123,11 +123,12 @@ create
 %type <ARCHETYPE_SLOT> c_archetype_slot_id c_archetype_slot_head archetype_slot
 %type <C_ATTRIBUTE> c_attribute_head
 
-%type <EXPR_ITEM> boolean_node boolean_expr boolean_leaf arithmetic_leaf 
+%type <EXPRESSION> boolean_node boolean_expr boolean_leaf arithmetic_leaf 
 %type <EXPR_UNARY_OPERATOR> boolean_unop_expr
 %type <EXPR_BINARY_OPERATOR> boolean_binop_expr arithmetic_relop_expr arithmetic_arith_binop_expr arch_outer_constraint_expr boolean_constraint
-%type <EXPR_LEAF> arithmetic_value boolean_literal
-%type <EXPR_ITEM> arithmetic_node
+%type <EXPR_LEAF> arithmetic_value
+%type <EXPR_LITERAL> boolean_literal
+%type <EXPRESSION> arithmetic_node
 
 %type <INTEGER> integer_value
 %type <REAL> real_value
@@ -780,14 +781,14 @@ boolean_leaf: boolean_literal
 -- the following form of expression has a relative path which is only allowed with Slot definitions.
 -- The absolute path form is for assertions in the rules section
 --
-arch_outer_constraint_expr: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_object SYM_END_CBLOCK
+arch_outer_constraint_expr: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_string SYM_END_CBLOCK
 		{
-			debug ("ADL_invariant")
-				io.put_string (indent + "arch_outer_constraint_expr: Archetype outer feature " + $1 + " matches {" + $4.as_string + "}%N") 
+			debug ("ADL_rule")
+				io.put_string (indent + "arch_outer_constraint_expr: Archetype ID constraint " + $1 + " matches {" + $4.as_string + "}%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_matches),
-				create {EXPR_LEAF}.make_archetype_ref ($1),
-				create {EXPR_LEAF}.make_constraint ($4))
+				create {EXPR_ARCHETYPE_REF}.make ($1),
+				create {EXPR_ARCHETYPE_ID_CONSTRAINT}.make ($4))
 		}
 	;
 
@@ -797,8 +798,8 @@ boolean_constraint: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_object S
 				io.put_string (indent + "boolean_constraint:" + $1 + " matches {" + $4.as_string + "}%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_matches), 
-				create {EXPR_LEAF}.make_archetype_definition_ref ($1),
-				create {EXPR_LEAF}.make_constraint ($4))
+				create {EXPR_ARCHETYPE_REF}.make_definition ($1),
+				create {EXPR_CONSTRAINT}.make ($4))
 		}
 	| V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_terminology_code SYM_END_CBLOCK
 		{
@@ -806,8 +807,8 @@ boolean_constraint: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive_object S
 				io.put_string (indent + "boolean_constraint:" + $1 + " matches {" + $4.as_string + "}%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_matches), 
-				create {EXPR_LEAF}.make_archetype_definition_ref ($1),
-				create {EXPR_LEAF}.make_coded_term ($4))
+				create {EXPR_ARCHETYPE_REF}.make_definition ($1),
+				create {EXPR_CONSTRAINT}.make_coded_term ($4))
 		}
 	;
 
@@ -820,14 +821,14 @@ boolean_unop_expr: SYM_EXISTS V_ABS_PATH
 			debug ("ADL_invariant")
 				io.put_string (indent + "boolean_unop_expr: exists " + $2 + "%N") 
 			end
-			create $$.make (create {OPERATOR_KIND}.make (op_exists), create {EXPR_LEAF}.make_archetype_definition_ref ($2))
+			create $$.make (create {OPERATOR_KIND}.make (op_exists), create {EXPR_ARCHETYPE_REF}.make_definition ($2))
 		}
 	| SYM_NOT V_ABS_PATH
 		{
 			debug ("ADL_invariant")
 				io.put_string (indent + "boolean_unop_expr: not " + $2 + "%N") 
 			end
-			create $$.make (create {OPERATOR_KIND}.make (op_not), create {EXPR_LEAF}.make_archetype_definition_ref ($2))
+			create $$.make (create {OPERATOR_KIND}.make (op_not), create {EXPR_ARCHETYPE_REF}.make_definition ($2))
 		}
 	| SYM_NOT '(' boolean_node ')'
 		{
@@ -949,21 +950,21 @@ arithmetic_value:  integer_value
 			debug ("ADL_invariant")
 				io.put_string (indent + "arith_leaf - integer: " + $1.out + "%N") 
 			end
-			create $$.make_integer ($1)
+			create {EXPR_LITERAL} $$.make_integer ($1)
 		}
 	| real_value
 		{
 			debug ("ADL_invariant")
 				io.put_string (indent + "arith_leaf - real: " + $1.out + "%N") 
 			end
-			create $$.make_real ($1)
+			create {EXPR_LITERAL} $$.make_real ($1)
 		}
 	| V_ABS_PATH
 		{
 			debug ("ADL_invariant")
 				io.put_string (indent + "arith_leaf - path: " + $1 + "%N") 
 			end
-			create $$.make_archetype_definition_ref ($1)
+			create {EXPR_ARCHETYPE_REF} $$.make_definition ($1)
 		}
 	;
 

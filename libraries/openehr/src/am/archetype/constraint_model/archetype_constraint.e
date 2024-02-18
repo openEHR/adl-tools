@@ -83,11 +83,6 @@ feature -- Status report
 			Result := attached soc_parent or else (attached parent as att_parent and then att_parent.is_second_order_constrained)
 		end
 
-	valid_archetype_id (an_id: STRING): BOOLEAN
-		do
-			Result := archetype_id_parser.valid_id (an_id)
-		end
-
 feature -- Comparison
 
 	c_congruent_to (other: like Current): BOOLEAN
@@ -245,11 +240,6 @@ feature {NONE} -- Implementation
 	create_default_representation: attached like representation_cache
 			-- create a reasonable `representation' instance
 		deferred
-		end
-
-	archetype_id_parser: ARCHETYPE_HRID_PARSER
-		once
-			create Result.make
 		end
 
 invariant

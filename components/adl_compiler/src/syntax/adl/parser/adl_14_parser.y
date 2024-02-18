@@ -87,7 +87,7 @@ source_identification: source_artefact_type arch_meta_data V_ARCHETYPE_ID
 		{
 			$1.right_adjust
 			create artefact_type.make_from_type_name ($1)
-			if archetype_id_parser.valid_id ($3) then
+			if archetype_id_parser.valid_adl14_archetype_id ($3) then
 				create archetype_id.make_from_string ($3)
 			else
 				abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)
@@ -170,7 +170,7 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_DOTTED_NUMERIC
 
 arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID 
 		{
-			if archetype_id_parser.valid_id_reference ($2) then
+			if archetype_id_parser.valid_adl14_archetype_ref ($2) then
 				parent_archetype_id := $2
 			else
 				abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)

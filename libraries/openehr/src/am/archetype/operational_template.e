@@ -146,7 +146,11 @@ feature -- Paths
 						else
 							Result.item.clear_object_id
 						end
+
+					-- TODO: now obsolete, since archetype IDs no longer in node_id field in OPTs
 					elseif archetype_id.valid_id (id_code) then
+						-- stop if we get here
+						check False end
 						create an_arch_id.make_from_string (id_code)
 						Result.item.set_object_id (an_arch_id.concept_id)
 						check component_terminologies.has (id_code) and then attached component_terminologies.item (id_code) as att_ct then

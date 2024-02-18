@@ -614,7 +614,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_2_parser.y' at line 218")
 end
 
-			if archetype_id_checker.valid_id_reference (yyvs2.item (yyvsp2)) then
+			if archetype_id_checker.valid_adl2_archetype_ref (yyvs2.item (yyvsp2)) then
 				parent_archetype_id := yyvs2.item (yyvsp2)
 			else
 				abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)
@@ -1232,7 +1232,7 @@ feature {NONE} -- Implementation
 
 	set_archetype_id (an_arch_id: STRING)
 		do
-			if archetype_id_checker.valid_id (an_arch_id) then
+			if archetype_id_checker.valid_adl2_archetype_id (an_arch_id) then
 				create archetype_id.make_from_string (an_arch_id)
 			else
 				abort_with_error ({ADL_MESSAGES_IDS}.ec_SASID, Void)

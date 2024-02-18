@@ -30,7 +30,7 @@ feature -- Initialisation
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
 			Valid_node_id: is_valid_id_code (an_object_id)
-			Archetype_id_valid: valid_archetype_id (an_archetype_ref)
+			Archetype_id_valid: valid_archetype_ref (an_archetype_ref)
 		do
 			cco_make (a_rm_type_name, an_object_id)
 			archetype_ref := an_archetype_ref
@@ -50,6 +50,13 @@ feature -- Access
 			an_og_path := og_path
 			an_og_path.last.set_object_id (archetype_ref)
 			Result := an_og_path.as_string
+		end
+
+feature -- Status Report
+
+	valid_archetype_ref (an_id: STRING): BOOLEAN
+		do
+			Result := archetype_id_parser.valid_adl2_archetype_open_ref (an_id)
 		end
 
 feature -- Comparison
@@ -112,6 +119,13 @@ feature -- Visitor
 			-- perform action at end of block for this node
 		do
 			visitor.end_c_archetype_root (Current, depth)
+		end
+
+feature {NONE} -- Implementation
+
+	archetype_id_parser: ARCHETYPE_HRID_PARSER
+		once
+			create Result.make
 		end
 
 end

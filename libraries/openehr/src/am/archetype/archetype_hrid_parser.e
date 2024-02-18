@@ -66,14 +66,37 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_id (an_id: STRING): BOOLEAN
+	valid_adl2_archetype_id (an_id: STRING): BOOLEAN
+			-- True for archetype IDs with 3-part version
 		do
-			Result := adl2_id_regex_matcher.recognizes (an_id) or else adl14_id_regex_matcher.recognizes (an_id)
+			Result := adl2_archetype_id_matcher.recognizes (an_id)
 		end
 
-	valid_id_reference (a_ref: STRING): BOOLEAN
+	valid_adl14_archetype_id (an_id: STRING): BOOLEAN
+			-- True for archetype IDs with only major version
 		do
-			Result := adl2_id_reference_regex_matcher.recognizes (a_ref) or else adl14_id_regex_matcher.recognizes (a_ref)
+			Result := adl14_archetype_id_matcher.recognizes (an_id)
+		end
+
+	valid_adl2_archetype_ref (a_ref: STRING): BOOLEAN
+			-- True for archetype IDs with 1, 2, or 3-part version;
+			-- Use for checking refs used in inheritance relationships
+		do
+			Result := adl2_archetype_ref_matcher.recognizes (a_ref)
+		end
+
+	valid_adl2_archetype_open_ref (a_ref: STRING): BOOLEAN
+			-- True for archetype IDs with 0, 1, 2, or 3-part version;
+			-- Allows for non-conformant (different major version archetypes).
+			-- Use for checking refs used in composition, but not inheritance relationships
+		do
+			Result := adl2_archetype_open_ref_matcher.recognizes (a_ref)
+		end
+
+	valid_adl14_archetype_ref (a_ref: STRING): BOOLEAN
+			-- True for archetype IDs with only major version
+		do
+			Result := adl14_archetype_id_matcher.recognizes (a_ref)
 		end
 
 	is_adl14_id: BOOLEAN
@@ -85,11 +108,11 @@ feature -- Commands
 	execute (an_id: STRING)
 		local
 			strs, qual_class_strs: LIST [STRING]
-			ns_idx, start_pos, end_pos, sym_pos: INTEGER
-			local_hrid, ver_str, sym: STRING
+			ns_idx, sym_len, start_pos, sym_pos: INTEGER
+			local_hrid: STRING
 		do
 			reset
-			if adl2_id_regex_matcher.matches (an_id) then
+			if adl2_archetype_id_matcher.matches (an_id) then
 				is_adl2_id := True
 
 				-- look for namespace in first section
@@ -102,6 +125,10 @@ feature -- Commands
 				end
 				local_hrid := an_id.substring (start_pos, an_id.count)
 
+				-- split on axis separator; may get something like:
+				-- 	openEHR-EHR-COMPOSITION, encounter, v1, 0, 4-rc, 47
+				-- 	openEHR-EHR-COMPOSITION, encounter, v1, 0, 4-alpha
+				-- 	openEHR-EHR-COMPOSITION, encounter, v1, 0, 4+78
 				strs := local_hrid.split ({ARCHETYPE_HRID}.axis_separator)
 
 				-- separate the qualified class part
@@ -113,49 +140,43 @@ feature -- Commands
 				-- concept part
 				concept_id := strs.i_th (2)
 
-				-- version part: looks like vN.M.P or vN.M.P-rc.NNN or vN.M.P-alpha.NNN
-				create ver_str.make_empty
-				from strs.go_i_th (3) until strs.off loop
-					ver_str.append (strs.item)
-					if not strs.islast then
-						ver_str.append_character ({ARCHETYPE_HRID}.axis_separator)
-					end
-					strs.forth
-				end
-				start_pos := 1 + {ARCHETYPE_HRID}.Version_delimiter.count
+				-- version part: looks like vN.M.P or vN.M.P-rc.NNN or vN.M.P-alpha.NNN or vN.M.P+78
+				-- first part: "vNNN"
+				release_version.append (strs.i_th (3).substring (2, strs.i_th (3).count))
+				release_version.append_character ({ARCHETYPE_HRID}.Axis_separator)
 
-				-- case: -alpha.NNN
-				sym := version_status_symbol_text (vs_alpha)
-				sym_pos := ver_str.substring_index (sym, start_pos)
-				if sym_pos > 0 then
-					end_pos := sym_pos - 1
-					build_count := ver_str.substring (sym_pos + sym.count, ver_str.count)
-					version_status := vs_alpha
+				-- second part should just be a number
+				release_version.append (strs.i_th (4))
+				release_version.append_character ({ARCHETYPE_HRID}.Axis_separator)
+
+				-- third part may have a "-xxx" section, e.g. "-rc';
+				sym_pos := strs.i_th (5).index_of ({ARCHETYPE_HRID}.Version_status_separator, 1)
+				sym_len := 1
+				if strs.i_th (5).has ({ARCHETYPE_HRID}.Version_status_separator) then
+					release_version.append (strs.i_th (5).substring (1, sym_pos - sym_len))
+					version_status := strs.i_th (5).substring (sym_pos + sym_len, strs.i_th (5).count)
+
+					-- get any build count in the next string
+					if strs.count = 6 then
+						build_count := strs.i_th (6)
+					end
+
+				-- or a '+NNN' at the end
 				else
-					-- case: -rc.NNN
-					sym := version_status_symbol_text (vs_release_candidate)
-					sym_pos := ver_str.substring_index (sym, start_pos)
+					sym_pos := strs.i_th (5).substring_index ({VERSION_STATUSES}.vs_build, 1)
+					sym_len := {VERSION_STATUSES}.vs_build.count
 					if sym_pos > 0 then
-						end_pos := sym_pos - 1
-						build_count := ver_str.substring (sym_pos + sym.count, ver_str.count)
-						version_status := vs_release_candidate
+						release_version.append (strs.i_th (5).substring (1, sym_pos - sym_len))
+						version_status := vs_build
+						build_count := strs.i_th (5).substring (sym_pos + sym_len, strs.i_th (5).count)
+
+					-- or it may just be a number
 					else
-						-- case: +NNN
-						sym := version_status_symbol_text (vs_build)
-						sym_pos := ver_str.substring_index (sym, start_pos)
-						if sym_pos > 0 then
-							end_pos := sym_pos - 1
-							build_count := ver_str.substring (sym_pos + sym.count, ver_str.count)
-							version_status := vs_build
-						else
-							end_pos := ver_str.count
-							version_status := vs_released
-						end
+						release_version.append (strs.i_th (5))
 					end
 				end
-				release_version := ver_str.substring (start_pos, end_pos)
 
-			elseif adl14_id_regex_matcher.matches (an_id) then
+			elseif adl14_archetype_id_matcher.matches (an_id) then
 				is_adl14_id := True
 
 				strs := an_id.split ({ARCHETYPE_HRID}.axis_separator)
@@ -172,7 +193,22 @@ feature -- Commands
 				-- version part
 				release_version := strs.i_th (3).substring (1 + {ARCHETYPE_HRID}.Version_delimiter.count, strs.i_th (3).count)
 				release_version.append (".0.0")
-			else
+
+			-- try for open archetype ref match, i.e. with no version section at all
+			elseif adl2_archetype_open_ref_matcher.matches (an_id) then
+				strs := an_id.split ({ARCHETYPE_HRID}.axis_separator)
+
+				-- separate the qualified class part
+				qual_class_strs := strs.i_th (1).split ({ARCHETYPE_HRID}.section_separator)
+				rm_publisher := qual_class_strs.i_th (1)
+				rm_closure := qual_class_strs.i_th (2)
+				rm_class := qual_class_strs.i_th (3)
+
+				-- concept part
+				concept_id := strs.i_th (2)
+
+				-- default the version part to 0.0.0
+				release_version.append ("0.0.0")
 			end
 		end
 
@@ -197,7 +233,7 @@ feature {NONE} -- Implementation
 			is_adl2_id := False
 		end
 
-	adl14_id_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+	adl14_archetype_id_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for all archetype ids.
 			-- openEHR-EHR-ENTRY.any.v1
 			-- openEHR-EHR-ENTRY.any.v22
@@ -207,7 +243,7 @@ feature {NONE} -- Implementation
 			Result.compile ((create {ARCHETYPE_HRID}).Adl14_id_regex)
 		end
 
-	adl2_id_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+	adl2_archetype_id_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for ADL 1.5 archetype ids, with optional namespace;
 			-- 	will match ids like:
 			-- openEHR-EHR-ENTRY.any.v1.0.1
@@ -216,12 +252,12 @@ feature {NONE} -- Implementation
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1-alpha.105
 		once
 			create Result.make
-			Result.compile ((create {ARCHETYPE_HRID}).Id_matcher_regex)
+			Result.compile ((create {ARCHETYPE_HRID}).Adl2_archetype_id_regex)
 		end
 
-	adl2_id_reference_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
+	adl2_archetype_ref_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for ADL 1.5 archetype id references, with optional namespace and optional versioning;
-			-- 	will match ids like:
+			-- 	will match refs like:
 			-- openEHR-EHR-ENTRY.any.v1.0.1
 			-- openEHR-EHR-ENTRY.any.v1
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1
@@ -229,7 +265,22 @@ feature {NONE} -- Implementation
 			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0
 		once
 			create Result.make
-			Result.compile ((create {ARCHETYPE_HRID}).Id_reference_matcher_regex)
+			Result.compile ((create {ARCHETYPE_HRID}).Adl2_archetype_ref_regex)
+		end
+
+	adl2_archetype_open_ref_matcher: RX_PCRE_REGULAR_EXPRESSION
+			-- Pattern matcher for open (i.e. non-conformant) ADL 2 archetype id references, with optional namespace and optional versioning;
+			-- 	will match refs like:
+			-- openEHR-EHR-ENTRY.any.v1.0.1
+			-- openEHR-EHR-ENTRY.any.v1
+			-- openEHR-EHR-ENTRY.any
+			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0.1
+			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1.0
+			-- uk.gov.nhs::openEHR-EHR-ENTRY.any.v1
+			-- uk.gov.nhs::openEHR-EHR-ENTRY.any
+		once
+			create Result.make
+			Result.compile ((create {ARCHETYPE_HRID}).Adl2_archetype_open_ref_regex)
 		end
 
 end

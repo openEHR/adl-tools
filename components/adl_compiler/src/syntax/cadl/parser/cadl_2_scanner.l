@@ -58,8 +58,17 @@ ID_CODE {ID_CODE_LEADER}{CODE_STR}
 AT_CODE at{CODE_STR}
 AC_CODE ac{CODE_STR}
 
-ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{ALPHANUM_STR}(-{ALPHANUM_STR})*\.v[0-9]+((\.[0-9]+){0,2}((-rc|\-alpha)(\.[0-9]+)?)?)?
-PATH_SEG [a-z]{ALPHANUM_CHAR}*(\[({ID_CODE}|{ARCHETYPE_ID})\])?
+-- full 3-part ID, possibly including -rc / -alpha parts etc
+ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{ALPHANUM_STR}(-{ALPHANUM_STR})*\.v[0-9]+(\.[0-9]+){0,2}((-rc|\-alpha)(\.[0-9]+)?)?
+
+-- archetype reference, which may be .vN, .VN.M, .vN.M.P, but no -rc etc.
+ARCHETYPE_REF ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{ALPHANUM_STR}(-{ALPHANUM_STR})*\.v[0-9]+(\.[0-9]+){0,2}
+
+-- open reference, which allows whole version id part to be optional
+ARCHETYPE_OPEN_REF ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}\.{ALPHANUM_STR}(-{ALPHANUM_STR})*(\.v[0-9]+(\.[0-9]+){0,2})?
+
+-- paths segments can only have full matched archetype ids.
+PATH_SEG [a-z]{ALPHANUM_CHAR}*(\[({ID_CODE}|{ARCHETYPE_REF})\])?
 
 UTF8_CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
@@ -219,8 +228,8 @@ UTF8_CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x
 	}
 
 ----------/* external ref / slot filler */ -------------------------------------------------
-\[{ID_CODE}[ \t]*,[ \t]*{ARCHETYPE_ID}\] {
-		last_token := V_EXT_REF
+\[{ID_CODE}[ \t]*,[ \t]*{ARCHETYPE_OPEN_REF}\] {
+		last_token := V_ARCHETYPE_OPEN_REF
 		last_string_value := text_substring (2, text_count - 1)
 		last_string_value.prune_all(' ')
 		last_string_value.prune_all('%T')

@@ -43,9 +43,8 @@ inherit
 
 create
 	make, make_adl14, make_namespaced,
-	make_from_string, make_from_string_reference,
-	make_new,
-	default_create
+	make_from_string, make_adl14_from_string,
+	make_new, default_create
 
 feature -- Definitions
 
@@ -87,6 +86,9 @@ feature -- Definitions
 	Section_separator_string: STRING = "-"
 			-- separator between sections in an axis
 
+	Version_status_separator: CHARACTER = '-'
+			-- separator between v1.2.3 and rc.68
+
 	Version_delimiter: STRING = "v"
 
 	Version_axis_delimiter: STRING = ".v"
@@ -112,7 +114,7 @@ feature -- Definitions
 			Result.is_equal ("^" + qualified_rm_class_regex + "\" + Axis_separator.out + concept_id_regex + "\" + Axis_separator.out + major_version_regex + "$")
 		end
 
-	Id_matcher_regex: STRING
+	Adl2_archetype_id_regex: STRING
 			-- matcher for archetype ids, which must include full version
 		once ("PROCESS")
 			Result := "^" + root_regex + "\" + Axis_separator.out + version_regex + "$"
@@ -120,13 +122,22 @@ feature -- Definitions
 			Result.is_equal ("^" + root_regex + "\" + Axis_separator.out + version_regex + "$")
 		end
 
-	Id_reference_matcher_regex: STRING
+	Adl2_archetype_ref_regex: STRING
 			-- matcher for references to archetypes, which may include partial (i.e. interface) form of the version part
 			-- and no +u or -rc extension
 		once ("PROCESS")
 			Result := "^" + root_regex + "\" + Axis_separator.out + version_reference_regex + "$"
 		ensure
 			Result.is_equal ("^" + root_regex + "\" + Axis_separator.out + version_reference_regex + "$")
+		end
+
+	Adl2_archetype_open_ref_regex: STRING
+			-- matcher for references to archetypes, which may include partial (i.e. interface) form of the version part
+			-- or no version at all, i.e. allow a non-conformant (breaking change) form of a named archetype
+		once ("PROCESS")
+			Result := "^" + root_regex + "(\" + Axis_separator.out + version_reference_regex + ")?$"
+		ensure
+			Result.is_equal ("^" + root_regex + "(\" + Axis_separator.out + version_reference_regex + ")?$")
 		end
 
 	root_regex: STRING
@@ -165,16 +176,16 @@ feature -- Initialisation
 			not is_adl14_id
 		end
 
-	make (a_rm_publisher, a_rm_closure, a_rm_class, a_concept_id, a_release_version, a_version_status, a_commit_number: STRING)
-			-- Create from rm_publisher - rm_closure - rm_class . concept_id .v release_version [version_status_text commit_number]
+	make (a_rm_publisher, a_rm_closure, a_rm_class, a_concept_id, a_release_version, a_version_status, a_build_count: STRING)
+			-- Create from rm_publisher - rm_closure - rm_class . concept_id .v release_version [version_status_text build_count]
 		require
 			Valid_rm_publisher: valid_id_segment (a_rm_publisher)
 			Valid_rm_publisher: valid_id_segment (a_rm_closure)
 			Valid_rm_publisher: valid_id_segment (a_rm_class)
-			Valid_concept_id: valid_id_segment (a_concept_id)
+			Valid_concept_id: valid_concept_id (a_concept_id)
 			Valid_release_version: valid_release_version (a_release_version)
 			Valid_version_status: valid_version_status (a_version_status)
-			Valid_commit_number: a_commit_number.is_integer and then a_commit_number.to_integer >= 0
+			Valid_commit_number: a_build_count.is_integer and then a_build_count.to_integer >= 0
 		do
 			rm_publisher := a_rm_publisher
 			rm_package := a_rm_closure
@@ -182,7 +193,7 @@ feature -- Initialisation
 			concept_id := a_concept_id
 			release_version := a_release_version
 			version_status := a_version_status
-			build_count := a_commit_number
+			build_count := a_build_count
 		ensure
 			not is_adl14_id
 		end
@@ -195,32 +206,31 @@ feature -- Initialisation
 		do
 			id_parser.execute (a_str)
 			namespace := id_parser.namespace
-			rm_publisher := id_parser.rm_publisher
-			rm_package := id_parser.rm_closure
-			rm_class := id_parser.rm_class
-			concept_id := id_parser.concept_id
-			release_version := id_parser.release_version
-			version_status := id_parser.version_status
-			build_count := id_parser.build_count
+			make (id_parser.rm_publisher, id_parser.rm_closure, id_parser.rm_class, id_parser.concept_id, id_parser.release_version, id_parser.version_status, id_parser.build_count)
 			is_adl14_id := id_parser.is_adl14_id
 		end
 
-	make_from_string_reference (a_str: STRING)
-			-- make from a string identifier that is recognised by either
-			-- the ADL 1.4 id matcher or the ADL 2 id reference matcher, which
-			-- treats version numbers after the major version as optional
+	make_adl14_from_string (a_str: STRING)
+			-- make from a string identifier that is recognised by
+			-- the ADL 1.4 id matcher, which treats version numbers
+			-- after the major version as optional
 		require
 			Valid_id_ref: valid_id_reference (a_str)
 		do
 			id_parser.execute (a_str)
+			make (id_parser.rm_publisher, id_parser.rm_closure, id_parser.rm_class, id_parser.concept_id, id_parser.release_version, id_parser.version_status, id_parser.build_count)
+			is_adl14_id := True
+		end
+
+	make_ref_from_string (a_str: STRING)
+			-- make from a string full identifier that is recognised by either
+			-- the ADL 1.4 id matcher or the ADL 2 id matcher
+		require
+			Valid_id: valid_open_id_reference (a_str)
+		do
+			id_parser.execute (a_str)
 			namespace := id_parser.namespace
-			rm_publisher := id_parser.rm_publisher
-			rm_package := id_parser.rm_closure
-			rm_class := id_parser.rm_class
-			concept_id := id_parser.concept_id
-			release_version := id_parser.release_version
-			version_status := id_parser.version_status
-			build_count := id_parser.build_count
+			make (id_parser.rm_publisher, id_parser.rm_closure, id_parser.rm_class, id_parser.concept_id, id_parser.release_version, id_parser.version_status, id_parser.build_count)
 		end
 
 	make_new (a_qualified_rm_class: STRING)
@@ -318,6 +328,19 @@ feature -- Access
 			Result.append_character (Axis_separator)
 			Result.append (Version_delimiter)
 			Result.append (version_id)
+		end
+
+	hrid_root: STRING
+			-- The root part of the HRID, i.e. excluding any version information
+		do
+			create Result.make_empty
+			if attached namespace as att_ns then
+				Result.append (att_ns.value)
+				Result.append (namespace_separator)
+			end
+			Result.append (qualified_rm_class)
+			Result.append_character (Axis_separator)
+			Result.append (concept_id)
 		end
 
 	display_semantic_id: STRING
@@ -422,14 +445,27 @@ feature -- Status Report
 	valid_id (an_id: STRING): BOOLEAN
 			-- True if `an_id' is either a valid ADL 1.4 id or 2 id
 		do
-			Result := id_parser.valid_id (an_id)
+			Result := id_parser.valid_adl2_archetype_id (an_id) or else id_parser.valid_adl14_archetype_id (an_id)
+		end
+
+	valid_adl2_id (an_id: STRING): BOOLEAN
+			-- True if `an_id' is a valid ADL2 id
+		do
+			Result := id_parser.valid_adl2_archetype_id (an_id)
 		end
 
 	valid_id_reference (a_ref: STRING): BOOLEAN
 			-- True if `a_ref' is a valid reference to an archetype, i.e. a value archetype id
 			-- down to the major version, with optional minor and patch version, no extension
 		do
-			Result := id_parser.valid_id_reference (a_ref)
+			Result := id_parser.valid_adl2_archetype_ref (a_ref)
+		end
+
+	valid_open_id_reference (a_ref: STRING): BOOLEAN
+			-- True if `a_ref' is a valid reference to an archetype, including open,
+			-- i.e. has no major version
+		do
+			Result := id_parser.valid_adl2_archetype_open_ref (a_ref)
 		end
 
 	valid_id_segment (a_segment: STRING): BOOLEAN
@@ -528,19 +564,6 @@ feature -- Output
 		end
 
 feature {NONE} -- Implementation
-
-	hrid_root: STRING
-			-- The root part of the HRID, i.e. excluding any version information
-		do
-			create Result.make_empty
-			if attached namespace as att_ns then
-				Result.append (att_ns.value)
-				Result.append (namespace_separator)
-			end
-			Result.append (qualified_rm_class)
-			Result.append_character (Axis_separator)
-			Result.append (concept_id)
-		end
 
 	namespace_regex_matcher: RX_PCRE_REGULAR_EXPRESSION
 			-- Pattern matcher for namespace part of archetype ids.

@@ -216,7 +216,7 @@ end
 				-- C_ARCHETYPE_ROOT specialises (i.e. fills) an ARCHETYPE_SLOT
 				if attached {C_ARCHETYPE_ROOT} co_child_diff as car and attached {ARCHETYPE_SLOT} co_in_flat_anc as parent_slot then
 					if flat_parent_slot_fillers_index.has (parent_slot.path) then
-						if not archetype_id_matches_slot (car.archetype_ref, parent_slot) then -- doesn't match the slot definition
+						if not archetype_ref_matches_slot (car.archetype_ref, parent_slot) then -- doesn't match the slot definition
 							add_error ({ADL_MESSAGES_IDS}.ec_VARXS, <<co_child_annotated_path, car.archetype_ref>>)
 
 						-- matches def, but not found in actual list from current repo

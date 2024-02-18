@@ -98,14 +98,20 @@ feature -- Access
 		do
 			key_lc := an_archetype_ref.as_lower
 
-			-- assume `an_archetype_ref' is of major version reference form
+			-- if `an_archetype_ref' is of major version reference form
 			if attached archetype_ref_index.item (key_lc) as att_aca then
 				Result := att_aca
-			-- else try for direct match, or else filler id is compatible with available actual ids
-			-- e.g. filler id is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
+
+			-- if `an_archetype_ref' is an open reference, i.e. no version part
+			elseif attached archetype_open_ref_index.item (key_lc) as att_aca then
+				Result := att_aca
+
+			-- try for direct match, or else filler id is compatible with available actual ids
+			-- e.g. ref is 'openEHR-EHR-COMPOSITION.discharge.v1' and list contains things
 			-- like 'openEHR-EHR-COMPOSITION.discharge.v1.3.28'
 			elseif attached {ARCH_LIB_ARCHETYPE} item_index.item (key_lc) as att_aca then
 				Result := att_aca
+
 			-- else expensive brute force search
 			else
 				from item_index.start until item_index.off or attached Result loop
@@ -336,6 +342,7 @@ feature -- Commands
 			reset
 			item_index.wipe_out
 			archetype_ref_index.wipe_out
+			archetype_open_ref_index.wipe_out
 			item_tree.wipe_out
 
 			archetype_count := 0
@@ -822,10 +829,17 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 		end
 
+	archetype_open_ref_index: HASH_TABLE [ARCH_LIB_ARCHETYPE, STRING]
+			-- index of archetype descriptors keyed by LOWER-CASE archetype open ref (i.e. id with with no version part),
+		attribute
+			create Result.make (0)
+		end
+
 	item_index_put (ala: ARCH_LIB_ARCHETYPE)
 		do
 			item_index.force (ala, ala.qualified_key)
 			archetype_ref_index.force (ala, ala.id.semantic_id.as_lower)
+			archetype_open_ref_index.force (ala, ala.id.hrid_root.as_lower)
 			archetype_count := archetype_count + 1
 			if attached {ARCH_LIB_TEMPLATE} ala then
 				template_count := template_count + 1
@@ -839,6 +853,7 @@ feature {NONE} -- Implementation
 			end
 			item_index.remove (arch_id.physical_id.as_lower)
 			archetype_ref_index.remove (arch_id.semantic_id.as_lower)
+			archetype_open_ref_index.remove (arch_id.hrid_root.as_lower)
 			archetype_count := archetype_count - 1
 		end
 
