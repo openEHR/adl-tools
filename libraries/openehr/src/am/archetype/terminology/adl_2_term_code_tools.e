@@ -150,7 +150,7 @@ feature -- Access
 			-- 	id4.0.1	=>	id4
 			--	id4.1.1 =>	id4.1
 		require
-			Code_valid: specialisation_depth_from_code (a_code) > 0
+			Code_valid: is_redefined_code (a_code)
 		local
 			sep_loc: INTEGER
 		do
@@ -167,6 +167,27 @@ feature -- Access
 			end
 		ensure
 			Valid_result: not Result.tail (Zero_filler.count).is_equal (Zero_filler)
+		end
+
+	specialised_code_parents (a_code: STRING): ARRAYED_LIST [STRING]
+			-- get all semantic parent codes of this specialised code, using `specialised_code_parent`
+		require
+			Code_valid: is_redefined_code (a_code)
+		local
+			sep_loc: INTEGER
+			parent_code, cur_code: STRING
+		do
+			create Result.make(0)
+			cur_code := a_code
+			from parent_code := specialised_code_parent (cur_code) until not is_redefined_code (cur_code) loop
+				Result.extend (parent_code)
+				cur_code := parent_code
+				if is_redefined_code (cur_code) then
+					parent_code := specialised_code_parent (cur_code)
+				end
+			end
+		ensure
+			Valid_result: not Result.is_empty
 		end
 
 	specialised_code_base (a_code: STRING): STRING

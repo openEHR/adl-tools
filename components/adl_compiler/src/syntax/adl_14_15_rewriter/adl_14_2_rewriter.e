@@ -1912,12 +1912,25 @@ feature {NONE} -- Implementation
 	output_new_id_code (an_old_code: STRING)
 		local
 			new_code: STRING
+			parent_codes: ARRAYED_LIST[STRING]
 		do
 			if converted_codes.has (an_old_code) and then attached converted_codes.item (an_old_code) as nc then
 				new_code := nc
 			else
 				new_code := adl_14_id_code_upgraded (an_old_code)
 				converted_codes.put (new_code, an_old_code)
+
+				-- check if the code is a specialised one, and obtain its specialisation parent codes; for each of
+				-- them that is not in the converted_codes list, add them.
+				if is_adl_14_refined_code (an_old_code) then
+					parent_codes := specialised_adl14_code_parents (an_old_code)
+
+					across parent_codes as code_csr loop
+					    if not converted_codes.has (code_csr.item) then
+							converted_codes.put (adl_14_id_code_upgraded (code_csr.item), code_csr.item)
+						end
+					end
+				end
 			end
 			out_buffer.append (new_code)
 		end
@@ -1925,12 +1938,25 @@ feature {NONE} -- Implementation
 	output_new_value_code (an_old_code: STRING)
 		local
 			new_code: STRING
+			parent_codes: ARRAYED_LIST [STRING]
 		do
 			if converted_codes.has (an_old_code) and then attached converted_codes.item (an_old_code) as nc then
 				new_code := nc
 			else
 				new_code := adl_14_value_code_upgraded (an_old_code)
 				converted_codes.put (new_code, an_old_code)
+
+				-- check if the code is a specialised one, and obtain its specialisation parent codes; for each of
+				-- them that is not in the converted_codes list, add them.
+				if is_adl_14_refined_code (an_old_code) then
+					parent_codes := specialised_adl14_code_parents (an_old_code)
+
+					across parent_codes as code_csr loop
+					    if not converted_codes.has (code_csr.item) then
+							converted_codes.put (adl_14_value_code_upgraded (code_csr.item), code_csr.item)
+						end
+					end
+				end
 			end
 
 			out_buffer.append (new_code)
@@ -1939,20 +1965,34 @@ feature {NONE} -- Implementation
 	output_new_value_set_code (an_old_code: STRING)
 		local
 			new_code: STRING
+			parent_codes: ARRAYED_LIST [STRING]
 		do
 			if converted_codes.has (an_old_code) and then attached converted_codes.item (an_old_code) as nc then
 				new_code := nc
 			else
 				new_code := adl_14_value_set_code_upgraded (an_old_code)
 				converted_codes.put (new_code, an_old_code)
+
+				-- check if the code is a specialised one, and obtain its specialisation parent codes; for each of
+				-- them that is not in the converted_codes list, add them.
+				if is_adl_14_refined_code (an_old_code) then
+					parent_codes := specialised_adl14_code_parents (an_old_code)
+
+					across parent_codes as code_csr loop
+					    if not converted_codes.has (code_csr.item) then
+							converted_codes.put (adl_14_value_set_code_upgraded (code_csr.item), code_csr.item)
+						end
+					end
+				end
 			end
 
 			out_buffer.append (new_code)
 		end
 
-	output_converted_code_dt_key (an_old_code: STRING; )
-			-- code should exist in converted_codes list; if not, output an invalid code, which will
-			-- cause later compilation to fail
+	output_converted_code_dt_key (an_old_code: STRING)
+			-- code should exist in converted_codes list or else should be the parent code of an existing code, e.g.
+			-- we get 'at0000' and the converted_codes list has 'at0000.1'.
+			-- if neither, output an invalid code, which will cause later compilation to fail
 		local
 			new_code: STRING
 		do

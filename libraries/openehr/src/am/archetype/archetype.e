@@ -976,7 +976,7 @@ feature -- Modification
 			-- create a id-code at the specialisation depth of this archetype as a child
 			-- id of `a_parent_id'
 		require
-			specialisation_depth_from_code (a_parent_id) + 1 = specialisation_depth
+			specialisation_depth_from_code (a_parent_id) < specialisation_depth
 		do
 			Result := new_refined_code_at_level (a_parent_id, specialisation_depth, highest_redefined_id_codes.item (a_parent_id))
 			highest_redefined_id_codes.replace (highest_redefined_id_codes.item (a_parent_id) + 1, a_parent_id)

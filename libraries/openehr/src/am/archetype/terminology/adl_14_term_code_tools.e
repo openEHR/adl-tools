@@ -93,14 +93,50 @@ feature -- Definitions
 
 feature -- Access
 
-	adl_14_specialisation_parent_from_code (a_code: STRING): STRING
-			-- get immediate parent of this specialised code
+	specialised_adl14_code_parent (a_code: STRING): STRING
+			-- get semantic parent code of this specialised code
+			-- 	id4.1	=> 	id4
+			-- 	id4.0.1	=>	id4
+			--	id4.1.1 =>	id4.1
 		require
-			Code_valid: adl_14_specialisation_depth_from_code(a_code) > 0
+			Code_valid: is_adl_14_refined_code (a_code)
+		local
+			sep_loc: INTEGER
 		do
-			Result := a_code.substring (1, a_code.last_index_of (Adl_14_specialisation_separator, a_code.count)-1)
+			Result := a_code.substring (1, a_code.last_index_of (Adl_14_specialisation_separator, a_code.count) - 1)
+
+			-- remove trailing .0 segments
+			from
+				sep_loc := Result.last_index_of (Adl_14_specialisation_separator, Result.count)
+			until
+				sep_loc = 0 or else not Result.substring (sep_loc + 1, Result.count).is_equal ("0")
+			loop
+				Result.remove_tail (2)
+				sep_loc := Result.last_index_of (Adl_14_specialisation_separator, Result.count)
+			end
 		ensure
-			Valid_result: adl_14_specialisation_depth_from_code(Result) = adl_14_specialisation_depth_from_code(a_code) - 1
+			Valid_result: not Result.tail (Adl_14_zero_filler.count).is_equal (Adl_14_zero_filler)
+		end
+
+	specialised_adl14_code_parents (a_code: STRING): ARRAYED_LIST [STRING]
+			-- get all semantic parent codes of this specialised code, using `specialised_code_parent`
+		require
+			Code_valid: is_adl_14_refined_code (a_code)
+		local
+			sep_loc: INTEGER
+			parent_code, cur_code: STRING
+		do
+			create Result.make(0)
+			cur_code := a_code
+			from parent_code := specialised_adl14_code_parent (cur_code) until not is_adl_14_refined_code (cur_code) loop
+				Result.extend (parent_code)
+				cur_code := parent_code
+				if is_adl_14_refined_code (cur_code) then
+					parent_code := specialised_adl14_code_parent (cur_code)
+				end
+			end
+		ensure
+			Valid_result: not Result.is_empty
 		end
 
 	adl_14_code_at_level (a_code: STRING; a_level: INTEGER): STRING
