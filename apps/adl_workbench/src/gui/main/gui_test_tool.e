@@ -879,21 +879,21 @@ feature {NONE} -- Implementation
 			-- source diff dirs
 			curr_prof := current_library_name
 			diff_dir_root := file_system.pathname (test_diff_directory, curr_prof)
-				diff_dir_source_root := file_system.pathname (diff_dir_root, "source")
-				diff_dir_source_orig := file_system.pathname (diff_dir_source_root, "orig")
-				diff_dir_source_new := file_system.pathname (diff_dir_source_root, "new")
+			diff_dir_source_root := file_system.pathname (diff_dir_root, "source")
+			diff_dir_source_orig := file_system.pathname (diff_dir_source_root, "orig")
+			diff_dir_source_new := file_system.pathname (diff_dir_source_root, "new")
 
-				if not file_system.directory_exists (diff_dir_source_orig) then
-					file_system.recursive_create_directory (diff_dir_source_orig)
+			if not file_system.directory_exists (diff_dir_source_orig) then
+				file_system.recursive_create_directory (diff_dir_source_orig)
+			end
+			if file_system.directory_exists (diff_dir_source_orig) then
+				if not file_system.directory_exists (diff_dir_source_new) then
+					file_system.recursive_create_directory (diff_dir_source_new)
 				end
-				if file_system.directory_exists (diff_dir_source_orig) then
-					if not file_system.directory_exists (diff_dir_source_new) then
-						file_system.recursive_create_directory (diff_dir_source_new)
-					end
-					if file_system.directory_exists (diff_dir_source_new) then
-						diff_dirs_available := True
-					end
+				if file_system.directory_exists (diff_dir_source_new) then
+					diff_dirs_available := True
 				end
+			end
 
 			-- legacy / flat diff dirs
 			if diff_dirs_available then
