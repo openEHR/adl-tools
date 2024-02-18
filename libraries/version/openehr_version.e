@@ -24,10 +24,10 @@ feature -- Access
 	major: INTEGER = 2
 			-- The major version number: manually incremented.
 
-	minor: INTEGER = 0
+	minor: INTEGER = 3
 			-- The minor version number: manually incremented, or else reset to 0 when `major' changes.
 
-	build: INTEGER = 6
+	build: INTEGER = 0
 			-- The build number: manually incremented for each public release, or else reset to 0 when `minor' changes.
 
 	revision: INTEGER = 0
