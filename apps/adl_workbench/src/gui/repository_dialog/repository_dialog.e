@@ -491,14 +491,14 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Implementation
 
 			if repo_install_dialog.is_valid then
 				if not repo_install_dialog.user_requires_repository_clone then
-					on_associate_repository (repo_install_dialog.local_directory, repo_install_dialog.legacy_directory)
+					on_associate_repository (repo_install_dialog.local_directory, repo_install_dialog.adl14_directory)
 				else
 					create verify_dialog.make_with_text (get_msg ({ADL_MESSAGES_IDS}.ec_repository_clone_dir_confirm_text,
 						<<repo_name, a_rem_proxy.remote_url, repo_install_dialog.local_directory>>))
 					verify_dialog.set_buttons (<<get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response), get_text ({GENERAL_MESSAGES_IDS}.ec_no_response)>>)
 					verify_dialog.show_modal_to_window (Current)
 					if attached verify_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response)) then
-						do_clone_repository (repo_install_dialog.local_directory, repo_install_dialog.legacy_directory, a_rem_proxy)
+						do_clone_repository (repo_install_dialog.local_directory, repo_install_dialog.adl14_directory, a_rem_proxy)
 					end
 				end
 			end
@@ -595,7 +595,7 @@ feature {REPOSITORY_COMMAND_RUNNER} -- Actions
 			repo_install_dialog.show_modal_to_window (Current)
 			if repo_install_dialog.is_valid then
 				repo_dir := repo_install_dialog.local_directory
-				repo_legacy_dir := repo_install_dialog.legacy_directory
+				repo_legacy_dir := repo_install_dialog.adl14_directory
 				repo_url := repo_install_dialog.repository_url
 
 				if not repo_dir.is_empty and then file_system.directory_exists (repo_dir) then

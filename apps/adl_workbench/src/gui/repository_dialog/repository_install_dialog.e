@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 		do
 			repository_url := a_repo_url
 			create local_directory.make_empty
-			create legacy_directory.make_empty
+			create adl14_directory.make_empty
 			header_text := get_text ({ADL_MESSAGES_IDS}.ec_repository_install_dialog_header_label_url)
 			default_create
 		end
@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 		do
 			create repository_url.make_empty
 			create local_directory.make_empty
-			create legacy_directory.make_empty
+			create adl14_directory.make_empty
 			header_text := get_text ({ADL_MESSAGES_IDS}.ec_repository_install_dialog_header_label)
 			default_create
 		end
@@ -99,13 +99,13 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (evx_clone_cb.ev_data_control)
 			gui_controls.extend (evx_clone_cb)
 
-			-- ============ optional: ADL 1.4 legacy repository dir chooser ============
-			create evx_legacy_dir_setter.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_repository_legacy_dir_text), agent :STRING do Result := legacy_directory end, agent set_legacy_directory, Void, Void, 0)
-			evx_legacy_dir_setter.set_button_tooltip (get_text ({ADL_MESSAGES_IDS}.ec_repository_legacy_dir_tooltip))
-			evx_legacy_dir_setter.set_default_directory_agent (agent :STRING do Result := last_user_selected_directory end)
-			ev_root_container.extend (evx_legacy_dir_setter.ev_root_container)
-			ev_root_container.disable_item_expand (evx_legacy_dir_setter.ev_root_container)
-			gui_controls.extend (evx_legacy_dir_setter)
+			-- ============ optional: ADL 1.4 repository dir chooser ============
+			create evx_adl14_dir_setter.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_repository_adl14_dir_text), agent :STRING do Result := adl14_directory end, agent set_adl14_directory, Void, Void, 0)
+			evx_adl14_dir_setter.set_button_tooltip (get_text ({ADL_MESSAGES_IDS}.ec_repository_adl14_dir_tooltip))
+			evx_adl14_dir_setter.set_default_directory_agent (agent :STRING do Result := last_user_selected_directory end)
+			ev_root_container.extend (evx_adl14_dir_setter.ev_root_container)
+			ev_root_container.disable_item_expand (evx_adl14_dir_setter.ev_root_container)
+			gui_controls.extend (evx_adl14_dir_setter)
 
 			-- ============ Ok/Cancel buttons ============
 			create ok_cancel_buttons.make (agent on_ok, agent hide)
@@ -145,7 +145,7 @@ feature -- Access
 
 	local_directory: STRING
 
-	legacy_directory: STRING
+	adl14_directory: STRING
 
 feature -- Status Report
 
@@ -172,9 +172,9 @@ feature -- Modification
 			local_directory := a_dir
 		end
 
-	set_legacy_directory (a_dir: STRING)
+	set_adl14_directory (a_dir: STRING)
 		do
-			legacy_directory := a_dir
+			adl14_directory := a_dir
 		end
 
 feature -- Commands
@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 
 	evx_clone_cb: EVX_CHECK_BOX_CONTROL
 
-	evx_dir_setter, evx_legacy_dir_setter: EVX_DIRECTORY_SETTER
+	evx_dir_setter, evx_adl14_dir_setter: EVX_DIRECTORY_SETTER
 
 	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 

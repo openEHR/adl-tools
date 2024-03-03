@@ -43,35 +43,6 @@ create
 
 feature -- Definitions
 
-	Validate_action: STRING = "validate"
-
-	Serialise_action: STRING = "serialise"
-
-	Serialise_action_alt_sp: STRING = "serialize"
-
-	List_action: STRING = "list"
-
-	Actions: ARRAYED_LIST [STRING]
-		once
-			create Result.make (0)
-			Result.compare_objects
-			Result.extend (Validate_action)
-			Result.extend (Serialise_action)
-			Result.extend (Serialise_action_alt_sp)
-			Result.extend (List_action)
-		end
-
-	Actions_string: STRING
-		once
-			create Result.make (0)
-			across actions as actions_csr loop
-				if actions_csr.target_index > 1 then
-					Result.append (", ")
-				end
-				Result.append (actions_csr.item)
-			end
-		end
-
 	switches: ARRAYED_LIST [ARGUMENT_SWITCH]
 			-- Retrieve a list of switch used for a specific application
 		once
@@ -92,7 +63,7 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text (ec_format_switch_desc), True, False, format_switch_arg, get_msg (ec_format_switch_arg_desc, <<archetype_all_serialiser_formats_string>>), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (output_dir_switch, get_text (ec_output_dir_switch_desc), True, False, output_dir_switch_arg_name, get_text (ec_output_dir_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text (ec_cfg_switch_desc), True, False, cfg_switch_arg_name, get_text (ec_cfg_switch_arg_desc), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (action_switch, get_text (ec_action_switch_desc), False, False, action_switch_arg, Actions_string, False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (action_switch, get_text (ec_action_switch_desc), False, False, action_switch_arg, actions_string, False))
 
 			-- valid command line configurations
 
@@ -262,7 +233,11 @@ feature -- Access
 
 	archetype_id_pattern: STRING
 		do
-			Result := value
+			if has_non_switched_argument then
+				Result := value
+			else
+				create Result.make_empty
+			end
 		end
 
 feature -- Status Report
@@ -289,6 +264,14 @@ feature -- Status Report
 	write_to_file_system: BOOLEAN
 			-- True if -o switch used to specify an output directory
 
+feature -- Modification
+
+	set_actions_string (str: STRING)
+			-- set a String containing list of possible actions for Usage display
+		do
+			actions_string := str
+		end
+
 feature {NONE} -- Usage
 
 	copyright: STRING = "Copyright (c) 2012- openEHR Foundation"
@@ -304,6 +287,11 @@ feature {NONE} -- Usage
 			--  <Precursor>
 		once
 			Result := (create {OPENEHR_VERSION}).out
+		end
+
+	actions_string: STRING
+		attribute
+			create Result.make_empty
 		end
 
 end

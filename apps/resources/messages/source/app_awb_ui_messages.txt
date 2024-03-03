@@ -78,8 +78,8 @@ templates = <
 		["repository_dir_text"] = <"Local path: ">
 		["repository_dir_tooltip"] = <"Choose repository root directory. This can be the root of e.g. %Na Git or SVN repository, or a normal file system location,%Nunder which archetype library folders may be sparsely located.">
 
-		["repository_legacy_dir_text"] = <"ADL 1.4 path: ">
-		["repository_legacy_dir_tooltip"] = <"Optionally specify ADL 1.4 legacy repository root directory.">
+		["repository_adl14_dir_text"] = <"ADL 1.4 path: ">
+		["repository_adl14_dir_tooltip"] = <"Optionally specify ADL 1.4 legacy repository root directory.">
 
 		["repository_dir_invalid"] = <"Directory $1 either doesn't exist, or already configured as a repository">
 		["repository_dir_not_repository"] = <"Directory $1 exists but is not an archetype repository (no $2 file found)">
