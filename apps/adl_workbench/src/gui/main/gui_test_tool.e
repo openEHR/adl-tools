@@ -873,6 +873,7 @@ feature {NONE} -- Implementation
 			has_current_library
 		local
 			curr_prof, diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root, odin_root: STRING
+			dir: DIRECTORY
 		do
 			diff_dirs_available := False
 
@@ -884,11 +885,17 @@ feature {NONE} -- Implementation
 			diff_dir_source_new := file_system.pathname (diff_dir_source_root, "new")
 
 			if not file_system.directory_exists (diff_dir_source_orig) then
-				file_system.recursive_create_directory (diff_dir_source_orig)
+				-- TODO: revert when original call no longer causes OS faults
+				-- file_system.recursive_create_directory (diff_dir_source_orig)
+				create dir.make (diff_dir_source_orig)
+				dir.recursive_create_dir
 			end
 			if file_system.directory_exists (diff_dir_source_orig) then
 				if not file_system.directory_exists (diff_dir_source_new) then
-					file_system.recursive_create_directory (diff_dir_source_new)
+					-- TODO: revert when original call no longer causes OS faults
+					-- file_system.recursive_create_directory (diff_dir_source_new)
+					create dir.make (diff_dir_source_new)
+					dir.recursive_create_dir
 				end
 				if file_system.directory_exists (diff_dir_source_new) then
 					diff_dirs_available := True
@@ -901,11 +908,17 @@ feature {NONE} -- Implementation
 				diff_dir_flat_orig := file_system.pathname (diff_dir_flat_root, "orig")
 				diff_dir_flat_new := file_system.pathname (diff_dir_flat_root, "new")
 				if not file_system.directory_exists (diff_dir_flat_orig) then
-					file_system.recursive_create_directory (diff_dir_flat_orig)
+					-- TODO: revert when original call no longer causes OS faults
+					-- file_system.recursive_create_directory (diff_dir_flat_orig)
+					create dir.make (diff_dir_flat_orig)
+					dir.recursive_create_dir
 				end
 				if file_system.directory_exists (diff_dir_flat_orig) then
 					if not file_system.directory_exists (diff_dir_flat_new) then
-						file_system.recursive_create_directory (diff_dir_flat_new)
+						-- TODO: revert when original call no longer causes OS faults
+						-- file_system.recursive_create_directory (diff_dir_flat_new)
+						create dir.make (diff_dir_flat_new)
+						dir.recursive_create_dir
 					end
 					if not file_system.directory_exists (diff_dir_flat_new) then
 						diff_dirs_available := False
@@ -923,11 +936,17 @@ feature {NONE} -- Implementation
 				diff_dir_source_flat_orig := file_system.pathname (diff_dir_source_flat_root, "orig")
 				diff_dir_source_flat_new := file_system.pathname (diff_dir_source_flat_root, "new")
 				if not file_system.directory_exists (diff_dir_source_flat_orig) then
-					file_system.recursive_create_directory (diff_dir_source_flat_orig)
+					-- TODO: revert when original call no longer causes OS faults
+					-- file_system.recursive_create_directory (diff_dir_source_flat_orig)
+					create dir.make (diff_dir_source_flat_orig)
+					dir.recursive_create_dir
 				end
 				if file_system.directory_exists (diff_dir_source_flat_orig) then
 					if not file_system.directory_exists (diff_dir_source_flat_new) then
-						file_system.recursive_create_directory (diff_dir_source_flat_new)
+						-- TODO: revert when original call no longer causes OS faults
+						-- file_system.recursive_create_directory (diff_dir_source_flat_new)
+						create dir.make (diff_dir_source_flat_new)
+						dir.recursive_create_dir
 					end
 					if not file_system.directory_exists (diff_dir_source_flat_new) then
 						diff_dirs_available := False
@@ -943,12 +962,18 @@ feature {NONE} -- Implementation
 			odin_root := file_system.pathname (diff_dir_root, "odin")
 			odin_source_dir := file_system.pathname (odin_root, "source")
 			if not file_system.directory_exists (odin_source_dir) then
-				file_system.recursive_create_directory (odin_source_dir)
+				-- TODO: revert when original call no longer causes OS faults
+				-- file_system.recursive_create_directory (odin_source_dir)
+				create dir.make (odin_source_dir)
+				dir.recursive_create_dir
 			end
 
 			odin_flat_dir := file_system.pathname (odin_root, "flat")
 			if not file_system.directory_exists (odin_flat_dir) then
-				file_system.recursive_create_directory (odin_flat_dir)
+				-- TODO: revert when original call no longer causes OS faults
+				-- file_system.recursive_create_directory (odin_flat_dir)
+				create dir.make (odin_flat_dir)
+				dir.recursive_create_dir
 			end
 
 			-- dirs for adl files produced by serialised first to odin, reading back odin,
@@ -956,12 +981,18 @@ feature {NONE} -- Implementation
 			odin_adl_root := file_system.pathname (diff_dir_root, "odin_adl")
 			diff_odin_round_trip_source_orig_dir := file_system.pathname (odin_adl_root, "orig")
 			if not file_system.directory_exists (diff_odin_round_trip_source_orig_dir) then
-				file_system.recursive_create_directory (diff_odin_round_trip_source_orig_dir)
+				-- TODO: revert when original call no longer causes OS faults
+				-- file_system.recursive_create_directory (diff_odin_round_trip_source_orig_dir)
+				create dir.make (diff_odin_round_trip_source_orig_dir)
+				dir.recursive_create_dir
 			end
 
 			diff_odin_round_trip_source_new_dir := file_system.pathname (odin_adl_root, "new")
 			if not file_system.directory_exists (diff_odin_round_trip_source_new_dir) then
-				file_system.recursive_create_directory (diff_odin_round_trip_source_new_dir)
+				-- TODO: revert when original call no longer causes OS faults
+				-- file_system.recursive_create_directory (diff_odin_round_trip_source_new_dir)
+				create dir.make (diff_odin_round_trip_source_new_dir)
+				dir.recursive_create_dir
 			end
 		end
 

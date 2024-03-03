@@ -378,15 +378,23 @@ feature -- Application Switches
 			-- create compiler source and flat generated file areas for current library
 		require
 			not current_library_name.is_empty
+		local
+			dir: DIRECTORY
 		do
 			compiler_gen_source_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, current_library_name), "source"))
 			if not file_system.directory_exists (compiler_gen_source_directory) then
-				file_system.recursive_create_directory (compiler_gen_source_directory)
+				-- TODO: revert when original call no longer causes OS faults
+				-- file_system.recursive_create_directory (compiler_gen_source_directory)
+				create dir.make (compiler_gen_source_directory)
+				dir.recursive_create_dir
 			end
 
 			compiler_gen_flat_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, current_library_name), "flat"))
 			if not file_system.directory_exists (compiler_gen_flat_directory) then
-				file_system.recursive_create_directory (compiler_gen_flat_directory)
+				-- TODO: revert when original call no longer causes OS faults
+				-- file_system.recursive_create_directory (compiler_gen_flat_directory)
+				create dir.make (compiler_gen_flat_directory)
+				dir.recursive_create_dir
 			end
 		end
 

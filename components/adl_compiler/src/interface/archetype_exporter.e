@@ -95,9 +95,14 @@ feature {NONE} -- Commands
 		end
 
 	valid_setup_args (args: like build_args_type): BOOLEAN
+		local
+			dir: DIRECTORY
 		do
 			if not directory_exists (args.export_dir) then
-				file_system.recursive_create_directory (args.export_dir)
+				-- TODO: revert when original call no longer causes OS faults
+				-- file_system.recursive_create_directory (args.export_dir)
+				create dir.make (args.export_dir)
+				dir.recursive_create_dir
 			end
 			Result := has_serialiser_format (args.syntax) and directory_exists (args.export_dir)
 		end

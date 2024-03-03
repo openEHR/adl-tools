@@ -28,9 +28,13 @@ feature {NONE} -- Assertions
 
 	test_directory: STRING
 			-- A directory for temporary test files.
+		local
+			dir: DIRECTORY
 		once
 			Result := file_system.pathname (user_config_file_directory, "autotest")
-			file_system.recursive_create_directory (Result)
+			-- file_system.recursive_create_directory (Result)
+			create dir.make (Result)
+			dir.recursive_create_dir
 		end
 
 end
