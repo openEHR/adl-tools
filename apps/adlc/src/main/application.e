@@ -107,7 +107,8 @@ feature -- Commands
 		local
 			curr_repo, action: STRING
 			aca: ARCH_LIB_ARCHETYPE
-			lib_name, full_output_dir, full_path, schema_file_path, export_dir: STRING
+			full_path, schema_file_path, export_dir: STRING
+			finished: BOOLEAN
 		do
 			report_std_out ("Initialising... %N")
 
@@ -138,32 +139,34 @@ feature -- Commands
 					archetype_compiler.set_archetype_visual_update_agent (agent compiler_archetype_gui_update)
 
 					-- set library to use
-					if attached opts.library as att_lib and then has_library (att_lib) then
-						set_current_library_name (att_lib)
-						report_std_out ("Using library " + att_lib + "%N")
+					if attached opts.library as att_lib then
+						if has_library (att_lib) then
+							set_current_library_name (att_lib)
+							report_std_out ("Using library " + att_lib + "%N")
 
-						-- list archetype ids
-						if opts.list_archetypes then
-							action_arch_list_archetype_ids (False)
+							-- list archetype ids
+							if opts.list_archetypes then
+								action_arch_list_archetype_ids (False)
 
-						-- output archetype id(s) in serialised format
-						elseif opts.display_archetypes then
-							action_arch_list_archetype_ids (True)
+							-- output archetype id(s) in serialised format
+							elseif opts.display_archetypes then
+								action_arch_list_archetype_ids (True)
 
-						else
-							-- check if valid action specified
-							check attached opts.action as a then
-								action := a
-							end
-							if not Actions.has (action) then
-								std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_action_err, <<action, Actions_string>>))
 							else
-								process_archetype_action (action)
+								-- check if valid action specified
+								check attached opts.action as a then
+									action := a
+								end
+								if not Actions.has (action) then
+									std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_action_err, <<action, Actions_string>>))
+								else
+									process_archetype_action (action)
+								end
 							end
+						else
+							std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_lib_does_not_exist_err, <<att_lib>>))
+							finished := True
 						end
-					else
-						std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_lib_does_not_exist_err, <<att_lib>>))
-						finished := True
 					end
 				end
 			else
@@ -179,15 +182,19 @@ feature -- Commands
 		end
 
 	process_archetype_action (an_action: STRING)
-		require
-
+		local
+			lib_name, full_output_dir, full_path, schema_file_path, export_dir: STRING
+			finished: BOOLEAN
 		do
 			-- if there is an archetype_id pattern use it, else default to all
 			if not opts.archetype_id_pattern.is_empty then
 				if valid_regex (opts.archetype_id_pattern) then
 					matched_archetype_ids := current_library.matching_ids (opts.archetype_id_pattern, Void, Void)
+					if matched_archetype_ids.is_empty then
+						std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_no_matching_ids_err, <<opts.archetype_id_pattern, current_library_name>>))
+					end
 				else
-					std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_no_matching_ids_err, <<opts.archetype_id_pattern, current_library_name>>))
+					std_err.put_string (get_msg_line ("regex_e1", <<opts.archetype_id_pattern>>))
 				end
 			else
 				matched_archetype_ids := current_library.matching_ids (match_all_regex, Void, Void)
@@ -195,10 +202,11 @@ feature -- Commands
 			end
 
 			-- List matched archetypes
-			if action.is_equal (opts.List_action) then
+			if an_action.is_equal (List_action) then
 				across matched_archetype_ids as arch_ids_csr loop
 					std_out.put_string (arch_ids_csr.item + "%N")
 				end
+
 			else
 				-- record flat option
 				use_flat_source := opts.use_flat_source
@@ -226,18 +234,20 @@ feature -- Commands
 						std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_output_directory, <<full_output_dir>>))
 						finished := True
 					else
-						report_std_out.put_string ("Serialising to " + full_output_dir + "%N")
+						report_std_out ("Serialising to " + full_output_dir + "%N")
 					end
 				end
-
-				-- First, compile
-				report_std_out.put_string ("--------- " + alaa.id.as_string + " ---------%N")
 
 				if process_all then
 					archetype_compiler.build_all
 				else
 					across matched_archetype_ids as arch_ids_csr loop
-						archetype_compiler.build_artefact (alaa)
+						if attached {ARCH_LIB_AUTHORED_ARCHETYPE} current_library.archetype_with_id (arch_ids_csr.item) as alaa then
+							-- First, compile
+							report_std_out ("--------- " + alaa.id.as_string + " ---------%N")
+
+							archetype_compiler.build_artefact (alaa)
+						end
 					end
 				end
 
@@ -246,16 +256,12 @@ feature -- Commands
 					across matched_archetype_ids as arch_ids_csr loop
 						if attached {ARCH_LIB_AUTHORED_ARCHETYPE} current_library.archetype_with_id (arch_ids_csr.item) as alaa then
 
-							-- First, compile the artefact
-							std_err.put_string ("--------- " + alaa.id.as_string + " ---------%N")
-							archetype_compiler.build_artefact (alaa)
-
 							-- Now execute the action
-							if action.is_equal (opts.Validate_action) then
+							if an_action.is_equal (Validate_action) then
 								-- no need to do anything; gui output agent will generate errors
 								-- std_err.put_string (alaa.status)
 
-							elseif action.is_equal (opts.Serialise_action) or action.is_equal (opts.Serialise_action_alt_sp) then
+							elseif an_action.is_equal (Serialise_action) or an_action.is_equal (Serialise_action_alt_sp) then
 								if alaa.is_valid then
 									-- write to file system
 									if opts.write_to_file_system then
@@ -285,19 +291,19 @@ feature -- Commands
 									std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_not_valid, <<alaa.id.as_string>>))
 								end
 							else
-								std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_action_err, <<action, opts.Actions_string>>))
+								std_err.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_action_err, <<an_action, Actions_string>>))
 							end
 						end
 					end
 				end
-			else
-				std_err.put_string (get_msg_line ("regex_e1", <<opts.archetype_id_pattern>>))
 			end
 		end
 
 feature {NONE} -- Commands
 
 	action_show_config
+		local
+			lib_name: STRING
 		do
 			-- location of .cfg file
 			std_out.put_string (get_msg ({ADL_MESSAGES_IDS}.ec_config_file_location, <<app_cfg.file_path>>))
@@ -339,6 +345,7 @@ feature {NONE} -- Commands
 	action_export_rms
 		local
 			finished, use_schema_dir: BOOLEAN
+			lib_name, full_output_dir, full_path, schema_file_path, export_dir: STRING
 		do
 			create export_dir.make_empty
 			if attached opts.rm_export_directory as xd then
@@ -455,7 +462,7 @@ feature {NONE} -- Implementation
 
 	dashes: STRING = "-----------------------------------------------------------------"
 
-	node_lister_enter (aci: ARCH_LIB_ITEM, user_friendly_list_output: BOOLEAN)
+	node_lister_enter (aci: ARCH_LIB_ITEM; user_friendly_list_output: BOOLEAN)
 			-- FIXME: at some point, implement a proper graphical tree in character graphics
 			-- not using fixed length source strings!
 		local
