@@ -57,10 +57,13 @@ feature -- Access
 			create Result.default_create
 		end
 
-	translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
+	translations: HASH_TABLE [TRANSLATION_DETAILS, STRING]
 			-- List of details for each natural translation made of this resource, keyed by
 			-- language tag. For each translation listed here, there must be corresponding
 			-- sections in all language-dependent parts of the resource.
+		attribute
+			create Result.make (0)
+		end
 
 	description: RESOURCE_DESCRIPTION
 			-- Description and lifecycle information of the resource.
@@ -127,7 +130,7 @@ feature -- Status Report
 	has_translations: BOOLEAN
 			-- True if there are translations
 		do
-			Result := attached translations
+			Result := not translations.is_empty
 		end
 
 	has_revision_history: BOOLEAN
@@ -191,16 +194,8 @@ feature -- Modification
 			-- add a translation for a_lang
 		require
 			Translation_valid: not has_language(a_trans.language.code_string)
-		local
-			trans: attached like translations
 		do
-			if attached translations as att_trans then
-				trans := att_trans
-			else
-				create trans.make(0)
-				translations := trans
-			end
-			trans.put (a_trans, a_trans.language.code_string)
+			translations.put (a_trans, a_trans.language.code_string)
 		ensure
 			has_language (a_trans.language.code_string)
 		end
@@ -272,12 +267,7 @@ feature {ARCHETYPE} -- Flattening
 		do
 			across languages_available as langs_csr loop
 				if not a_langs.has (langs_csr.item) then
-					if attached translations as trans then
-						trans.remove (langs_csr.item)
-						if trans.is_empty then
-							translations := Void
-						end
-					end
+					translations.remove (langs_csr.item)
 					description.remove_language (langs_csr.item)
 					if attached annotations as annots then
 						annots.remove_language (langs_csr.item)
@@ -291,12 +281,7 @@ feature {ARCHETYPE} -- Flattening
 		require
 			has_language (a_lang)
 		do
-			if attached translations then
-				translations.remove (a_lang)
-				if translations.is_empty then
-					translations := Void
-				end
-			end
+			translations.remove (a_lang)
 			description.remove_language (a_lang)
 			if attached annotations then
 				annotations.remove_language (a_lang)
@@ -324,9 +309,9 @@ feature {ARCHETYPE} -- Flattening
 			-- remove translations meta-data structure;
 			-- leaves any translation languages in description intact
 		do
-			translations := Void
+			translations.wipe_out
 		ensure
-			not attached translations
+			translations.is_empty
 		end
 
 feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Implementation

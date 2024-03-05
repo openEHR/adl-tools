@@ -59,14 +59,23 @@ feature -- Access
 			create Result.make (0)
 		end
 
-	term_bindings: detachable HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+	term_bindings: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 			-- tables of bindings of external terms to internal codes, keyed by external terminology id
+		attribute
+			create Result.make (0)
+		end
 
-	value_sets: detachable HASH_TABLE [VALUE_SET, STRING]
+	value_sets: HASH_TABLE [VALUE_SET, STRING]
 			-- table of value set relationships keyed by ac-code
+		attribute
+			create Result.make (0)
+		end
 
-	terminology_extracts: detachable HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
+	terminology_extracts: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Factory
 

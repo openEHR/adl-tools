@@ -55,17 +55,17 @@ feature -- Initialisation
 			c_attribute_completed.wipe_out
 			c_object_ignore.wipe_out
 
-			aom_profile := Void
+			create aom_profile.make_dt (Void) -- wipe out from previous run
 			archetype_parent_class := {BMM_DEFINITIONS}.any_type_name
 			archetype_data_value_parent_class := {BMM_DEFINITIONS}.any_type_name
 
 			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
-				if attached aom_profile.archetype_parent_class as aop_loc then
-					archetype_parent_class := aop_loc
+				if not aom_profile.archetype_parent_class.is_empty then
+					archetype_parent_class := aom_profile.archetype_parent_class
 				end
-				if attached aom_profile.archetype_data_value_parent_class as aop_dt then
-					archetype_data_value_parent_class := aop_dt
+				if not aom_profile.archetype_data_value_parent_class.is_empty then
+					archetype_data_value_parent_class := aom_profile.archetype_data_value_parent_class
 				end
 			end
 		end
@@ -313,7 +313,10 @@ feature {NONE} -- Implementation
 			Result := model_for_archetype_id (archetype_id)
 		end
 
-	aom_profile: detachable AOM_PROFILE
+	aom_profile: AOM_PROFILE
+		attribute
+			create Result.make_dt (Void)
+		end
 
 	language: STRING
 		attribute
@@ -470,8 +473,8 @@ feature {NONE} -- Implementation
 
 	is_ignored (rm_type, attr_name: STRING): BOOLEAN
 		do
-			if ignored_attributes.has (rm_type) then
-				Result := ignored_attributes.item (rm_type).has(attr_name)
+			if ignored_attributes.has (rm_type) and then attached ignored_attributes.item (rm_type) as attr_list then
+				Result := attr_list.has(attr_name)
 			end
 		end
 
@@ -484,8 +487,8 @@ feature {NONE} -- Implementation
 
 	is_required (rm_type, attr_name: STRING): BOOLEAN
 		do
-			if required_attributes.has (rm_type) then
-				Result := required_attributes.item (rm_type).has(attr_name)
+			if required_attributes.has (rm_type) and then attached required_attributes.item (rm_type) as attr_list then
+				Result := attr_list.has (attr_name)
 			end
 		end
 

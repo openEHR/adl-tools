@@ -46,7 +46,7 @@ feature {NONE} -- Initialisation
 			-- lifecycle state control - single line combo text-selection field
 			create evx_lifecycle_state_combo.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_lifecycle_state_label_text),
 				get_text ({ADL_MESSAGES_IDS}.ec_lifecycle_state_label_tooltip),
-				agent : detachable STRING do Result := source_archetype.description.lifecycle_state end,
+				agent : STRING do Result := source_archetype.description.lifecycle_state end,
 				resource_lifecycle_states,
 				agent (a_str: STRING) do source_archetype.description.set_lifecycle_state (a_str) end,
 				Void, undo_redo_chain, 18)
@@ -59,12 +59,7 @@ feature {NONE} -- Initialisation
 			ev_governance_tab_vbox.extend (evx_package_frame.ev_root_container)
 			ev_governance_tab_vbox.disable_item_expand (evx_package_frame.ev_root_container)
 			create evx_resource_package.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_packages_label_text),
-				agent :detachable STRING
-					do
-						if attached source_archetype.description.resource_package_uri as rpi then
-							Result := rpi.out
-						end
-					end,
+				agent : STRING do Result := source_archetype.description.resource_package_uri.out end,
 				agent (a_str: STRING) do source_archetype.description.set_resource_package_uri (a_str) end,
 				agent do source_archetype.description.clear_resource_package_uri end,
 				undo_redo_chain, 0, True)
@@ -78,12 +73,7 @@ feature {NONE} -- Initialisation
 
 			-- custodian namespace - String
 			create evx_custodian_namespace_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_custodian_namespace_label_text),
-				agent : detachable STRING
-					do
-						if attached source_archetype.description.custodian_namespace as rpi then
-							Result := rpi
-						end
-					end,
+				agent : STRING do Result := source_archetype.description.custodian_namespace end,
 				agent (a_str: STRING) do source_archetype.description.set_custodian_namespace (a_str) end,
 				agent do source_archetype.description.clear_custodian_namespace end,
 				undo_redo_chain, 0, True)
@@ -92,12 +82,7 @@ feature {NONE} -- Initialisation
 
 			-- custodian organisation - String
 			create evx_custodian_organisation_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_custodian_organisation_label_text),
-				agent : detachable STRING
-					do
-						if attached source_archetype.description.custodian_organisation as rpi then
-							Result := rpi
-						end
-					end,
+				agent : STRING do Result := source_archetype.description.custodian_organisation end,
 				agent (a_str: STRING) do source_archetype.description.set_custodian_organisation (a_str) end,
 				agent do source_archetype.description.clear_custodian_organisation end,
 				undo_redo_chain, 0, True)
@@ -112,12 +97,7 @@ feature {NONE} -- Initialisation
 
 			-- original namespace - String
 			create evx_original_namespace_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_original_namespace_label_text),
-				agent : detachable STRING
-					do
-						if attached source_archetype.description.original_namespace as rpi then
-							Result := rpi
-						end
-					end,
+				agent : STRING do Result := source_archetype.description.original_namespace end,
 				agent (a_str: STRING) do source_archetype.description.set_original_namespace (a_str) end,
 				agent do source_archetype.description.clear_original_namespace end,
 				undo_redo_chain, 0, True)
@@ -126,12 +106,7 @@ feature {NONE} -- Initialisation
 
 			-- original publisher - String
 			create evx_original_publisher_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_original_publisher_label_text),
-				agent : detachable STRING
-					do
-						if attached source_archetype.description.original_publisher as rpi then
-							Result := rpi
-						end
-					end,
+				agent : STRING do Result := source_archetype.description.original_publisher end,
 				agent (a_str: STRING) do source_archetype.description.set_original_publisher (a_str) end,
 				agent do source_archetype.description.clear_original_publisher end,
 				undo_redo_chain, 0, True)
@@ -145,7 +120,7 @@ feature {NONE} -- Initialisation
 
 			-- copyright - multi-line text
 			create evx_copyright_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_copyright_label_text),
-				agent : detachable STRING do Result := source_archetype.description.copyright end,
+				agent : STRING do Result := source_archetype.description.copyright end,
 				agent (a_str: STRING) do source_archetype.description.set_copyright (a_str) end,
 				agent do source_archetype.description.clear_copyright end,
 				undo_redo_chain, 0, 0, True)
@@ -154,7 +129,7 @@ feature {NONE} -- Initialisation
 
 			-- licence - multi-line text
 			create evx_licence_text.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_licence_label_text),
-				agent : detachable STRING do Result := source_archetype.description.licence end,
+				agent : STRING do Result := source_archetype.description.licence end,
 				agent (a_str: STRING) do source_archetype.description.set_licence (a_str) end,
 				agent do source_archetype.description.clear_licence end,
 				undo_redo_chain, 0, 0, True)
@@ -163,7 +138,7 @@ feature {NONE} -- Initialisation
 
 			-- ip_acknowledgements control - Hash
 			create evx_ip_acknowledgements.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_ip_acknowledgements_label_text),
-				agent : detachable HASH_TABLE [STRING, STRING] do if attached source_archetype.description.ip_acknowledgements as ack then Result := ack end end,
+				agent : HASH_TABLE [STRING, STRING] do Result := source_archetype.description.ip_acknowledgements end,
 				agent (a_key, a_val: STRING) do source_archetype.description.put_ip_acknowledgements_item (a_key, a_val) end,
 				agent (a_key: STRING) do source_archetype.description.remove_ip_acknowledgements_item (a_key) end,
 				undo_redo_chain,
@@ -184,9 +159,9 @@ feature {NONE} -- Initialisation
 
 			-- conversion_details control - Hash
 			create evx_conversion_details.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_conversion_details_label_text),
-				agent : detachable HASH_TABLE [STRING, STRING] do if attached source_archetype.description as desc and then attached desc.conversion_details as cd then Result := cd end end,
-				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_conversion_details_item (a_key, a_val) end end,
-				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_conversion_details_item (a_key) end end,
+				agent : HASH_TABLE [STRING, STRING] do Result := source_archetype.description.conversion_details end,
+				agent (a_key, a_val: STRING) do source_archetype.description.put_conversion_details_item (a_key, a_val) end,
+				agent (a_key: STRING) do source_archetype.description.remove_conversion_details_item (a_key) end,
 				undo_redo_chain,
 				0, 0, True, Void)
 			gui_controls.extend (evx_conversion_details)
@@ -203,18 +178,18 @@ feature {NONE} -- Initialisation
 
 			-- original_author control - Hash
 			create evx_original_author.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_auth_orig_auth_label_text),
-				agent : detachable HASH_TABLE [STRING, STRING] do if attached source_archetype.description as desc then Result := desc.original_author end end,
-				agent (a_key, a_val: STRING) do if attached source_archetype.description as desc then desc.put_original_author_item (a_key, a_val) end end,
-				agent (a_key: STRING) do if attached source_archetype.description as desc then desc.remove_original_author_item (a_key) end end,
+				agent : HASH_TABLE [STRING, STRING] do Result := source_archetype.description.original_author end,
+				agent (a_key, a_val: STRING) do source_archetype.description.put_original_author_item (a_key, a_val) end,
+				agent (a_key: STRING) do source_archetype.description.remove_original_author_item (a_key) end,
 				undo_redo_chain, 0, min_entry_control_width_in_chars, False, Void)
 			gui_controls.extend (evx_original_author)
 			evx_auth_frame.extend (evx_original_author.ev_root_container, True)
 
 			-- contributors - list
 			create evx_auth_contrib_list.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_auth_contrib_label_text),
-				agent : detachable DYNAMIC_LIST [STRING] do if attached source_archetype.description as desc and then attached desc.other_contributors as oc then Result := oc end end,
-				agent (a_str: STRING; i: INTEGER) do if attached source_archetype.description as desc then desc.add_other_contributor (a_str, i) end end,
-				agent (a_str: STRING) do if attached source_archetype.description as desc then desc.remove_other_contributor (a_str) end end,
+				agent : DYNAMIC_LIST [STRING] do Result := source_archetype.description.other_contributors end,
+				agent (a_str: STRING; i: INTEGER) do source_archetype.description.add_other_contributor (a_str, i) end,
+				agent (a_str: STRING) do source_archetype.description.remove_other_contributor (a_str) end,
 				undo_redo_chain, 0, min_entry_control_width_in_chars, False)
 			gui_controls.extend (evx_auth_contrib_list)
 			evx_auth_frame.extend (evx_auth_contrib_list.ev_root_container, True)
@@ -232,11 +207,9 @@ feature {NONE} -- Initialisation
 
 			-- translation languages selector
 			create evx_trans_languages_combo.make (get_text ({ADL_MESSAGES_IDS}.ec_trans_languages_label_text), Void,
-				agent : detachable DYNAMIC_LIST [STRING]
+				agent : DYNAMIC_LIST [STRING]
 					do
-						if source_archetype.has_translations then
-							Result := create {ARRAYED_LIST [STRING]}.make_from_array (source_archetype.translations.current_keys)
-						end
+						Result := create {ARRAYED_LIST [STRING]}.make_from_array (source_archetype.translations.current_keys)
 					end, Void, 6, True)
 			ev_lang_original_trans_hbox.extend (evx_trans_languages_combo.ev_root_container)
 			gui_controls.extend (evx_trans_languages_combo)

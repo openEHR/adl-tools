@@ -524,8 +524,8 @@ feature -- Artefacts
 			locatable_class_name := ref_model.any_type_name
 			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
-				if attached aom_profile.archetype_parent_class as advpc then
-					locatable_class_name := advpc
+				if not aom_profile.archetype_parent_class.is_empty then
+					locatable_class_name := aom_profile.archetype_parent_class
 				end
 			end
 			Result := select_archetype (differential_view, editing_enabled).paths_matching_rm_type (agent ref_model.type_conforms_to (?, locatable_class_name))
@@ -552,8 +552,8 @@ feature -- Artefacts
 			locatable_class_name := ref_model.any_type_name
 			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
-				if attached aom_profile.archetype_parent_class as advpc then
-					locatable_class_name := advpc
+				if not aom_profile.archetype_parent_class.is_empty then
+					locatable_class_name := aom_profile.archetype_parent_class
 				end
 			end
 			Result := select_archetype (differential_view, editing_enabled).locatable_descriptions (a_language, a_segment_delimiter, agent ref_model.type_conforms_to (?, locatable_class_name))

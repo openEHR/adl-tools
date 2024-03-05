@@ -142,8 +142,11 @@ feature -- Access (Stored)
             create Result.make (0)
         end
 
-	terminology_extracts: detachable HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
+	terminology_extracts: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
+        attribute
+            create Result.make (0)
+        end
 
 feature -- Access (computed)
 
@@ -273,7 +276,7 @@ feature -- Access (computed)
 			Terminology_valid: has_terminology_extract (a_terminology)
 			Term_code_valid: has_terminology_extract_code (a_terminology, a_code)
 		do
-			check attached terminology_extracts as att_tex and then attached att_tex.item (a_terminology) as att_ex_terms and then attached att_ex_terms.item (a_code) as term then
+			check attached terminology_extracts.item (a_terminology) as att_ex_terms and then attached att_ex_terms.item (a_code) as term then
 				Result := term
 			end
 		end

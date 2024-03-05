@@ -58,11 +58,11 @@ feature {NONE} -- Implementation
 			create rm_stats_class_list.make (0)
 			if aom_profiles_access.has_profile_for_rm_schema (safe_source.model_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (safe_source.model_id)
-				if attached aom_profile.archetype_parent_class as apc then
-					rm_stats_class_list.extend (apc)
+				if not aom_profile.archetype_parent_class.is_empty then
+					rm_stats_class_list.extend (aom_profile.archetype_parent_class)
 				end
-				if attached aom_profile.archetype_data_value_parent_class as advpc then
-					rm_stats_class_list.extend (advpc)
+				if not aom_profile.archetype_data_value_parent_class.is_empty then
+					rm_stats_class_list.extend (aom_profile.archetype_data_value_parent_class)
 				end
 			end
 
