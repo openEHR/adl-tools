@@ -49,7 +49,7 @@ feature -- Access
 
 feature {ARCHETYPE_REPORTER} -- Processing
 
-	process_archetype (auth_ara: ARCH_LIB_AUTHORED_ARCHETYPE)
+	process_archetype (auth_ara: ARCH_LIB_ARCHETYPE)
 			-- Generate structure of the form:
 			--  {
 			--		id: "Value_sets_report"

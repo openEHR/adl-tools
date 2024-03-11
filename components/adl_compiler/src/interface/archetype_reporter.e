@@ -63,6 +63,7 @@ feature -- Access
 			report2: ID_CODE_REPORT
 			report3: ARCH_ID_TO_TPL_ID_REPORT
 			report4: VALUE_SETS_REPORT
+			report5: SPECIALIZATION_GRAPH_REPORT
 		once
 			create Result.make(0)
 
@@ -80,6 +81,9 @@ feature -- Access
 
 			create report4.make
 			Result.put (report4, report4.title)
+
+			create report5.make
+			Result.put (report5, report5.title)
 		end
 
 feature -- Commands
@@ -206,7 +210,7 @@ feature {NONE} -- Implementation
 		do
 			if not exception_encountered then
 				if not is_interrupted then
-					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} ara as auth_ara and then auth_ara.is_valid then
+					if attached {ARCH_LIB_ARCHETYPE} ara as auth_ara and then auth_ara.is_valid then
 						report.process_archetype (auth_ara)
 						update_progress
 					end

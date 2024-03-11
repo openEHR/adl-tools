@@ -64,7 +64,7 @@ feature {ARCHETYPE_REPORTER} -- Processing
 		do
 		end
 
-	process_archetype (auth_ara: ARCH_LIB_AUTHORED_ARCHETYPE)
+	process_archetype (auth_ara: ARCH_LIB_ARCHETYPE)
 		require
 			auth_ara.is_valid
 		deferred
