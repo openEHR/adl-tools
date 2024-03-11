@@ -31,11 +31,11 @@ feature -- Initialisation
 			archetype := aca.select_archetype (differential_view_flag, False)
 			flat_archetype := source.flat_archetype
 			flat_terminology := flat_archetype.terminology
-			if aom_profiles_access.has_profile_for_rm_schema (an_rm.model_id) then
-				aom_profile := aom_profiles_access.profile_for_rm_schema (an_rm.model_id)
-				archetype_parent_class := aom_profile.archetype_parent_class
-				archetype_data_value_parent_class := aom_profile.archetype_data_value_parent_class
-				archetype_visualise_descendants_of := aom_profile.archetype_visualise_descendants_of
+			if aom_profiles_access.has_profile_for_rm_schema (an_rm.model_id) and then attached aom_profiles_access.profile_for_rm_schema (an_rm.model_id) as att_ap then
+				aom_profile := att_ap
+				archetype_parent_class := att_ap.archetype_parent_class
+				archetype_data_value_parent_class := att_ap.archetype_data_value_parent_class
+				archetype_visualise_descendants_of := att_ap.archetype_visualise_descendants_of
 			end
 		end
 
@@ -50,11 +50,11 @@ feature -- Initialisation
 			flat_archetype := source.flat_archetype
 			flat_terminology := archetype.terminology
 			undo_redo_chain := an_undo_redo_chain
-			if aom_profiles_access.has_profile_for_rm_schema (an_rm.model_id) then
-				aom_profile := aom_profiles_access.profile_for_rm_schema (an_rm.model_id)
-				archetype_parent_class := aom_profile.archetype_parent_class
-				archetype_data_value_parent_class := aom_profile.archetype_data_value_parent_class
-				archetype_visualise_descendants_of := aom_profile.archetype_visualise_descendants_of
+			if aom_profiles_access.has_profile_for_rm_schema (an_rm.model_id) and then attached aom_profiles_access.profile_for_rm_schema (an_rm.model_id) as att_ap then
+				aom_profile := att_ap
+				archetype_parent_class := att_ap.archetype_parent_class
+				archetype_data_value_parent_class := att_ap.archetype_data_value_parent_class
+				archetype_visualise_descendants_of := att_ap.archetype_visualise_descendants_of
 			end
 			if attached aca.specialisation_parent as par_aca then
 				parent_archetype := par_aca.flat_archetype

@@ -234,8 +234,8 @@ feature -- Modification
 			-- merge annotations, if any found in `other' to current
 		do
 			if attached other.annotations as other_anns then
-				if attached annotations then
-					annotations.merge (other_anns)
+				if attached annotations as att_annot then
+					att_annot.merge (other_anns)
 				else
 					annotations := other_anns.deep_twin
 				end
@@ -283,8 +283,8 @@ feature {ARCHETYPE} -- Flattening
 		do
 			translations.remove (a_lang)
 			description.remove_language (a_lang)
-			if attached annotations then
-				annotations.remove_language (a_lang)
+			if attached annotations as att_annot then
+				att_annot.remove_language (a_lang)
 			end
 		ensure
 			not has_language (a_lang)
@@ -295,14 +295,14 @@ feature {ARCHETYPE} -- Flattening
 		local
 			trans_langs: ARRAYED_LIST [STRING]
 		do
-			if attached translations as trans then
-				create trans_langs.make_from_array (trans.current_keys)
+			if not translations.is_empty then
+				create trans_langs.make_from_array (translations.current_keys)
 				across trans_langs as trans_langs_csr loop
 					remove_language (trans_langs_csr.item)
 				end
 			end
 		ensure
-			not attached translations
+			translations.is_empty
 		end
 
 	remove_translations
