@@ -43,10 +43,13 @@ feature -- Access
 			create Result.default_create
 		end
 
-	translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
+	translations: HASH_TABLE [TRANSLATION_DETAILS, STRING]
 			-- List of details for each natural translation made of this resource, keyed by
 			-- language. For each translation listed here, there must be corresponding
 			-- sections in all language-dependent parts of the resource.
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Modification
 

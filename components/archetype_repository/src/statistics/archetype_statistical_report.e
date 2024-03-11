@@ -44,13 +44,13 @@ feature -- Initialisation
 			-- no 'LOCATABLE' or equivalent class declared, create a default table. Additionally create a
 			-- primitive types table (for nodes that archetype RM types like String, Integer etc), since this can
 			-- always be detected
-			if attached archetype_parent_class as apc then
-				rm_grouped_class_table.put (default_rm_class_table, apc)
+			if not archetype_parent_class.is_empty then
+				rm_grouped_class_table.put (default_rm_class_table, archetype_parent_class)
 			else
 				rm_grouped_class_table.put (default_rm_class_table, "Any")
 			end
-			if attached archetype_data_value_parent_class as advpc then
-				rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), advpc)
+			if not archetype_data_value_parent_class.is_empty then
+				rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), archetype_data_value_parent_class)
 			end
 			rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), Rm_primitive_group_key)
 		end
@@ -89,9 +89,15 @@ feature -- Access
 
 	ref_model: BMM_MODEL
 
-	archetype_data_value_parent_class: detachable STRING
+	archetype_data_value_parent_class: STRING
+		attribute
+			create Result.make (0)
+		end
 
-	archetype_parent_class: detachable STRING
+	archetype_parent_class: STRING
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Modification
 

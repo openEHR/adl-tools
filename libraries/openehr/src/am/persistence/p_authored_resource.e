@@ -26,14 +26,20 @@ feature {P_AUTHORED_ARCHETYPE} -- Initialisation
 
 feature -- Access
 
-	uid: detachable STRING
+	uid: STRING
+		attribute
+			create Result.make (0)
+		end
 
 	original_language: TERMINOLOGY_CODE
 		attribute
 			create Result.default_create
 		end
 
-	translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
+	translations: HASH_TABLE [TRANSLATION_DETAILS, STRING]
+		attribute
+			create Result.make (0)
+		end
 
 	description: RESOURCE_DESCRIPTION
 

@@ -474,9 +474,9 @@ feature {NONE} -- Implementation
 
 			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
-				if attached aom_profile.archetype_parent_class then
+				if not aom_profile.archetype_parent_class.is_empty then
 					visualise_descendants_class := aom_profile.archetype_parent_class
-				elseif attached aom_profile.archetype_visualise_descendants_of then
+				elseif not aom_profile.archetype_visualise_descendants_of.is_empty then
 					visualise_descendants_class := aom_profile.archetype_visualise_descendants_of
 				end
 			end

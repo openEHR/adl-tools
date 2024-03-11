@@ -61,19 +61,20 @@ feature {NONE} -- Implementation
 
 	validate_translations
 			-- True if `translations' structures obey their invariants
+		local
+			tgt_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING]
 		do
 			-- check that AUTHORED_RESOURCE.translations items match their Hash keys
-			if attached target.translations as tgt_trans then
-				from
-					tgt_trans.start
-				until
-					tgt_trans.off or not tgt_trans.key_for_iteration.is_equal (tgt_trans.item_for_iteration.language.code_string)
-				loop
-					tgt_trans.forth
-				end
-				if not tgt_trans.off then
-					add_error ({ADL_MESSAGES_IDS}.ec_VTRLA, <<tgt_trans.key_for_iteration, tgt_trans.item_for_iteration.language.code_string>>)
-				end
+			tgt_trans := target.translations
+			from
+				tgt_trans.start
+			until
+				tgt_trans.off or not tgt_trans.key_for_iteration.is_equal (tgt_trans.item_for_iteration.language.code_string)
+			loop
+				tgt_trans.forth
+			end
+			if not tgt_trans.off then
+				add_error ({ADL_MESSAGES_IDS}.ec_VTRLA, <<tgt_trans.key_for_iteration, tgt_trans.item_for_iteration.language.code_string>>)
 			end
 		end
 

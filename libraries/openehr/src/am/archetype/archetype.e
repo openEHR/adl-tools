@@ -219,7 +219,7 @@ feature -- Access
 
 	terminology: ARCHETYPE_TERMINOLOGY
 
-feature -- Paths
+feature -- Path Maps
 
 	path_map: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
 			-- get the full path map of the archetype, including paths created by
@@ -232,6 +232,31 @@ feature -- Paths
 				path_map_cache := Result
 			end
 		end
+
+	path_map_filtered (a_filter: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]): HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
+			-- full path map from definition structure filtered by `a_filter'; inclusion if filter
+			-- returns True
+		do
+			create Result.make (0)
+			across path_map as map_csr loop
+				if a_filter.item ([map_csr.item]) then
+					Result.put (map_csr.item, map_csr.key)
+				end
+			end
+		end
+
+	path_map_matching_rm_type (a_bmm_type_matcher_agent: FUNCTION [ANY, TUPLE [STRING], BOOLEAN]): HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
+			-- path map from definition structure
+		do
+			Result := path_map_filtered (
+				agent (ac: ARCHETYPE_CONSTRAINT; bmm_type_matcher_agent: FUNCTION [ANY, TUPLE [STRING], BOOLEAN]): BOOLEAN
+					do
+						Result := attached {C_OBJECT} ac as cco and then bmm_type_matcher_agent.item ([cco.rm_type_name])
+					end (?, a_bmm_type_matcher_agent)
+			)
+		end
+
+feature -- Paths
 
 	all_paths: ARRAYED_LIST [STRING]
 			-- all paths from definition structure
@@ -249,7 +274,7 @@ feature -- Paths
 			Result := all_paths_filtered (
 				agent (ac: ARCHETYPE_CONSTRAINT; bmm_type_matcher_agent: FUNCTION [ANY, TUPLE [STRING], BOOLEAN]): BOOLEAN
 					do
-						Result := attached {C_COMPLEX_OBJECT} ac as cco and then bmm_type_matcher_agent.item ([cco.rm_type_name])
+						Result := attached {C_OBJECT} ac as cco and then bmm_type_matcher_agent.item ([cco.rm_type_name])
 					end (?, a_bmm_type_matcher_agent)
 			)
 		ensure

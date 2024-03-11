@@ -142,8 +142,8 @@ feature {NONE} -- Implementation
 			-- find out if any mappings exist in an AOM_PROFILE
 		do
 			if attached aom_profile as att_ap then
-				if attached att_ap.aom_rm_type_mappings as aom_tm and then aom_tm.has (bare_type_name (({TERMINOLOGY_CODE}).name)) then
-					c_terminology_code_type_mapping := aom_tm.item (bare_type_name (({TERMINOLOGY_CODE}).name))
+				if att_ap.aom_rm_type_mappings.has (bare_type_name (({TERMINOLOGY_CODE}).name)) then
+					c_terminology_code_type_mapping := att_ap.aom_rm_type_mappings.item (bare_type_name (({TERMINOLOGY_CODE}).name))
 				else
 					clear
 				end

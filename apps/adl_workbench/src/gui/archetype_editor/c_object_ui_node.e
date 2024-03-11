@@ -56,8 +56,8 @@ feature -- Access
 	path: STRING
 			-- path of this node with respect to top of archetype
 		do
-			if attached arch_node then
-				Result := arch_node.path
+			if attached arch_node as a_n then
+				Result := a_n.path
 			else
 				Result := parent.path
 			end
@@ -115,10 +115,10 @@ feature -- Display
 			precursor (ui_settings)
 
 			if attached evx_grid then
-				if attached arch_node then
+				if attached arch_node as a_n then
 					-- RM name & meaning columns
 					if display_settings.show_technical_view then
-						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, arch_node.rm_type_name, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
+						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_type_name, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
 						evx_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_node_font, c_meaning_colour, Void)
 			 		else
 						evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_display_text, node_tooltip_str, c_node_font, c_object_colour, c_pixmap)
@@ -128,27 +128,27 @@ feature -- Display
 					-- card/occ column
 					create s.make_empty
 					c_occ_colour := c_constraint_colour
-					if attached arch_node.occurrences as att_occ then
+					if attached a_n.occurrences as att_occ then
 						if not att_occ.is_prohibited then
 							s.append (att_occ.as_string)
 						else
 							s.append (get_text ({ADL_MESSAGES_IDS}.ec_occurrences_removed_text))
 						end
 					elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities and not is_root then
-						s := arch_node.effective_occurrences (agent (ui_graph_state.ref_model).property_object_multiplicity).as_string
+						s := a_n.effective_occurrences (agent (ui_graph_state.ref_model).property_object_multiplicity).as_string
 						c_occ_colour := c_attribute_colour
 					end
 					evx_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, Void, c_occ_colour, Void)
 
 					-- sibling order column
-					if ui_graph_state.in_differential_view and then attached arch_node.sibling_order then
+					if ui_graph_state.in_differential_view and then attached a_n.sibling_order as a_n_so then
 						create s.make_empty
-						if arch_node.sibling_order.is_after then
+						if a_n_so.is_after then
 							s.append ("after")
 						else
 							s.append ("before")
 						end
-						s.append ("%N" + local_term_string (arch_node.sibling_order.sibling_node_id))
+						s.append ("%N" + local_term_string (a_n_so.sibling_node_id))
 						evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, Void, c_constraint_colour, Void)
 					end
 
@@ -229,7 +229,7 @@ feature -- Modification
 		require
 			is_specialised and not is_rm
 		do
-			if attached arch_node then
+			if attached arch_node as a_n then
 				-- if AOM type has changed, need to remove current node from flat and replace
 				-- with a node of the new type
 			    if not co_create_params.aom_type.same_string (arch_node.generator) then
@@ -238,9 +238,9 @@ feature -- Modification
 					-- setup undo/redo
 					ui_graph_state.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
 						-- undo
-						agent do_refine_existing_constraint (arch_node.rm_type_name, arch_node.occurrences.as_string,
-							ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text,
-							ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).description),
+						agent do_refine_existing_constraint (a_n.rm_type_name, a_n.occurrences.as_string,
+							ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id).text,
+							ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id).description),
 						-- redo
 						agent do_refine_existing_constraint (co_create_params.rm_type, co_create_params.occurrences,
 							co_create_params.node_id_text, co_create_params.node_id_description)
@@ -257,26 +257,26 @@ feature -- Modification
 		local
 			new_occ: MULTIPLICITY_INTERVAL
 		do
-			if attached arch_node then
+			if attached arch_node as a_n then
 				-- RM type
-				if not arch_node.rm_type_name.same_string (new_rm_type) then
-					arch_node.set_rm_type_name (new_rm_type)
-					arch_node.set_specialisation_status_redefined
+				if not a_n.rm_type_name.same_string (new_rm_type) then
+					a_n.set_rm_type_name (new_rm_type)
+					a_n.set_specialisation_status_redefined
 				end
 
 				-- occurences
 				new_occ := create {MULTIPLICITY_INTERVAL}.make_from_string (new_occurrences)
 				if attached arch_node.occurrences as occ and then not occ.is_equal (new_occ) then
-					arch_node.set_occurrences (new_occ)
-					arch_node.set_specialisation_status_redefined
+					a_n.set_occurrences (new_occ)
+					a_n.set_specialisation_status_redefined
 				end
 
 				-- node id
-				if not new_node_text.same_string (ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text) then
-					ui_graph_state.flat_terminology.replace_term_definition_item (display_settings.language, arch_node.node_id, {ARCHETYPE_TERM}.text_key, new_node_text)
+				if not new_node_text.same_string (ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id).text) then
+					ui_graph_state.flat_terminology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.text_key, new_node_text)
 				end
-				if not new_node_description.same_string (ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).description) then
-					ui_graph_state.flat_terminology.replace_term_definition_item (display_settings.language, arch_node.node_id, {ARCHETYPE_TERM}.description_key, new_node_description)
+				if not new_node_description.same_string (ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id).description) then
+					ui_graph_state.flat_terminology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.description_key, new_node_description)
 				end
 			end
 		end
@@ -295,15 +295,15 @@ feature {NONE} -- Implementation
 			-- show node_id text either as just rubric, or as node_id|rubric|, depending on `show_codes' setting
 		do
 			create Result.make_empty
-			if attached arch_node then
-				if not arch_node.node_id.is_equal (Primitive_node_id) then
-					if ui_graph_state.flat_terminology.has_id_code (arch_node.node_id) then
-						Result := ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id).text.twin
+			if attached arch_node as a_n then
+				if not a_n.node_id.is_equal (Primitive_node_id) then
+					if ui_graph_state.flat_terminology.has_id_code (a_n.node_id) then
+						Result := ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id).text.twin
 						if display_settings.show_codes then
-							Result := annotated_code (arch_node.node_id, Result, " ")
+							Result := annotated_code (a_n.node_id, Result, " ")
 						end
 					elseif display_settings.show_codes then
-						Result := arch_node.node_id
+						Result := a_n.node_id
 					end
 				else
 					-- nothing special to do
@@ -315,8 +315,8 @@ feature {NONE} -- Implementation
 			-- show `node_id_text' unless empty, in which case show `rm_type_name'
 		do
 			Result := node_id_text
-			if Result.is_empty and then attached arch_node then
-				Result := "(" + arch_node.rm_type_name + ")"
+			if Result.is_empty and then attached arch_node as a_n then
+				Result := "(" + a_n.rm_type_name + ")"
 			end
 		end
 
@@ -350,25 +350,25 @@ feature {NONE} -- Implementation
 			pixmap_key, pixmap_cand_key, c_type_occ_str: STRING
 		do
 			create pixmap_key.make_empty
-			if attached arch_node then
+			if attached arch_node as a_n then
 				if not display_settings.show_technical_view then
 					pixmap_key := rm_type_pixmap_key (rm_type.defining_class)
 				end
 
 				if pixmap_key.is_empty then
-					if attached {C_PRIMITIVE_OBJECT} arch_node then
+					if attached {C_PRIMITIVE_OBJECT} a_n then
 						c_type_occ_str := bare_type_name (({C_PRIMITIVE_OBJECT}).name)
 					else
-						c_type_occ_str := arch_node.generating_type.name
+						c_type_occ_str := a_n.generating_type.name
 					end
 					c_type_occ_str.append ("." +
-							arch_node.effective_occurrences (agent (ui_graph_state.ref_model).property_object_multiplicity).as_quantifier_text)
+							a_n.effective_occurrences (agent (ui_graph_state.ref_model).property_object_multiplicity).as_quantifier_text)
 					pixmap_key := Icon_am_dir + resource_path_separator + "added" + resource_path_separator
 					pixmap_cand_key := pixmap_key + c_type_occ_str
 					if has_icon_pixmap (pixmap_cand_key) then
 						pixmap_key := pixmap_cand_key
 					else
-						pixmap_key.append (arch_node.generating_type.name)
+						pixmap_key.append (a_n.generating_type.name)
 					end
 				end
 
@@ -409,13 +409,13 @@ feature {NONE} -- Context menu
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 			context_menu.extend (an_mi)
 
-			if attached arch_node then
+			if attached arch_node as a_n then
 				-- if this node is addressable, add menu item to show node_id in terminology
 				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_menu_option_display_code),
 					agent (node_id_str: STRING)
 						do
 							archetype_tool_agents.id_code_select_action_agent.call ([node_id_str])
-						end (arch_node.node_id)
+						end (a_n.node_id)
 				)
 				context_menu.extend (an_mi)
 
@@ -426,13 +426,13 @@ feature {NONE} -- Context menu
 							agent (path_str: STRING)
 								do
 									archetype_tool_agents.path_select_action_agent.call ([path_str])
-								end (arch_node.path)
+								end (a_n.path)
 						)
 						context_menu.extend (an_mi)
 					end
 				else
-					if not arch_node.is_root then
-						if arch_node.specialisation_status /= ss_added then
+					if not a_n.is_root then
+						if a_n.specialisation_status /= ss_added then
 							-- add menu item to refine constraint
 							create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_object_context_menu_refine), agent ui_offer_refine_constraint)
 							context_menu.extend (an_mi)
@@ -503,8 +503,8 @@ feature {NONE} -- Context menu
 					arch_node_aom_type, rm_type.type_name,
 					def_occ, ui_graph_state.archetype, anc_arch_node, display_settings)
 
-				if attached arch_node and then is_valid_code (arch_node.node_id) then
-					a_term := ui_graph_state.flat_terminology.term_definition (display_settings.language, arch_node.node_id)
+				if attached arch_node as a_n and then is_valid_code (a_n.node_id) then
+					a_term := ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id)
 					dialog.set_term (a_term.text, a_term.description)
 				end
 
@@ -536,8 +536,8 @@ feature {NONE} -- Context menu
 			apa: ARCHETYPE_PATH_ANALYSER
 			co_path_in_flat: STRING
 		do
-			if attached arch_node and attached ui_graph_state.parent_archetype as parent_arch then
-				create apa.make (arch_node.og_path)
+			if attached arch_node as a_n and attached ui_graph_state.parent_archetype as parent_arch then
+				create apa.make (a_n.og_path)
 				if not apa.is_phantom_path_at_level (parent_arch.specialisation_depth) then
 					co_path_in_flat := apa.path_at_level (parent_arch.specialisation_depth)
 					if parent_arch.has_object_path (co_path_in_flat) then

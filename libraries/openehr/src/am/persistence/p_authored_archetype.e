@@ -28,8 +28,6 @@ feature -- Initialisation
 	make_dt (make_args: detachable ARRAY[ANY])
 			-- basic make routine to guarantee validity on creation
 		do
-			create adl_version.make_empty
-			create rm_release.make_empty
 			create description.make_dt (make_args)
 		end
 
@@ -50,15 +48,27 @@ feature -- Initialisation
 
 feature -- Access
 
-	other_metadata: detachable HASH_TABLE [STRING, STRING]
+	other_metadata: HASH_TABLE [STRING, STRING]
+		attribute
+			create Result.make (0)
+		end
 
 	adl_version: STRING
 			-- ADL version of this archetype
+		attribute
+			create Result.make_empty
+		end
 
 	rm_release: STRING
 			-- RM release on which definition of this archetype is based
+		attribute
+			create Result.make_empty
+		end
 
-	build_uid: detachable STRING
+	build_uid: STRING
+		attribute
+			create Result.make_empty
+		end
 
 feature -- Factory
 
@@ -77,8 +87,8 @@ feature -- Factory
 				if attached uid as att_uid then
 					create o_uid.make_from_string (att_uid)
 				end
-				if attached build_uid as att_uid then
-					create o_build_uid.make_from_string (att_uid)
+				if not build_uid.is_empty then
+					create o_build_uid.make_from_string (build_uid)
 				end
 
 				create arch_terminology.make_differential (original_language.code_string, o_definition.node_id)

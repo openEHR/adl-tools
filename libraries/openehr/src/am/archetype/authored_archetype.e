@@ -93,7 +93,6 @@ feature -- Initialisation
 			an_annotations: like annotations)
 				-- make from all possible items
 		require
-			Translations_valid: attached a_translations as att_trans implies not att_trans.is_empty
 			Rules_valid: attached a_rules as att_rules implies not att_rules.is_empty
 		do
 			make (an_adl_version, an_rm_release, an_id, an_original_language, a_uid, a_build_uid, a_description, a_definition, a_terminology)
@@ -133,19 +132,19 @@ feature -- Initialisation
 				build_uid := att_other_uid.twin
 			end
 			set_original_language (other.original_language)
-			if attached other.other_metadata as att_omd then
-				other_metadata := att_omd.deep_twin
+			if not other.other_metadata.is_empty then
+				other_metadata := other.other_metadata.deep_twin
 			end
-			if attached other.translations as other_trans then
-				translations := other_trans.deep_twin
+			if not other.translations.is_empty then
+				translations := other.translations.deep_twin
 			end
 			description := other.description.deep_twin
 			if attached other.annotations as other_annots then
 				annotations := other_annots.deep_twin
 			end
 		ensure then
-			Other_metadata_copied: attached other_metadata as att_omd implies (attached other.other_metadata as att_other_omd and then att_omd.is_deep_equal (att_other_omd))
-			Translations_copied: attached translations as att_trans implies (attached other.translations as att_other_trans and then att_trans.is_deep_equal (att_other_trans))
+			Other_metadata_copied: not other_metadata.is_empty implies (other.other_metadata.is_deep_equal (other_metadata))
+			Translations_copied: not translations.is_empty implies (other.translations.is_deep_equal (translations))
 			Description_copied: description.is_deep_equal (other.description)
 			Annotations_copied: attached annotations as att_ann implies (attached other.annotations as att_other_ann and then att_ann.is_deep_equal (att_other_ann))
 		end
@@ -194,8 +193,11 @@ feature -- Access
 			-- be valid with respect to multiple releases of a reference model. Conformance is captured
 			-- outside of the archetype.
 
-	other_metadata: detachable HASH_TABLE [STRING, STRING]
+	other_metadata: HASH_TABLE [STRING, STRING]
 			-- other top-level meta-data
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Modification
 
@@ -242,18 +244,10 @@ feature -- Modification
 	put_other_metadata_value (a_key, a_value: STRING)
 			-- add the pair `a_key' / `a_value' to `other_metadata', overwriting any value
 			-- with the same key if necessary.
-		local
-			o_metadata: HASH_TABLE [STRING, STRING]
 		do
-			if attached other_metadata as omd then
-				o_metadata := omd
-			else
-				create o_metadata.make (0)
-				other_metadata := o_metadata
-			end
-			o_metadata.force (a_value, a_key)
+			other_metadata.force (a_value, a_key)
 		ensure
-			attached other_metadata as att_omd and then attached att_omd.item (a_key) as att_omd_item and then att_omd_item = a_value
+			attached other_metadata.item (a_key) as att_omd_item and then att_omd_item = a_value
 		end
 
 	put_other_metadata_flag (a_key: STRING)
@@ -262,7 +256,7 @@ feature -- Modification
 		do
 			put_other_metadata_value (a_key, (True).out)
 		ensure
-			attached other_metadata as att_omd and then attached att_omd.item (a_key) as att_md_item and then att_md_item.is_equal ((True).out)
+			attached other_metadata.item (a_key) as att_md_item and then att_md_item.is_equal ((True).out)
 		end
 
 	add_language (a_lang_tag: STRING)

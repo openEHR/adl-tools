@@ -83,30 +83,54 @@ feature -- Access
             Result.put (Default_original_author, "name")
 		end
 
-	original_namespace: detachable STRING
+	original_namespace: STRING
 			-- Original namespace of this archetype as a reverse domain name
+		attribute
+			create Result.make_empty
+		end
 
-	original_publisher: detachable STRING
+	original_publisher: STRING
 			-- Original publisher of this archetype as a string name
+		attribute
+			create Result.make_empty
+		end
 
-	custodian_namespace: detachable STRING
+	custodian_namespace: STRING
 			-- Namespace of current custodian organisation of this archetype as a reverse domain name
+		attribute
+			create Result.make_empty
+		end
 
-	custodian_organisation: detachable STRING
+	custodian_organisation: STRING
 			-- Current custodian organisation of this archetype as a string name
+		attribute
+			create Result.make_empty
+		end
 
-	copyright:  detachable STRING
+	copyright:  STRING
 			-- Rights over the archetype as a knowledge resource;
 			-- usually copyright and/or license to use.
+		attribute
+			create Result.make_empty
+		end
 
-	licence: detachable STRING
+	licence: STRING
 			-- Licence for this archetype if any, typically a short phrase with embedded URL
+		attribute
+			create Result.make_empty
+		end
 
-	ip_acknowledgements: detachable HASH_TABLE [STRING, STRING]
+	ip_acknowledgements: HASH_TABLE [STRING, STRING]
 			-- list of IP acknowledgments, keyed by tag name of IP being mentioned
+		attribute
+			create Result.make (0)
+		end
 
-	conversion_details: detachable HASH_TABLE [STRING, STRING]
+	conversion_details: HASH_TABLE [STRING, STRING]
 			-- tagged list of conversion information, where applicable
+		attribute
+			create Result.make (0)
+		end
 
 	details: HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
 			-- list of translatable descriptive details, keyed by language
@@ -114,18 +138,31 @@ feature -- Access
             create Result.make (0)
         end
 
-	other_contributors: detachable ARRAYED_LIST [STRING]
+	other_contributors: ARRAYED_LIST [STRING]
 			-- Other contributors to the resource, probably listed in “name <email>” form
+		attribute
+			create Result.make (0)
+			Result.compare_objects
+		end
 
-	references: detachable HASH_TABLE [STRING, STRING]
+	references: HASH_TABLE [STRING, STRING]
+		attribute
+			create Result.make (0)
+		end
 
-	other_details: detachable HASH_TABLE [STRING, STRING]
+	other_details: HASH_TABLE [STRING, STRING]
+		attribute
+			create Result.make (0)
+		end
 
 	parent_resource: detachable AUTHORED_RESOURCE
 			-- Reference to owning resource.
 
-	resource_package_uri: detachable URI
+	resource_package_uri: URI
 			-- URI of archetype package
+		attribute
+			create Result
+		end
 
 	languages: ARRAYED_SET [STRING]
 			-- list of all languages in details
@@ -155,22 +192,22 @@ feature -- Status Report
 	has_details: BOOLEAN
 			-- True if there are any details
 		do
-			Result := attached details and not details.is_empty
+			Result := not details.is_empty
 		end
 
 	has_ip_acknowledgements (a_key: STRING): BOOLEAN
 		do
-			Result := attached ip_acknowledgements as att_ack and then att_ack.has (a_key)
+			Result := ip_acknowledgements.has (a_key)
 		end
 
 	has_conversion_details (a_key: STRING): BOOLEAN
 		do
-			Result := attached conversion_details as att_cd and then att_cd.has (a_key)
+			Result := conversion_details.has (a_key)
 		end
 
 	has_other_contributors (a_key: STRING): BOOLEAN
 		do
-			Result := attached other_contributors as att_oc and then att_oc.has (a_key)
+			Result := other_contributors.has (a_key)
 		end
 
 feature -- Comparison
@@ -207,7 +244,7 @@ feature -- Modification
 	clear_original_author
 			-- wipeout current items in original_author list
 		do
-			create original_author.make(0)
+			original_author.wipe_out
 		ensure
 			original_author.is_empty
 		end
@@ -221,9 +258,9 @@ feature -- Modification
 
 	clear_original_namespace
 		do
-			original_namespace := Void
+			original_namespace.wipe_out
 		ensure
-			not attached original_namespace
+			original_namespace.is_empty
 		end
 
 	set_original_publisher (a_name: STRING)
@@ -235,9 +272,9 @@ feature -- Modification
 
 	clear_original_publisher
 		do
-			original_publisher := Void
+			original_publisher.wipe_out
 		ensure
-			not attached original_publisher
+			original_publisher.is_empty
 		end
 
 	set_custodian_namespace (a_namespace: STRING)
@@ -249,9 +286,9 @@ feature -- Modification
 
 	clear_custodian_namespace
 		do
-			custodian_namespace := Void
+			custodian_namespace.wipe_out
 		ensure
-			not attached custodian_namespace
+			custodian_namespace.is_empty
 		end
 
 	set_custodian_organisation (a_name: STRING)
@@ -263,9 +300,9 @@ feature -- Modification
 
 	clear_custodian_organisation
 		do
-			custodian_organisation := Void
+			custodian_organisation.wipe_out
 		ensure
-			not attached custodian_organisation
+			custodian_organisation.is_empty
 		end
 
 	set_copyright (a_copyright: STRING)
@@ -280,9 +317,9 @@ feature -- Modification
 
 	clear_copyright
 		do
-			copyright := Void
+			copyright.wipe_out
 		ensure
-			not attached copyright
+			copyright.is_empty
 		end
 
 	set_licence (a_text: STRING)
@@ -294,9 +331,9 @@ feature -- Modification
 
 	clear_licence
 		do
-			licence := Void
+			licence.wipe_out
 		ensure
-			not attached licence
+			licence.is_empty
 		end
 
 	put_ip_acknowledgements_item (a_key, a_value: STRING)
@@ -304,43 +341,28 @@ feature -- Modification
 		require
 			Key_valid: not a_key.is_empty
 			Value_valid: not a_value.is_empty
-		local
-			ipa: attached like ip_acknowledgements
 		do
-			if attached ip_acknowledgements as att_ipa then
-				ipa := att_ipa
-			else
-				create ipa.make (0)
-				ip_acknowledgements := ipa
-			end
-			ipa.force (a_value, a_key)
+			ip_acknowledgements.force (a_value, a_key)
 		ensure
-			Item_added: attached ip_acknowledgements as att_ipa and then att_ipa.item (a_key) = a_value
+			Item_added: ip_acknowledgements.item (a_key) = a_value
 		end
 
 	remove_ip_acknowledgements_item (a_key: STRING)
 			-- remove the key, value pair from `ip_acknowledgements'
 		require
 			Key_valid: has_ip_acknowledgements (a_key)
-			Ip_acknowledgements_exists: attached ip_acknowledgements
 		do
-			if attached ip_acknowledgements as att_ipa then
-				att_ipa.remove (a_key)
-				if att_ipa.is_empty then
-					ip_acknowledgements := Void
-				end
-			end
+			ip_acknowledgements.remove (a_key)
 		ensure
-			Item_removed: not has_ip_acknowledgements (a_key)
-			If_last_then_removed: attached old ip_acknowledgements as att_old_ipa and then att_old_ipa.count = 1 implies not attached ip_acknowledgements
+			Item_removed: not ip_acknowledgements.has (a_key)
 		end
 
 	clear_ip_acknowledgements
 			-- wipeout current items in `ip_acknowledgements' list
 		do
-			ip_acknowledgements := Void
+			ip_acknowledgements.wipe_out
 		ensure
-			not attached ip_acknowledgements
+			ip_acknowledgements.is_empty
 		end
 
 	put_conversion_details_item (a_key, a_value: STRING)
@@ -348,18 +370,10 @@ feature -- Modification
 		require
 			Key_valid: not a_key.is_empty
 			Value_valid: not a_value.is_empty
-		local
-			cd: attached like conversion_details
 		do
-			if attached conversion_details as att_cd then
-				cd := att_cd
-			else
-				create cd.make (0)
-				conversion_details := cd
-			end
-			cd.force (a_value, a_key)
+			conversion_details.force (a_value, a_key)
 		ensure
-			Item_added: attached conversion_details as att_cd and then att_cd.item (a_key) = a_value
+			Item_added: conversion_details.item (a_key) = a_value
 		end
 
 	remove_conversion_details_item (a_key: STRING)
@@ -367,49 +381,35 @@ feature -- Modification
 		require
 			Key_valid: has_conversion_details (a_key)
 		do
-			if attached conversion_details as att_cd then
-				att_cd.remove (a_key)
-				if att_cd.is_empty then
-					conversion_details := Void
-				end
-			end
+			conversion_details.remove (a_key)
 		ensure
-			Item_removed: not has_conversion_details (a_key)
-			If_last_then_removed: attached old conversion_details as att_old_cd and then att_old_cd.count = 1 implies not attached conversion_details
+			Item_removed: not conversion_details.has (a_key)
+			If_last_then_removed: old conversion_details.count = 1 implies conversion_details.is_empty
 		end
 
 	clear_conversion_details
 			-- wipeout current items in `conversion_details' list
 		do
-			conversion_details := Void
+			conversion_details.wipe_out
 		ensure
-			not attached conversion_details
+			conversion_details.is_empty
 		end
 
 	add_other_contributor (a_contributor: STRING; at_pos: INTEGER)
 			-- add a_contributor to `add_other_contributor' at position `at_pos', or end if i is 0
 		require
 			Contributor_valid: not a_contributor.is_empty
-			Valid_max_index: attached other_contributors as att_oc implies at_pos <= att_oc.count
-		local
-			oc: attached like other_contributors
+			Valid_max_index: at_pos <= other_contributors.count
 		do
-			if attached other_contributors as att_oc then
-				oc := att_oc
-			else
-				create oc.make(0)
-				oc.compare_objects
-				other_contributors := oc
-			end
 			if at_pos > 0 then
-				oc.go_i_th (at_pos)
-				oc.put_left (a_contributor)
+				other_contributors.go_i_th (at_pos)
+				other_contributors.put_left (a_contributor)
 			else
-				oc.extend (a_contributor)
+				other_contributors.extend (a_contributor)
 			end
 		ensure
-			attached other_contributors as att_oc and then (att_oc.has (a_contributor) and
-				at_pos > 0 implies att_oc.i_th (at_pos) = a_contributor)
+			other_contributors.has (a_contributor) and
+				at_pos > 0 implies other_contributors.i_th (at_pos) = a_contributor
 		end
 
 	remove_other_contributor (a_contributor: STRING)
@@ -417,19 +417,17 @@ feature -- Modification
 		require
 			Contributor_valid: has_other_contributors (a_contributor)
 		do
-			if attached other_contributors as att_oc then
-				att_oc.prune_all (a_contributor)
-			end
+			other_contributors.prune_all (a_contributor)
 		ensure
-			Other_contributor_set: not has_other_contributors (a_contributor)
+			Other_contributor_set: not other_contributors.has (a_contributor)
 		end
 
 	clear_other_contributors
 			-- wipeout current items in other_contributors list
 		do
-			other_contributors := Void
+			other_contributors.wipe_out
 		ensure
-			not attached other_contributors
+			other_contributors.is_empty
 		end
 
 	set_resource_package_uri (a_uri: STRING)
@@ -439,15 +437,15 @@ feature -- Modification
 		do
 			create resource_package_uri.make_from_string (a_uri)
 		ensure
-			Archetype_package_uri_set: attached resource_package_uri as att_rpu and then att_rpu.out.is_equal (a_uri)
+			Archetype_package_uri_set: resource_package_uri.out.is_equal (a_uri)
 		end
 
 	clear_resource_package_uri
 			-- clear `resource_package_uri'
 		do
-			resource_package_uri := Void
+			resource_package_uri.wipe_out
 		ensure
-			not attached resource_package_uri
+			resource_package_uri.is_empty
 		end
 
 	set_lifecycle_state (a_lifecycle_state: STRING)
@@ -498,7 +496,7 @@ feature -- Modification
 	clear_details
 			-- wipeout current items in details list
 		do
-			create details.make(0)
+			details.wipe_out
 		end
 
 	put_other_details_item (a_key, a_value: STRING)
@@ -506,19 +504,10 @@ feature -- Modification
 			-- existing value for the same key
 		require
 			Key_valid: not a_key.is_empty
-		local
-			dets: attached like other_details
 		do
-			if attached other_details as att_od then
-				dets := att_od
-			else
-				create dets.make (0)
-				other_details := dets
-			end
-
-			dets.force (a_value, a_key)
+			other_details.force (a_value, a_key)
 		ensure
-			other_details_attached: attached other_details as od and then od.item (a_key) = a_value
+			other_details_added: other_details.item (a_key) = a_value
 		end
 
 	remove_other_details_item (a_key: STRING)
@@ -526,11 +515,9 @@ feature -- Modification
 		require
 			Key_valid: not a_key.is_empty
 		do
-			if attached other_details as att_od then
-				att_od.remove (a_key)
-			end
+			other_details.remove (a_key)
 		ensure
-			key_removed: attached other_details as od and then not od.has (a_key)
+			key_removed: other_details.has (a_key)
 		end
 
 	put_references_item (a_key, a_value: STRING)
@@ -538,19 +525,10 @@ feature -- Modification
 			-- existing value for the same key
 		require
 			Key_valid: not a_key.is_empty
-		local
-			dets: attached like references
 		do
-			if attached references as att_od then
-				dets := att_od
-			else
-				create dets.make (0)
-				references := dets
-			end
-
-			dets.force (a_value, a_key)
+			references.force (a_value, a_key)
 		ensure
-			references_attached: attached references as od and then od.item (a_key) = a_value
+			references_added: references.item (a_key) = a_value
 		end
 
 	remove_references_item (a_key: STRING)
@@ -558,11 +536,9 @@ feature -- Modification
 		require
 			Key_valid: not a_key.is_empty
 		do
-			if attached references as att_od then
-				att_od.remove (a_key)
-			end
+			references.remove (a_key)
 		ensure
-			key_removed: attached references as od and then not od.has (a_key)
+			key_removed: references.has (a_key)
 		end
 
 	set_parent_resource (a_res: AUTHORED_RESOURCE)
@@ -604,8 +580,6 @@ invariant
 	Parent_resource_valid: attached parent_resource as att_pr implies att_pr.description = Current
 	Language_valid: attached parent_resource as att_pr implies details.linear_representation.for_all
 		(agent (rdi: RESOURCE_DESCRIPTION_ITEM; auth_res: AUTHORED_RESOURCE): BOOLEAN do Result := auth_res.languages_available.has (rdi.language.code_string) end (?, att_pr))
-	Copyright_valid: attached copyright as att_copyright implies not att_copyright.is_empty
-	Ip_acknowledgements_valid: attached ip_acknowledgements as att_ipa implies not att_ipa.is_empty
 
 end
 

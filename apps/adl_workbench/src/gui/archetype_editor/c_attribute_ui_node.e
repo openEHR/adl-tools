@@ -70,8 +70,8 @@ feature -- Access
 	path: STRING
 			-- path of this node with respect to top of archetype
 		do
-			if attached arch_node then
-				Result := arch_node.path
+			if attached arch_node as a_n then
+				Result := a_n.path
 			elseif parent.is_root then
 				Result := parent.path + rm_property.name
 			else
@@ -135,26 +135,26 @@ feature -- Display
 		do
 			precursor (ui_settings)
 
-			if attached arch_node then
+			if attached arch_node as a_n then
 				-- RM attr name / path
-				if arch_node.has_differential_path then
+				if a_n.has_differential_path then
 					create attr_str.make_empty
 					if display_settings.show_technical_view then
-						attr_str.append (arch_node.rm_attribute_path)
+						attr_str.append (a_n.rm_attribute_path)
 					else
-						attr_str.append (ui_graph_state.flat_archetype.annotated_path (arch_node.rm_attribute_path, display_settings.language, True))
+						attr_str.append (ui_graph_state.flat_archetype.annotated_path (a_n.rm_attribute_path, display_settings.language, True))
 					end
 					attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 					attr_str.remove_head (1)
 					evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, node_tooltip_str, Void, c_attribute_colour, c_pixmap)
 				else
-					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, arch_node.rm_attribute_name, node_tooltip_str, c_node_font, c_attribute_colour, c_pixmap)
+					evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_n.rm_attribute_name, node_tooltip_str, c_node_font, c_attribute_colour, c_pixmap)
 				end
 
 				-- existence
 				c_col := c_attribute_colour
 				create ex_str.make_empty
-				if attached arch_node.existence as att_ex then
+				if attached a_n.existence as att_ex then
 					if not att_ex.is_prohibited then
 						ex_str.append (att_ex.as_string)
 					else
@@ -169,7 +169,7 @@ feature -- Display
 				-- cardinality
 				create card_str.make_empty
 				c_col := c_attribute_colour
-				if attached arch_node.cardinality as att_card then
+				if attached a_n.cardinality as att_card then
 					card_str := att_card.as_string
 					c_col := c_constraint_colour
 				elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities and then attached {BMM_CONTAINER_PROPERTY} rm_property as bmm_cont_prop then
@@ -178,7 +178,7 @@ feature -- Display
 				evx_grid.update_last_row_label_col (Definition_grid_col_card_occ, card_str, Void, Void, c_col, Void)
 
 				-- any allowed
-				if arch_node.any_allowed then
+				if a_n.any_allowed then
 					evx_grid.update_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, Void, c_constraint_colour, Void)
 				end
 
@@ -270,8 +270,8 @@ feature -- Modification
 			Not_already_child: not has_child (a_ui_node)
 			Coherence: not a_ui_node.is_rm implies not is_rm
 		do
-			if attached arch_node and attached a_ui_node.arch_node as child_a_n then
-				arch_node.put_child (child_a_n)
+			if attached arch_node as a_n and attached a_ui_node.arch_node as child_a_n then
+				a_n.put_child (child_a_n)
 			end
 			attach_child_and_display (a_ui_node)
 		ensure
@@ -305,8 +305,8 @@ feature -- Modification
 			if is_rm then
 				convert_to_constraint
 			end
-			check attached arch_node then
-				arch_node.set_prohibited
+			if attached arch_node as a_n then
+				a_n.set_prohibited
 			end
 			if is_displayed then
 				display_in_grid (display_settings)
@@ -318,8 +318,8 @@ feature -- Modification
 			if is_rm then
 				convert_to_constraint
 			end
-			check attached arch_node then
-				arch_node.set_mandated
+			if attached arch_node as a_n then
+				a_n.set_mandated
 			end
 			if is_displayed then
 				display_in_grid (display_settings)
@@ -330,8 +330,8 @@ feature -- Modification
 		require
 			not is_rm
 		do
-			check attached arch_node then
-				arch_node.set_optional
+			if attached arch_node as a_n then
+				a_n.set_optional
 			end
 			if is_displayed then
 				display_in_grid (display_settings)
@@ -626,7 +626,7 @@ feature {NONE} -- Context menu
 				end
 
 				-- only offer addition of new nodes if current node existence is not prohibited
-				if attached arch_node and then not arch_node.is_prohibited then
+				if attached arch_node as a_n and then not a_n.is_prohibited then
 					create types_sub_menu.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_attribute_context_menu_add_child))
 
 					-- make a menu item with the base class of the property
@@ -655,12 +655,12 @@ feature {NONE} -- Context menu
 			end
 
 			-- add menu item for copying path to clipboard
-			if attached arch_node and attached archetype_tool_agents.path_select_action_agent then
+			if attached arch_node as a_n and attached archetype_tool_agents.path_select_action_agent then
 				create an_mi.make_with_text_and_action (get_text ({ADL_MESSAGES_IDS}.ec_object_context_menu_copy_path),
 					agent (path_str: STRING)
 						do
 							archetype_tool_agents.path_copy_action_agent.call ([path_str])
-						end (arch_node.path)
+						end (a_n.path)
 				)
 				context_menu.extend (an_mi)
 			end
@@ -762,8 +762,8 @@ feature {NONE} -- Implementation
 			apa: ARCHETYPE_PATH_ANALYSER
 			ca_path_in_flat: STRING
 		do
-			if attached arch_node and attached ui_graph_state.parent_archetype as parent_arch then
-				create apa.make (arch_node.og_path)
+			if attached arch_node as a_n and attached ui_graph_state.parent_archetype as parent_arch then
+				create apa.make (a_n.og_path)
 				if not apa.is_phantom_path_at_level (parent_arch.specialisation_depth) then
 					ca_path_in_flat := apa.path_at_level (parent_arch.specialisation_depth)
 					if parent_arch.has_attribute_path (ca_path_in_flat) then

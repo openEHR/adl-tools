@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2024- openEHR International"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCH_ID_TO_TPL_ID_REPORT
+class SPECIALIZATION_GRAPH_REPORT
 
 inherit
 	ARCHETYPE_LIBRARY_REPORT
@@ -34,36 +34,43 @@ feature -- Access
 
 	id: STRING
 		do
-			Result := "Arch_id_to_tpl_id_report"
+			Result := "Spec_graph_report"
 		end
 
 	title: STRING
 		do
-			Result := "Archetype ID to Template ID map"
+			Result := "Specialization graph of archetype library"
 		end
 
-	output_table: ARRAYED_LIST[TUPLE [arch_id, tpl_id: STRING]]
+	output_table: ARRAYED_LIST[TUPLE [arch_id, spec_lineage: STRING]]
 		once
 			create Result.make(0)
 		end
 
 feature {ARCHETYPE_REPORTER} -- Processing
 
-	process_archetype (auth_ara: ARCH_LIB_ARCHETYPE)
-			-- Generate serialised output under `output_dir' from `ara', optionally building it first if necessary.
+	process_archetype (ara: ARCH_LIB_ARCHETYPE)
 		local
-			arch_id: STRING
+			arch_csr: ARCH_LIB_ARCHETYPE
+			parents: STRING
 		do
-			if attached {ARCH_LIB_TEMPLATE} auth_ara then
-				across auth_ara.suppliers_index as suppliers_csr loop
-					if attached {ARCH_LIB_TEMPLATE_OVERLAY} suppliers_csr.item as tpl_ovl then
-						arch_id := tpl_ovl.parent_id.as_string
-					else
-						arch_id := suppliers_csr.key
+			create parents.make_empty
+
+			from
+				arch_csr := ara
+			until
+				not attached {ARCH_LIB_ARCHETYPE} arch_csr.parent
+			loop
+				if attached {ARCH_LIB_ARCHETYPE} arch_csr.parent as p then
+					parents.append (p.id.as_string)
+					arch_csr := p
+					if attached {ARCH_LIB_ARCHETYPE} arch_csr.parent then
+						parents.append (", ")
 					end
-					output_table.extend ([arch_id, auth_ara.id.as_string])
 				end
 			end
+
+			output_table.extend ([ara.id.as_string, "%"" + parents + "%""])
 		end
 
 end

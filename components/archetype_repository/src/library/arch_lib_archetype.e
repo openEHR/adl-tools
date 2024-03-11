@@ -524,11 +524,27 @@ feature -- Artefacts
 			locatable_class_name := ref_model.any_type_name
 			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
-				if attached aom_profile.archetype_parent_class as advpc then
-					locatable_class_name := advpc
+				if not aom_profile.archetype_parent_class.is_empty then
+					locatable_class_name := aom_profile.archetype_parent_class
 				end
 			end
 			Result := select_archetype (differential_view, editing_enabled).paths_matching_rm_type (agent ref_model.type_conforms_to (?, locatable_class_name))
+		end
+
+	locatable_path_map (differential_view, editing_enabled: BOOLEAN): HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
+			-- path map to Locatable objects
+		local
+			aom_profile: AOM_PROFILE
+			locatable_class_name: STRING
+		do
+			locatable_class_name := ref_model.any_type_name
+			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
+				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
+				if not aom_profile.archetype_parent_class.is_empty then
+					locatable_class_name := aom_profile.archetype_parent_class
+				end
+			end
+			Result := select_archetype (differential_view, editing_enabled).path_map_matching_rm_type (agent ref_model.type_conforms_to (?, locatable_class_name))
 		end
 
 	primitive_paths (differential_view, editing_enabled: BOOLEAN): ARRAYED_LIST[STRING]
@@ -552,8 +568,8 @@ feature -- Artefacts
 			locatable_class_name := ref_model.any_type_name
 			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
-				if attached aom_profile.archetype_parent_class as advpc then
-					locatable_class_name := advpc
+				if not aom_profile.archetype_parent_class.is_empty then
+					locatable_class_name := aom_profile.archetype_parent_class
 				end
 			end
 			Result := select_archetype (differential_view, editing_enabled).locatable_descriptions (a_language, a_segment_delimiter, agent ref_model.type_conforms_to (?, locatable_class_name))
