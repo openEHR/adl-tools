@@ -65,15 +65,15 @@ feature -- Modification
 		local
 			ala_list: attached like children
 		do
-			if attached children as att_children then
-				ala_list := att_children
+			if attached children as c then
+				ala_list := c
 			else
 				create ala_list.make
 				children := ala_list
 			end
 			ala_list.extend (a_child)
-			if attached {ARCH_LIB_FILESYS_ITEM} a_child then
-				a_child.set_parent (Current)
+			if attached {ARCH_LIB_FILESYS_ITEM} a_child as c then
+				c.set_parent (Current)
 			end
 			reset_subtree_artefact_count
 		end

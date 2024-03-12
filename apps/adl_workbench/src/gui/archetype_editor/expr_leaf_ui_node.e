@@ -27,7 +27,7 @@ feature -- Display
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
 		do
 			evx_grid := a_gui_grid
-			check attached parent.ev_grid_row as parent_gr then
+			check attached parent as p and then attached p.ev_grid_row as parent_gr then
 				evx_grid.add_sub_row (parent_gr, arch_node)
 			end
 			check attached evx_grid.last_row as lr then
@@ -38,6 +38,7 @@ feature -- Display
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		do
 			precursor (ui_settings)
+			check attached evx_grid end
 			evx_grid.set_last_row_label_col (Rules_grid_col_expr_type, meaning, Void, Void, c_meaning_colour, c_pixmap)
 		end
 

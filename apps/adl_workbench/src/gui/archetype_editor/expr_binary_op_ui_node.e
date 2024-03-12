@@ -31,6 +31,7 @@ feature -- Display
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
 		do
 			evx_grid := a_gui_grid
+			
 			check attached parent as att_parent and then attached att_parent.ev_grid_row as parent_gr then
 				a_gui_grid.add_sub_row (parent_gr, arch_node)
 			end
@@ -38,15 +39,27 @@ feature -- Display
 				ev_grid_row := lr
 			end
 
-			left_operand_ed_context.prepare_display_in_grid (a_gui_grid)
-			right_operand_ed_context.prepare_display_in_grid (a_gui_grid)
+			if attached left_operand_ed_context as l_ctx then
+				l_ctx.prepare_display_in_grid (a_gui_grid)
+			end
+			if attached right_operand_ed_context as r_ctx then
+				r_ctx.prepare_display_in_grid (a_gui_grid)
+			end
 		end
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		do
 			precursor (ui_settings)
-			left_operand_ed_context.display_in_grid (ui_settings)
-			right_operand_ed_context.display_in_grid (ui_settings)
+
+			check attached evx_grid end
+
+			if attached left_operand_ed_context as l_ctx then
+				l_ctx.display_in_grid (ui_settings)
+			end
+
+			if attached right_operand_ed_context as r_ctx then
+				r_ctx.display_in_grid (ui_settings)
+			end
 
 			check attached ev_grid_row as gr then
 				evx_grid.set_last_row (gr)
@@ -71,7 +84,7 @@ feature -- Modification
 feature {EXPR_ITEM_UI_NODE} -- Implementation
 
 	meaning: STRING
-			-- generate useful string representatoin for meaning column
+			-- generate useful string representation for meaning column
 		local
 			precedence_overridden: BOOLEAN
 		do
@@ -83,9 +96,13 @@ feature {EXPR_ITEM_UI_NODE} -- Implementation
 				if precedence_overridden then
 					Result.append_character ('(')
 				end
-				Result.append (left_operand_ed_context.meaning)
+				if attached left_operand_ed_context as l_ctx then
+					Result.append (l_ctx.meaning)
+				end
 				Result.append (" " + a_n.operator.out + " ")
-				Result.append (right_operand_ed_context.meaning)
+				if attached right_operand_ed_context as r_ctx then
+					Result.append (r_ctx.meaning)
+				end
 				if precedence_overridden then
 					Result.append_character (')')
 				end

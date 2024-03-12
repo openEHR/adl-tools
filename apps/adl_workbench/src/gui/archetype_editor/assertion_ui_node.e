@@ -48,17 +48,20 @@ feature -- Display
 			s: STRING
 		do
 			precursor (ui_settings)
-			if attached evx_grid as att_evx_grid and attached expression_context as att_ec then
-				att_ec.display_in_grid (ui_settings)
+
+			check attached evx_grid end
+
+			if attached expression_context as e_ctx then
+				e_ctx.display_in_grid (ui_settings)
 				create s.make_empty
-				if attached arch_node.tag as a_n_tag then
+				if attached arch_node as a_n and then attached a_n.tag as a_n_tag then
 					s.append (a_n_tag)
 				end
 				check attached ev_grid_row as gr then
-					att_evx_grid.set_last_row (gr)
+					evx_grid.set_last_row (gr)
 				end
-				att_evx_grid.set_last_row_label_col (rules_grid_col_expr_type, s, Void, Void, c_meaning_colour, c_pixmap)
-				att_evx_grid.set_last_row_label_col (rules_grid_col_expr_value, meaning, Void, Void, c_meaning_colour, Void)
+				evx_grid.set_last_row_label_col (rules_grid_col_expr_type, s, Void, Void, c_meaning_colour, c_pixmap)
+				evx_grid.set_last_row_label_col (rules_grid_col_expr_value, meaning, Void, Void, c_meaning_colour, Void)
 			end
 		end
 

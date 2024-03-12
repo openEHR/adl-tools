@@ -446,7 +446,7 @@ feature -- Status Report
 			Terminology_valid: not has_terminology_extract (a_terminology)
 			Term_code_valid: not a_code.is_empty
 		do
-			Result := terminology_extracts.item (a_terminology).has (a_code)
+			Result := attached terminology_extracts.item (a_terminology) as t and then t.has (a_code)
 		end
 
 	has_term_bindings (a_terminology: STRING): BOOLEAN
@@ -932,13 +932,17 @@ feature {ARCHETYPE, ARCHETYPE_TERMINOLOGY} -- Modification
 
 feature {ARCHETYPE} -- Modification
 
-	set_new_id_code_agt (an_agt: like new_id_code_agt)
+	set_new_id_code_agt (an_agt: attached like new_id_code_agt)
 		do
 			new_id_code_agt := an_agt
 		end
 
 	new_id_code_agt: detachable FUNCTION [ARCHETYPE, TUPLE, STRING]
 			-- agent to obtain new id code at the specialisation level of this archetype
+		note
+			option: stable
+		attribute
+		end
 
 	import_terms (old_concept_code: STRING; a_codes: ARRAYED_LIST[STRING]; codes_xref: HASH_TABLE [STRING, STRING]; a_terminology: ARCHETYPE_TERMINOLOGY)
 			-- import terms, bindings and value_sets from `a_terminology', according to codes listed in `a_definition_codes',

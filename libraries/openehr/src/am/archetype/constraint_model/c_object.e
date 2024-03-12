@@ -128,9 +128,7 @@ feature -- Comparison
         	-- redefinitions of multiply-occurrences nodes must be evaluated at the owning
         	-- attribute, according to VSCONCO.
 		do
-			if attached occurrences as occ and attached other.occurrences as other_occ and
-				other.occurrences.upper = 1
-			then
+			if attached occurrences as occ and attached other.occurrences as other_occ and then other_occ.upper = 1 then
 				Result := other_occ.contains (occ)
 			else
 				Result := True

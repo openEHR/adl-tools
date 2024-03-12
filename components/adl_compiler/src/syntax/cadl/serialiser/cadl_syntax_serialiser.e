@@ -460,6 +460,10 @@ feature {NONE} -- Implementation
 			-- True if last object traversed was an OBJECT_SIMPLE
 
 	last_coded_constraint_comment: detachable STRING
+		note
+			option: stable
+		attribute
+		end
 
 	odin_engine: ODIN_ENGINE
 			-- for handling inline dADL sections like for C_QUANTITY

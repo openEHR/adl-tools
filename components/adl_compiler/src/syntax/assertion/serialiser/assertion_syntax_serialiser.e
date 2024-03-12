@@ -45,8 +45,8 @@ feature -- Modification
 		do
 			across invs as invs_csr loop
 				last_result.append (create_indent(depth+1))
-				if attached invs_csr.item.tag then
-					last_result.append (invs_csr.item.tag + ": ")
+				if attached invs_csr.item.tag as t then
+					last_result.append (t + ": ")
 				end
 				last_result.append (invs_csr.item.expression.as_string + format_item(FMT_NEWLINE))
 			end

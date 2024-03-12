@@ -139,10 +139,8 @@ feature {NONE} -- Implementation
 					ev_slot_owners_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_slots_incomplete_w1)))
 				end
 
-				if attached src.slot_owners_index as ci then
-					append_tree (ev_slot_owners_tree, ci)
-					used_by_count := used_by_count + ev_slot_owners_tree.count
-				end
+				append_tree (ev_slot_owners_tree, src.slot_owners_index)
+				used_by_count := used_by_count + ev_slot_owners_tree.count
 
 				call_visual_update_action (slots_count, used_by_count)
 			end

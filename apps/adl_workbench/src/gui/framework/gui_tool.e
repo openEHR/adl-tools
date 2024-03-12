@@ -65,7 +65,10 @@ feature -- Access
 		deferred
 		end
 
-	selection_history: detachable SELECTION_HISTORY
+	selection_history: SELECTION_HISTORY
+		attribute
+			create Result.make
+		end
 
 	selected_item: detachable IDENTIFIED_TOOL_ARTEFACT
 		require
@@ -255,6 +258,10 @@ feature {GUI_TOOL} -- Implementation
 
 	sub_tools: detachable LIST [GUI_TOOL]
 			-- list of subtools of this tool
+		note
+			option: stable
+		attribute
+		end
 
 	add_sub_tool (a_tool: GUI_TOOL)
 		require
@@ -272,8 +279,8 @@ feature {GUI_TOOL} -- Implementation
 
 	do_all_sub_tools (tool_agt: PROCEDURE [ANY, TUPLE[GUI_TOOL]])
 		do
-			if attached sub_tools then
-				across sub_tools as tool_csr loop
+			if attached sub_tools as st then
+				across st as tool_csr loop
 					tool_agt.call ([tool_csr.item])
 				end
 			end

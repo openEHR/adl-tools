@@ -275,7 +275,7 @@ feature -- Access
 	        -- attribute node that redefine `a_parent_co`, which is assumed to be an object node
 	        -- within the specialisation parent of this C_ATTRIBUTE
 	    require
-	        a_parent_co.parent.is_multiple
+	        attached a_parent_co.parent as p and then p.is_multiple
 	    do
 	        -- make a 0..0 interval
 	        create Result.make_prohibited
@@ -301,8 +301,8 @@ feature -- Access
 	                end (?, a_parent_co, an_rm_prop_mult, Result)
 	        )
 
-	        if attached cardinality and then not cardinality.upper_unbounded then
-	            Result.set_upper (if Result.upper_unbounded then cardinality.upper else Result.upper.min (cardinality.upper) end)
+	        if attached cardinality as card and then not card.upper_unbounded then
+	            Result.set_upper (if Result.upper_unbounded then card.upper else Result.upper.min (card.upper) end)
 	        end
 	    end
 

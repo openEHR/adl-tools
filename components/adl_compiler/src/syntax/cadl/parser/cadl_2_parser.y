@@ -2566,6 +2566,7 @@ feature {NONE} -- Implementation
 		note
 			option: stable
 		attribute
+			check False then end
 		end
 
 	flat_ancestor: detachable ARCHETYPE
@@ -2649,7 +2650,10 @@ feature {NONE} -- Parse Tree
 	time_vc: TIME_VALIDITY_CHECKER
 	date_vc: DATE_VALIDITY_CHECKER
 
-	rm_prop_def: detachable BMM_PROPERTY
+	rm_prop_def: BMM_PROPERTY
+		attribute
+			check False then end
+		end
 
 	ca_tuple: C_ATTRIBUTE_TUPLE
 		attribute

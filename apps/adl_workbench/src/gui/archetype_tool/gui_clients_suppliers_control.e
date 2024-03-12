@@ -131,24 +131,18 @@ feature {NONE} -- Implementation
 		local
 			csr_ala: detachable ARCH_LIB_ARCHETYPE
 		do
-			if attached source as src then
-				-- add C_ARCHETYPE_ROOTs to clients
-				if attached src.clients_index as att_clients then
-					across att_clients as id_csr loop
+			-- add C_ARCHETYPE_ROOTs to clients
+			across safe_source.clients_index as id_csr loop
+				client_ids.extend (id_csr.item)
+			end
+
+			-- if in flat view, add C_ARCHETYPE_ROOTs of parents
+			if not differential_view and safe_source.is_specialised then
+				from csr_ala := safe_source.specialisation_parent until csr_ala = Void loop
+					across csr_ala.clients_index as id_csr loop
 						client_ids.extend (id_csr.item)
 					end
-				end
-
-				-- if in flat view, add C_ARCHETYPE_ROOTs of parents
-				if not differential_view and src.is_specialised then
-					from csr_ala := src.specialisation_parent until csr_ala = Void loop
-						if attached csr_ala.clients_index as att_clients then
-							across att_clients as id_csr loop
-								client_ids.extend (id_csr.item)
-							end
-						end
-						csr_ala := csr_ala.specialisation_parent
-					end
+					csr_ala := csr_ala.specialisation_parent
 				end
 			end
 		end

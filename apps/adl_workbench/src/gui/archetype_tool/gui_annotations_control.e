@@ -119,7 +119,7 @@ feature {NONE} -- Implementation
 				lang_key := source_archetype.annotations.matching_language_tag (selected_language)
 
 				-- populate grid
-				if attached source_archetype.annotations.path_table_for_language (lang_key) as path_tbl then
+				if attached source_archetype.annotations as annot and then attached annot.path_table_for_language (lang_key) as path_tbl then
 					across path_tbl.path_table as val_tbl_csr loop
 						-- put the path in the first column
 						create gli.make_with_text (source_archetype.annotated_path (val_tbl_csr.key, selected_language, True))

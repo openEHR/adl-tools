@@ -72,10 +72,14 @@ feature -- Access
 		do
 			if attached arch_node as a_n then
 				Result := a_n.path
-			elseif parent.is_root then
-				Result := parent.path + rm_property.name
+			elseif attached parent as p then
+				if p.is_root then
+					Result := p.path + rm_property.name
+				else
+					Result := p.path + {OG_PATH}.segment_separator_string + rm_property.name
+				end
 			else
-				Result := parent.path + {OG_PATH}.segment_separator_string + rm_property.name
+				create Result.make_empty
 			end
 		end
 
@@ -84,8 +88,8 @@ feature -- Access
 			-- note that this will always be intermediate in the structure, since it has
 			-- to be the child of some archetyped node
 		do
-			if parent.is_rm then
-				Result := parent.rm_depth + 1
+			if attached parent as p and then p.is_rm then
+				Result := p.rm_depth + 1
 			else
 				Result := 1
 			end
@@ -109,6 +113,8 @@ feature -- Display
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
 		do
 			precursor (a_gui_grid)
+
+			check attached evx_grid end
 
 			-- set an empty string in the rm_name column, so later updates have an object to modify
 			evx_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, "", Void, Void, Void, c_pixmap)
@@ -134,6 +140,8 @@ feature -- Display
 			c_col: EV_COLOR
 		do
 			precursor (ui_settings)
+
+			check attached evx_grid end
 
 			if attached arch_node as a_n then
 				-- RM attr name / path
@@ -673,6 +681,8 @@ feature {NONE} -- Context menu
 			rm_type_substitutions: ARRAYED_SET [STRING]
 			aom_type_subs: ARRAYED_SET [STRING]
 		do
+			check attached evx_grid end
+
 			create rm_type_substitutions.make (0)
 			rm_type_substitutions.compare_objects
 			rm_type_substitutions.extend (a_unitary_type_name)

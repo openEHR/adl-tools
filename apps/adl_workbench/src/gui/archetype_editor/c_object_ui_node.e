@@ -398,7 +398,11 @@ feature {NONE} -- Context menu
 		end
 
 	context_menu: detachable EV_MENU
-
+		note
+			option: stable
+		attribute
+		end
+		
 	build_context_menu
 			-- create context menu
 		local

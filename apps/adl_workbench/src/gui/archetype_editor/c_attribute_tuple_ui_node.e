@@ -32,7 +32,7 @@ feature -- Display
 			evx_grid := a_gui_grid
 
 			-- create a new row
-			check attached parent.ev_grid_row as parent_gr then
+			check attached parent as p and then attached p.ev_grid_row as parent_gr then
 				a_gui_grid.add_sub_row (parent_gr, Current)
 			end
 			check attached a_gui_grid.last_row as lr then
@@ -57,8 +57,10 @@ feature -- Display
 		do
 			precursor (ui_settings)
 
+			check attached evx_grid end
+
 			-- RM name col - if in technical mode, show primitive data type
-			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, node_tooltip_str,Void,  Void, Void)
+			evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, rm_string, node_tooltip_str, Void,  Void, Void)
 
 			-- update tooltip in RM column
 		--	evx_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, Void, node_tooltip_str, Void, Void)

@@ -85,7 +85,7 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
-			across source as stats_csr loop
+			across safe_source as stats_csr loop
 				do_populate_model (stats_csr.item)
 			end
 		end

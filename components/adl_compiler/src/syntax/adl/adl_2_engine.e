@@ -333,16 +333,16 @@ feature -- Parsing
 			)
 
 			-- add optional standard parts
-			if attached adl_parser.parent_archetype_id then
-				Result.set_parent_archetype_id (adl_parser.parent_archetype_id)
+			if attached adl_parser.parent_archetype_id as pid then
+				Result.set_parent_archetype_id (pid)
 			end
 
 			if adl_parser.is_generated then
 				Result.set_is_generated
 			end
 
-			if attached a_rules then
-				Result.set_rules (a_rules)
+			if attached a_rules as r then
+				Result.set_rules (r)
 			end
 
 			Result.rebuild
@@ -383,12 +383,12 @@ feature -- Validation
 			flat_parent: detachable ARCHETYPE
 		do
 			validation_passed := False
-			if attached aca.specialisation_parent then
-				flat_parent := aca.specialisation_parent.flat_archetype
+			if attached aca.specialisation_parent as sp then
+				flat_parent := sp.flat_archetype
  			end
 
-			if attached phase_1_validator then
-				phase_1_validator.initialise (aca.safe_differential_archetype, flat_parent, aca.ref_model)
+			if attached phase_1_validator as p1v then
+				p1v.initialise (aca.safe_differential_archetype, flat_parent, aca.ref_model)
 			else
 				create phase_1_validator.initialise (aca.safe_differential_archetype, flat_parent, aca.ref_model)
 			end
@@ -405,9 +405,9 @@ feature -- Validation
 			flat_parent_slot_fillers_index: detachable HASH_TABLE [ARRAYED_SET[STRING], STRING]
 		do
 			validation_passed := False
-			if attached aca.specialisation_parent then
-				flat_parent := aca.specialisation_parent.flat_archetype
-				flat_parent_slot_fillers_index := aca.specialisation_parent.flat_slot_fillers_index
+			if attached aca.specialisation_parent as sp then
+				flat_parent := sp.flat_archetype
+				flat_parent_slot_fillers_index := sp.flat_slot_fillers_index
  			end
 
 			if attached phase_2_validator then
@@ -427,12 +427,12 @@ feature -- Validation
 			flat_parent: detachable ARCHETYPE
 		do
 			validation_passed := False
-			if attached aca.specialisation_parent then
-				flat_parent := aca.specialisation_parent.flat_archetype
+			if attached aca.specialisation_parent as sp then
+				flat_parent := sp.flat_archetype
  			end
 
-			if attached phase_3_validator then
-				phase_3_validator.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
+			if attached phase_3_validator as p3v then
+				p3v.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
 			else
 				create phase_3_validator.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
 			end
@@ -448,12 +448,12 @@ feature -- Validation
 			flat_parent: detachable ARCHETYPE
 		do
 			validation_passed := False
-			if attached aca.specialisation_parent then
-				flat_parent := aca.specialisation_parent.flat_archetype
+			if attached aca.specialisation_parent as sp then
+				flat_parent := sp.flat_archetype
  			end
 
-			if attached phase_4_validator then
-				phase_4_validator.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
+			if attached phase_4_validator as p4v then
+				p4v.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
 			else
 				create phase_4_validator.initialise (aca.safe_differential_archetype, flat_parent, aca.flat_archetype, aca.ref_model)
 			end

@@ -538,27 +538,29 @@ feature {NONE} -- Implementation
 		require
 			class_grid_row_valid: attached a_class_grid_row.parent_row
 		do
+			check attached evx_grid end
+
 			-- set the RM path from the sibling node; it is the regardless of whether we are replacing or adding nodes
 			if attached {EV_GRID_LABEL_ITEM} a_class_grid_row.item (Definition_grid_col_rm_name) as gli and then attached gli.tooltip as tt then
 				create rm_node_path.make_from_string (utf32_to_utf8 (tt))
 			end
-			if replace_mode then
+			if replace_mode and attached evx_grid.last_row as evx_grid_lr then
 				evx_grid.remove_sub_rows (a_class_grid_row)
 				evx_grid.set_last_row (a_class_grid_row)
 				evx_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_bmm_class.name, Void, Void, archetype_rm_type_color, rm_type_pixmap (a_bmm_class, use_rm_pixmaps))
-				evx_grid.last_row.set_data (a_bmm_class)
+				evx_grid_lr.set_data (a_bmm_class)
 				ev_grid_rm_row_stack.extend (a_class_grid_row)
 			else
 				check attached a_class_grid_row.parent_row as pr then
 					evx_grid.add_sub_row (pr, a_bmm_class)
 				end
 				evx_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_bmm_class.name, rm_node_path.as_string, Void, archetype_rm_type_color, rm_type_pixmap (a_bmm_class, use_rm_pixmaps))
-				if attached evx_grid.last_row as lr then
-					if attached {EV_GRID_LABEL_ITEM} lr.item (Definition_grid_col_rm_name) as gli then
-	 	 				gli.pointer_button_press_actions.extend (agent class_node_handler_wrapper (lr, ?, ?, ?, ?, ?, ?, ?, ?))
-						lr.expand_actions.force_extend (agent property_node_expand_handler (lr))
+				if attached evx_grid.last_row as evx_grid_lr then
+					if attached {EV_GRID_LABEL_ITEM} evx_grid_lr.item (Definition_grid_col_rm_name) as gli then
+	 	 				gli.pointer_button_press_actions.extend (agent class_node_handler_wrapper (evx_grid_lr, ?, ?, ?, ?, ?, ?, ?, ?))
+						evx_grid_lr.expand_actions.force_extend (agent property_node_expand_handler (evx_grid_lr))
 					end
-					ev_grid_rm_row_stack.extend (lr)
+					ev_grid_rm_row_stack.extend (evx_grid_lr)
 				end
 			end
 

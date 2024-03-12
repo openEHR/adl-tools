@@ -71,7 +71,9 @@ feature {EXPR_ITEM_UI_NODE} -- Implementation
 			create Result.make_empty
 			if attached arch_node as a_n then
 				Result.append (a_n.operator.out + " ")
-				Result.append (operand_ed_context.meaning)
+				if attached operand_ed_context as e_ctx then
+					Result.append (e_ctx.meaning)
+				end
 			end
 		end
 

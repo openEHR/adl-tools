@@ -43,7 +43,7 @@ feature -- AOM type mappings
 			-- return the name of a property name that is either a native one of this class,
 			-- or else a mapped name from a reference model in use by the compiler
 		do
-			if attached rm_type_mapping as rm_tm and then rm_tm.property_mappings.has (a_key) and then attached rm_tm.property_mappings.item (a_key) as prop_mapping then
+			if attached rm_type_mapping as rm_tm and then attached rm_tm.property_mappings as rm_pm and then rm_pm.has (a_key) and then attached rm_pm.item (a_key) as prop_mapping then
 				Result := prop_mapping.target_property_name
 			else
 				Result := a_key

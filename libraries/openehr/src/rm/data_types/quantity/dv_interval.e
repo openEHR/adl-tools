@@ -22,11 +22,8 @@ inherit
 			is_equal,
 			out
 		end
-	
+
 	PROPER_INTERVAL [G]
-		redefine
-			as_string
-		end
 
 create
 	default_create,
@@ -39,13 +36,6 @@ feature -- Initialization
 
 	make_from_string (str: STRING)
 		do
-		end
-
-feature -- Conversion
-
-	as_string: STRING
-		do
-			Result := lower.as_string + ".." + upper.as_string
 		end
 
 invariant

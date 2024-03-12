@@ -60,7 +60,7 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
-			ev_rich_text.set_text (utf8_to_utf32 (source.errors.as_string))
+			ev_rich_text.set_text (utf8_to_utf32 (safe_source.errors.as_string))
 		end
 
 	ev_rich_text: EV_RICH_TEXT

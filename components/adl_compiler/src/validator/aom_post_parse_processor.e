@@ -57,8 +57,8 @@ feature {ADL_2_ENGINE, ADL_14_ENGINE} -- Initialisation
 				set_domain_type_mappings
 			end
 			target := a_target
-			if ara.is_specialised then
-				flat_ancestor := ara.specialisation_parent.flat_archetype
+			if ara.is_specialised and attached ara.specialisation_parent as sp then
+				flat_ancestor := sp.flat_archetype
 			else
 				flat_ancestor := Void
 			end

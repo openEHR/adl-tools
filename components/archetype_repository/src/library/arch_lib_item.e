@@ -151,8 +151,8 @@ feature -- Access
 	new_cursor: ITERATION_CURSOR [like children.item]
 			-- Fresh cursor associated with `children' of curren node
 		do
-			check attached children as att_children then
-				Result := att_children.new_cursor
+			check attached children as c then
+				Result := c.new_cursor
 			end
 		end
 
@@ -205,11 +205,16 @@ feature {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE} -- Modification
 	put_child (a_child: like children.item)
 		require
 			a_child /= Current and then not has_child (a_child)
+		local
+			ala_list: attached like children
 		do
-			if not attached children then
-				create children.make
+			if attached children as c then
+				ala_list := c
+			else
+				create ala_list.make
+				children := ala_list
 			end
-			children.extend (a_child)
+			ala_list.extend (a_child)
 			a_child.set_parent (Current)
 			reset_subtree_artefact_count
 		ensure
@@ -220,9 +225,9 @@ feature {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE} -- Modification
 		require
 			has_child (a_child)
 		do
-			check attached children then
-				children.start
-				children.prune (a_child)
+			check attached children as c then
+				c.start
+				c.prune (a_child)
 			end
 			reset_subtree_artefact_count
 		ensure

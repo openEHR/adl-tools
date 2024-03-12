@@ -298,7 +298,7 @@ feature {NONE} -- Implementation
 					ev_adl_version_text.set_text (auth_arch.adl_version)
 				end
 
-				selected_language := source.differential_archetype.original_language.code_string
+				selected_language := safe_source.differential_archetype.original_language.code_string
 				populate_languages
 			end
 		end
@@ -338,10 +338,10 @@ feature {NONE} -- Implementation
 	populate_languages
 			-- Populate `language_combo' in the toolbar for currently selected archetype
 		require
-			source.is_valid
+			safe_source.is_valid
 		do
 			ev_language_combo.select_actions.block
-			ev_language_combo.set_strings (source.differential_archetype.languages_available)
+			ev_language_combo.set_strings (safe_source.differential_archetype.languages_available)
 			ev_language_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (selected_language) then li.enable_select end end)
 			ev_language_combo.select_actions.resume
 		end
@@ -389,8 +389,8 @@ feature {NONE} -- Implementation
 		do
 			if attached source then
 				Result :=
-					an_arch_tool.last_populate_timestamp < source.last_compile_attempt_timestamp or	-- source re-compiled more recently than last populate
-					an_arch_tool.last_populate_timestamp < source.last_modify_timestamp				-- source modified more recently than last populate
+					an_arch_tool.last_populate_timestamp < safe_source.last_compile_attempt_timestamp or	-- source re-compiled more recently than last populate
+					an_arch_tool.last_populate_timestamp < safe_source.last_modify_timestamp				-- source modified more recently than last populate
 			end
 		end
 

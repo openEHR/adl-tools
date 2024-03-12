@@ -212,8 +212,8 @@ feature {NONE} -- Implementation
 			if not evx_adl_source_editor.is_empty then
 				sel_tab := ev_root_container.item_tab (evx_adl_source_editor.ev_root_container)
 				sel_tab.set_pixmap (get_icon_pixmap ("tool/edit_active"))
-				if not source.file_mgr.adl_version.is_empty then
-					ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_msg ({ADL_MESSAGES_IDS}.ec_adl_ver_source_tab_text, <<source.file_mgr.adl_version>>))
+				if not safe_source.file_mgr.adl_version.is_empty then
+					ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_msg ({ADL_MESSAGES_IDS}.ec_adl_ver_source_tab_text, <<safe_source.file_mgr.adl_version>>))
 				else
 					ev_root_container.set_item_text (evx_adl_source_editor.ev_root_container, get_msg ({ADL_MESSAGES_IDS}.ec_adl_ver_source_tab_text, <<latest_adl_version>>))
 				end

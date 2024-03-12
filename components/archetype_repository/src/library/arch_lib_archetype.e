@@ -274,11 +274,19 @@ feature -- Relationships
 			create Result.make (0)
 		end
 
-	clients_index: detachable ARRAYED_LIST [STRING]
+	clients_index: ARRAYED_LIST [STRING]
 			-- list of ids of archetypes that reference this archetype
+		attribute
+			create Result.make (0)
+			Result.compare_objects
+		end
 
-	slot_owners_index: detachable ARRAYED_LIST [STRING]
+	slot_owners_index: ARRAYED_LIST [STRING]
 			-- list of ids of archetypes that have slots that could be filled by this archetype
+		attribute
+			create Result.make (0)
+			Result.compare_objects
+		end
 
 	slot_fillers_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
 			-- list of Archetype ids matching slot definitions of `differential_archetype', keyed by slot path
@@ -365,7 +373,7 @@ feature -- Relationships
 	is_supplier: BOOLEAN
 			-- Is this archetype used by any other archetypes (i.e. matches any of their slots)?
 		do
-			Result := attached slot_owners_index
+			Result := not slot_owners_index.is_empty
 		end
 
 	has_artefacts: BOOLEAN = True
@@ -382,20 +390,12 @@ feature {ARCH_LIB_ARCHETYPE} -- Relationships
 	add_slot_owner (an_archetype_id: STRING)
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
 		do
-			if not attached slot_owners_index then
-				create slot_owners_index.make (0)
-				slot_owners_index.compare_objects
-			end
 			slot_owners_index.extend (an_archetype_id)
 		end
 
 	add_client (an_archetype_id: STRING)
 			-- add the id of an archetype that references this archetype
 		do
-			if not attached clients_index then
-				create clients_index.make (0)
-				clients_index.compare_objects
-			end
 			clients_index.extend (an_archetype_id)
 		end
 
@@ -1196,6 +1196,10 @@ feature -- Statistics
 		end
 
 	statistical_analyser: detachable ARCHETYPE_STATISTICAL_ANALYSER
+		note
+			option: stable
+		attribute
+		end
 
 feature -- Editing
 
@@ -1330,7 +1334,7 @@ feature {NONE} -- Implementation
 				if an_archetype.is_differential then
 					across slot_filler_ids as filler_ids_csr loop
 						ala := current_library.archetype_with_id (filler_ids_csr.item)
-						if not attached ala.slot_owners_index as att_soi or else not att_soi.has (id.physical_id) then
+						if not ala.slot_owners_index.has (id.physical_id) then
 							ala.add_slot_owner (id.physical_id)
 						end
 					end
@@ -1351,7 +1355,6 @@ invariant
 	Flat_archetype_cache_is_flat: attached flat_archetype_cache as fac implies fac.is_flat
 
 	parent_existence: attached specialisation_parent implies is_specialised
-	clients_index_valid: attached slot_owners_index as soi implies not soi.is_empty
 
 end
 

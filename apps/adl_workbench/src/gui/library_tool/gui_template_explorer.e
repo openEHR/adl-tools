@@ -77,7 +77,7 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
- 			source.do_all_archetypes (agent ev_tree_node_populate)
+ 			safe_source.do_all_archetypes (agent ev_tree_node_populate)
 			gui_semantic_grid.resize_columns_to_content
 		end
 
@@ -121,6 +121,8 @@ feature {NONE} -- Implementation
 			ca_path: detachable STRING
 			csr: detachable ARCHETYPE_CONSTRAINT
 		do
+			check attached ref_model end
+
 			if attached {ARCHETYPE_CONSTRAINT} an_og_node.content_item as ca then
 				if attached {C_ATTRIBUTE} ca as c_attr then
 					-- first see if it is an atribute containing any ext ref nodes
