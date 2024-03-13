@@ -448,6 +448,10 @@ feature {NONE} -- Implementation
 
 	repository_access: detachable VCS_TOOL_INTERFACE
 			-- repo access object; specific subtype for remote repository type
+		note
+			option: stable
+		attribute
+		end
 
 	local_definition_file_access: detachable ODIN_OBJECT_READER [ARCHETYPE_REPOSITORY_DEFINITION]
 			-- file accessor for the local definition file
