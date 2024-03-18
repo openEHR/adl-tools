@@ -35,13 +35,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_COMPILER
-		export
-			{NONE} all
-		undefine
-			default_create, copy
-		end
-
 create
 	make
 

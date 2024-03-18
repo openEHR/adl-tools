@@ -16,6 +16,20 @@ inherit
 			initialize, create_interface_objects
 		end
 
+	SHARED_ARCHETYPE_EXPORTER
+		export
+			{NONE} all;
+		undefine
+			is_equal, default_create, copy
+		end
+
+	SHARED_ARCHETYPE_COMPILER
+		export
+			{NONE} all;
+		undefine
+			is_equal, default_create, copy
+		end
+
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all;
@@ -177,9 +191,9 @@ feature {NONE} -- Initialization
 			archetype_compiler.set_new_state_change_listener (agent evx_run_button.populate)
 			archetype_compiler.set_console_update_agent (agent update_console)
 
-			builder.set_progress_agents (agent initialise_progress_bar, agent set_progress_bar_current_value)
-			builder.set_new_state_change_listener (agent evx_run_button.populate)
-			builder.set_console_update_agent (agent update_console)
+			archetype_exporter.set_progress_agents (agent initialise_progress_bar, agent set_progress_bar_current_value)
+			archetype_exporter.set_new_state_change_listener (agent evx_run_button.populate)
+			archetype_exporter.set_console_update_agent (agent update_console)
 
 			-- any other setup
 			user_rm_flattening_on := rm_flattening_on
@@ -210,8 +224,8 @@ feature -- Events
 			else
 				if execution_state = es_compiling then
 					archetype_compiler.interrupt_build
-				elseif execution_state = es_exporting then
-					builder.interrupt_build
+				elseif execution_state = es_generating then
+					archetype_exporter.interrupt_build
 				end
 			end
 		end
@@ -244,7 +258,7 @@ feature -- Access
 	is_running: BOOLEAN
 		do
 			Result := execution_state = es_compiling and then archetype_compiler.is_building or else
-				execution_state = es_exporting and then builder.is_building
+				execution_state = es_generating and then archetype_exporter.is_building
 		end
 
 feature -- Commands
@@ -309,8 +323,8 @@ feature {NONE} -- Implementation
 	es_initial: INTEGER = 0
 	es_ready_to_compile: INTEGER = 1
 	es_compiling: INTEGER = 2
-	es_ready_to_export: INTEGER = 3
-	es_exporting: INTEGER = 4
+	es_ready_to_generate: INTEGER = 3
+	es_generating: INTEGER = 4
 	es_completed: INTEGER = 5
 
 	do_populate
@@ -344,26 +358,26 @@ feature {NONE} -- Implementation
 						archetype_compiler.setup_build ([False])
 						execution_state := es_ready_to_compile
 					else
-						execution_state := es_ready_to_export
+						execution_state := es_ready_to_generate
 					end
-					builder.setup_build ([output_directory, evx_format_cob.data_control_text, export_flat, evx_flatten_with_rm_cb.is_selected])
+					archetype_exporter.setup_build ([output_directory, evx_format_cob.data_control_text, export_flat, evx_flatten_with_rm_cb.is_selected])
 
 				-- start compilation
 				elseif execution_state = es_ready_to_compile then
 					execution_state := es_compiling
 					archetype_compiler.build_all
 					if not archetype_compiler.is_interrupted then
-						execution_state := es_ready_to_export
+						execution_state := es_ready_to_generate
 					else
 						finished := True
 					end
 
 				-- start export
-				elseif execution_state = es_ready_to_export then
-					execution_state := es_exporting
+				elseif execution_state = es_ready_to_generate then
+					execution_state := es_generating
 					evx_run_button.set_labels (get_text ({ADL_MESSAGES_IDS}.ec_export_button_text), get_text ({ADL_MESSAGES_IDS}.ec_export_button_text))
-					builder.build_all
-					if not builder.is_interrupted then
+					archetype_exporter.build_all
+					if not archetype_exporter.is_interrupted then
 						execution_state := es_completed
 					else
 						finished := True
@@ -379,9 +393,9 @@ feature {NONE} -- Implementation
 					end
 
 				-- restart after exporting phase interrupted
-				elseif execution_state = es_exporting and then builder.is_interrupted then
-					builder.resume_build
-					if not builder.is_interrupted then
+				elseif execution_state = es_generating and then archetype_exporter.is_interrupted then
+					archetype_exporter.resume_build
+					if not archetype_exporter.is_interrupted then
 						execution_state := es_completed
 					else
 						finished := True
@@ -447,16 +461,5 @@ feature {NONE} -- Implementation
 	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 
 	ev_console: EV_TEXT
-
-	builder: ARCHETYPE_EXPORTER
-		once
-			create Result.make
-		end
-
-	archetype_compiler: ARCHETYPE_COMPILER
-			-- create own copy of archetype compiler
-		once
-			create Result.make
-		end
 
 end
