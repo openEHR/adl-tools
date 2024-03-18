@@ -110,6 +110,18 @@ feature -- Export Types
 			Result.extend (Syntax_type_csv)
 		end
 
+	report_formats_string: STRING
+			-- utility string generating valid report formats
+		once ("PROCESS")
+			create Result.make_empty
+			across report_formats as fmts_csr loop
+				Result.append (fmts_csr.item)
+				if not fmts_csr.is_last then
+					Result.append (", ")
+				end
+			end
+		end
+
 	reporting_file_extensions: HASH_TABLE [STRING, STRING]
 			-- File extensions for logical serialisation formats.
 		once ("PROCESS")

@@ -51,10 +51,13 @@ feature -- Definitions
 			-- non-argument switches
 			Result.extend (create {ARGUMENT_SWITCH}.make (quiet_switch, get_text (ec_adlc_quiet_switch_desc), True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (flat_switch, get_text (ec_flat_switch_desc), True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (rm_multiplicities_switch, get_text (ec_rm_multiplicities_switch_desc), True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (show_config_switch, get_text (ec_show_config_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (list_archetypes_switch, get_text (ec_list_archetypes_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (display_archetypes_switch, get_text (ec_display_archetypes_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (list_rms_switch, get_text (ec_list_rms_switch_desc), False, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (report_switch, get_text (ec_report_switch_desc), False, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (export_switch, get_text (ec_export_switch_desc), False, False))
 
 			-- switches with arguments
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (display_rm_switch, get_text (ec_display_rm_switch_desc), False, False, display_rm_switch_arg, get_text (ec_display_rm_switch_arg_desc), False))
@@ -63,7 +66,6 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text (ec_format_switch_desc), True, False, format_switch_arg, get_msg (ec_format_switch_arg_desc, <<archetype_all_serialiser_formats_string>>), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (output_dir_switch, get_text (ec_output_dir_switch_desc), True, False, output_dir_switch_arg_name, get_text (ec_output_dir_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text (ec_cfg_switch_desc), True, False, cfg_switch_arg_name, get_text (ec_cfg_switch_arg_desc), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (action_switch, get_text (ec_action_switch_desc), False, False, action_switch_arg, actions_string, False))
 
 			-- valid command line configurations
 
@@ -73,35 +75,64 @@ feature -- Definitions
 			-- <Precursor>
 		once
 			create Result.make (4)
+
+			-- adlc -s [-q]
+			-- adlc --show_config [--quiet]
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (show_config_switch), switch_of_name (quiet_switch) >>, False))
 
+			-- adlc -L [-q]
+			-- adlc --list_rms [--quiet]
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (list_rms_switch), switch_of_name (quiet_switch) >>, False))
+
+			-- adlc -D [-q]
+			-- adlc --display_rms [--quiet]
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (display_rm_switch), switch_of_name (quiet_switch) >>, False))
+
+			-- adlc -X [-q]
+			-- adlc --export_rms [--quiet]
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (export_rms_switch), switch_of_name (quiet_switch) >>, False))
 
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (list_archetypes_switch), switch_of_name (quiet_switch) >>, False))
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (display_archetypes_switch), switch_of_name (quiet_switch) >>, False))
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (flat_switch), switch_of_name (cfg_switch),
-														switch_of_name (quiet_switch), switch_of_name (format_switch),
-														switch_of_name (action_switch), switch_of_name (output_dir_switch)>>, True))
+			-- adlc [-q] -b <library name> -l [<id_pattern>]
+			-- adlc [--quiet] --library <library name> --list_archetypes [<id_pattern>]
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (list_archetypes_switch), switch_of_name (quiet_switch) >>, True))
+
+			-- adlc [-q] -b <library name> -d [<id_pattern>]
+			-- adlc [--quiet] --library <library name> --display_archetypes [<id_pattern>]
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (display_archetypes_switch), switch_of_name (quiet_switch) >>, True))
+
+			-- EXPORT
+			-- adlc -b <library name> [--cfg <file path>] [-q] [-f <format>] -x [--flat] [--rm_multiplicities] [-o <output_dir>] [<id_pattern>]
+			-- adlc --library <library name> [--cfg <file path>] [--quiet] [--format <format>] --export  [--flat] [--output <output_dir>] [<id_pattern>]
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (flat_switch), switch_of_name (rm_multiplicities_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (quiet_switch), switch_of_name (format_switch),
+															switch_of_name (export_switch), switch_of_name (output_dir_switch)>>, True))
+
+			-- REPORT
+			-- adlc -b <library name> [-q] [-f <format>] -p [-o <output_dir>]
+			-- adlc --library [--quiet] [--format <format>] --report [--output <output_dir>]
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch),
+															switch_of_name (quiet_switch), switch_of_name (format_switch),
+															switch_of_name (report_switch), switch_of_name (output_dir_switch)>>, False))
 		end
 
 	quiet_switch: STRING = "q|quiet"
 	flat_switch: STRING = "flat"
+	rm_multiplicities_switch: STRING = "rm_multiplicities"
 	show_config_switch: STRING = "s|show_config"
+
+	list_rms_switch: STRING = "L|list_rms"
+	display_rm_switch: STRING = "D|display_rm"
+	display_rm_switch_arg: STRING = "reference model name"
+
+	export_rms_switch: STRING = "X|export_rms"
+	export_rms_switch_arg: STRING = "export folder path"
 
 	list_archetypes_switch: STRING = "l|list_archetypes"
 	display_archetypes_switch: STRING = "d|display_archetypes"
 
-	list_rms_switch: STRING = "r|list_rms"
-	display_rm_switch: STRING = "R|display_rm"
-	display_rm_switch_arg: STRING = "reference model name"
-
-	export_rms_switch: STRING = "x|export_rms"
-	export_rms_switch_arg: STRING = "export folder path"
-
-	action_switch: STRING = "a|action"
-	action_switch_arg: STRING = "action"
+	report_switch: STRING = "r|report"
+	export_switch: STRING = "x|export"
 
 	library_switch: STRING = "b|library"
 	library_switch_arg: STRING = "library name"
@@ -135,7 +166,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize argument parser
 		do
-			make_parser (True, True)
+			make_parser (True, False)
 		end
 
 	initialize_defaults
@@ -150,12 +181,15 @@ feature {NONE} -- Initialization
 			if is_successful then
 				is_verbose := not has_option (quiet_switch)
 				use_flat_source := has_option (flat_switch)
+				include_rm_multiplicities := has_option (rm_multiplicities_switch)
 				show_config := has_option (show_config_switch)
 				list_archetypes := has_option (list_archetypes_switch)
 				display_archetypes := has_option (display_archetypes_switch)
 				list_rms := has_option (list_rms_switch)
 				export_rms := has_option (export_rms_switch)
 				write_to_file_system := has_option (output_dir_switch)
+				report := has_option (report_switch)
+				export_archetypes := has_option (export_switch)
 			end
 		end
 
@@ -211,16 +245,6 @@ feature -- Access
 			end
 		end
 
-	action: detachable STRING
-			-- action to perform
-		require
-			is_successful: is_successful
-		once
-			if has_option (action_switch) and then attached option_of_name (action_switch) as opt and then opt.has_value then
-				Result := opt.value
-			end
-		end
-
 	output_dir: detachable STRING
 			-- output directory to write files to
 		require
@@ -246,35 +270,27 @@ feature -- Status Report
 
 	use_flat_source: BOOLEAN
 
+	include_rm_multiplicities: BOOLEAN
+
 	show_config: BOOLEAN
-			-- request to show configuration information
 
 	list_archetypes: BOOLEAN
-			-- True for -l switch to list archetypes
 
 	display_archetypes: BOOLEAN
-			-- True for -d switch to list archetypes in user friendly format
 
 	list_rms: BOOLEAN
-			-- True for -r switch to list RMs
 
 	export_rms: BOOLEAN
-			-- True for -x switch to export RMs
 
 	write_to_file_system: BOOLEAN
-			-- True if -o switch used to specify an output directory
 
-feature -- Modification
+	report: BOOLEAN
 
-	set_actions_string (str: STRING)
-			-- set a String containing list of possible actions for Usage display
-		do
-			actions_string := str
-		end
+	export_archetypes: BOOLEAN
 
 feature {NONE} -- Usage
 
-	copyright: STRING = "Copyright (c) 2012- openEHR Foundation"
+	copyright: STRING = "Copyright (c) 2012- openEHR International"
 			--  <Precursor>
 
 	name: STRING
@@ -287,11 +303,6 @@ feature {NONE} -- Usage
 			--  <Precursor>
 		once
 			Result := (create {OPENEHR_VERSION}).out
-		end
-
-	actions_string: STRING
-		attribute
-			create Result.make_empty
 		end
 
 end

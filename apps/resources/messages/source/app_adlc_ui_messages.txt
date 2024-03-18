@@ -20,11 +20,14 @@ templates = <
 
 		-- simple command line options
 		["adlc_quiet_switch_desc"] = <"suppress verbose feedback, including configuration information on startup">
-		["flat_switch_desc"] = <"use flat form of archetype[s] for actions, e.g. path extraction etc">
+		["flat_switch_desc"] = <"use flat form of archetype[s] for export">
+		["rm_multiplicities_switch_desc"] = <"include RM multiplicities when flattening">
 		["show_config_switch_desc"] = <"show current configuration and defaults">
 		["list_archetypes_switch_desc"] = <"generate list of archetypes in current library (use for further processing)">
 		["display_archetypes_switch_desc"] = <"generate list of archetypes in current library in user-friendly format">
 		["list_rms_switch_desc"] = <"generate list of reference models">
+		["export_switch_desc"] = <"export archetypes">
+		["report_switch_desc"] = <"genreate reports">
 
 		-- command line options with arguments
 		["display_rm_switch_desc"] = <"display reference model in user-friendly format">
@@ -34,19 +37,16 @@ templates = <
 		["export_rms_switch_arg_desc"] = <"path of folder in which to save export files">
 
 		["format_switch_desc"] = <"output format for generated files">
-		["format_switch_arg_desc"] = <"file formats: json, adl, odin, yaml, xml (default = adl)">
+		["format_switch_arg_desc"] = <"file format">
 
-		["output_dir_switch_desc"] = <"output directory for serialised files">
-		["output_dir_switch_arg_desc"] = <"output directory for serialised files">
+		["output_dir_switch_desc"] = <"output directory">
+		["output_dir_switch_arg_desc"] = <"output directory">
 
 		["cfg_switch_desc"] = <"output default configuration file location">
 		["cfg_switch_arg_desc"] = <".cfg file path">
 
 		["library_switch_desc"] = <"library to use">
 		["library_switch_arg_desc"] = <"library name">
-
-		["action_switch_desc"] = <"action to perform">
-		["action_switch_arg_desc"] = <"action: $1">
 
 		-- non-switched command-line options
 		["id_pattern_arg_name"] = <"id_pattern">
@@ -63,8 +63,8 @@ templates = <
 		["no_matching_ids_err"] = <"No archetype ids matching pattern '$1' in library $2 (use -s to see current config)%N">
 		["lib_does_not_exist_err"] = <"No library with name '$1' (use -s to see all libraries)%N">
 		["invalid_serialisation_format_err"] = <"Invalid serialisation format '$1'; valid formats: $2%N">
+		["invalid_report_format_err"] = <"Invalid report format '$1'; valid formats: $2%N">
 		["invalid_output_directory"] = <"Could not create output directory '$1'%N">
-		["invalid_action_err"] = <"Invalid action '$1'; valid actions: $2%N">
 		["archetype_not_valid"] = <"Archetype $1 not validated (run with '-a validate' to see errors)%N">
 
 		["archs_list_text"] = <"------------ Archetypes in library '$1 --------------'%N">
