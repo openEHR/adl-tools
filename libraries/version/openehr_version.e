@@ -24,7 +24,7 @@ feature -- Access
 	major: INTEGER = 2
 			-- The major version number: manually incremented.
 
-	minor: INTEGER = 3
+	minor: INTEGER = 1
 			-- The minor version number: manually incremented, or else reset to 0 when `major' changes.
 
 	build: INTEGER = 0
