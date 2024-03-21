@@ -280,6 +280,9 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 	-- count line endings
 	\n+			in_lineno := in_lineno + text_count
 
+	-- ignore CRs
+	\r
+
 	-- count line endings with comments
 	\-\-[^\n]*\n	in_lineno := in_lineno + 1
 
@@ -372,6 +375,9 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 	-- count line endings
 	\n+			in_lineno := in_lineno + text_count
+
+	-- ignore CRs
+	\r
 
 	-- count line endings with comments
 	\-\-[^\n]*\n	in_lineno := in_lineno + 1

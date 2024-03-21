@@ -274,6 +274,9 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 	-- pass comment lines
 	\-\-[^\n]*\n	out_buffer.append (text)
 
+	-- remove CRs
+	\r
+
 	\] 			{
 		out_buffer.append (text)
 		set_start_condition (INITIAL)

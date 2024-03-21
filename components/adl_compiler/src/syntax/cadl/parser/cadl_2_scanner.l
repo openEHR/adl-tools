@@ -519,6 +519,9 @@ P[yY]?[mM]?[Ww]?[dD]?(T[hH]?[mM]?[sS]?)? {
 	-- count line endings
 	\n+			in_lineno := in_lineno + text_count
 
+	-- ignore CRs
+	\r
+
 	-- count line endings with comments
 	\-\-[^\n]*\n	in_lineno := in_lineno + 1
 
@@ -611,6 +614,9 @@ P[yY]?[mM]?[Ww]?[dD]?(T[hH]?[mM]?[sS]?)? {
 
 	-- count line endings
 	\n+			in_lineno := in_lineno + text_count
+
+	-- ignore CRs
+	\r
 
 	-- count line endings with comments
 	\-\-[^\n]*\n	in_lineno := in_lineno + 1
