@@ -11,6 +11,7 @@ note
 					   adlc [-q] -b <library name> -l [<id_pattern>]
 					   adlc [-q] -b <library name> -d [<id_pattern>]
 					   adlc [-q] -b <library name> [-f <format>] --report [-o <output_dir>]
+					   adlc [-q] -b <library name> --inject_loinc -i <loinc_file>
 					   adlc [-q] -b <library name> [--flat] [--cfg <file path>] [-f <format>] -a <action> [-o <output_dir>] [<id_pattern>]
 
 					OPTIONS:
@@ -35,6 +36,9 @@ note
 					   -x --export            : export matching archetypes in specified format
 					   -r --report            : generate reports in specified format
 					   -o --output            : output directory to write files to; '.' for current directory
+					      --inject_loinc      : read <loinc_file>, which is formatted as {archetype_id,id_code,loinc_code} and 
+					                            inject bindings from loinc codes to id-codes
+					   
 					   -? --help              : Display usage information. (Optional)
 
 					NON-SWITCHED ARGUMENTS:
@@ -119,7 +123,7 @@ feature -- Commands
 			full_path, schema_file_path, export_dir: STRING
 			finished: BOOLEAN
 		do
-			report_std_out ("Initialising... %N")
+			report_std_out ("Initialising... ")
 
 			app_root.initialise_app
 
@@ -148,7 +152,7 @@ feature -- Commands
 				elseif attached opts.library as att_lib then
 					if has_library (att_lib) then
 						set_current_library_name (att_lib)
-						report_std_out ("Using library " + att_lib + "%N")
+						report_std_out ("Using library " + att_lib)
 						build_archetype_id_list
 
 						if not error_reported then
@@ -157,7 +161,7 @@ feature -- Commands
 
 							-- a build is required
 							else
-								report_std_out ("--------- Building all ---------%N")
+								report_std_out ("--------- Building all ---------")
 								archetype_compiler.setup_build ([False])
 								archetype_compiler.build_all
 
@@ -169,6 +173,9 @@ feature -- Commands
 
 								elseif opts.report then
 									generate_library_reports
+
+								elseif opts.inject_loinc_bindings then
+									inject_loinc_bindings
 								end
 							end
 						end
@@ -180,7 +187,7 @@ feature -- Commands
 				report_std_err (app_root.error_strings)
 				across bmm_models_access.all_schemas as schemas_csr loop
 					if schemas_csr.item.has_errors then
-						report_std_err ("========== Schema validation errors for " + schemas_csr.key.as_string_8 + " ===========%N")
+						report_std_err ("========== Schema validation errors for " + schemas_csr.key.as_string_8 + " ===========")
 						report_std_err (schemas_csr.item.errors.as_string)
 					end
 				end
@@ -225,7 +232,7 @@ feature -- Commands
 
 			-- PROCESS LIBRARY
 			if not error_reported then
-				report_std_out ("--------- Exporting to " + full_output_dir + "---------%N")
+				report_std_out ("--------- Exporting to " + full_output_dir + "---------")
 				archetype_exporter.setup_build ([full_output_dir, output_format, opts.use_flat_source, opts.include_rm_multiplicities])
 				archetype_exporter.build_all
 			end
@@ -263,8 +270,111 @@ feature -- Commands
 			-- PROCESS LIBRARY
 			if not error_reported then
 				archetype_reporter.setup_build ([full_output_dir, output_format])
-				report_std_out ("--------- Generating reports in " + full_output_dir + " ---------%N")
+				report_std_out ("--------- Generating reports in " + full_output_dir + " ---------")
 				archetype_reporter.build_all
+			end
+		end
+
+	Loinc_uri_root: STRING = "http://loinc.org/"
+
+	inject_loinc_bindings
+			-- Inject LOINC bindings from a file whose structure is
+			-- {archetype_id,node_id,loinc_code}
+		local
+			last_arch_id, input_file_path: STRING
+			in_file: PLAIN_TEXT_FILE
+			a_line, arch_id, id_code, loinc_code: STRING
+			strs: LIST[STRING]
+			ara: ARCH_LIB_AUTHORED_ARCHETYPE
+			old_loinc_binding_uri, binding_uri: URI
+			diff_arch: AUTHORED_ARCHETYPE
+			arch_count, inject_new_count, inject_replace_count, inject_ignore_count: INTEGER
+			save_required: BOOLEAN
+		do
+			-- OPTION: input file
+			create input_file_path.make_empty
+			if attached opts.input_file as att_if then
+				if file_system.is_absolute_pathname (att_if) then
+					input_file_path := att_if
+				else
+					input_file_path := file_system.pathname (file_system.current_working_directory, att_if)
+				end
+
+				if not file_system.file_exists (input_file_path) then
+					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_input_file, <<input_file_path>>))
+				end
+
+				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_loinc_start, <<input_file_path>>))
+
+				create in_file.make(input_file_path)
+
+				create last_arch_id.make_empty
+				if in_file.exists then
+					in_file.open_read
+					from until in_file.end_of_file loop
+						in_file.read_line
+						a_line := in_file.last_string
+						if not a_line.is_whitespace then
+							-- right adjust in case we are on Linux, and files were
+							-- created on Windows, which means they will have a trailing CR
+							a_line.right_adjust
+							strs := a_line.split (',')
+
+							arch_id := strs.i_th (1)
+							if not arch_id.is_equal (last_arch_id) then
+								-- save last archetype changes
+								if save_required and attached ara and then attached ara.differential_archetype then
+									ara.save_differential_text
+									arch_count := arch_count + 1
+									last_arch_id := arch_id
+									save_required := False
+								end
+
+								if current_library.has_archetype_with_id (arch_id) and then attached {ARCH_LIB_AUTHORED_ARCHETYPE} current_library.archetype_with_id (arch_id) as arch_desc then
+									ara := arch_desc
+
+									if attached {AUTHORED_ARCHETYPE} ara.differential_archetype as da then
+										diff_arch := da
+									else
+										report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_in_memory_not_found, <<arch_id, current_library_name>>))
+									end
+								else
+									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_not_found, <<arch_id, current_library_name>>))
+								end
+							end
+
+							if attached diff_arch then
+								id_code := strs.i_th (2)
+								loinc_code := strs.i_th (3)
+
+								-- now process all the codes for this archetype
+								create binding_uri.make_from_string (Loinc_uri_root + loinc_code)
+								if diff_arch.terminology.has_term_binding ({OPENEHR_DEFINITIONS}.Loinc_terminology_id, id_code) then
+									old_loinc_binding_uri := diff_arch.terminology.term_binding ({OPENEHR_DEFINITIONS}.Loinc_terminology_id, id_code)
+									if not old_loinc_binding_uri.is_equal(binding_uri) then
+										diff_arch.terminology.replace_term_binding (binding_uri, {OPENEHR_DEFINITIONS}.Loinc_terminology_id, id_code)
+										report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_loinc_replace_binding, <<{OPENEHR_DEFINITIONS}.Loinc_terminology_id,
+											old_loinc_binding_uri.as_string, id_code, binding_uri.as_string, arch_id>>))
+										inject_replace_count := inject_replace_count + 1
+										save_required := True
+									else
+										inject_ignore_count := inject_ignore_count + 1
+									end
+								elseif diff_arch.terminology.has_id_code (id_code) then
+									diff_arch.terminology.put_term_binding (binding_uri, {OPENEHR_DEFINITIONS}.Loinc_terminology_id, id_code)
+									inject_new_count := inject_new_count + 1
+									save_required := True
+								else
+									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_node_not_found, <<arch_id, id_code, current_library_name>>))
+								end
+							end
+						end
+					end
+
+					in_file.close
+
+					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_loinc_report, <<inject_new_count.out, inject_replace_count.out, inject_ignore_count.out, arch_count.out>>))
+				end
 			end
 		end
 
@@ -361,7 +471,7 @@ feature {NONE} -- Commands
 							-- serialisation of a BMM schema
 							schema_file_path := file_system.pathname (schema_file_path, schemas_csr.key.as_string_8 + {BMM_DEFINITIONS}.bmm2_schema_file_extension + fmt_csr.item)
 
-							report_std_out ("exported " + schemas_csr.key.as_string_8 + " in format " + fmt_csr.key + " to file " + schema_file_path + "%N")
+							report_std_out ("exported " + schemas_csr.key.as_string_8 + " in format " + fmt_csr.key + " to file " + schema_file_path)
 
 							schemas_csr.item.export_schema (fmt_csr.key, schema_file_path)
 						end
@@ -389,12 +499,14 @@ feature {NONE} -- Implementation
 		do
 			if opts.is_verbose then
 				std_out.put_string (str)
+				std_out.new_line
 			end
 		end
 
 	report_std_err (str: STRING)
 		do
 			std_err.put_string (str)
+			std_err.new_line
 			error_reported := True
 		end
 
@@ -413,8 +525,8 @@ feature {NONE} -- Implementation
 	compiler_archetype_gui_update (ara: ARCH_LIB_ARCHETYPE)
 			-- Update UI with progress on build.
 		do
-			if opts.is_verbose or ara.is_in_terminal_compilation_state and then not ara.is_valid then
-				std_out.put_string (ara.error_strings)
+			if opts.is_verbose and ara.is_in_terminal_compilation_state and not ara.is_valid then
+				std_err.put_string (ara.error_strings)
 			end
 		end
 

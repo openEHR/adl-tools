@@ -16,6 +16,9 @@ templates = <
 		["rep_populate_build_info"] = <"Doing complete build on current library">
 		["repos_not_found_info"] = <"No repository specified in .cfg file">
 		["libs_not_found_info"] = <"No libraries found in available repositories">
+		["archetype_not_found"] = <"Archetype id $1 not found in repository $2">
+		["archetype_in_memory_not_found"] = <"Archetype $1 differential desc in-memory form not found in repository $2">
+		["archetype_node_not_found"] = <"Archetype $1 node $2 not found in repository $3">
 		["app_exit_with_errors"] = <"Exiting....APP_ROOT initialisation completed with errors">
 
 		-- simple command line options
@@ -27,7 +30,8 @@ templates = <
 		["display_archetypes_switch_desc"] = <"generate list of archetypes in current library in user-friendly format">
 		["list_rms_switch_desc"] = <"generate list of reference models">
 		["export_switch_desc"] = <"export archetypes">
-		["report_switch_desc"] = <"genreate reports">
+		["report_switch_desc"] = <"generate reports">
+		["loinc_switch_desc"] = <"inject LOINC code bindings">
 
 		-- command line options with arguments
 		["display_rm_switch_desc"] = <"display reference model in user-friendly format">
@@ -42,6 +46,9 @@ templates = <
 		["output_dir_switch_desc"] = <"output directory">
 		["output_dir_switch_arg_desc"] = <"output directory">
 
+		["input_file_switch_desc"] = <"input file">
+		["input_file_switch_arg_desc"] = <"input file path">
+
 		["cfg_switch_desc"] = <"output default configuration file location">
 		["cfg_switch_arg_desc"] = <".cfg file path">
 
@@ -51,7 +58,7 @@ templates = <
 		-- non-switched command-line options
 		["id_pattern_arg_name"] = <"id_pattern">
 		["id_pattern_arg_description"] = <"archetype id regex">
-		["id_patter_arg_type"] = <"regex string">
+		["id_pattern_arg_type"] = <"regex string">
 
 		-- other messages
 		["config_file_location"] = <"User .cfg file location: $1%N">
@@ -60,12 +67,18 @@ templates = <
 		["current_lib_info_text"] = <"Current library: $1%N">
 		["rm_schemas_info_text"] = <"Loaded RM schemas (BMM files): %N">
 
-		["no_matching_ids_err"] = <"No archetype ids matching pattern '$1' in library $2 (use -s to see current config)%N">
-		["lib_does_not_exist_err"] = <"No library with name '$1' (use -s to see all libraries)%N">
-		["invalid_serialisation_format_err"] = <"Invalid serialisation format '$1'; valid formats: $2%N">
-		["invalid_report_format_err"] = <"Invalid report format '$1'; valid formats: $2%N">
-		["invalid_output_directory"] = <"Could not create output directory '$1'%N">
-		["archetype_not_valid"] = <"Archetype $1 not validated (run with '-a validate' to see errors)%N">
+		["no_matching_ids_err"] = <"No archetype ids matching pattern '$1' in library $2 (use -s to see current config)">
+		["lib_does_not_exist_err"] = <"No library with name '$1' (use -s to see all libraries)">
+		["invalid_serialisation_format_err"] = <"Invalid serialisation format '$1'; valid formats: $2">
+		["invalid_report_format_err"] = <"Invalid report format '$1'; valid formats: $2">
+		["invalid_output_directory"] = <"Could not create output directory '$1'">
+		["invalid_input_file"] = <"Could not read input file '$1'">
+		["archetype_not_valid"] = <"Archetype $1 not validated (run with '-a validate' to see errors)">
+
+
+		["loinc_start"] = <"--------- Injecting LOINC bindings from $1 ---------">
+		["loinc_replace_binding"] = <"Replacing $1 binding $2 for $3 with $4 in archetype $5">
+		["loinc_report"] = <"--------- Injected $1 new LOINC codes; replaced $2; ignored $3 in $4 archetypes">
 
 		["archs_list_text"] = <"------------ Archetypes in library '$1 --------------'%N">
 		["archs_list_text_end"] = <"-----------------------------------------------------%N">

@@ -382,7 +382,7 @@ feature -- File Access
 			Result := file_mgr.can_save_to_legacy_file
 		end
 
-feature {MAIN_WINDOW} -- File Access
+feature -- File Access
 
 	clean_generated
 			-- delete generated file and compiler products; forces next compilation to start from primary expression
@@ -394,7 +394,7 @@ feature {MAIN_WINDOW} -- File Access
 			Reset_if_source_generated: file_mgr.is_source_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
 		end
 
-feature {GUI_TEST_TOOL} -- File Access
+feature -- File Access
 
 	save_differential_compiled
 			-- save validated differential archetype in fast-retrieve form (ODIN)

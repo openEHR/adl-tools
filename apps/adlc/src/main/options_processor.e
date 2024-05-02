@@ -57,6 +57,7 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_SWITCH}.make (display_archetypes_switch, get_text (ec_display_archetypes_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (list_rms_switch, get_text (ec_list_rms_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (report_switch, get_text (ec_report_switch_desc), False, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (loinc_switch, get_text (ec_loinc_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (export_switch, get_text (ec_export_switch_desc), False, False))
 
 			-- switches with arguments
@@ -66,6 +67,7 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text (ec_format_switch_desc), True, False, format_switch_arg, get_msg (ec_format_switch_arg_desc, <<archetype_all_serialiser_formats_string>>), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (output_dir_switch, get_text (ec_output_dir_switch_desc), True, False, output_dir_switch_arg_name, get_text (ec_output_dir_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text (ec_cfg_switch_desc), True, False, cfg_switch_arg_name, get_text (ec_cfg_switch_arg_desc), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (input_file_switch, get_text (ec_input_file_switch_desc), True, False, input_file_switch_arg_name, get_text (ec_input_file_switch_arg_desc), False))
 
 			-- valid command line configurations
 
@@ -110,10 +112,18 @@ feature -- Definitions
 
 			-- REPORT
 			-- adlc -b <library name> [-q] [-f <format>] -p [-o <output_dir>]
-			-- adlc --library [--quiet] [--format <format>] --report [--output <output_dir>]
+			-- adlc --library <library name> [--quiet] [--format <format>] --report [--output <output_dir>]
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch),
 															switch_of_name (quiet_switch), switch_of_name (format_switch),
 															switch_of_name (report_switch), switch_of_name (output_dir_switch)>>, False))
+
+			-- LOINC binding injection
+			-- adlc -b <library name> [-q] --inject_loinc -i <loinc_file>
+			-- adlc --library <library name> [--quiet] --inject_loinc --input_file <loinc_file>
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch),
+															switch_of_name (quiet_switch),
+															switch_of_name (loinc_switch),
+															switch_of_name (input_file_switch)>>, False))
 		end
 
 	quiet_switch: STRING = "q|quiet"
@@ -133,6 +143,7 @@ feature -- Definitions
 
 	report_switch: STRING = "r|report"
 	export_switch: STRING = "x|export"
+	loinc_switch: STRING = "inject_loinc"
 
 	library_switch: STRING = "b|library"
 	library_switch_arg: STRING = "library name"
@@ -146,6 +157,9 @@ feature -- Definitions
 	output_dir_switch: STRING = "o|output_dir"
 	output_dir_switch_arg_name: STRING = "output directory"
 
+	input_file_switch: STRING = "i|input_file"
+	input_file_switch_arg_name: STRING = "input file"
+
 	non_switched_argument_name: STRING = "id_pattern"
 			--  <Precursor>
 
@@ -158,7 +172,7 @@ feature -- Definitions
 	non_switched_argument_type: STRING
 			--  <Precursor>
 		once
-			Result := get_text (ec_id_patter_arg_type)
+			Result := get_text (ec_id_pattern_arg_type)
 		end
 
 feature {NONE} -- Initialization
@@ -190,6 +204,7 @@ feature {NONE} -- Initialization
 				write_to_file_system := has_option (output_dir_switch)
 				report := has_option (report_switch)
 				export_archetypes := has_option (export_switch)
+				inject_loinc_bindings := has_option (loinc_switch)
 			end
 		end
 
@@ -255,6 +270,16 @@ feature -- Access
 			end
 		end
 
+	input_file: detachable STRING
+			-- input file to read from
+		require
+			is_successful: is_successful
+		once
+			if has_option (input_file_switch) and then attached option_of_name (input_file_switch) as opt and then opt.has_value then
+				Result := opt.value
+			end
+		end
+
 	archetype_id_pattern: STRING
 		do
 			if has_non_switched_argument then
@@ -285,6 +310,8 @@ feature -- Status Report
 	write_to_file_system: BOOLEAN
 
 	report: BOOLEAN
+
+	inject_loinc_bindings: BOOLEAN
 
 	export_archetypes: BOOLEAN
 
