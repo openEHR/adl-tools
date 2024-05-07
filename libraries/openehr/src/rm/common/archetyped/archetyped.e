@@ -10,19 +10,28 @@ note
 	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-
 class ARCHETYPED
+
+create
+	make
+
+feature -- Initialisation
+
+	make (an_archetype_id: STRING)
+		do
+			create archetype_id.make_from_string (an_archetype_id)
+		end
 
 feature -- Access
 
-	archetype_id: ARCHETYPE_HRID
+	archetype_id: ARCHETYPE_ID
 			-- id of the archetype in the global archetype library
 
 	rm_version: STRING = "1"
 			-- relevant for exchange and implementations the version  of  the  RM  at  the  time  of creation
 			-- of this archetyped object.
 
-	access_control: ACCESS_GROUP_REF
+	access_control: detachable ACCESS_GROUP_REF
 			-- Access control settings for this archetyped structure
 
 end

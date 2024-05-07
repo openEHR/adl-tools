@@ -89,7 +89,6 @@ feature -- Visitor
 					node_id := a_node.node_id
 					dt_attribute_nodes.item.put_child (prototype_value)
 				end
-				add_locatable_attrs (prototype_value, node_id)
 
 				dt_object_nodes.extend (prototype_value)
 			else
@@ -122,7 +121,6 @@ feature -- Visitor
 			if not c_attribute_completed.item then
 				create prototype_value.make_anonymous
 				prototype_value.set_im_type_name (a_node.rm_type_name)
-				add_locatable_attrs (prototype_value, a_node.node_id)
 
 				dt_object_nodes.extend (prototype_value)
 				dt_attribute_nodes.item.put_child (prototype_value)
@@ -135,7 +133,7 @@ feature -- Visitor
 			if not c_attribute_completed.item then
 				dt_object_nodes.remove
 
-				-- for single valued node, marke completed after one object node
+				-- for single valued node, mark completed after one object node
 				if attached a_node.parent as ca_parent and then ca_parent.is_single then
 					c_attribute_completed.replace (True)
 				end
@@ -156,7 +154,6 @@ feature -- Visitor
 
 				create prototype_value.make_anonymous
 				prototype_value.set_im_type_name (a_node.rm_type_name)
-				add_locatable_attrs (prototype_value, a_node.node_id)
 
 				dt_object_nodes.extend (prototype_value)
 				dt_attribute_nodes.item.put_child (prototype_value)
@@ -168,10 +165,9 @@ feature -- Visitor
 		do
 			if not c_attribute_completed.item then
 				add_non_constrained_attrs (a_node, depth)
-
 				dt_object_nodes.remove
 
-				-- for single valued node, marke completed after one object node
+				-- for single valued node, mark completed after one object node
 				if attached a_node.parent as ca_parent and then ca_parent.is_single then
 					c_attribute_completed.replace (True)
 				end
@@ -191,7 +187,6 @@ feature -- Visitor
 			if not c_attribute_completed.item then
 				create prototype_value.make_anonymous
 				prototype_value.set_im_type_name (a_node.rm_type_name)
-				add_locatable_attrs (prototype_value, a_node.node_id)
 
 				dt_object_nodes.extend (prototype_value)
 				dt_attribute_nodes.item.put_child (prototype_value)
@@ -204,7 +199,7 @@ feature -- Visitor
 			if not c_attribute_completed.item then
 				dt_object_nodes.remove
 
-				-- for single valued node, marke completed after one object node
+				-- for single valued node, mark completed after one object node
 				if attached a_node.parent as ca_parent and then ca_parent.is_single then
 					c_attribute_completed.replace (True)
 				end
@@ -262,7 +257,7 @@ feature -- Visitor
 		do
 			if not c_attribute_completed.item then
 				dt_obj := dt_object_converter.object_to_dt (a_node.prototype_value)
-				dt_obj.set_im_type_name (case_corrected (dt_obj.im_type_name))
+				dt_obj.set_im_type_name (convert_to_snake_case (dt_obj.im_type_name))
 				dt_attribute_nodes.item.put_child (dt_obj)
 			end
 		end
@@ -338,21 +333,6 @@ feature {NONE} -- Implementation
 			create Result
 		end
 
-	add_locatable_attrs (a_dt_object: DT_COMPLEX_OBJECT; a_node_id: STRING)
-		do
-			-- if LOCATABLE then add some attributes
-			if ref_model.is_descendant_of (a_dt_object.im_type_name, archetype_parent_class) then
-
-				-- add an attribute for LOCATABLE.code
-				add_primitive_dt_attribute (a_dt_object, {OPENEHR_DEFINITIONS}.Locatable_node_attribute, a_node_id)
-
-				if terminology.has_id_code (a_node_id) then
-					-- add an attribute for LOCATABLE.name
-					add_primitive_dt_attribute (a_dt_object, {OPENEHR_DEFINITIONS}.Locatable_name_attribute, terminology.term_definition (language, a_node_id).text)
-				end
-			end
-		end
-
 	add_primitive_dt_attribute (a_dt_object: DT_COMPLEX_OBJECT; attr_name: STRING; attr_val: ANY)
 		local
 			dt_attr: DT_ATTRIBUTE
@@ -370,12 +350,15 @@ feature {NONE} -- Implementation
 		local
 			dt_attr: DT_ATTRIBUTE
 			dt_object: DT_COMPLEX_OBJECT
+			dt_iterator: DT_VISITOR_ITERATOR
 		do
 			create dt_attr.make_single (attr_name)
 			dt_object := dt_object_converter.object_to_dt (attr_val)
 			dt_attr.put_child (dt_object)
+
 			-- convert type name to mixed snake case
-			dt_object.set_im_type_name (dt_object.im_type_name.item (1).out + dt_object.im_type_name.substring (2, dt_object.im_type_name.count).as_lower)
+			create dt_iterator.make (dt_object, dt_case_corrector)
+			dt_iterator.do_all
 			a_dt_object.put_attribute (dt_attr)
 		end
 
@@ -395,6 +378,21 @@ feature {NONE} -- Implementation
 
 			across dt_object_nodes.item.attributes as dt_attr_csr loop
 				instantiated_attrs.extend (dt_attr_csr.item.im_attr_name)
+			end
+
+			-- if LOCATABLE then add some attributes
+			if ref_model.is_descendant_of (dt_object_nodes.item.im_type_name, archetype_parent_class) then
+				-- add an attribute for LOCATABLE.archetype_node_id
+				if not instantiated_attrs.has ({OPENEHR_DEFINITIONS}.Locatable_node_attribute) then
+					add_primitive_dt_attribute (dt_object_nodes.item, {OPENEHR_DEFINITIONS}.Locatable_node_attribute, a_node.node_id)
+					instantiated_attrs.extend ({OPENEHR_DEFINITIONS}.Locatable_node_attribute)
+				end
+
+				if not instantiated_attrs.has ({OPENEHR_DEFINITIONS}.Locatable_name_attribute) and terminology.has_id_code (a_node.node_id) then
+					-- add an attribute for LOCATABLE.name
+					add_primitive_dt_attribute (dt_object_nodes.item, {OPENEHR_DEFINITIONS}.Locatable_name_attribute, terminology.term_definition (language, a_node.node_id).text)
+					instantiated_attrs.extend ({OPENEHR_DEFINITIONS}.Locatable_name_attribute)
+				end
 			end
 
 			bmm_class := ref_model.class_definition (a_node.rm_type_name)
@@ -430,6 +428,10 @@ feature {NONE} -- Implementation
 					elseif attached {BMM_ENUMERATION} bmm_prop_csr.item.bmm_type as bmm_enum then
 						val := bmm_enum.item_values.first
 						add_primitive_dt_attribute (dt_object_nodes.item, prop_name, val)
+
+					elseif attached {C_ARCHETYPE_ROOT} a_node as car and prop_type.is_case_insensitive_equal ("Archetyped") then
+						val := create {ARCHETYPED}.make (car.archetype_ref)
+						add_complex_dt_attribute (dt_object_nodes.item, prop_name, val)
 
 					-- deal with true primitive types
 					elseif bmm_prop_csr.item.bmm_type.is_primitive then
@@ -511,12 +513,11 @@ feature {NONE} -- Implementation
 			attrs_list.compare_objects
 			attrs_list.extend ("null_flavour")
 			attrs_list.extend ("uid")
-			Result.put (attrs_list, "Element")
+			Result.put (attrs_list, "Node")
 
 			create attrs_list.make(0)
 			attrs_list.compare_objects
 			attrs_list.extend ("uid")
-			Result.put (attrs_list, "Cluster")
 			Result.put (attrs_list, "Event_context")
 			Result.put (attrs_list, "Folder")
 			Result.put (attrs_list, "Section")
@@ -536,16 +537,49 @@ feature {NONE} -- Implementation
 
 			create attrs_list.make(0)
 			attrs_list.compare_objects
-			attrs_list.extend ("code")
 			attrs_list.extend ("result_time")
-			Result.put (attrs_list, "Element")
+			attrs_list.extend ("archetype_details")
+			attrs_list.extend ("code")
+			Result.put (attrs_list, "Lab_result")
+			Result.put (attrs_list, "Imaging")
+
+			create attrs_list.make(0)
+			attrs_list.compare_objects
+			attrs_list.extend ("archetype_details")
+			attrs_list.extend ("code")
+			attrs_list.extend ("uid")
+			Result.put (attrs_list, "Direct_observation")
+			Result.put (attrs_list, "Assessment")
+			Result.put (attrs_list, "Questionnaire_result")
+			Result.put (attrs_list, "Composition")
+
+			create attrs_list.make(0)
+			attrs_list.compare_objects
+			attrs_list.extend ("archetype_details")
+			attrs_list.extend ("code")
+			Result.put (attrs_list, "Node")
+
+			create attrs_list.make(0)
+			attrs_list.compare_objects
+			attrs_list.extend ("value_status")
+			Result.put (attrs_list, "Measured<Quantity>")
 		end
 
-	case_corrected (a_class_name: STRING): STRING
+	convert_to_snake_case (a_class_name: STRING): STRING
 			-- convert class name case to correct form for BMM model
 			-- TODO: build in class name style to BMM schemas
 		do
 			Result := a_class_name.item (1).out + a_class_name.substring (2, a_class_name.count).as_lower
+		end
+
+	set_dt_node_type_to_snake_case (a_node: DT_OBJECT_ITEM)
+		do
+			a_node.set_im_type_name (convert_to_snake_case (a_node.im_type_name))
+		end
+
+	dt_case_corrector: DT_OBJECT_NODE_MODIFIER
+		once
+			create Result.make (agent set_dt_node_type_to_snake_case)
 		end
 
 end

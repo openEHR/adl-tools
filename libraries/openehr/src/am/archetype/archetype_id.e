@@ -18,17 +18,25 @@ note
 class ARCHETYPE_ID
 
 inherit
-	RM_CONCEPT_ID
+	OBJECT_ID
 
 create
-	make,
-	make_from_string,
-	make_new,
-	default_create
+	make_from_string
 
 feature -- Definitions
 
 	Default_id: STRING = "openehr-ehr-ENTRY.any.v1"
+
+feature -- Status Report
+
+	valid_id (an_id: STRING): BOOLEAN
+			--
+		local
+			arch_hrid: ARCHETYPE_HRID
+		do
+			create arch_hrid.default_create
+			Result := arch_hrid.valid_adl2_id (an_id)
+		end
 
 feature {NONE} -- Implementation
 

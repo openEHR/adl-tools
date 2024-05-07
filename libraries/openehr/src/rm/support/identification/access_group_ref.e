@@ -1,6 +1,6 @@
 note
 	component:   "openEHR ADL Tools"
-	
+
 	description: "[
 			 Reference to an ACCESS_GROUP object, e.g. in an access control service
 			 ]"
@@ -19,6 +19,9 @@ class ACCESS_GROUP_REF
 inherit
 	OBJECT_REF
 
+create
+	make
+	
 invariant
 	namespace_validity: namespace.is_equal("access_control")
 	type_validity: type.is_equal("ACCESS_GROUP")
