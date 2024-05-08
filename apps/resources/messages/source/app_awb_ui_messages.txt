@@ -553,6 +553,8 @@ templates = <
 		["rendering_controls_text"] = <"Rendering">
 		["show_rm_inh_button_text"] = <"Inheritance">
 		["show_rm_inh_button_tooltip"] = <"Show inheritance status: inherited, redefined or added here">
+		["hide_excl_attrs_button_text"] = <"Hide excluded">
+		["hide_excl_attrs_button_tooltip"] = <"Hide excluded attributes, i.e. with existence matches {0}">
 
 		["rm_closure_depth_control_frame_text"] = <"Closure depth">
 		["closure_depth_spin_button_tooltip"] = <"Depth of closure to explore; this computation can be long for depths > 5">

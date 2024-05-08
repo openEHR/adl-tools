@@ -759,6 +759,8 @@ feature -- Definitions
 		ec_rendering_controls_text: STRING = "rendering_controls_text"
 		ec_show_rm_inh_button_text: STRING = "show_rm_inh_button_text"
 		ec_show_rm_inh_button_tooltip: STRING = "show_rm_inh_button_tooltip"
+		ec_hide_excl_attrs_button_text: STRING = "hide_excl_attrs_button_text"
+		ec_hide_excl_attrs_button_tooltip: STRING = "hide_excl_attrs_button_tooltip"
 		ec_rm_closure_depth_control_frame_text: STRING = "rm_closure_depth_control_frame_text"
 		ec_closure_depth_spin_button_tooltip: STRING = "closure_depth_spin_button_tooltip"
 		ec_closure_depth_recompute_button_text: STRING = "closure_depth_recompute_button_text"

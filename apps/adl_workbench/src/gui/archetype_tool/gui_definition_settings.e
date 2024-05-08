@@ -34,7 +34,8 @@ feature -- Initialisation
 			a_show_rm_multiplicities,
 			a_show_rm_data_properties,
 			a_show_rm_runtime_properties,
-			a_show_rm_infrastructure_properties: BOOLEAN)
+			a_show_rm_infrastructure_properties,
+			a_hide_excluded_attributes: BOOLEAN)
 		do
 			language := a_language
 			show_codes := a_show_codes
@@ -44,6 +45,7 @@ feature -- Initialisation
 			show_rm_data_properties := a_show_rm_data_properties
 			show_rm_runtime_properties := a_show_rm_runtime_properties
 			show_rm_infrastructure_properties := a_show_rm_infrastructure_properties
+			hide_excluded_attributes := a_hide_excluded_attributes
 		end
 
 feature -- Access
@@ -63,6 +65,8 @@ feature -- Access
 	show_rm_runtime_properties: BOOLEAN
 
 	show_rm_infrastructure_properties: BOOLEAN
+
+	hide_excluded_attributes: BOOLEAN
 
 end
 

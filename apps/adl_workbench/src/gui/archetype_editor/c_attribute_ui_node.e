@@ -138,6 +138,7 @@ feature -- Display
 		local
 			attr_str, ex_str, card_str: STRING
 			c_col: EV_COLOR
+			hide_row: BOOLEAN
 		do
 			precursor (ui_settings)
 
@@ -167,6 +168,9 @@ feature -- Display
 						ex_str.append (att_ex.as_string)
 					else
 						ex_str.append (get_text ({ADL_MESSAGES_IDS}.ec_attribute_removed_text))
+						if ui_settings.hide_excluded_attributes then
+							hide_row := True
+						end
 					end
 					c_col := c_constraint_colour
 				elseif not ui_graph_state.in_differential_view and display_settings.show_rm_multiplicities then
@@ -206,7 +210,9 @@ feature -- Display
 			-- add context menu
 			build_context_menu
 
-			if not ev_grid_row.is_displayed then
+			if hide_row then
+				ev_grid_row.hide
+			elseif not ev_grid_row.is_displayed then
 				ev_grid_row.show
 			end
 

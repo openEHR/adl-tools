@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (956)
+			create message_table.make (958)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -774,6 +774,8 @@ feature -- Initialisation
 			message_table.put ("Rendering", ec_rendering_controls_text)
 			message_table.put ("Inheritance", ec_show_rm_inh_button_text)
 			message_table.put ("Show inheritance status: inherited, redefined or added here", ec_show_rm_inh_button_tooltip)
+			message_table.put ("Hide excluded", ec_hide_excl_attrs_button_text)
+			message_table.put ("Hide excluded attributes, i.e. with existence matches {0}", ec_hide_excl_attrs_button_tooltip)
 			message_table.put ("Closure depth", ec_rm_closure_depth_control_frame_text)
 			message_table.put ("Depth of closure to explore; this computation can be long for depths > 5", ec_closure_depth_spin_button_tooltip)
 			message_table.put ("Refresh", ec_closure_depth_recompute_button_text)

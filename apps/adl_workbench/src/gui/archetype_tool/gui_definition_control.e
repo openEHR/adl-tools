@@ -127,6 +127,13 @@ feature -- Initialisation
 			gui_controls.extend (evx_view_rm_display_inheritance_cb)
 			evx_rendering_frame.extend (evx_view_rm_display_inheritance_cb.ev_data_control, False)
 
+			-- hide excluded attributes check button
+			create evx_hide_excl_attrs_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_hide_excl_attrs_button_text),
+				get_text ({ADL_MESSAGES_IDS}.ec_hide_excl_attrs_button_tooltip),
+				agent :BOOLEAN do Result := hide_excluded_attributes end, agent update_hide_excluded_attributes)
+			gui_controls.extend (evx_hide_excl_attrs_cb)
+			evx_rendering_frame.extend (evx_hide_excl_attrs_cb.ev_data_control, False)
+
 			-- ============ RULES HBOX, with GRID & control panel =============
 			create ev_rules_hbox
 			ev_rules_hbox.set_padding (Default_padding_width)
@@ -249,6 +256,11 @@ feature -- Status Report
 			else
 				Result := global_show_rm_infrastructure_properties
 			end
+		end
+
+	hide_excluded_attributes: BOOLEAN
+		do
+			Result := global_hide_excluded_attributes
 		end
 
 	is_expanded: BOOLEAN
@@ -412,6 +424,14 @@ feature {NONE} -- Events
 			end
 		end
 
+	update_hide_excluded_attributes (a_flag: BOOLEAN)
+		do
+			set_global_hide_excluded_attributes (a_flag)
+			if attached source then
+				redisplay
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	undo_redo_chain: detachable UNDO_REDO_CHAIN
@@ -439,7 +459,7 @@ feature {NONE} -- Implementation
 
 	evx_view_detail_radio: EVX_BOOLEAN_RADIO_CONTROL
 
-	evx_view_rm_display_inheritance_cb, evx_show_codes_cb: EVX_CHECK_BOX_CONTROL
+	evx_view_rm_display_inheritance_cb, evx_show_codes_cb, evx_hide_excl_attrs_cb: EVX_CHECK_BOX_CONTROL
 
 	evx_rm_data_attrs_visible_cb, evx_rm_runtime_attrs_visible_cb, evx_rm_if_attrs_visible_cb, evx_rm_multiplicities_cb: EVX_CHECK_BOX_CONTROL
 
@@ -487,7 +507,8 @@ feature {NONE} -- Implementation
 			check attached selected_language end
 			create ui_settings.make (selected_language,
 				show_codes, effective_show_rm_inheritance, show_technical_view, show_rm_multiplicities,
-				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
+				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
+				hide_excluded_attributes)
 
 			-- populate the main definition grid
 			evx_definition_grid.ev_grid.lock_update
@@ -557,7 +578,7 @@ feature {NONE} -- Implementation
 
 			check attached selected_language end
 			create ui_settings.make (selected_language, show_codes, effective_show_rm_inheritance, show_technical_view,
-				show_rm_multiplicities, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
+				show_rm_multiplicities, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties, hide_excluded_attributes)
 
 			-- repopulate main definition
 			source_ui_graph.definition_ui_graph.display_in_grid (ui_settings)

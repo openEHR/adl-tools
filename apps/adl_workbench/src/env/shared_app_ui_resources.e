@@ -717,6 +717,18 @@ feature -- Application Switches
 			app_cfg.put_boolean_value ("/gui/show_rm_infrastructure_properties", flag)
 		end
 
+	global_hide_excluded_attributes: BOOLEAN
+			-- Hide excluded C_ATTRIBUTE nodes in the archetype definition node tree?
+		do
+			Result := app_cfg.boolean_value ("/gui/hide_excluded_attributes")
+		end
+
+	set_global_hide_excluded_attributes (flag: BOOLEAN)
+			-- Set flag for whether to Hide excluded C_ATTRIBUTE nodes in definition tree
+		do
+			app_cfg.put_boolean_value ("/gui/hide_excluded_attributes", flag)
+		end
+
 	global_show_rm_inheritance: BOOLEAN
 			-- Use inheritance-based colourisation in definition tree?
 		do
