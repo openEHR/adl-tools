@@ -42,7 +42,7 @@ feature -- Access
 			Result := "Archetype local value sets"
 		end
 
-	output_tree: REPORT_DATA
+	output_tree: REPORT_DATA_GROUP
 		once
 			create Result.make (Id)
 		end
@@ -85,7 +85,9 @@ feature {ARCHETYPE_REPORTER} -- Processing
 			--	}
 		local
 			arch_id: STRING
-			arch_report, vset_obj, vset_term_obj: REPORT_DATA
+			arch_report: REPORT_DATA_GROUP
+			vset_obj: REPORT_DATA_GROUP
+			vset_term_obj: REPORT_DATA_NODE
 		do
 			if not attached {ARCH_LIB_TEMPLATE} auth_ara then
 				terminology := auth_ara.differential_archetype.terminology
@@ -113,7 +115,7 @@ feature {ARCHETYPE_REPORTER} -- Processing
 			end
 		end
 
-	add_term_def (vset_term_obj: REPORT_DATA; a_term_code: STRING)
+	add_term_def (vset_term_obj: REPORT_DATA_NODE; a_term_code: STRING)
 		do
 			vset_term_obj.add_attribute (terminology.term_definition (default_language, a_term_code).text, "text")
 			vset_term_obj.add_attribute (terminology.term_definition (default_language, a_term_code).description, "description")

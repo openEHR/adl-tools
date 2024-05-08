@@ -7,53 +7,34 @@ note
 	copyright:   "Copyright (c) 2024 Graphite Health"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class REPORT_DATA
+class REPORT_DATA_GROUP
 
 inherit
-	ANY
-		export {NONE}
-			all
+	REPORT_DATA_NODE
 		redefine
 			default_create
 		end
 
-feature -- Definitions
-
-	Default_id: STRING = "Unknown"
+create
+	default_create, make
 
 feature -- Initialisation
 
 	default_create
 		do
-			create id.make_from_string (Default_id)
-		end
-
-	make (an_id: STRING)
-		require
-			an_id_valid: not an_id.is_empty
-		do
-			default_create
-			id := an_id
+			precursor
+			create items.make(0)
 		end
 
 feature -- Access
 
-	id: STRING
-
-feature -- Status Report
-
-	is_identified: BOOLEAN
-		do
-			Result := not id.is_equal (Default_id)
-		end
+	items: HASH_TABLE [REPORT_DATA, STRING]
 
 feature-- Modification
 
-	set_id (an_id: STRING)
-		require
-			an_id_valid: not an_id.is_empty
+	add_item (an_item: REPORT_DATA)
 		do
-			id := an_id
+			items.put (an_item, an_item.id)
 		end
 
 end
