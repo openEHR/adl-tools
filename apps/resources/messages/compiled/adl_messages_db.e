@@ -330,7 +330,7 @@ feature -- Initialisation
 			message_table.put ("Archetype $1 not validated (run with '-a validate' to see errors)", ec_archetype_not_valid)
 			message_table.put ("--------- Injecting LOINC bindings from $1 ---------", ec_loinc_start)
 			message_table.put ("Replacing $1 binding $2 for $3 with $4 in archetype $5", ec_loinc_replace_binding)
-			message_table.put ("--------- Injected $1 new LOINC codes; replaced $2; ignored $3 in $4 archetypes", ec_loinc_report)
+			message_table.put ("--------- Injected $1 new LOINC codes and replaced $2 in $3 archetypes; ignored $4 codes", ec_loinc_report)
 			message_table.put ("------------ Archetypes in library '$1 --------------'%N", ec_archs_list_text)
 			message_table.put ("-----------------------------------------------------%N", ec_archs_list_text_end)
 			message_table.put ("External tool $1 not found on local system; repository operations limited to local access.%N(Recommendation on Windows: install Git for any platform from https://git-scm.com/)", ec_repository_tool_unavailable)

@@ -78,7 +78,7 @@ templates = <
 
 		["loinc_start"] = <"--------- Injecting LOINC bindings from $1 ---------">
 		["loinc_replace_binding"] = <"Replacing $1 binding $2 for $3 with $4 in archetype $5">
-		["loinc_report"] = <"--------- Injected $1 new LOINC codes; replaced $2; ignored $3 in $4 archetypes">
+		["loinc_report"] = <"--------- Injected $1 new LOINC codes and replaced $2 in $3 archetypes; ignored $4 codes">
 
 		["archs_list_text"] = <"------------ Archetypes in library '$1 --------------'%N">
 		["archs_list_text_end"] = <"-----------------------------------------------------%N">
