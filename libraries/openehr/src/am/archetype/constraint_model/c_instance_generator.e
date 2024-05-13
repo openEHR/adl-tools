@@ -25,6 +25,13 @@ inherit
 			is_equal
 		end
 
+	SHARED_ADL_APP_RESOURCES
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	SHARED_AOM_PROFILES_ACCESS
 		export
 			{NONE} all
@@ -369,8 +376,10 @@ feature {NONE} -- Implementation
 			bmm_class: BMM_CLASS
 			prop_type, indent, prop_name: STRING
 			val: ANY
+			term_val: TERMINOLOGY_TERM
 			iso_dt: ISO8601_DATE_TIME
 			iso_t: ISO8601_TIME
+			id_code_text, code_string: STRING
 		do
 			create indent.make_filled ('%T', depth)
 			create instantiated_attrs.make (0)
@@ -383,15 +392,26 @@ feature {NONE} -- Implementation
 			-- if LOCATABLE then add some attributes
 			if ref_model.is_descendant_of (dt_object_nodes.item.im_type_name, archetype_parent_class) then
 				-- add an attribute for LOCATABLE.archetype_node_id
-				if not instantiated_attrs.has ({OPENEHR_DEFINITIONS}.Locatable_node_attribute) then
-					add_primitive_dt_attribute (dt_object_nodes.item, {OPENEHR_DEFINITIONS}.Locatable_node_attribute, a_node.node_id)
-					instantiated_attrs.extend ({OPENEHR_DEFINITIONS}.Locatable_node_attribute)
-				end
+				add_primitive_dt_attribute (dt_object_nodes.item, {OPENEHR_DEFINITIONS}.locatable_archetype_node_id_attribute, a_node.node_id)
+				instantiated_attrs.extend ({OPENEHR_DEFINITIONS}.locatable_archetype_node_id_attribute)
 
-				if not instantiated_attrs.has ({OPENEHR_DEFINITIONS}.Locatable_name_attribute) and terminology.has_id_code (a_node.node_id) then
+				-- add Locatable.code
+				if terminology.has_id_code (a_node.node_id) then
+					id_code_text := terminology.term_definition (language, a_node.node_id).text
+
+					if terminology.has_term_binding ({OPENEHR_DEFINITIONS}.Loinc_terminology_id, a_node.node_id) then
+						code_string := terminology.term_binding ({OPENEHR_DEFINITIONS}.Loinc_terminology_id, a_node.node_id).as_string
+
+						create term_val.make (id_code_text, create {TERMINOLOGY_CODE}.make ({OPENEHR_DEFINITIONS}.Loinc_terminology_id, code_string))
+						add_complex_dt_attribute (dt_object_nodes.item, {OPENEHR_DEFINITIONS}.locatable_code_attribute, term_val)
+						instantiated_attrs.extend ({OPENEHR_DEFINITIONS}.locatable_code_attribute)
+					end
+
 					-- add an attribute for LOCATABLE.name
-					add_primitive_dt_attribute (dt_object_nodes.item, {OPENEHR_DEFINITIONS}.Locatable_name_attribute, terminology.term_definition (language, a_node.node_id).text)
-					instantiated_attrs.extend ({OPENEHR_DEFINITIONS}.Locatable_name_attribute)
+					if not instantiated_attrs.has ({OPENEHR_DEFINITIONS}.Locatable_name_attribute) then
+						add_primitive_dt_attribute (dt_object_nodes.item, {OPENEHR_DEFINITIONS}.Locatable_name_attribute, id_code_text)
+						instantiated_attrs.extend ({OPENEHR_DEFINITIONS}.Locatable_name_attribute)
+					end
 				end
 			end
 
@@ -539,14 +559,12 @@ feature {NONE} -- Implementation
 			attrs_list.compare_objects
 			attrs_list.extend ("result_time")
 			attrs_list.extend ("archetype_details")
-			attrs_list.extend ("code")
 			Result.put (attrs_list, "Lab_result")
 			Result.put (attrs_list, "Imaging")
 
 			create attrs_list.make(0)
 			attrs_list.compare_objects
 			attrs_list.extend ("archetype_details")
-			attrs_list.extend ("code")
 			attrs_list.extend ("uid")
 			Result.put (attrs_list, "Direct_observation")
 			Result.put (attrs_list, "Assessment")
@@ -556,7 +574,6 @@ feature {NONE} -- Implementation
 			create attrs_list.make(0)
 			attrs_list.compare_objects
 			attrs_list.extend ("archetype_details")
-			attrs_list.extend ("code")
 			Result.put (attrs_list, "Node")
 
 			create attrs_list.make(0)

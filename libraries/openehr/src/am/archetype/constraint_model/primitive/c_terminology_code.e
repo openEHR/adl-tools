@@ -186,6 +186,17 @@ feature -- Comparison
 				else
 					Result := True
 				end
+
+			-- if this is a single at-code redefining an ac-code constraint, it must be in the ac-code
+			-- value set
+			elseif is_valid_value_code (constraint) and is_valid_value_set_code (other.constraint) then
+				other_vset := other.value_set_expanded
+				if not other_vset.is_empty then
+					Result := other_vset.has (constraint)
+				else
+					Result := True
+				end
+
 			else
 				Result := codes_conformant (constraint, other.constraint)
 			end

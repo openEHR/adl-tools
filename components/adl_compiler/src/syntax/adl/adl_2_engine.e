@@ -243,6 +243,7 @@ feature -- Parsing
 										end
 									else
 										errors.add_error ({ADL_MESSAGES_IDS}.ec_STOV, Void, generator + ".parse")
+										errors.append (amp.errors)
 									end
 								end
 							end
