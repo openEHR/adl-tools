@@ -11,35 +11,35 @@ note
 					   adlc [-q] -b <library name> -l [<id_pattern>]
 					   adlc [-q] -b <library name> -d [<id_pattern>]
 					   adlc [-q] -b <library name> [-f <format>] --report [-o <output_dir>]
-					   adlc [-q] -b <library name> --inject_loinc -i <loinc_file>
+					   adlc [-q] -b <library name> --inject_term_bindings <terminology_namespace> -i <terms_file>
 					   adlc [-q] -b <library name> [--flat] [--cfg <file path>] [-f <format>] -a <action> [-o <output_dir>] [<id_pattern>]
 
 					OPTIONS:
 					   Options should be prefixed with: '-' or '/'
 
-					   -q --quiet             : suppress verbose feedback, including configuration information on startup (Optional)
-					      --flat              : use flat form of archetype[s] for actions, e.g. path extraction etc (Optional)
-					   -s --show_config       : show current configuration and defaults
+					   -q --quiet             	: suppress verbose feedback, including configuration information on startup (Optional)
+					      --flat              	: use flat form of archetype[s] for actions, e.g. path extraction etc (Optional)
+					   -s --show_config       	: show current configuration and defaults
 
-					   -L --list_rms          : generate list of reference models.
-					   -D --display_rms		  : generate view of reference models user-friendly format
-					   -X --export_rms        : export reference models in all available formats (JSON, ODIN, etc)
+					   -L --list_rms          	: generate list of reference models.
+					   -D --display_rms		  	: generate view of reference models user-friendly format
+					   -X --export_rms        	: export reference models in all available formats (JSON, ODIN, etc)
 
-					   -l --list_archetypes   : generate list of archetypes in current library (use for further processing)
-					   -d --display_archetypes: generate list of archetypes in current library in user-friendly format
-					   -b --library           : library to use
-					                            <library name>: library name
-					   -f --format            : output format for generated files (Optional)
-					                            <format>: file formats: json|adl|odin|yaml|xml|csv (default = adl or csv)
-					      --cfg               : output default configuration file location (Optional)
-					                            <file path>: .cfg file path
-					   -x --export            : export matching archetypes in specified format
-					   -r --report            : generate reports in specified format
-					   -o --output            : output directory to write files to; '.' for current directory
-					      --inject_loinc      : read <loinc_file>, which is formatted as {archetype_id,id_code,loinc_code} and 
-					                            inject bindings from loinc codes to id-codes
+					   -l --list_archetypes   	: generate list of archetypes in current library (use for further processing)
+					   -d --display_archetypes	: generate list of archetypes in current library in user-friendly format
+					   -b --library           	: library to use
+					                          	  <library name>: library name
+					   -f --format            	: output format for generated files (Optional)
+					                          	  <format>: file formats: json|adl|odin|yaml|xml|csv (default = adl or csv)
+					      --cfg               	: output default configuration file location (Optional)
+					                          	  <file path>: .cfg file path
+					   -x --export            	: export matching archetypes in specified format
+					   -r --report            	: generate reports in specified format
+					   -o --output            	: output directory to write files to; '.' for current directory
+					      --inject_term_bindings: read <loinc_file>, which is formatted as {archetype_id,archetype_code,term_code} and 
+					                            	inject bindings from loinc codes to id-codes
 					   
-					   -? --help              : Display usage information. (Optional)
+					   -? --help              	: Display usage information. (Optional)
 
 					NON-SWITCHED ARGUMENTS:
 					   <id_pattern>: archetype id regex
@@ -174,8 +174,12 @@ feature -- Commands
 								elseif opts.report then
 									generate_library_reports
 
-								elseif opts.inject_loinc_bindings then
-									inject_loinc_bindings
+								elseif opts.inject_term_bindings and then attached opts.term_bindings_namespace as term_ns then
+									if code_systems.has (term_ns) then
+										inject_term_bindings (term_ns)
+									else
+										report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_terminology_does_not_exist_err, <<term_ns>>))
+									end
 								end
 							end
 						end
@@ -275,18 +279,30 @@ feature -- Commands
 			end
 		end
 
-	Loinc_uri_root: STRING = "http://loinc.org/"
+	code_systems: HASH_TABLE[STRING, STRING]
+			-- TODO: for now, a static copy of the file
+		once
+			create Result.make(0)
+			Result.put ("http://loinc.org/",          "loinc")
+			Result.put ("http://snomed.info/id/",     "snomed")
+			Result.put ("http://s2health.org/id/",    "s2")
+			Result.put ("http://openehr.org/id/",     "openehr")
+			Result.put ("http://ucum.org/id/",        "ucum")
+			Result.put ("http://www.nlm.nih.gov/research/umls/rxnorm/",     "rxnorm")
+		end
 
-	inject_loinc_bindings
-			-- Inject LOINC bindings from a file whose structure is
-			-- {archetype_id,node_id,loinc_code}
+	inject_term_bindings (term_binding_ns: STRING)
+			-- Inject terminology bindings from a file whose structure is
+			-- {archetype_id,node_id,raw_code}
+		require
+			code_systems.has (term_binding_ns)
 		local
 			last_arch_id, input_file_path: STRING
 			in_file: PLAIN_TEXT_FILE
-			a_line, arch_id, id_code, loinc_code: STRING
+			a_line, arch_id, arch_code, term_code, term_binding_uri_root: STRING
 			strs: LIST[STRING]
 			ara: ARCH_LIB_AUTHORED_ARCHETYPE
-			old_loinc_binding_uri, binding_uri: URI
+			old_term_binding_uri, binding_uri: URI
 			diff_arch: AUTHORED_ARCHETYPE
 			arch_count, inject_new_count, inject_replace_count, inject_ignore_count: INTEGER
 			save_required: BOOLEAN
@@ -304,12 +320,15 @@ feature -- Commands
 					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_input_file, <<input_file_path>>))
 				end
 
-				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_loinc_start, <<input_file_path>>))
+				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_term_bindings_start, <<term_binding_ns, input_file_path>>))
 
 				create in_file.make(input_file_path)
 
 				create last_arch_id.make_empty
 				if in_file.exists then
+					check attached code_systems.item(term_binding_ns) as uri_root then
+						term_binding_uri_root := uri_root
+					end
 					in_file.open_read
 					from until in_file.end_of_file loop
 						in_file.read_line
@@ -344,28 +363,28 @@ feature -- Commands
 							end
 
 							if attached diff_arch then
-								id_code := strs.i_th (2)
-								loinc_code := strs.i_th (3)
+								arch_code := strs.i_th (2)
+								term_code := strs.i_th (3)
 
 								-- now process all the codes for this archetype
-								create binding_uri.make_from_string (Loinc_uri_root + loinc_code)
-								if diff_arch.terminology.has_term_binding ({OPENEHR_DEFINITIONS}.Loinc_terminology_id, id_code) then
-									old_loinc_binding_uri := diff_arch.terminology.term_binding ({OPENEHR_DEFINITIONS}.Loinc_terminology_id, id_code)
-									if not old_loinc_binding_uri.is_equal(binding_uri) then
-										diff_arch.terminology.replace_term_binding (binding_uri, {OPENEHR_DEFINITIONS}.Loinc_terminology_id, id_code)
-										report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_loinc_replace_binding, <<{OPENEHR_DEFINITIONS}.Loinc_terminology_id,
-											old_loinc_binding_uri.as_string, id_code, binding_uri.as_string, arch_id>>))
+								create binding_uri.make_from_string (term_binding_uri_root + term_code)
+								if diff_arch.terminology.has_term_binding (term_binding_ns, arch_code) then
+									old_term_binding_uri := diff_arch.terminology.term_binding (term_binding_ns, arch_code)
+									if not old_term_binding_uri.is_equal(binding_uri) then
+										diff_arch.terminology.replace_term_binding (binding_uri, term_binding_ns, arch_code)
+										report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_replace_term_binding, <<term_binding_ns,
+											old_term_binding_uri.as_string, arch_code, binding_uri.as_string, arch_id>>))
 										inject_replace_count := inject_replace_count + 1
 										save_required := True
 									else
 										inject_ignore_count := inject_ignore_count + 1
 									end
-								elseif diff_arch.terminology.has_id_code (id_code) then
-									diff_arch.terminology.put_term_binding (binding_uri, {OPENEHR_DEFINITIONS}.Loinc_terminology_id, id_code)
+								elseif diff_arch.terminology.has_code (arch_code) then
+									diff_arch.terminology.put_term_binding (binding_uri, term_binding_ns, arch_code)
 									inject_new_count := inject_new_count + 1
 									save_required := True
 								else
-									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_node_not_found, <<arch_id, id_code, current_library_name>>))
+									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_node_not_found, <<arch_id, arch_code, current_library_name>>))
 								end
 							end
 						end
@@ -373,7 +392,7 @@ feature -- Commands
 
 					in_file.close
 
-					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_loinc_report, <<inject_new_count.out, inject_replace_count.out, inject_ignore_count.out, arch_count.out>>))
+					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_term_bindings_report, <<inject_new_count.out, term_binding_ns, inject_replace_count.out, inject_ignore_count.out, arch_count.out>>))
 				end
 			end
 		end

@@ -57,7 +57,6 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_SWITCH}.make (display_archetypes_switch, get_text (ec_display_archetypes_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (list_rms_switch, get_text (ec_list_rms_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (report_switch, get_text (ec_report_switch_desc), False, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (loinc_switch, get_text (ec_loinc_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (export_switch, get_text (ec_export_switch_desc), False, False))
 
 			-- switches with arguments
@@ -68,6 +67,7 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (output_dir_switch, get_text (ec_output_dir_switch_desc), True, False, output_dir_switch_arg_name, get_text (ec_output_dir_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text (ec_cfg_switch_desc), True, False, cfg_switch_arg_name, get_text (ec_cfg_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (input_file_switch, get_text (ec_input_file_switch_desc), True, False, input_file_switch_arg_name, get_text (ec_input_file_switch_arg_desc), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (term_bindings_switch, get_text (ec_term_bindings_switch_desc), True, False, term_bindings_switch_arg, get_text (ec_term_bindings_switch_arg_desc), False))
 
 			-- valid command line configurations
 
@@ -117,12 +117,12 @@ feature -- Definitions
 															switch_of_name (quiet_switch), switch_of_name (format_switch),
 															switch_of_name (report_switch), switch_of_name (output_dir_switch)>>, False))
 
-			-- LOINC binding injection
-			-- adlc -b <library name> [-q] --inject_loinc -i <loinc_file>
-			-- adlc --library <library name> [--quiet] --inject_loinc --input_file <loinc_file>
+			-- Terminology binding injection
+			-- adlc -b <library name> [-q] --inject_term_bindings <terminology_name_space> -i <terms_file>
+			-- adlc --library <library name> [--quiet] --inject_term_bindings --input_file <terms_file>
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch),
 															switch_of_name (quiet_switch),
-															switch_of_name (loinc_switch),
+															switch_of_name (term_bindings_switch),
 															switch_of_name (input_file_switch)>>, False))
 		end
 
@@ -143,7 +143,9 @@ feature -- Definitions
 
 	report_switch: STRING = "r|report"
 	export_switch: STRING = "x|export"
-	loinc_switch: STRING = "inject_loinc"
+
+	term_bindings_switch: STRING = "inject_term_bindings"
+	term_bindings_switch_arg: STRING = "terminology namespace"
 
 	library_switch: STRING = "b|library"
 	library_switch_arg: STRING = "library name"
@@ -204,7 +206,7 @@ feature {NONE} -- Initialization
 				write_to_file_system := has_option (output_dir_switch)
 				report := has_option (report_switch)
 				export_archetypes := has_option (export_switch)
-				inject_loinc_bindings := has_option (loinc_switch)
+				inject_term_bindings := has_option (term_bindings_switch)
 			end
 		end
 
@@ -280,6 +282,16 @@ feature -- Access
 			end
 		end
 
+	term_bindings_namespace: detachable STRING
+			-- terminology to add bindings for
+		require
+			is_successful: is_successful
+		once
+			if has_option (term_bindings_switch) and then attached option_of_name (term_bindings_switch) as opt and then opt.has_value then
+				Result := opt.value
+			end
+		end
+
 	archetype_id_pattern: STRING
 		do
 			if has_non_switched_argument then
@@ -311,7 +323,7 @@ feature -- Status Report
 
 	report: BOOLEAN
 
-	inject_loinc_bindings: BOOLEAN
+	inject_term_bindings: BOOLEAN
 
 	export_archetypes: BOOLEAN
 

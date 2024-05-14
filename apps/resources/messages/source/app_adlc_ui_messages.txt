@@ -31,7 +31,6 @@ templates = <
 		["list_rms_switch_desc"] = <"generate list of reference models">
 		["export_switch_desc"] = <"export archetypes">
 		["report_switch_desc"] = <"generate reports">
-		["loinc_switch_desc"] = <"inject LOINC code bindings">
 
 		-- command line options with arguments
 		["display_rm_switch_desc"] = <"display reference model in user-friendly format">
@@ -48,6 +47,9 @@ templates = <
 
 		["input_file_switch_desc"] = <"input file">
 		["input_file_switch_arg_desc"] = <"input file path">
+
+		["term_bindings_switch_desc"] = <"terminology namespace">
+		["term_bindings_switch_arg_desc"] = <"terminology namespace: loinc, snomed, s2, openehr, etc">
 
 		["cfg_switch_desc"] = <"output default configuration file location">
 		["cfg_switch_arg_desc"] = <".cfg file path">
@@ -74,11 +76,12 @@ templates = <
 		["invalid_output_directory"] = <"Could not create output directory '$1'">
 		["invalid_input_file"] = <"Could not read input file '$1'">
 		["archetype_not_valid"] = <"Archetype $1 not validated (run with '-a validate' to see errors)">
+		["terminology_does_not_exist_err"] = <"No terminology with namespace '$1'">
 
 
-		["loinc_start"] = <"--------- Injecting LOINC bindings from $1 ---------">
-		["loinc_replace_binding"] = <"Replacing $1 binding $2 for $3 with $4 in archetype $5">
-		["loinc_report"] = <"--------- Injected $1 new LOINC codes and replaced $2 in $3 archetypes; ignored $4 codes">
+		["term_bindings_start"] = <"--------- Injecting term bindings for $1 from $2 ---------">
+		["replace_term_binding"] = <"Replacing $1 binding $2 for $3 with $4 in archetype $5">
+		["term_bindings_report"] = <"--------- Injected $1 new bindings for $2 and replaced $3 in $4 archetypes; ignored $5 codes">
 
 		["archs_list_text"] = <"------------ Archetypes in library '$1 --------------'%N">
 		["archs_list_text_end"] = <"-----------------------------------------------------%N">
