@@ -404,16 +404,18 @@ feature {NONE} -- Implementation
 
 						create term_val.make (id_code_text, create {TERMINOLOGY_CODE}.make ({OPENEHR_DEFINITIONS}.Loinc_terminology_id, code_string))
 						add_complex_dt_attribute (dt_object_nodes.item, {OPENEHR_DEFINITIONS}.locatable_code_attribute, term_val)
-						instantiated_attrs.extend ({OPENEHR_DEFINITIONS}.locatable_code_attribute)
 					end
 
 					-- add an attribute for LOCATABLE.name
 					if not instantiated_attrs.has ({OPENEHR_DEFINITIONS}.Locatable_name_attribute) then
 						add_primitive_dt_attribute (dt_object_nodes.item, {OPENEHR_DEFINITIONS}.Locatable_name_attribute, id_code_text)
-						instantiated_attrs.extend ({OPENEHR_DEFINITIONS}.Locatable_name_attribute)
 					end
 				end
 			end
+
+			-- treat /code and /name as having been dealt with
+			instantiated_attrs.extend ({OPENEHR_DEFINITIONS}.locatable_code_attribute)
+			instantiated_attrs.extend ({OPENEHR_DEFINITIONS}.Locatable_name_attribute)
 
 			bmm_class := ref_model.class_definition (a_node.rm_type_name)
 			across bmm_class.flat_properties as bmm_prop_csr loop
@@ -538,6 +540,7 @@ feature {NONE} -- Implementation
 			create attrs_list.make(0)
 			attrs_list.compare_objects
 			attrs_list.extend ("uid")
+			attrs_list.extend ("original_code")
 			Result.put (attrs_list, "Event_context")
 			Result.put (attrs_list, "Folder")
 			Result.put (attrs_list, "Section")
