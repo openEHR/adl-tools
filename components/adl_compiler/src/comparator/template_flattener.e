@@ -26,7 +26,7 @@ feature -- Access
 feature -- Commands
 
 	execute (a_template: TEMPLATE; include_rm: BOOLEAN)
-			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
+			-- create with source (differential) archetype for which we wish to generate a flat archetype
 		require
 			Template_valid: a_template.is_valid and then a_template.is_flat
 		do
@@ -47,6 +47,8 @@ feature {NONE} -- Implementation
 			supp_flat_arch, matched_arch: ARCHETYPE
 			supp_arch_root_cco: C_COMPLEX_OBJECT
 			supp_arch_id: STRING
+			bindings: HASH_TABLE [URI, STRING]
+			found: BOOLEAN
 		do
 debug ("overlay")
 	io.put_string ("&&&&&& flattening template root nodes &&&&&&%N")
@@ -73,6 +75,25 @@ end
 				-- archetype id xrefs_csr.key into each one of these C_ARCHETYPE_ROOT nodes, clone the
 				-- flat definition structure from the supplier archetype
 				across xrefs_csr.item as c_arch_roots_csr loop
+
+					-- first, copy any bindings to the root point of the used archetype/overlay into the bindings of the owning template, under the
+					-- id-code of the use_archetype reference
+					across supp_flat_arch.terminology.term_bindings as bindings_for_terminology_csr loop
+						bindings := bindings_for_terminology_csr.item
+
+						-- see if there is a binding for the supplier archetype concept id (some id1....1 code) or any parent of that
+						found := False
+						from bindings.start until bindings.off or found loop
+							if supp_flat_arch.concept_id.starts_with (bindings.key_for_iteration) then
+								found := True
+								if attached bindings.item_for_iteration as uri then
+									a_flat_arch.terminology.put_term_binding (uri, bindings_for_terminology_csr.key, c_arch_roots_csr.item.node_id)
+								end
+							end
+							bindings.forth
+						end
+					end
+
 					-- always convert, to ensure archetype id replaces archetype ref in C_ARCHETYPE_ROOT
 					-- even if no overlaying takes place
 					c_arch_roots_csr.item.convert_to_flat (supp_flat_arch.archetype_id)
