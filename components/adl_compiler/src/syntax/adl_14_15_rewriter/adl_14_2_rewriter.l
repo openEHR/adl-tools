@@ -213,7 +213,7 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 		output_new_value_code (text)
 	}
 
-	[ \n\t,;]+	out_buffer.append (text)
+	[ \r\n\t,;]+	out_buffer.append (text)
 	
 	-- pass comment lines
 	\-\-[^\n]*\n	out_buffer.append (text)
@@ -267,15 +267,12 @@ ARCHETYPE_ID ({NAMESTR}(\.{ALPHANUM_STR})*::)?{NAMESTR}-{ALPHANUM_STR}-{NAMESTR}
 		out_buffer.append (text)
 	}
 
-	[ \n\t,;]+[ \t]*	{
+	[ \r\n\t,;]+[ \t]*	{
 		out_buffer.append (text)
 	}
 	
 	-- pass comment lines
 	\-\-[^\n]*\n	out_buffer.append (text)
-
-	-- remove CRs
-	\r
 
 	\] 			{
 		out_buffer.append (text)
