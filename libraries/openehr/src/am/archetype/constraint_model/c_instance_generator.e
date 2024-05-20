@@ -535,6 +535,7 @@ feature {NONE} -- Implementation
 			attrs_list.compare_objects
 			attrs_list.extend ("null_flavour")
 			attrs_list.extend ("uid")
+			attrs_list.extend ("original_code")
 			Result.put (attrs_list, "Node")
 
 			create attrs_list.make(0)
