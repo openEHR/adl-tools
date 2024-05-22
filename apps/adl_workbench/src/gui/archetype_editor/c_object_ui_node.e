@@ -379,10 +379,23 @@ feature {NONE} -- Implementation
 		end
 
 	loinc_code: STRING
+		local
+			specialised_codes: ARRAYED_LIST [STRING]
 		do
 			Create Result.make(0)
+			-- try to get a direct hit on the id-code of this node
 			if ui_graph_state.flat_terminology.has_term_binding (Loinc_terminology_id, arch_node.node_id) then
 				Result := ui_graph_state.flat_terminology.term_binding (Loinc_terminology_id, arch_node.node_id).as_string
+
+			-- otherwise try to match on a parent of the current node code
+			else
+				specialised_codes := specialised_code_parents (arch_node.node_id)
+				from specialised_codes.start until specialised_codes.off or not Result.is_empty loop
+					if ui_graph_state.flat_terminology.has_term_binding (Loinc_terminology_id, specialised_codes.item) then
+						Result := ui_graph_state.flat_terminology.term_binding (Loinc_terminology_id, specialised_codes.item).as_string
+					end
+					specialised_codes.forth
+				end
 			end
 		end
 
@@ -402,7 +415,7 @@ feature {NONE} -- Context menu
 			option: stable
 		attribute
 		end
-		
+
 	build_context_menu
 			-- create context menu
 		local
