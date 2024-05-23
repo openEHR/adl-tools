@@ -60,10 +60,10 @@ feature -- Access
 	reports: HASH_TABLE [ARCHETYPE_LIBRARY_REPORT, STRING]
 		local
 			report1: LOINC_ARCHETYPE_MAP_REPORT
-			report2: ID_CODE_REPORT
-			report3: ARCH_ID_TO_TPL_ID_REPORT
+			report2: LIBRARY_ELEMENTS_REPORT
+			report3: ARCH_ID_TO_TPL_ID_MAP
 			report4: VALUE_SETS_REPORT
-			report5: SPECIALIZATION_GRAPH_REPORT
+			report5: SPECIALIZATION_GRAPH
 		once
 			create Result.make(0)
 

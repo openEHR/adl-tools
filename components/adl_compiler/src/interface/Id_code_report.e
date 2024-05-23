@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2024- openEHR International"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ID_CODE_REPORT
+class LIBRARY_ELEMENTS_REPORT
 
 inherit
 	ARCHETYPE_LIBRARY_REPORT
@@ -34,12 +34,12 @@ feature -- Access
 
 	id: STRING
 		do
-			Result := "Id_code_report"
+			Result := "library_elements_report"
 		end
 
 	title: STRING
 		do
-			Result := "Id-codes in library"
+			Result := "All id-coded nodes in archetype library"
 		end
 
 	output_table: ARRAYED_LIST[TUPLE [arch_id, id_code, path, use_ref, description, loinc_code: STRING]]

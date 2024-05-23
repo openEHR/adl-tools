@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2024- openEHR International"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class SPECIALIZATION_GRAPH_REPORT
+class SPECIALIZATION_GRAPH
 
 inherit
 	ARCHETYPE_LIBRARY_REPORT
@@ -34,7 +34,7 @@ feature -- Access
 
 	id: STRING
 		do
-			Result := "Spec_graph_report"
+			Result := "Specialisation_graph"
 		end
 
 	title: STRING

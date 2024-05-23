@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2024- openEHR International"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class ARCH_ID_TO_TPL_ID_REPORT
+class ARCH_ID_TO_TPL_ID_MAP
 
 inherit
 	ARCHETYPE_LIBRARY_REPORT
@@ -34,7 +34,7 @@ feature -- Access
 
 	id: STRING
 		do
-			Result := "Arch_id_to_tpl_id_report"
+			Result := "Arch_id_to_tpl_id_map"
 		end
 
 	title: STRING
