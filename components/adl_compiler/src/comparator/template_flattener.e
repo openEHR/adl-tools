@@ -86,7 +86,9 @@ end
 						from bindings.start until bindings.off or found loop
 							if supp_flat_arch.concept_id.starts_with (bindings.key_for_iteration) then
 								found := True
-								if attached bindings.item_for_iteration as uri then
+								if attached bindings.item_for_iteration as uri and
+									not a_flat_arch.terminology.has_term_binding (bindings_for_terminology_csr.key, c_arch_roots_csr.item.node_id)
+								then
 									a_flat_arch.terminology.put_term_binding (uri, bindings_for_terminology_csr.key, c_arch_roots_csr.item.node_id)
 								end
 							end
