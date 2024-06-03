@@ -84,7 +84,7 @@ feature -- Access
 	value_set_binding: ARRAYED_LIST [URI]
 			-- bindings if any
 		do
-			if is_valid_value_set_code (constraint) and attached value_set_binding_extractor as att_agt then
+			if (is_valid_value_set_code (constraint) or is_valid_value_code (constraint)) and attached value_set_binding_extractor as att_agt then
 				Result := att_agt.item ([constraint])
 			else
 				create Result.make (0)

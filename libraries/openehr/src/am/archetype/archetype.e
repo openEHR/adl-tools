@@ -1274,11 +1274,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	get_value_set_binding (ac_code: STRING): ARRAYED_LIST [URI]
-			-- get value set bindings from archetype terminology if they exist
+	get_value_set_binding (a_code: STRING): ARRAYED_LIST [URI]
+			-- get value set or value bindings from archetype terminology if they exist
 		do
-			if terminology.has_any_term_binding (ac_code) then
-				Result := terminology.term_bindings_for_key (ac_code).linear_representation
+			if terminology.has_any_term_binding (a_code) then
+				Result := terminology.term_bindings_for_key (a_code).linear_representation
 			else
 				create Result.make (0)
 				Result.compare_objects

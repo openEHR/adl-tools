@@ -269,22 +269,33 @@ feature {NONE} -- Implementation
 			vset_exp: ARRAYED_LIST [STRING]
 		do
 			create Result.make_empty
+
+			-- show any value set binding references
+			if not a_ccp.value_set_binding.is_empty then
+				Result.append ("EXTERNAL:%N")
+				across a_ccp.value_set_binding as bnd_csr loop
+					Result.append ("  " + bnd_csr.item.as_string)
+					if not bnd_csr.is_last then
+						Result.append_string ("%N")
+					end
+				end
+			end
+
 			-- show inline value set if available
 			vset_exp := a_ccp.value_set_expanded
 			if not vset_exp.is_empty then
+				if not Result.is_empty then
+					Result.append ("%N")
+				end
+				Result.append ("INTERNAL:%N")
 				across vset_exp as codes_csr loop
-					Result.append_string (term_string (Local_terminology_id, codes_csr.item))
+					Result.append_string ("  " + term_string (Local_terminology_id, codes_csr.item))
 					if attached a_ccp.assumed_value as att_av and then att_av.is_equal (codes_csr.item) then
 						Result.append (" (" + get_text ({ADL_MESSAGES_IDS}.ec_assumed_text) + ")")
 					end
 					if not codes_csr.is_last then
 						Result.append_string ("%N")
 					end
-				end
-			-- otherwise try to show value set binding references
-			else
-				across a_ccp.value_set_binding as bnd_csr loop
-					Result.append (bnd_csr.item.as_string + "%N")
 				end
 			end
 		end
