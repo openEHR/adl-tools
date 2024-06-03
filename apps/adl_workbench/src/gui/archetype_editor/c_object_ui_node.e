@@ -82,12 +82,12 @@ feature -- Display
 				a_gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "", Void, Void, Void, c_pixmap)
 
 				-- add 'power expander' action to logical C_OBJECT leaf nodes
-				if attached ui_graph_state.archetype_parent_class as apc then
-					visualise_descendants_class := apc
-				elseif attached ui_graph_state.archetype_visualise_descendants_of as avdo then
+				if attached ui_graph_state.archetype_visualise_descendants_of as avdo then
 					visualise_descendants_class := avdo
+				elseif attached ui_graph_state.archetype_parent_class as apc then
+					visualise_descendants_class := apc
 				end
-				if attached visualise_descendants_class as vdc and then ui_graph_state.ref_model.is_descendant_of (arch_node.rm_type_name, vdc) then
+				if attached visualise_descendants_class as vdc and then (arch_node.rm_type_name.is_equal (vdc) or ui_graph_state.ref_model.is_descendant_of (arch_node.rm_type_name, vdc)) then
 					ev_grid_row.expand_actions.force_extend (agent power_expand)
 				end
 
@@ -388,7 +388,7 @@ feature {NONE} -- Implementation
 				Result := ui_graph_state.flat_terminology.term_binding (Loinc_terminology_id, arch_node.node_id).as_string
 
 			-- otherwise try to match on a parent of the current node code
-			else
+			elseif is_redefined_code (arch_node.node_id) then
 				specialised_codes := specialised_code_parents (arch_node.node_id)
 				from specialised_codes.start until specialised_codes.off or not Result.is_empty loop
 					if ui_graph_state.flat_terminology.has_term_binding (Loinc_terminology_id, specialised_codes.item) then

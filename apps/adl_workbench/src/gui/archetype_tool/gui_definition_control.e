@@ -436,7 +436,7 @@ feature {NONE} -- Implementation
 
 	undo_redo_chain: detachable UNDO_REDO_CHAIN
 
-	visualise_descendants_class: detachable STRING
+	visible_leaf_class: detachable STRING
 
 	ev_definition_hbox: EV_HORIZONTAL_BOX
 
@@ -477,7 +477,7 @@ feature {NONE} -- Implementation
 			evx_definition_grid.wipe_out
 			evx_rules_grid.wipe_out
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.clear end)
-			visualise_descendants_class := Void
+			visible_leaf_class := Void
 		end
 
 	do_populate
@@ -495,9 +495,9 @@ feature {NONE} -- Implementation
 			if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
 				aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
 				if not aom_profile.archetype_parent_class.is_empty then
-					visualise_descendants_class := aom_profile.archetype_parent_class
+					visible_leaf_class := aom_profile.archetype_parent_class
 				elseif not aom_profile.archetype_visualise_descendants_of.is_empty then
-					visualise_descendants_class := aom_profile.archetype_visualise_descendants_of
+					visible_leaf_class := aom_profile.archetype_visualise_descendants_of
 				end
 			end
 
@@ -514,23 +514,6 @@ feature {NONE} -- Implementation
 			evx_definition_grid.ev_grid.lock_update
 			source_ui_graph.prepare_display_in_grid (evx_definition_grid)
 
-			-- make visualisation adjustments
-			if attached visualise_descendants_class as vis_desc_cl then
-				-- collapse the tree except nodes inheriting from `visualise_descendants_class'
-				evx_definition_treeview_control.on_collapse_except (
-					agent (a_row: EV_GRID_ROW; vis_desc_class: STRING): BOOLEAN
-						do
-							if attached {C_OBJECT_UI_NODE} a_row.data as co_ed_ctx then
-								Result := not co_ed_ctx.is_rm and ref_model.is_descendant_of (co_ed_ctx.rm_type.type_base_name, vis_desc_class)
-							end
-						end (?, vis_desc_cl)
-				)
-			else
-				evx_definition_treeview_control.on_collapse_all
-				evx_definition_treeview_control.on_expand_one_level
-				evx_definition_treeview_control.on_expand_one_level
-			end
-
 			-- now do the display, so that colours get set properly according to what is open or closed in the tree
 			source_ui_graph.definition_ui_graph.display_in_grid (ui_settings)
 
@@ -543,6 +526,24 @@ feature {NONE} -- Implementation
 			evx_definition_grid.set_column_titles (Definition_grid_col_names.linear_representation)
 			evx_definition_grid.resize_columns_to_content
 			evx_definition_grid.ev_grid.unlock_update
+
+			-- make visualisation adjustments
+			if attached visible_leaf_class as vdc then
+				-- collapse the tree except nodes inheriting from `visible_leaf_class'
+				evx_definition_treeview_control.on_collapse_except (
+					agent (a_row: EV_GRID_ROW; visualise_class: STRING): BOOLEAN
+						do
+							if attached a_row.parent_row and attached {C_OBJECT_UI_NODE} a_row.data as co_ed_ctx then
+								Result := not co_ed_ctx.is_rm and (co_ed_ctx.rm_type.type_base_name.is_equal (visualise_class) or
+									ref_model.is_descendant_of (co_ed_ctx.rm_type.type_base_name, visualise_class))
+							end
+						end (?, vdc)
+				)
+			else
+				evx_definition_treeview_control.on_collapse_all
+				evx_definition_treeview_control.on_expand_one_level
+				evx_definition_treeview_control.on_expand_one_level
+			end
 
 			-- populate rules grid, where applicable
 			if source_archetype.has_rules then
