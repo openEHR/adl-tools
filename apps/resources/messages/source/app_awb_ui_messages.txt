@@ -814,6 +814,11 @@ templates = <
 		["rm_info_grid_metric_col_title"] = <"Metric">
 		["rm_info_grid_count_col_title"] = <"Count">
 
+		["rm_terminology_class"] = <"Class">
+		["rm_terminology_property"] = <"Property">
+		["rm_terminology_property_type"] = <"Type">
+		["rm_terminology_value_constraint"] = <"Value constraint">
+
 		-- GUI_STATISTICS_TOOL
 		["stats_frame_text"] = <"Basic statistics">
 		["term_bindings_frame_text"] = <"Terminology bindings">

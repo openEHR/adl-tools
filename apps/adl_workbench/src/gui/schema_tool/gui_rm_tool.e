@@ -42,6 +42,7 @@ feature {NONE}-- Initialization
 
 			create ev_notebook
 			create description_controls.make
+			create terminology_controls.make
 			create statistical_information_control.make
 
 			-- connect widgets
@@ -51,6 +52,7 @@ feature {NONE}-- Initialization
 			ev_action_bar.extend (ev_rm_id)
 
 			ev_notebook.extend (description_controls.ev_root_container)
+			ev_notebook.extend (terminology_controls.ev_root_container)
 			ev_notebook.extend (statistical_information_control.ev_root_container)
 
 			-- set visual characteristics
@@ -64,6 +66,9 @@ feature {NONE}-- Initialization
 
 			ev_notebook.set_item_text (description_controls.ev_root_container, get_msg ({ADL_MESSAGES_IDS}.ec_description_tab_text, Void))
 			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/description"))
+
+			ev_notebook.set_item_text (terminology_controls.ev_root_container, get_msg ({ADL_MESSAGES_IDS}.ec_terminology_tab_text, Void))
+			ev_notebook.item_tab (terminology_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/terminology"))
 
 			ev_notebook.set_item_text (statistical_information_control.ev_root_container, get_msg ({ADL_MESSAGES_IDS}.ec_stat_info_tab_text, Void))
 			ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
@@ -101,6 +106,7 @@ feature {NONE} -- Implementation
 		do
 			ev_rm_id.remove_text
 			description_controls.clear
+			terminology_controls.clear
 			statistical_information_control.clear
  		end
 
@@ -111,11 +117,14 @@ feature {NONE} -- Implementation
 			-- pre-populate the description and node-map controls, or else populate the validity control and show it
 			check attached source as s then
 				description_controls.populate (s)
+				terminology_controls.populate (s)
 				statistical_information_control.populate (s)
 			end
 		end
 
 	description_controls: GUI_RM_DESCRIPTION_CONTROLS
+
+	terminology_controls: GUI_RM_TERMINOLOGY
 
 	statistical_information_control: GUI_RM_INFORMATION_TOOL
 
