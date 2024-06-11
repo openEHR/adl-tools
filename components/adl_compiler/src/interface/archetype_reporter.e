@@ -45,10 +45,6 @@ inherit
 create
 	make
 
-feature -- Definitions
-
-	Report_name: STRING = "Loinc_archetype_id_map"
-
 feature {NONE} -- Initialisation
 
 	make
