@@ -274,7 +274,7 @@ feature {NONE} -- Implementation
 			if not a_ccp.value_set_binding.is_empty then
 				Result.append ("EXTERNAL:%N")
 				across a_ccp.value_set_binding as bnd_csr loop
-					Result.append ("  " + bnd_csr.item.as_string)
+					Result.append ("    " + bnd_csr.item.as_string)
 					if not bnd_csr.is_last then
 						Result.append_string ("%N")
 					end
@@ -289,7 +289,7 @@ feature {NONE} -- Implementation
 				end
 				Result.append ("INTERNAL:%N")
 				across vset_exp as codes_csr loop
-					Result.append_string ("  " + term_string (Local_terminology_id, codes_csr.item))
+					Result.append_string ("    " + term_string (Local_terminology_id, codes_csr.item))
 					if attached a_ccp.assumed_value as att_av and then att_av.is_equal (codes_csr.item) then
 						Result.append (" (" + get_text ({ADL_MESSAGES_IDS}.ec_assumed_text) + ")")
 					end
