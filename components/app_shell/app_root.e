@@ -154,11 +154,16 @@ feature -- Initialisation
 			--
 			if file_system.directory_exists (aom_profile_directory) then
 				aom_profiles_access.initialise (aom_profile_directory)
+
+				-- make sure it is in the cfg file
+				if aom_profile_user_directory.is_empty then
+					set_aom_profile_user_directory (aom_profile_directory)
+				end
 				if not aom_profiles_access.found_valid_profiles then
 					merge_errors (aom_profiles_access.errors)
 				end
 			else
-				add_warning ({ADL_MESSAGES_IDS}.ec_aom_profile_dir_not_valid, <<aom_profile_directory>>)
+				add_error ({ADL_MESSAGES_IDS}.ec_aom_profile_dir_not_valid, <<aom_profile_directory>>)
 			end
 
 			-- process repositories and validate; determine setting for `current_library' if
