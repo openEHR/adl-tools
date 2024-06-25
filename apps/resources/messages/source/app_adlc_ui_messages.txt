@@ -31,6 +31,7 @@ templates = <
 		["list_rms_switch_desc"] = <"generate list of reference models">
 		["export_switch_desc"] = <"export archetypes">
 		["report_switch_desc"] = <"generate reports">
+		["export_term_bindings_desc"] = <"export archetype term bindings">
 
 		-- command line options with arguments
 		["display_rm_switch_desc"] = <"display reference model in user-friendly format">
@@ -65,6 +66,7 @@ templates = <
 		-- other messages
 		["config_file_location"] = <"User .cfg file location: $1%N">
 		["xml_rules_file_location"] = <"XML rules file location: $1%N">
+		["aom_profiles_location"] = <"AOM profiles location: $1%N">
 		["repos_info_text"] = <"Configured repositories: %N">
 		["current_lib_info_text"] = <"Current library: $1%N">
 		["rm_schemas_info_text"] = <"Loaded RM schemas (BMM files): %N">
@@ -74,6 +76,9 @@ templates = <
 		["invalid_serialisation_format_err"] = <"Invalid serialisation format '$1'; valid formats: $2">
 		["invalid_report_format_err"] = <"Invalid report format '$1'; valid formats: $2">
 		["invalid_output_directory"] = <"Could not create output directory '$1'">
+		["output_directory_required_err"] = <"Output directory must be specified">
+		["input_file_required_err"] = <"Input file must be specified">
+		["terminology_namespace_required_err"] = <"Terminology namespace must be specified">
 		["invalid_input_file"] = <"Could not read input file '$1'">
 		["archetype_not_valid"] = <"Archetype $1 not validated (run with '-a validate' to see errors)">
 		["terminology_does_not_exist_err"] = <"No terminology with namespace '$1'">

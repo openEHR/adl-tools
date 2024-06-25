@@ -12,6 +12,7 @@ note
 					   adlc [-q] -b <library name> -d [<id_pattern>]
 					   adlc [-q] -b <library name> [-f <format>] --report [-o <output_dir>]
 					   adlc [-q] -b <library name> --inject_term_bindings <terminology_namespace> -i <terms_file>
+					   adlc [-q] -b <library name> --export_term_bindings
 					   adlc [-q] -b <library name> [--flat] [--cfg <file path>] [-f <format>] -a <action> [-o <output_dir>] [<id_pattern>]
 
 					OPTIONS:
@@ -36,8 +37,12 @@ note
 					   -x --export            	: export matching archetypes in specified format
 					   -r --report            	: generate reports in specified format
 					   -o --output            	: output directory to write files to; '.' for current directory
+					   
 					      --inject_term_bindings: read <loinc_file>, which is formatted as {archetype_id,archetype_code,term_code} and 
-					                            	inject bindings from loinc codes to id-codes
+					                              inject bindings from loinc codes to id-codes
+					                            	
+					      --export_term_bindings: generate out files named term_bindings-<terminology_namespace>.csv, e.g.
+					                              term_bindings-loinc.csv, term_bindings-snomed.csv, term_bindings-ucum.csv, etc
 					   
 					   -? --help              	: Display usage information. (Optional)
 
@@ -83,6 +88,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_CODE_SYSTEMS
+		export
+			{NONE} all
+		end
+
 	ODIN_DEFINITIONS
 		export
 			{NONE} all
@@ -90,6 +100,10 @@ inherit
 
 create
 	make
+
+feature -- Definitions
+
+	Uri_leader: STRING = "http:"
 
 feature -- Initialization
 
@@ -171,15 +185,14 @@ feature -- Commands
 								elseif opts.export_archetypes then
 									export_library
 
+								elseif opts.export_term_bindings then
+									export_term_bindings
+
 								elseif opts.report then
 									generate_library_reports
 
-								elseif opts.inject_term_bindings and then attached opts.term_bindings_namespace as term_ns then
-									if code_systems.has (term_ns) then
-										inject_term_bindings (term_ns)
-									else
-										report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_terminology_does_not_exist_err, <<term_ns>>))
-									end
+								elseif opts.inject_term_bindings then
+									inject_term_bindings
 								end
 							end
 						end
@@ -189,6 +202,7 @@ feature -- Commands
 				end
 			else
 				report_std_err (app_root.error_strings)
+				report_std_err(get_msg ({ADL_MESSAGES_IDS}.ec_config_file_location, <<app_cfg.file_path>>))
 				across bmm_models_access.all_schemas as schemas_csr loop
 					if schemas_csr.item.has_errors then
 						report_std_err ("========== Schema validation errors for " + schemas_csr.key.as_string_8 + " ===========")
@@ -242,6 +256,48 @@ feature -- Commands
 			end
 		end
 
+	export_term_bindings
+			-- export all term bindings into one files per terminology namespace
+			-- Each file is a CSV file of the form
+			--     archetype_id, archetype_node_id, binding_value
+		local
+			action: TERMINOLOGY_BINDINGS_EXPORTER
+		do
+			if opts.write_to_file_system and then attached opts.output_dir as att_op_dir then
+				create action.make (att_op_dir, agent report_std_out, agent report_std_err, agent :BOOLEAN do Result := error_reported end)
+				action.execute
+			else
+				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_output_directory_required_err, <<>>))
+			end
+		end
+
+	inject_term_bindings
+			-- export all term bindings into one files per terminology namespace
+			-- Each file is a CSV file of the form
+			--     archetype_id, archetype_node_id, binding_value
+		local
+			action: TERMINOLOGY_BINDINGS_INJECTOR
+		do
+			if opts.write_to_file_system and then attached opts.output_dir as att_out_dir then
+				if attached opts.input_file as att_in_file then
+					if attached opts.term_bindings_namespace as term_ns then
+						if code_systems.has (term_ns) then
+							create action.make (term_ns, att_in_file, att_out_dir, agent report_std_out, agent report_std_err, agent :BOOLEAN do Result := error_reported end)
+							action.execute
+						else
+							report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_terminology_does_not_exist_err, <<term_ns>>))
+						end
+					else
+						report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_terminology_namespace_required_err, <<>>))
+					end
+				else
+					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_input_file_required_err, <<>>))
+				end
+			else
+				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_output_directory_required_err, <<>>))
+			end
+		end
+
 	generate_library_reports
 		local
 			lib_name, full_output_dir, full_path, schema_file_path, export_dir: STRING
@@ -279,124 +335,6 @@ feature -- Commands
 			end
 		end
 
-	code_systems: HASH_TABLE[STRING, STRING]
-			-- TODO: for now, a static copy of the file
-		once
-			create Result.make(0)
-			Result.put ("http://loinc.org/",          "loinc")
-			Result.put ("http://snomed.info/id/",     "snomed")
-			Result.put ("http://s2health.org/id/",    "s2")
-			Result.put ("http://openehr.org/id/",     "openehr")
-			Result.put ("http://ucum.org/id/",        "ucum")
-			Result.put ("http://www.nlm.nih.gov/research/umls/rxnorm/",     "rxnorm")
-		end
-
-	inject_term_bindings (term_binding_ns: STRING)
-			-- Inject terminology bindings from a file whose structure is
-			-- {archetype_id,node_id,raw_code}
-		require
-			code_systems.has (term_binding_ns)
-		local
-			last_arch_id, input_file_path: STRING
-			in_file: PLAIN_TEXT_FILE
-			a_line, arch_id, arch_code, term_code, term_binding_uri_root: STRING
-			strs: LIST[STRING]
-			ara: ARCH_LIB_AUTHORED_ARCHETYPE
-			old_term_binding_uri, binding_uri: URI
-			diff_arch: AUTHORED_ARCHETYPE
-			arch_count, inject_new_count, inject_replace_count, inject_ignore_count: INTEGER
-			save_required: BOOLEAN
-		do
-			-- OPTION: input file
-			create input_file_path.make_empty
-			if attached opts.input_file as att_if then
-				if file_system.is_absolute_pathname (att_if) then
-					input_file_path := att_if
-				else
-					input_file_path := file_system.pathname (file_system.current_working_directory, att_if)
-				end
-
-				if not file_system.file_exists (input_file_path) then
-					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_input_file, <<input_file_path>>))
-				end
-
-				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_term_bindings_start, <<term_binding_ns, input_file_path>>))
-
-				create in_file.make(input_file_path)
-
-				create last_arch_id.make_empty
-				if in_file.exists then
-					check attached code_systems.item(term_binding_ns) as uri_root then
-						term_binding_uri_root := uri_root
-					end
-					in_file.open_read
-					from until in_file.end_of_file loop
-						in_file.read_line
-						a_line := in_file.last_string
-						if not a_line.is_whitespace then
-							-- right adjust in case we are on Linux, and files were
-							-- created on Windows, which means they will have a trailing CR
-							a_line.right_adjust
-							strs := a_line.split (',')
-
-							arch_id := strs.i_th (1)
-							if not arch_id.is_equal (last_arch_id) then
-								-- save last archetype changes
-								if save_required and attached ara and then attached ara.differential_archetype then
-									ara.save_differential_text
-									arch_count := arch_count + 1
-									last_arch_id := arch_id
-									save_required := False
-								end
-
-								if current_library.has_archetype_with_id (arch_id) and then attached {ARCH_LIB_AUTHORED_ARCHETYPE} current_library.archetype_with_id (arch_id) as arch_desc then
-									ara := arch_desc
-
-									if attached {AUTHORED_ARCHETYPE} ara.differential_archetype as da then
-										diff_arch := da
-									else
-										report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_in_memory_not_found, <<arch_id, current_library_name>>))
-									end
-								else
-									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_not_found, <<arch_id, current_library_name>>))
-								end
-							end
-
-							if attached diff_arch then
-								arch_code := strs.i_th (2)
-								term_code := strs.i_th (3)
-
-								-- now process all the codes for this archetype
-								create binding_uri.make_from_string (term_binding_uri_root + term_code)
-								if diff_arch.terminology.has_term_binding (term_binding_ns, arch_code) then
-									old_term_binding_uri := diff_arch.terminology.term_binding (term_binding_ns, arch_code)
-									if not old_term_binding_uri.is_equal(binding_uri) then
-										diff_arch.terminology.replace_term_binding (binding_uri, term_binding_ns, arch_code)
-										report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_replace_term_binding, <<term_binding_ns,
-											old_term_binding_uri.as_string, arch_code, binding_uri.as_string, arch_id>>))
-										inject_replace_count := inject_replace_count + 1
-										save_required := True
-									else
-										inject_ignore_count := inject_ignore_count + 1
-									end
-								elseif diff_arch.terminology.has_code (arch_code) then
-									diff_arch.terminology.put_term_binding (binding_uri, term_binding_ns, arch_code)
-									inject_new_count := inject_new_count + 1
-									save_required := True
-								else
-									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_node_not_found, <<arch_id, arch_code, current_library_name>>))
-								end
-							end
-						end
-					end
-
-					in_file.close
-
-					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_term_bindings_report, <<inject_new_count.out, term_binding_ns, inject_replace_count.out, inject_ignore_count.out, arch_count.out>>))
-				end
-			end
-		end
-
 feature {NONE} -- Commands
 
 	build_archetype_id_list
@@ -428,6 +366,9 @@ feature {NONE} -- Commands
 
 			-- XML rules file
 			buffer.append (get_msg ({ADL_MESSAGES_IDS}.ec_xml_rules_file_location, <<xml_rules_file_path>>))
+
+			-- AOM profiles file
+			buffer.append (get_msg ({ADL_MESSAGES_IDS}.ec_aom_profiles_location, <<aom_profile_directory>>))
 
 			-- RM schemas info
 			buffer.append ("%N" + get_text ({ADL_MESSAGES_IDS}.ec_rm_schemas_info_text))
@@ -545,7 +486,8 @@ feature {NONE} -- Implementation
 			-- Update UI with progress on build.
 		do
 			if opts.is_verbose and ara.is_in_terminal_compilation_state and not ara.is_valid then
-				std_err.put_string (ara.error_strings)
+				std_err.put_string ("---- " + ara.id.as_string + " ----%N")
+				std_err.put_string (ara.errors.as_string_filtered (True, False, False))
 			end
 		end
 

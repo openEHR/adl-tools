@@ -46,7 +46,7 @@ feature -- Definitions
 	switches: ARRAYED_LIST [ARGUMENT_SWITCH]
 			-- Retrieve a list of switch used for a specific application
 		once
-			create Result.make (4)
+			create Result.make (20)
 
 			-- non-argument switches
 			Result.extend (create {ARGUMENT_SWITCH}.make (quiet_switch, get_text (ec_adlc_quiet_switch_desc), True, False))
@@ -58,6 +58,7 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_SWITCH}.make (list_rms_switch, get_text (ec_list_rms_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (report_switch, get_text (ec_report_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (export_switch, get_text (ec_export_switch_desc), False, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (export_term_bindings_switch, get_text (ec_export_term_bindings_desc), False, False))
 
 			-- switches with arguments
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (display_rm_switch, get_text (ec_display_rm_switch_desc), False, False, display_rm_switch_arg, get_text (ec_display_rm_switch_arg_desc), False))
@@ -76,7 +77,7 @@ feature -- Definitions
 	switch_groups: ARRAYED_LIST [ARGUMENT_GROUP]
 			-- <Precursor>
 		once
-			create Result.make (4)
+			create Result.make (10)
 
 			-- adlc -s [-q]
 			-- adlc --show_config [--quiet]
@@ -102,6 +103,14 @@ feature -- Definitions
 			-- adlc [--quiet] --library <library name> --display_archetypes [<id_pattern>]
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (display_archetypes_switch), switch_of_name (quiet_switch) >>, True))
 
+			-- EXPORT term bindings
+			-- adlc [-q] -b <library name> --export_term_bindings
+			-- adlc [--quiet] --library <library name> --export_term_bindings
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch),
+															switch_of_name (export_term_bindings_switch),
+															switch_of_name (quiet_switch),
+															switch_of_name (output_dir_switch) >>, False))
+
 			-- EXPORT
 			-- adlc -b <library name> [--cfg <file path>] [-q] [-f <format>] -x [--flat] [--rm_multiplicities] [-o <output_dir>] [<id_pattern>]
 			-- adlc --library <library name> [--cfg <file path>] [--quiet] [--format <format>] --export  [--flat] [--output <output_dir>] [<id_pattern>]
@@ -111,8 +120,8 @@ feature -- Definitions
 															switch_of_name (export_switch), switch_of_name (output_dir_switch)>>, True))
 
 			-- REPORT
-			-- adlc -b <library name> [-q] [-f <format>] -p [-o <output_dir>]
-			-- adlc --library <library name> [--quiet] [--format <format>] --report [--output <output_dir>]
+			-- adlc [-q] -b <library name> [-f <format>] -p [-o <output_dir>]
+			-- adlc [--quiet] --library <library name> [--format <format>] --report [--output <output_dir>]
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch),
 															switch_of_name (quiet_switch), switch_of_name (format_switch),
 															switch_of_name (report_switch), switch_of_name (output_dir_switch)>>, False))
@@ -143,6 +152,8 @@ feature -- Definitions
 
 	report_switch: STRING = "r|report"
 	export_switch: STRING = "x|export"
+
+	export_term_bindings_switch: STRING = "export_term_bindings"
 
 	term_bindings_switch: STRING = "inject_term_bindings"
 	term_bindings_switch_arg: STRING = "terminology namespace"
@@ -206,6 +217,7 @@ feature {NONE} -- Initialization
 				write_to_file_system := has_option (output_dir_switch)
 				report := has_option (report_switch)
 				export_archetypes := has_option (export_switch)
+				export_term_bindings := has_option (export_term_bindings_switch)
 				inject_term_bindings := has_option (term_bindings_switch)
 			end
 		end
@@ -326,6 +338,8 @@ feature -- Status Report
 	inject_term_bindings: BOOLEAN
 
 	export_archetypes: BOOLEAN
+
+	export_term_bindings: BOOLEAN
 
 feature {NONE} -- Usage
 

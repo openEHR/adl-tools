@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (960)
+			create message_table.make (969)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -298,6 +298,7 @@ feature -- Initialisation
 			message_table.put ("generate list of reference models", ec_list_rms_switch_desc)
 			message_table.put ("export archetypes", ec_export_switch_desc)
 			message_table.put ("generate reports", ec_report_switch_desc)
+			message_table.put ("export archetype term bindings", ec_export_term_bindings_desc)
 			message_table.put ("display reference model in user-friendly format", ec_display_rm_switch_desc)
 			message_table.put ("reference model name", ec_display_rm_switch_arg_desc)
 			message_table.put ("export reference models in all available formats", ec_export_rms_switch_desc)
@@ -319,6 +320,7 @@ feature -- Initialisation
 			message_table.put ("regex string", ec_id_pattern_arg_type)
 			message_table.put ("User .cfg file location: $1%N", ec_config_file_location)
 			message_table.put ("XML rules file location: $1%N", ec_xml_rules_file_location)
+			message_table.put ("AOM profiles location: $1%N", ec_aom_profiles_location)
 			message_table.put ("Configured repositories: %N", ec_repos_info_text)
 			message_table.put ("Current library: $1%N", ec_current_lib_info_text)
 			message_table.put ("Loaded RM schemas (BMM files): %N", ec_rm_schemas_info_text)
@@ -327,6 +329,9 @@ feature -- Initialisation
 			message_table.put ("Invalid serialisation format '$1'; valid formats: $2", ec_invalid_serialisation_format_err)
 			message_table.put ("Invalid report format '$1'; valid formats: $2", ec_invalid_report_format_err)
 			message_table.put ("Could not create output directory '$1'", ec_invalid_output_directory)
+			message_table.put ("Output directory must be specified", ec_output_directory_required_err)
+			message_table.put ("Input file must be specified", ec_input_file_required_err)
+			message_table.put ("Terminology namespace must be specified", ec_terminology_namespace_required_err)
 			message_table.put ("Could not read input file '$1'", ec_invalid_input_file)
 			message_table.put ("Archetype $1 not validated (run with '-a validate' to see errors)", ec_archetype_not_valid)
 			message_table.put ("No terminology with namespace '$1'", ec_terminology_does_not_exist_err)
