@@ -255,7 +255,9 @@ feature {NONE} -- Implementation
 							else
 								build_status := get_msg_line ({ADL_MESSAGES_IDS}.ec_compiler_already_attempted_failed, <<ara.artefact_type.as_upper, ara.id.physical_id, ara.error_strings>>)
 							end
-							call_debug_update_agent (build_status, dependency_depth)
+							if global_error_reporting_level = Error_type_debug then
+								call_debug_update_agent (build_status, dependency_depth)
+							end
 						end
 					else
 						ara.signal_exception
