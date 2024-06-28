@@ -700,42 +700,6 @@ feature -- Modification
 			value_sets.put (a_value_set, a_value_set.id)
 		end
 
-feature {ARCHETYPE, AOM_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Modification
-
-	remove_definition (a_code: STRING)
-			-- completely remove the term from the terminology
-		require
-			Code_found: has_code (a_code)
-		local
-			terminologies: ARRAYED_LIST[STRING]
-			langs_to_remove: ARRAYED_LIST[STRING]
-		do
-			create langs_to_remove.make(0)
-			across term_definitions as defs_csr loop
-				defs_csr.item.remove (a_code)
-				if defs_csr.item.count = 0 then
-					langs_to_remove.extend (defs_csr.key)
-				end
-			end
-
-			across langs_to_remove as lang_terms_csr loop
-				term_definitions.remove (lang_terms_csr.item)
-			end
-
-			-- make a copy of terminologies list, since the next action might modify it...
-			create terminologies.make_from_array (term_bindings.current_keys)
-			if has_any_term_binding (a_code) then
-				across terminologies as terminologies_csr loop
-					if term_bindings_for_terminology (terminologies_csr.item).has (a_code) then
-						remove_term_binding (a_code, terminologies_csr.item)
-					end
-				end
-			end
-			clear_cache
-		ensure
-			not has_code (a_code)
-		end
-
 	remove_term_binding (a_key, a_terminology: STRING)
 			-- remove term binding to local code or key in group a_terminology
 		require
@@ -771,6 +735,42 @@ feature {ARCHETYPE, AOM_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Modification
 			end
 
 			term_binding_map_cache := Void
+		end
+
+feature {ARCHETYPE, AOM_151_CONVERTER, ARCHETYPE_COMPARATOR} -- Modification
+
+	remove_definition (a_code: STRING)
+			-- completely remove the term from the terminology
+		require
+			Code_found: has_code (a_code)
+		local
+			terminologies: ARRAYED_LIST[STRING]
+			langs_to_remove: ARRAYED_LIST[STRING]
+		do
+			create langs_to_remove.make(0)
+			across term_definitions as defs_csr loop
+				defs_csr.item.remove (a_code)
+				if defs_csr.item.count = 0 then
+					langs_to_remove.extend (defs_csr.key)
+				end
+			end
+
+			across langs_to_remove as lang_terms_csr loop
+				term_definitions.remove (lang_terms_csr.item)
+			end
+
+			-- make a copy of terminologies list, since the next action might modify it...
+			create terminologies.make_from_array (term_bindings.current_keys)
+			if has_any_term_binding (a_code) then
+				across terminologies as terminologies_csr loop
+					if term_bindings_for_terminology (terminologies_csr.item).has (a_code) then
+						remove_term_binding (a_code, terminologies_csr.item)
+					end
+				end
+			end
+			clear_cache
+		ensure
+			not has_code (a_code)
 		end
 
 feature {ARCHETYPE_TERMINOLOGY, AOM_151_CONVERTER} -- Modification

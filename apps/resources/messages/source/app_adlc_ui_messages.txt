@@ -32,6 +32,7 @@ templates = <
 		["export_switch_desc"] = <"export archetypes">
 		["report_switch_desc"] = <"generate reports">
 		["export_term_bindings_desc"] = <"export archetype term bindings">
+		["clean_term_bindings_desc"] = <"remove mis-matched archetype term bindings">
 
 		-- command line options with arguments
 		["display_rm_switch_desc"] = <"display reference model in user-friendly format">

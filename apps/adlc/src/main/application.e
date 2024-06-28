@@ -43,6 +43,9 @@ note
 					                            	
 					      --export_term_bindings: generate out files named term_bindings-<terminology_namespace>.csv, e.g.
 					                              term_bindings-loinc.csv, term_bindings-snomed.csv, term_bindings-ucum.csv, etc
+
+					      --clean_term_bindings : remove term_bindings that don't contain the namespace string under which they are defined,
+					                              e.g. if a binding <http://snomed.info...> appears under ["loinc"], remove it  
 					   
 					   -? --help              	: Display usage information. (Optional)
 
@@ -188,6 +191,9 @@ feature -- Commands
 								elseif opts.export_term_bindings then
 									export_term_bindings
 
+								elseif opts.clean_term_bindings then
+									clean_term_bindings
+
 								elseif opts.report then
 									generate_library_reports
 
@@ -278,24 +284,31 @@ feature -- Commands
 		local
 			action: TERMINOLOGY_BINDINGS_INJECTOR
 		do
-			if opts.write_to_file_system and then attached opts.output_dir as att_out_dir then
-				if attached opts.input_file as att_in_file then
-					if attached opts.term_bindings_namespace as term_ns then
-						if code_systems.has (term_ns) then
-							create action.make (term_ns, att_in_file, att_out_dir, agent report_std_out, agent report_std_err, agent :BOOLEAN do Result := error_reported end)
-							action.execute
-						else
-							report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_terminology_does_not_exist_err, <<term_ns>>))
-						end
+			if attached opts.input_file as att_in_file then
+				if attached opts.term_bindings_namespace as term_ns then
+					if code_systems.has (term_ns) then
+						create action.make (term_ns, att_in_file, agent report_std_out, agent report_std_err, agent :BOOLEAN do Result := error_reported end)
+						action.execute
 					else
-						report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_terminology_namespace_required_err, <<>>))
+						report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_terminology_does_not_exist_err, <<term_ns>>))
 					end
 				else
-					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_input_file_required_err, <<>>))
+					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_terminology_namespace_required_err, <<>>))
 				end
 			else
-				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_output_directory_required_err, <<>>))
+				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_input_file_required_err, <<>>))
 			end
+		end
+
+	clean_term_bindings
+			-- export all term bindings into one files per terminology namespace
+			-- Each file is a CSV file of the form
+			--     archetype_id, archetype_node_id, binding_value
+		local
+			action: TERMINOLOGY_BINDINGS_CLEANER
+		do
+			create action.make (agent report_std_out, agent report_std_err, agent :BOOLEAN do Result := error_reported end)
+			action.execute
 		end
 
 	generate_library_reports

@@ -25,20 +25,11 @@ inherit
 
 feature -- Initialization
 
-	make (an_output_dir: STRING; report_std_out_agt, report_std_err_agt: PROCEDURE [ANY, TUPLE[STRING]]; an_error_reported_agt: FUNCTION[ANY, TUPLE[], BOOLEAN])
+	make (report_std_out_agt, report_std_err_agt: PROCEDURE [ANY, TUPLE[STRING]]; an_error_reported_agt: FUNCTION[ANY, TUPLE[], BOOLEAN])
 		do
 			std_out_agt := report_std_out_agt
 			std_err_agt := report_std_err_agt
 			error_reported_agt := an_error_reported_agt
-
-			output_dir := an_output_dir
-			if not file_system.is_absolute_pathname (output_dir) then
-				output_dir := file_system.pathname (file_system.current_working_directory, output_dir)
-			end
-			file_system.recursive_create_directory (output_dir)
-			if not file_system.directory_exists (output_dir) then
-				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_invalid_output_directory, <<output_dir>>))
-			end
 		end
 
 feature -- Commands
@@ -48,8 +39,6 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
-
-	output_dir: STRING
 
 	report_std_out (str: STRING)
 		do

@@ -284,6 +284,7 @@ feature -- Definitions
 		ec_export_switch_desc: STRING = "export_switch_desc"
 		ec_report_switch_desc: STRING = "report_switch_desc"
 		ec_export_term_bindings_desc: STRING = "export_term_bindings_desc"
+		ec_clean_term_bindings_desc: STRING = "clean_term_bindings_desc"
 		ec_display_rm_switch_desc: STRING = "display_rm_switch_desc"
 		ec_display_rm_switch_arg_desc: STRING = "display_rm_switch_arg_desc"
 		ec_export_rms_switch_desc: STRING = "export_rms_switch_desc"

@@ -59,6 +59,7 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_SWITCH}.make (report_switch, get_text (ec_report_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (export_switch, get_text (ec_export_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (export_term_bindings_switch, get_text (ec_export_term_bindings_desc), False, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (clean_term_bindings_switch, get_text (ec_clean_term_bindings_desc), False, False))
 
 			-- switches with arguments
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (display_rm_switch, get_text (ec_display_rm_switch_desc), False, False, display_rm_switch_arg, get_text (ec_display_rm_switch_arg_desc), False))
@@ -111,6 +112,13 @@ feature -- Definitions
 															switch_of_name (quiet_switch),
 															switch_of_name (output_dir_switch) >>, False))
 
+			-- CLEAN term bindings
+			-- adlc [-q] -b <library name> --clean_term_bindings
+			-- adlc [--quiet] --library <library name> --clean_term_bindings
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch),
+															switch_of_name (clean_term_bindings_switch),
+															switch_of_name (quiet_switch) >>, False))
+
 			-- EXPORT
 			-- adlc -b <library name> [--cfg <file path>] [-q] [-f <format>] -x [--flat] [--rm_multiplicities] [-o <output_dir>] [<id_pattern>]
 			-- adlc --library <library name> [--cfg <file path>] [--quiet] [--format <format>] --export  [--flat] [--output <output_dir>] [<id_pattern>]
@@ -154,6 +162,7 @@ feature -- Definitions
 	export_switch: STRING = "x|export"
 
 	export_term_bindings_switch: STRING = "export_term_bindings"
+	clean_term_bindings_switch: STRING = "clean_term_bindings"
 
 	term_bindings_switch: STRING = "inject_term_bindings"
 	term_bindings_switch_arg: STRING = "terminology namespace"
@@ -218,6 +227,7 @@ feature {NONE} -- Initialization
 				report := has_option (report_switch)
 				export_archetypes := has_option (export_switch)
 				export_term_bindings := has_option (export_term_bindings_switch)
+				clean_term_bindings := has_option (clean_term_bindings_switch)
 				inject_term_bindings := has_option (term_bindings_switch)
 			end
 		end
@@ -340,6 +350,8 @@ feature -- Status Report
 	export_archetypes: BOOLEAN
 
 	export_term_bindings: BOOLEAN
+
+	clean_term_bindings: BOOLEAN
 
 feature {NONE} -- Usage
 
