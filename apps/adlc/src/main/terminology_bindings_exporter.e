@@ -71,7 +71,7 @@ feature -- Commands
 				end
 				out_file.close
 
-				report_std_out ("    Exported terminology " + binding_count.out + " " + namespace + " bindings%N")
+				report_std_out ("    Exported " + binding_count.out + " " + namespace + " bindings%N")
 			end
 		end
 

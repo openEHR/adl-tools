@@ -14,6 +14,8 @@ inherit
 	ARGUMENT_SINGLE_PARSER
 		rename
 			make as make_parser
+		export
+			{ANY} display_usage
 		redefine
 			post_process_arguments, switch_groups, initialize_defaults
 		end
@@ -56,20 +58,22 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_SWITCH}.make (list_archetypes_switch, get_text (ec_list_archetypes_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (display_archetypes_switch, get_text (ec_display_archetypes_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (list_rms_switch, get_text (ec_list_rms_switch_desc), False, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (build_switch, get_text (ec_build_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (report_switch, get_text (ec_report_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (export_switch, get_text (ec_export_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (export_term_bindings_switch, get_text (ec_export_term_bindings_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (clean_term_bindings_switch, get_text (ec_clean_term_bindings_desc), False, False))
 
 			-- switches with arguments
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text (ec_cfg_switch_desc), True, False, cfg_switch_arg_name, get_text (ec_cfg_switch_arg_desc), False))
+
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (display_rm_switch, get_text (ec_display_rm_switch_desc), False, False, display_rm_switch_arg, get_text (ec_display_rm_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (export_rms_switch, get_text (ec_export_rms_switch_desc), False, False, export_rms_switch_arg, get_text (ec_export_rms_switch_arg_desc), True))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (library_switch, get_text (ec_library_switch_desc), False, False, library_switch_arg, get_text (ec_library_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text (ec_format_switch_desc), True, False, format_switch_arg, get_msg (ec_format_switch_arg_desc, <<archetype_all_serialiser_formats_string>>), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (output_dir_switch, get_text (ec_output_dir_switch_desc), True, False, output_dir_switch_arg_name, get_text (ec_output_dir_switch_arg_desc), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text (ec_cfg_switch_desc), True, False, cfg_switch_arg_name, get_text (ec_cfg_switch_arg_desc), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (input_file_switch, get_text (ec_input_file_switch_desc), True, False, input_file_switch_arg_name, get_text (ec_input_file_switch_arg_desc), False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (term_bindings_switch, get_text (ec_term_bindings_switch_desc), True, False, term_bindings_switch_arg, get_text (ec_term_bindings_switch_arg_desc), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (output_dir_switch, get_text (ec_output_dir_switch_desc), False, False, output_dir_switch_arg_name, get_text (ec_output_dir_switch_arg_desc), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (input_file_switch, get_text (ec_input_file_switch_desc), False, False, input_file_switch_arg_name, get_text (ec_input_file_switch_arg_desc), False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (inject_term_bindings_switch, get_text (ec_term_bindings_switch_desc), False, False, inject_term_bindings_switch_arg, get_text (ec_term_bindings_switch_arg_desc), False))
 
 			-- valid command line configurations
 
@@ -80,67 +84,83 @@ feature -- Definitions
 		once
 			create Result.make (10)
 
-			-- adlc -s [-q]
-			-- adlc --show_config [--quiet]
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (show_config_switch), switch_of_name (quiet_switch) >>, False))
+			-- adlc [--quiet] --show_config
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (show_config_switch)>>, False))
 
-			-- adlc -L [-q]
-			-- adlc --list_rms [--quiet]
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (list_rms_switch), switch_of_name (quiet_switch) >>, False))
+			-- adlc [--quiet] --list_rms
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (list_rms_switch)>>, False))
 
-			-- adlc -D [-q]
-			-- adlc --display_rms [--quiet]
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (display_rm_switch), switch_of_name (quiet_switch) >>, False))
+			-- adlc [--quiet] --display_rms
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (display_rm_switch)>>, False))
 
-			-- adlc -X [-q]
-			-- adlc --export_rms [--quiet]
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (export_rms_switch), switch_of_name (quiet_switch) >>, False))
+			-- adlc [--quiet] --export_rms
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (export_rms_switch)>>, False))
 
-			-- adlc [-q] -b <library name> -l [<id_pattern>]
-			-- adlc [--quiet] --library <library name> --list_archetypes [<id_pattern>]
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (list_archetypes_switch), switch_of_name (quiet_switch) >>, True))
+			-- adlc [--quiet] [--cfg <file path>] --library <library name> --list_archetypes [<id_pattern>]
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (library_switch),
+															switch_of_name (list_archetypes_switch)>>, True))
 
-			-- adlc [-q] -b <library name> -d [<id_pattern>]
-			-- adlc [--quiet] --library <library name> --display_archetypes [<id_pattern>]
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (display_archetypes_switch), switch_of_name (quiet_switch) >>, True))
+			-- adlc [--quiet] [--cfg <file path>] --library <library name> --display_archetypes [<id_pattern>]
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (library_switch),
+															switch_of_name (display_archetypes_switch)>>, True))
+
+			-- BUILD system
+			-- adlc [--quiet] [--cfg <file path>] --library <library name> --build
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (library_switch),
+															switch_of_name (build_switch)>>, False))
 
 			-- EXPORT term bindings
-			-- adlc [-q] -b <library name> --export_term_bindings
-			-- adlc [--quiet] --library <library name> --export_term_bindings
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch),
-															switch_of_name (export_term_bindings_switch),
-															switch_of_name (quiet_switch),
-															switch_of_name (output_dir_switch) >>, False))
+			-- adlc [--quiet] [--cfg <file path>] --library <library name> --export_term_bindings [--output <output_dir>]
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (library_switch),
+															switch_of_name (export_term_bindings_switch), switch_of_name (output_dir_switch) >>, False))
 
 			-- CLEAN term bindings
-			-- adlc [-q] -b <library name> --clean_term_bindings
-			-- adlc [--quiet] --library <library name> --clean_term_bindings
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch),
-															switch_of_name (clean_term_bindings_switch),
-															switch_of_name (quiet_switch) >>, False))
+			-- adlc [--quiet] [--cfg <file path>] --library <library name> --clean_term_bindings
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (library_switch),
+															switch_of_name (clean_term_bindings_switch)>>, False))
 
 			-- EXPORT
-			-- adlc -b <library name> [--cfg <file path>] [-q] [-f <format>] -x [--flat] [--rm_multiplicities] [-o <output_dir>] [<id_pattern>]
-			-- adlc --library <library name> [--cfg <file path>] [--quiet] [--format <format>] --export  [--flat] [--output <output_dir>] [<id_pattern>]
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch), switch_of_name (flat_switch), switch_of_name (rm_multiplicities_switch),
+			-- adlc [--quiet] [--cfg <file path>] --library <library name> --export [--format <format>]  [--flat] [--output <output_dir>] [<id_pattern>]
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
 															switch_of_name (cfg_switch),
-															switch_of_name (quiet_switch), switch_of_name (format_switch),
-															switch_of_name (export_switch), switch_of_name (output_dir_switch)>>, True))
+															switch_of_name (library_switch),
+															switch_of_name (export_switch),
+															switch_of_name (flat_switch), switch_of_name (rm_multiplicities_switch),
+															switch_of_name (format_switch),
+															switch_of_name (output_dir_switch)>>, True))
 
 			-- REPORT
-			-- adlc [-q] -b <library name> [-f <format>] -p [-o <output_dir>]
-			-- adlc [--quiet] --library <library name> [--format <format>] --report [--output <output_dir>]
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch),
-															switch_of_name (quiet_switch), switch_of_name (format_switch),
+			-- adlc [--quiet] [--cfg <file path>] --library <library name> [--format <format>] --report [--output <output_dir>]
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (library_switch),
+															switch_of_name (format_switch),
 															switch_of_name (report_switch), switch_of_name (output_dir_switch)>>, False))
 
-			-- Terminology binding injection
-			-- adlc -b <library name> [-q] --inject_term_bindings <terminology_name_space> -i <terms_file>
-			-- adlc --library <library name> [--quiet] --inject_term_bindings --input_file <terms_file>
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (library_switch),
-															switch_of_name (quiet_switch),
-															switch_of_name (term_bindings_switch),
-															switch_of_name (input_file_switch)>>, False))
+			-- INJECT Terminology bindings
+			-- adlc [--quiet] [--cfg <file path>] --library <library name> --inject_term_bindings --input_file <terms_file>
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (library_switch),
+															switch_of_name (inject_term_bindings_switch), switch_of_name (input_file_switch)>>, False))
 		end
 
 	quiet_switch: STRING = "q|quiet"
@@ -158,14 +178,15 @@ feature -- Definitions
 	list_archetypes_switch: STRING = "l|list_archetypes"
 	display_archetypes_switch: STRING = "d|display_archetypes"
 
+	build_switch: STRING = "build"
 	report_switch: STRING = "r|report"
 	export_switch: STRING = "x|export"
 
 	export_term_bindings_switch: STRING = "export_term_bindings"
 	clean_term_bindings_switch: STRING = "clean_term_bindings"
 
-	term_bindings_switch: STRING = "inject_term_bindings"
-	term_bindings_switch_arg: STRING = "terminology namespace"
+	inject_term_bindings_switch: STRING = "inject_term_bindings"
+	inject_term_bindings_switch_arg: STRING = "terminology namespace"
 
 	library_switch: STRING = "b|library"
 	library_switch_arg: STRING = "library name"
@@ -224,11 +245,12 @@ feature {NONE} -- Initialization
 				list_rms := has_option (list_rms_switch)
 				export_rms := has_option (export_rms_switch)
 				write_to_file_system := has_option (output_dir_switch)
+				build := has_option (build_switch)
 				report := has_option (report_switch)
 				export_archetypes := has_option (export_switch)
 				export_term_bindings := has_option (export_term_bindings_switch)
 				clean_term_bindings := has_option (clean_term_bindings_switch)
-				inject_term_bindings := has_option (term_bindings_switch)
+				inject_term_bindings := has_option (inject_term_bindings_switch)
 			end
 		end
 
@@ -309,7 +331,7 @@ feature -- Access
 		require
 			is_successful: is_successful
 		once
-			if has_option (term_bindings_switch) and then attached option_of_name (term_bindings_switch) as opt and then opt.has_value then
+			if has_option (inject_term_bindings_switch) and then attached option_of_name (inject_term_bindings_switch) as opt and then opt.has_value then
 				Result := opt.value
 			end
 		end
@@ -342,6 +364,8 @@ feature -- Status Report
 	export_rms: BOOLEAN
 
 	write_to_file_system: BOOLEAN
+
+	build: BOOLEAN
 
 	report: BOOLEAN
 

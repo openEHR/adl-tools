@@ -281,6 +281,7 @@ feature -- Definitions
 		ec_list_archetypes_switch_desc: STRING = "list_archetypes_switch_desc"
 		ec_display_archetypes_switch_desc: STRING = "display_archetypes_switch_desc"
 		ec_list_rms_switch_desc: STRING = "list_rms_switch_desc"
+		ec_build_switch_desc: STRING = "build_switch_desc"
 		ec_export_switch_desc: STRING = "export_switch_desc"
 		ec_report_switch_desc: STRING = "report_switch_desc"
 		ec_export_term_bindings_desc: STRING = "export_term_bindings_desc"

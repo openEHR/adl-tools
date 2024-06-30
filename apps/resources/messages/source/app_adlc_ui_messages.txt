@@ -29,6 +29,7 @@ templates = <
 		["list_archetypes_switch_desc"] = <"generate list of archetypes in current library (use for further processing)">
 		["display_archetypes_switch_desc"] = <"generate list of archetypes in current library in user-friendly format">
 		["list_rms_switch_desc"] = <"generate list of reference models">
+		["build_switch_desc"] = <"build system and generate report">
 		["export_switch_desc"] = <"export archetypes">
 		["report_switch_desc"] = <"generate reports">
 		["export_term_bindings_desc"] = <"export archetype term bindings">

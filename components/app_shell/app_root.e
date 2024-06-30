@@ -11,21 +11,45 @@ class APP_ROOT
 
 inherit
 	SHARED_ARCHETYPE_LIBRARIES
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
 
 	SHARED_ARCHETYPE_REPOSITORY_INTERFACES
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
 
 	SHARED_ARCHETYPE_LIBRARY_INTERFACES
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
 
 	SHARED_AOM_PROFILES_ACCESS
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
 
 	EXTERNAL_TOOL_DEFINITIONS
 		export
 			{NONE} all
+		undefine
+			default_create
 		end
 
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all
+		undefine
+			default_create
 		end
 
 	-- FIXME: this is a hack to allow add_custom_dt_dynamic_type_from_string to be called, adding in some
@@ -33,32 +57,50 @@ inherit
 	DT_TYPES
 		export
 			{NONE} all
+		undefine
+			default_create
 		end
 
 	SHARED_DT_OBJECT_CONVERTER
 		export
 			{NONE} all
+		undefine
+			default_create
 		end
 
 	SHARED_ARCHETYPE_COMPILER
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
 
 	ANY_VALIDATOR
 		rename
-			validate as initialise_app, ready_to_validate as ready_to_initialise_app
+			validate as initialise_app,
+			passed as cfg_file_initialised,
+			ready_to_validate as ready_to_initialise_app
 		redefine
-			ready_to_initialise_app
+			default_create, ready_to_initialise_app
 		end
 
 	SHARED_XML_RULES_FILE_ACCESS
 		export
 			{NONE} all
 		undefine
-			app_cfg_initialise, Default_application_name, Application_developer_name, Fallback_application_name, app_cfg
+			default_create, app_cfg_initialise, Default_application_name, Application_developer_name, Fallback_application_name, app_cfg
 		end
 
 feature -- Initialisation
 
+	default_create
+		do
+			in_initial_state := True
+		end
+
 	initialise_shell
+		require
+			in_initial_state
 		once
 			-- see DT_TYPES note above; a hack needed to make string name -> type_id work for class names
 			-- that clash with Eiffel type names
@@ -76,11 +118,26 @@ feature -- Initialisation
 			set_xml_load_rules_agent
 
 			initialise_serialisers
-			reset
 
+			shell_initialised := True
+		ensure
+			shell_initialised
+		end
+
+	initialise_cfg
+		require
+			shell_initialised
+		once
+			reset
 			if app_cfg.errors.has_errors then
 				merge_errors (app_cfg.errors)
 			end
+
+			if not has_errors then
+				cfg_file_initialised := True
+			end
+		ensure
+			cfg_file_initialised or initialisation_failed
 		end
 
 	initialise_app
@@ -224,13 +281,36 @@ feature -- Initialisation
 			if term_init.init_failed then
 				add_error ({ADL_MESSAGES_IDS}.ec_terminology_init_failed, <<term_init.init_fail_reason>>)
 			end
+
+			if not has_errors then
+				app_initialised := True
+			end
 		end
 
 feature -- Status Report
 
+	initialisation_failed: BOOLEAN
+		do
+			Result := has_errors
+		end
+
+	in_initial_state: BOOLEAN
+
+	shell_initialised: BOOLEAN
+
+	app_initialised: BOOLEAN
+
 	ready_to_initialise_app: BOOLEAN
 		do
-			Result := not app_cfg.errors.has_errors
+			Result := cfg_file_initialised
+		end
+
+feature -- Modification
+
+	set_custom_config_file_path (a_path: STRING)
+		do
+			custom_config_file_path.wipe_out
+			custom_config_file_path.append (a_path)
 		end
 
 end

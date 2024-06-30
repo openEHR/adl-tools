@@ -8,12 +8,12 @@ note
 					   adlc [-q] -L
 					   adlc [-q] -D
 					   adlc [-q] -X
+					   adlc [-q] -b <library name> --build
 					   adlc [-q] -b <library name> -l [<id_pattern>]
 					   adlc [-q] -b <library name> -d [<id_pattern>]
 					   adlc [-q] -b <library name> [-f <format>] --report [-o <output_dir>]
 					   adlc [-q] -b <library name> --inject_term_bindings <terminology_namespace> -i <terms_file>
 					   adlc [-q] -b <library name> --export_term_bindings
-					   adlc [-q] -b <library name> [--flat] [--cfg <file path>] [-f <format>] -a <action> [-o <output_dir>] [<id_pattern>]
 
 					OPTIONS:
 					   Options should be prefixed with: '-' or '/'
@@ -34,6 +34,8 @@ note
 					                          	  <format>: file formats: json|adl|odin|yaml|xml|csv (default = adl or csv)
 					      --cfg               	: output default configuration file location (Optional)
 					                          	  <file path>: .cfg file path
+					                          	  
+					      --build               : build system and generate report to std_out
 					   -x --export            	: export matching archetypes in specified format
 					   -r --report            	: generate reports in specified format
 					   -o --output            	: output directory to write files to; '.' for current directory
@@ -114,8 +116,38 @@ feature -- Initialization
 			-- Run application.
 		do
 			app_root.initialise_shell
-			if app_root.ready_to_initialise_app then
+			if app_root.shell_initialised then
 				opts.execute (agent start)
+			else
+				report_std_out ("Failed to initialise application shell (app_root.initialise_shell)")
+			end
+		end
+
+	start
+		do
+			report_std_out ("Initialising... ")
+
+			if attached opts.cfg_file_path as cfg_file_path then
+				app_root.set_custom_config_file_path (cfg_file_path)
+			end
+
+			app_root.initialise_cfg
+			
+			if app_root.ready_to_initialise_app then
+				app_root.initialise_app
+
+				if not app_root.has_errors then
+					process_jobs
+				else
+					report_std_err (app_root.error_strings)
+					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_config_file_location, <<app_cfg.file_path>>))
+					across bmm_models_access.all_schemas as schemas_csr loop
+						if schemas_csr.item.has_errors then
+							report_std_err ("========== Schema validation errors for " + schemas_csr.key.as_string_8 + " ===========")
+							report_std_err (schemas_csr.item.errors.as_string)
+						end
+					end
+				end
 			end
 		end
 
@@ -133,88 +165,79 @@ feature -- Status Report
 
 feature -- Commands
 
-	start
+	process_jobs
 		local
 			curr_repo, action, report: STRING
 			aca: ARCH_LIB_ARCHETYPE
 			full_path, schema_file_path, export_dir: STRING
 			finished: BOOLEAN
 		do
-			report_std_out ("Initialising... ")
+			-- set some feedback agents in the compiler
+			archetype_compiler.set_console_update_agent (agent report_std_out)
+			archetype_compiler.set_archetype_visual_update_agent (agent compiler_archetype_gui_update)
 
-			app_root.initialise_app
+			-- process command line
+			if opts.show_config then
+				action_show_config
 
-			if not app_root.has_errors then
-				-- set some feedback agents in the compiler
-				archetype_compiler.set_console_update_agent (agent report_std_out)
-				archetype_compiler.set_archetype_visual_update_agent (agent compiler_archetype_gui_update)
+			-- List Reference Models
+			elseif opts.list_rms then
+				action_list_rms
 
-				-- process command line
-				if opts.show_config then
-					action_show_config
+			-- Display a Reference Model
+			elseif attached opts.display_rm as rm then
+				action_display_rm (rm)
 
-				-- List Reference Models
-				elseif opts.list_rms then
-					action_list_rms
+			-- Export Reference Models
+			elseif opts.export_rms then
+				action_export_rms
 
-				-- Display a Reference Model
-				elseif attached opts.display_rm as rm then
-					action_display_rm (rm)
+			-- otherwise process archetype library
+			elseif attached opts.library as att_lib then
+				if has_library (att_lib) then
+					set_current_library_name (att_lib)
+					report_std_out ("Using library " + att_lib)
+					build_archetype_id_list
 
-				-- Export Reference Models
-				elseif opts.export_rms then
-					action_export_rms
+					if not error_reported then
+						if opts.list_archetypes then
+							action_list_archetype_ids
 
-				-- otherwise process archetype library
-				elseif attached opts.library as att_lib then
-					if has_library (att_lib) then
-						set_current_library_name (att_lib)
-						report_std_out ("Using library " + att_lib)
-						build_archetype_id_list
+						-- a build is required
+						else
+							archetype_compiler.setup_build ([False])
+							archetype_compiler.build_all
 
-						if not error_reported then
-							if opts.list_archetypes then
-								action_list_archetype_ids
+							if opts.display_archetypes then
+								action_arch_display_library
 
-							-- a build is required
-							else
-								report_std_out ("--------- Building all ---------")
-								archetype_compiler.setup_build ([False])
-								archetype_compiler.build_all
+							elseif opts.export_archetypes then
+								export_library
 
-								if opts.display_archetypes then
-									action_arch_display_library
+							elseif opts.export_term_bindings then
+								export_term_bindings
 
-								elseif opts.export_archetypes then
-									export_library
+							elseif opts.clean_term_bindings then
+								clean_term_bindings
 
-								elseif opts.export_term_bindings then
-									export_term_bindings
+							elseif opts.report then
+								generate_library_reports
 
-								elseif opts.clean_term_bindings then
-									clean_term_bindings
+							elseif opts.inject_term_bindings then
+								inject_term_bindings
 
-								elseif opts.report then
-									generate_library_reports
-
-								elseif opts.inject_term_bindings then
-									inject_term_bindings
-								end
+							elseif opts.build then
+								-- nothing special yet
 							end
 						end
-					else
-						report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_lib_does_not_exist_err, <<att_lib>>))
 					end
+				else
+					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_lib_does_not_exist_err, <<att_lib>>))
 				end
+
+			-- no options present; show help
 			else
-				report_std_err (app_root.error_strings)
-				report_std_err(get_msg ({ADL_MESSAGES_IDS}.ec_config_file_location, <<app_cfg.file_path>>))
-				across bmm_models_access.all_schemas as schemas_csr loop
-					if schemas_csr.item.has_errors then
-						report_std_err ("========== Schema validation errors for " + schemas_csr.key.as_string_8 + " ===========")
-						report_std_err (schemas_csr.item.errors.as_string)
-					end
-				end
+				opts.display_usage
 			end
 		end
 

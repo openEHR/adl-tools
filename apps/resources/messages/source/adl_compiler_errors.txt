@@ -20,16 +20,16 @@ templates = <
 		-- ARCHETYPE_COMPILER
 		["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
 		["compiler_status"] = <"==== $1 %N">
-		["compiler_finished_status"] = <"==== finished $1 %N">
+		["compiler_finished_status"] = <"==== Finished $1 ==== %N">
 
-		["compiler_building_system"] = <"==== building system %N">
-		["compiler_finished_building_system"] = <"==== finished building system: $1 total; $2 valid; $3 warnings; $4 errors ====%N">
+		["compiler_building_system"] = <"==== Building system ====%N">
+		["compiler_finished_building_system"] = <"==== Build complete: total=$1; valid=$2; warnings=$3; errors=$4 ====%N">
 
 		["compiler_rebuilding_system"] = <"==== rebuilding system from scratch">
-		["compiler_finished_rebuilding_system"] = <"==== finished rebuilding system: $1 total; $2 valid; $3 warnings; $4 errors ====%N">
+		["compiler_finished_rebuilding_system"] = <"==== Rebuild complete: total=$1; valid=$2; warnings=$3; errors=$4 ====%N">
 
 		["compiler_export"] = <"==== exporting built library as $1 to $2 %N">
-		["compiler_finished_export"] = <"==== finished library export %N">
+		["compiler_finished_export"] = <"==== Finished library export ==== %N">
 
 		["compiler_compiling_archetype"] = <"---- compiling $1 ---- $2 ">
 		["compiler_already_attempted_failed"] = <"---- $1 ---- $2 (already attempted - FAILED) %N$2">
