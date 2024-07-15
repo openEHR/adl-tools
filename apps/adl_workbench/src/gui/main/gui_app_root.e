@@ -53,6 +53,7 @@ feature {NONE} -- Initialization
 			splash.show
 			process_events
 			app_root.initialise_shell
+			app_root.initialise_cfg
 			if app_root.ready_to_initialise_app then
 				app_root.initialise_app
 				process_graphical_events

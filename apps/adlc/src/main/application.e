@@ -35,7 +35,7 @@ note
 					      --cfg               	: output default configuration file location (Optional)
 					                          	  <file path>: .cfg file path
 					                          	  
-					      --build               : build system and generate report to std_out
+					      --build               : build system, OPTs, and reports and generate log to std_out
 					   -x --export            	: export matching archetypes in specified format
 					   -r --report            	: generate reports in specified format
 					   -o --output            	: output directory to write files to; '.' for current directory
@@ -132,7 +132,7 @@ feature -- Initialization
 			end
 
 			app_root.initialise_cfg
-			
+
 			if app_root.ready_to_initialise_app then
 				app_root.initialise_app
 
@@ -405,6 +405,10 @@ feature {NONE} -- Commands
 
 			-- AOM profiles file
 			buffer.append (get_msg ({ADL_MESSAGES_IDS}.ec_aom_profiles_location, <<aom_profile_directory>>))
+
+			-- terminology file
+			buffer.append (get_msg ({ADL_MESSAGES_IDS}.ec_terminology_location, <<terminology_directory>>))
+
 
 			-- RM schemas info
 			buffer.append ("%N" + get_text ({ADL_MESSAGES_IDS}.ec_rm_schemas_info_text))

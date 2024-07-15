@@ -47,7 +47,9 @@ feature -- Initialisation
 			make
 			profile_directory := an_absolute_dir
 			load_profiles
-			validate
+			if not profile_descriptor_candidates.is_empty then
+				validate
+			end
 		end
 
 feature -- Access
@@ -167,7 +169,7 @@ feature -- Commands
 						aom_pd.load
 						profile_descriptor_candidates.extend (aom_pd)
 					end
-					if profiles.is_empty then
+					if profile_descriptor_candidates.is_empty then
 						add_error ({ADL_MESSAGES_IDS}.ec_aom_profile_dir_contains_no_valid_profiles, <<profile_directory>>)
 					end
 				end

@@ -308,6 +308,7 @@ feature -- Definitions
 		ec_config_file_location: STRING = "config_file_location"
 		ec_xml_rules_file_location: STRING = "xml_rules_file_location"
 		ec_aom_profiles_location: STRING = "aom_profiles_location"
+		ec_terminology_location: STRING = "terminology_location"
 		ec_repos_info_text: STRING = "repos_info_text"
 		ec_current_lib_info_text: STRING = "current_lib_info_text"
 		ec_rm_schemas_info_text: STRING = "rm_schemas_info_text"

@@ -69,6 +69,7 @@ templates = <
 		["config_file_location"] = <"User .cfg file location: $1%N">
 		["xml_rules_file_location"] = <"XML rules file location: $1%N">
 		["aom_profiles_location"] = <"AOM profiles location: $1%N">
+		["terminology_location"] = <"openEHR terminology file location: $1%N">
 		["repos_info_text"] = <"Configured repositories: %N">
 		["current_lib_info_text"] = <"Current library: $1%N">
 		["rm_schemas_info_text"] = <"Loaded RM schemas (BMM files): %N">

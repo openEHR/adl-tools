@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (971)
+			create message_table.make (972)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -323,6 +323,7 @@ feature -- Initialisation
 			message_table.put ("User .cfg file location: $1%N", ec_config_file_location)
 			message_table.put ("XML rules file location: $1%N", ec_xml_rules_file_location)
 			message_table.put ("AOM profiles location: $1%N", ec_aom_profiles_location)
+			message_table.put ("openEHR terminology file location: $1%N", ec_terminology_location)
 			message_table.put ("Configured repositories: %N", ec_repos_info_text)
 			message_table.put ("Current library: $1%N", ec_current_lib_info_text)
 			message_table.put ("Loaded RM schemas (BMM files): %N", ec_rm_schemas_info_text)
