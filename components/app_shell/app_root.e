@@ -177,10 +177,11 @@ feature -- Initialisation
 			if rm_schema_directories.is_empty then
 				add_rm_schema_directory (Default_rm_schema_directory)
 				if not file_system.directory_exists (Default_rm_schema_directory) then
-					-- TODO: revert when original call no longer causes OS faults
-					-- file_system.recursive_create_directory (Default_rm_schema_directory)
-					create dir.make (Default_rm_schema_directory)
-					dir.recursive_create_dir
+					file_system.recursive_create_directory (Default_rm_schema_directory)
+
+					-- alternative to above line if OS faults cause problems e.g. on Mac/Parallels
+					-- create dir.make (Default_rm_schema_directory)
+					-- dir.recursive_create_dir
 				end
 			end
 			create dead_schema_dirs.make (0)
