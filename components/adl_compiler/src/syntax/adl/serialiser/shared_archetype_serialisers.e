@@ -114,8 +114,8 @@ feature -- Access
 			-- File extensions for logical serialisation formats.
 		once ("PROCESS")
 			create Result.make (0)
-			Result.put (File_ext_archetype_source, Syntax_type_adl)
-			Result.put (File_ext_archetype_web_page, Syntax_type_adl_html)
+			Result.put (File_ext_archetype_source, {ARCHETYPE_DEFINITIONS}.Syntax_type_adl)
+			Result.put (File_ext_archetype_web_page, {ARCHETYPE_DEFINITIONS}.Syntax_type_adl_html)
 			Result.put ({ODIN_DEFINITIONS}.File_ext_odin, {ODIN_DEFINITIONS}.Syntax_type_odin)
 			Result.put ({ODIN_DEFINITIONS}.File_ext_xml_default, {ODIN_DEFINITIONS}.Syntax_type_xml)
 			Result.put ({ODIN_DEFINITIONS}.File_ext_json_default, {ODIN_DEFINITIONS}.Syntax_type_json)
@@ -128,7 +128,7 @@ feature -- Access
 			-- File extensions for logical serialisation formats.
 		once ("PROCESS")
 			create Result.make (0)
-			Result.put ({ARCHETYPE_DEFINITIONS}.File_ext_archetype_flat, {ARCHETYPE_DEFINITIONS}.Syntax_type_adl)
+			Result.put ({ARCHETYPE_DEFINITIONS}.File_ext_opt2, {ARCHETYPE_DEFINITIONS}.Syntax_type_adl)
 			Result.put ({ARCHETYPE_DEFINITIONS}.File_ext_archetype_web_page, {ARCHETYPE_DEFINITIONS}.Syntax_type_adl_html)
 			Result.put ({ODIN_DEFINITIONS}.File_ext_odin, {ODIN_DEFINITIONS}.Syntax_type_odin)
 			Result.put ({ODIN_DEFINITIONS}.File_ext_xml_default, {ODIN_DEFINITIONS}.Syntax_type_xml)
@@ -138,14 +138,14 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	archetype_file_extension (diff_flag: BOOLEAN; a_format: STRING): STRING
+	archetype_file_extension (flat_flag: BOOLEAN; a_format: STRING): STRING
 		do
-			if diff_flag then
-				check attached archetype_file_extensions [a_format] as ext then
+			if flat_flag then
+				check attached flat_archetype_file_extensions [a_format] as ext then
 					Result := ext
 				end
 			else
-				check attached flat_archetype_file_extensions [a_format] as ext then
+				check attached archetype_file_extensions [a_format] as ext then
 					Result := ext
 				end
 			end

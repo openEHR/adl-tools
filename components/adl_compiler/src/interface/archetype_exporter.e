@@ -60,6 +60,7 @@ feature {NONE} -- Commands
 			syntax := args.syntax
 			export_flat := args.export_flat
 			export_with_rm := args.export_with_rm
+			templates_only := args.templates_only
 
 			artefact_count := current_library.archetype_count
 		end
@@ -120,6 +121,9 @@ feature {NONE} -- Build State
 	export_with_rm: BOOLEAN
 		-- True if exporting flat form with RM included
 
+	templates_only: BOOLEAN
+		-- True if we only want templates
+
 feature {NONE} -- Implementation
 
 	process_archetype (ara: ARCH_LIB_ARCHETYPE)
@@ -128,18 +132,20 @@ feature {NONE} -- Implementation
 			filename, exc_trace_str: STRING
 			exception_encountered: BOOLEAN
 		do
-			if not exception_encountered then
-				if not is_interrupted then
-					if attached {ARCH_LIB_AUTHORED_ARCHETYPE} ara as auth_ara and then auth_ara.is_valid then
-						check attached archetype_file_extensions.item (syntax) as ext then
-							filename := file_system.pathname (output_dir, ara.id.as_filename) + ext
+			if not templates_only or else attached {ARCH_LIB_TEMPLATE} ara then
+				if not exception_encountered then
+					if not is_interrupted then
+						if attached {ARCH_LIB_AUTHORED_ARCHETYPE} ara as auth_ara and then auth_ara.is_valid then
+							check attached archetype_file_extension (export_flat, syntax) as ext then
+								filename := file_system.pathname (output_dir, ara.id.as_filename) + ext
+							end
+							if export_flat then
+								auth_ara.save_flat_as (filename, syntax, export_with_rm)
+							else
+								auth_ara.save_differential_as (filename, syntax)
+							end
+							update_progress
 						end
-						if export_flat then
-							auth_ara.save_flat_as (filename, syntax)
-						else
-							auth_ara.save_differential_as (filename, syntax)
-						end
-						update_progress
 					end
 				end
 			end
@@ -154,7 +160,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	build_args_type: TUPLE [export_dir, syntax: STRING; export_flat, export_with_rm: BOOLEAN]
+	build_args_type: TUPLE [export_dir, syntax: STRING; export_flat, export_with_rm, templates_only: BOOLEAN]
 		do
 			create Result
 		end

@@ -329,7 +329,7 @@ feature {NONE} -- Implementation
 				question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 				if attached question_dialog.selected_button as att_sel_btn and then att_sel_btn.same_string (get_text ({GENERAL_MESSAGES_IDS}.ec_yes_response)) then
 					src.remove_archetype (aca)
-					aca.remove_file
+					aca.remove_source_file
 					if attached aca.parent as att_parent then
 						remove_item_in_tree (aca.global_artefact_identifier)
 						library_tool_agents.call_update_explorers_and_select_agent (att_parent.global_artefact_identifier)

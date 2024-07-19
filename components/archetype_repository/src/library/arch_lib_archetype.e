@@ -436,23 +436,6 @@ feature -- Artefacts
 			end
 		end
 
-	differential_serialised_native: STRING
-			-- serialise differential archetype to its file in its source form, even if not compiling
-			-- this might fail because the serialiser might try to do something that an invalid archetype
-			-- can't support
-		local
-			exception_occurred: BOOLEAN
-		do
-			create Result.make_empty
-			if not exception_occurred then
-				if attached differential_archetype as da then
-					Result := adl_2_engine.serialise_native (da, Syntax_type_adl, current_archetype_language)
-				end
-			end
-		rescue
-			exception_occurred := True
-		end
-
 	flat_archetype: AUTHORED_ARCHETYPE
 			-- inheritance-flattened form of archetype
 		require
@@ -468,28 +451,17 @@ feature -- Artefacts
 			Result.is_flat
 		end
 
-	flat_archetype_with_rm: like flat_archetype
-			-- overlay RM multiplicities on flat form.
+	flat_archetype_processed (include_rm:BOOLEAN): like flat_archetype
+			-- post-process flat archetype in various ways and return a copy
+			-- `with_rm` - overlay RM multiplicities on flat form.
 		require
 			compilation_state >= Cs_validated_phase_2
 		do
 			Result := flat_archetype.deep_twin
 
 			-- if requested, do RM flattening		
-			if rm_flattening_on then
+			if include_rm or rm_flattening_on then
 				rm_flattener.execute (Result, ref_model)
-			end
-		end
-
-	flat_serialised_native (include_rm: BOOLEAN): STRING
-			-- The serialised text of the flat form of the archetype
-		require
-			compilation_state >= Cs_validated_phase_2
-		do
-			if include_rm then
-				Result := adl_2_engine.serialise_native (flat_archetype_with_rm, Syntax_type_adl, current_archetype_language)
-			else
-				Result := adl_2_engine.serialise_native (flat_archetype, Syntax_type_adl, current_archetype_language)
 			end
 		end
 
@@ -1073,18 +1045,6 @@ feature -- Visualisation
 			end
 		end
 
-	select_native_serialised_archetype (differential_view, with_rm: BOOLEAN): STRING
-			-- return appropriate differential or flat version of archetype, depending on setting of `differential_view' and `with_rm'
-		require
-			is_valid
-		do
-			if differential_view then
-				Result := differential_serialised_native
-			else
-				Result := flat_serialised_native (with_rm)
-			end
-		end
-
 feature -- File Access
 
 	file_mgr: ARCH_PERSISTENCE_MGR
@@ -1100,18 +1060,54 @@ feature -- File Access
 			Result := file_mgr.has_source
 		end
 
-feature -- Output
+feature -- Serialisation
 
-	serialise_object (flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
-			-- serialise internal structure in a brute-force object way, using
-			-- format like ODIN, XML, JSON etc
+	serialised_native (differential_view, with_rm: BOOLEAN): STRING
+			-- return appropriate differential or flat version of archetype, depending on setting of `differential_view' and `with_rm'
+		require
+			is_valid
+		do
+			if differential_view then
+				Result := differential_serialised_native
+			else
+				Result := flat_serialised_native (with_rm)
+			end
+		end
+
+	differential_serialised_native: STRING
+			-- serialise differential archetype to its file in its source form, even if not compiling
+			-- this might fail because the serialiser might try to do something that an invalid archetype
+			-- can't support
+		local
+			exception_occurred: BOOLEAN
+		do
+			create Result.make_empty
+			if not exception_occurred then
+				if attached differential_archetype as da then
+					Result := adl_2_engine.serialise_native (da, Syntax_type_adl, current_archetype_language)
+				end
+			end
+		rescue
+			exception_occurred := True
+		end
+
+	flat_serialised_native (include_rm: BOOLEAN): STRING
+			-- The serialised text of the flat form of the archetype
+		require
+			compilation_state >= Cs_validated_phase_2
+		do
+			Result := adl_2_engine.serialise_native (flat_archetype_processed (include_rm), Syntax_type_adl, current_archetype_language)
+		end
+
+	serialised_object (flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
+			-- serialise in-memory objects, using a format like ODIN, XML, JSON etc
 		require
 			Archetype_valid: is_valid
 			Format_valid: has_dt_serialiser_format (a_format)
 		local
 			dt_arch: DT_CONVERTIBLE
 		do
-			dt_arch := flat_for_serialisation (flat_flag)
+			dt_arch := compact_aom (flat_flag)
 
 			dt_object_converter.set_false_booleans_off_option
 			archetype_serialise_engine.set_tree (dt_arch.dt_representation)
@@ -1119,7 +1115,7 @@ feature -- Output
 			Result := archetype_serialise_engine.serialised
 		end
 
-	serialise_object_ejson (flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
+	serialised_object_ejson (flat_flag: BOOLEAN; type_marking_flag: BOOLEAN; a_format: STRING): STRING
 			-- serialise internal structure in a brute-force object way, using
 			-- format like ODIN, XML, JSON etc
 		require
@@ -1130,7 +1126,7 @@ feature -- Output
 			fac: JSON_SERIALIZATION_FACTORY
 			conv: JSON_SERIALIZATION
 		do
-			dt_arch := flat_for_serialisation (flat_flag)
+			dt_arch := compact_aom (flat_flag)
 
 			conv := fac.smart_serialization
 			conv.set_pretty_printing
@@ -1142,8 +1138,17 @@ feature -- Output
 			end
 		end
 
+	compact_aom (flat_flag: BOOLEAN): like persistent_compact_type
+		do
+			if flat_flag then
+				create Result.make (flat_archetype_processed (rm_flattening_on))
+			else
+				create Result.make (safe_differential_archetype)
+			end
+		end
+
 	generate_instance (a_format: STRING): STRING
-			-- The serialised text of the flat form of the archetype
+			-- Simple synthesised instance, serialised in an object format
 		require
 			Archetype_valid: is_valid
 			Format_valid: has_dt_serialiser_format (a_format)
@@ -1161,15 +1166,6 @@ feature {NONE}-- Output
 	persistent_compact_type: P_ARCHETYPE
 		do
 			create Result.make_dt (Void)
-		end
-
-	flat_for_serialisation (flat_flag: BOOLEAN): like persistent_compact_type
-		do
-			if flat_flag then
-				create Result.make (flat_archetype)
-			else
-				create Result.make (safe_differential_archetype)
-			end
 		end
 
 feature -- Statistics

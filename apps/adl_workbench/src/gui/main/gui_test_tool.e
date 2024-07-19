@@ -643,7 +643,7 @@ feature {NONE} -- Tests
 					flat_fname := extension_replaced (orig_fname, File_ext_archetype_flat)
 
 					flat_path := file_system.pathname (diff_dir_flat_new, flat_fname)
-					auth_target.save_flat_as (flat_path, Syntax_type_adl)
+					auth_target.save_flat_as (flat_path, Syntax_type_adl, False)
 
 					-- copy above flat file to $repository/source_flat/orig area as well, using extension .adlx (flat also uses this - diff tool needs to see same
 					-- extensions or else it gets confused)

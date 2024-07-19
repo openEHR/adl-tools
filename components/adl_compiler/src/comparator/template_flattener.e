@@ -58,7 +58,7 @@ end
 			across a_flat_arch.suppliers_index as xrefs_csr loop
 				-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
 				check attached current_library.archetype_matching_ref (xrefs_csr.key) as att_ala then
-					matched_arch := if include_rm then att_ala.flat_archetype_with_rm else att_ala.flat_archetype end
+					matched_arch := att_ala.flat_archetype_processed (include_rm)
 				end
 
 				-- make a copy of the supplier archetype (or template)

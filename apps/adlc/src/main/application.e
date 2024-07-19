@@ -8,12 +8,13 @@ note
 					   adlc [-q] -L
 					   adlc [-q] -D
 					   adlc [-q] -X
-					   adlc [-q] -b <library name> --build
-					   adlc [-q] -b <library name> -l [<id_pattern>]
-					   adlc [-q] -b <library name> -d [<id_pattern>]
-					   adlc [-q] -b <library name> [-f <format>] --report [-o <output_dir>]
-					   adlc [-q] -b <library name> --inject_term_bindings <terminology_namespace> -i <terms_file>
-					   adlc [-q] -b <library name> --export_term_bindings
+					   adlc [-q] -b <library> --build
+					   adlc [-q] -b <library> -l [<id_pattern>]
+					   adlc [-q] -b <library> -d [<id_pattern>]
+					   adlc [-q] -b <library> --export [--format <format>] [--flat] [--templates] [--rm_multiplicities] [--output <output_dir>]
+					   adlc [-q] -b <library> [-f <format>] --report [-o <output_dir>]
+					   adlc [-q] -b <library> --inject_term_bindings <terminology_namespace> -i <terms_file>
+					   adlc [-q] -b <library> --export_term_bindings
 
 					OPTIONS:
 					   Options should be prefixed with: '-' or '/'
@@ -32,6 +33,8 @@ note
 					                          	  <library name>: library name
 					   -f --format            	: output format for generated files (Optional)
 					                          	  <format>: file formats: json|adl|odin|yaml|xml|csv (default = adl or csv)
+					      --templates           : process only templates in operations like export
+					      --rm_multiplicities   : include RM cardinality and existences to AOM structures in output
 					      --cfg               	: output default configuration file location (Optional)
 					                          	  <file path>: .cfg file path
 					                          	  
@@ -280,7 +283,7 @@ feature -- Commands
 			-- PROCESS LIBRARY
 			if not error_reported then
 				report_std_out ("--------- Exporting to " + full_output_dir + "---------")
-				archetype_exporter.setup_build ([full_output_dir, output_format, opts.use_flat_source, opts.include_rm_multiplicities])
+				archetype_exporter.setup_build ([full_output_dir, output_format, opts.use_flat, opts.include_rm_multiplicities, opts.templates_only])
 				archetype_exporter.build_all
 			end
 		end

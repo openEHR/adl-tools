@@ -277,6 +277,7 @@ feature -- Definitions
 		ec_adlc_quiet_switch_desc: STRING = "adlc_quiet_switch_desc"
 		ec_flat_switch_desc: STRING = "flat_switch_desc"
 		ec_rm_multiplicities_switch_desc: STRING = "rm_multiplicities_switch_desc"
+		ec_templates_only_switch_desc: STRING = "templates_only_switch_desc"
 		ec_show_config_switch_desc: STRING = "show_config_switch_desc"
 		ec_list_archetypes_switch_desc: STRING = "list_archetypes_switch_desc"
 		ec_display_archetypes_switch_desc: STRING = "display_archetypes_switch_desc"

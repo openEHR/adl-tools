@@ -324,13 +324,15 @@ feature -- File Access
 		do
 			if has_archetype_native_serialiser_format (a_format) and attached differential_archetype as da then
 				file_mgr.save_as (a_full_path, adl_2_engine.serialise_native (da, a_format, current_archetype_language))
+
 			else -- must be a DT serialisation format
-				file_mgr.save_as (a_full_path, serialise_object (False, type_marking_on, a_format))
+				file_mgr.save_as (a_full_path, serialised_object (False, type_marking_on, a_format))
 			end
+
 			status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
 
-	save_flat_as (a_full_path, a_format: STRING)
+	save_flat_as (a_full_path, a_format: STRING; include_rm: BOOLEAN)
 			-- Save current flat archetype to `a_full_path' in `a_format'.
 		require
 			Archetype_valid: is_valid
@@ -338,11 +340,13 @@ feature -- File Access
 			Serialise_format_valid: has_serialiser_format (a_format)
 		do
 			if a_format.same_string (Syntax_type_adl) then
-				file_mgr.save_as (a_full_path, flat_serialised_native (False))
+				file_mgr.save_as (a_full_path, flat_serialised_native (include_rm))
+
 			elseif has_archetype_native_serialiser_format (a_format) then
 				file_mgr.save_as (a_full_path, adl_2_engine.serialise_native (flat_archetype, a_format, current_archetype_language))
+
 			else -- must be a DT serialisation format
-				file_mgr.save_as (a_full_path, serialise_object (True, type_marking_on, a_format))
+				file_mgr.save_as (a_full_path, serialised_object (True, type_marking_on, a_format))
 			end
 			status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<a_full_path, a_format>>)
 		end
@@ -370,7 +374,7 @@ feature -- File Access
 			file_mgr.save_as (a_full_path, a_text)
 		end
 
-	remove_file
+	remove_source_file
 			-- remove the source file from the file system
 		do
 			file_mgr.remove_source_file
@@ -382,7 +386,13 @@ feature -- File Access
 			Result := file_mgr.can_save_to_legacy_file
 		end
 
-feature -- File Access
+	save_differential_compiled
+			-- save validated differential archetype in fast-retrieve form (ODIN)
+		require
+			Archetype_valid: is_valid
+		do
+			file_mgr.save_differential_compiled (serialised_object (False, False, {ODIN_DEFINITIONS}.Syntax_type_odin))
+		end
 
 	clean_generated
 			-- delete generated file and compiler products; forces next compilation to start from primary expression
@@ -394,15 +404,7 @@ feature -- File Access
 			Reset_if_source_generated: file_mgr.is_source_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
 		end
 
-feature -- File Access
-
-	save_differential_compiled
-			-- save validated differential archetype in fast-retrieve form (ODIN)
-		require
-			Archetype_valid: is_valid
-		do
-			file_mgr.save_differential_compiled (serialise_object (False, False, {ODIN_DEFINITIONS}.Syntax_type_odin))
-		end
+feature -- Serialisation
 
 	compiled_differential: STRING
 			-- round-trip from ODIN-serialised file to AOM2 to ODIN

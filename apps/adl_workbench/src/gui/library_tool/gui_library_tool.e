@@ -512,7 +512,7 @@ feature {NONE} -- Implementation
 						-- finalise the file path & create a handle
 						set_last_user_save_directory (file_system.dirname (name))
 						format := format_list [save_dialog.selected_filter_index]
-						ext := archetype_file_extension (diff_flag, format)
+						ext := archetype_file_extension (not diff_flag, format)
 						if not file_system.has_extension (name, ext) then
 							name.append (ext)
 						end
@@ -531,7 +531,7 @@ feature {NONE} -- Implementation
 							if diff_flag then
 								aca.save_differential_as (name, format)
 							else
-								aca.save_flat_as (name, format)
+								aca.save_flat_as (name, format, False)
 							end
 							gui_agents.call_console_tool_append_agent (aca.status)
 						end

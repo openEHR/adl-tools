@@ -221,7 +221,7 @@ feature {NONE} -- Implementation
 	adl_text: STRING
 		do
 			if adl_text_cache.is_empty then
-				adl_text_cache.append (safe_source.select_native_serialised_archetype (differential_view, rm_flattening_on))
+				adl_text_cache.append (safe_source.serialised_native (differential_view, rm_flattening_on))
 			end
 			Result := adl_text_cache
 		end
@@ -236,7 +236,7 @@ feature {NONE} -- Implementation
 	json_text: STRING
 		do
 			if json_text_cache.is_empty then
-				json_text_cache.append (safe_source.serialise_object (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_json))
+				json_text_cache.append (safe_source.serialised_object (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_json))
 			end
 			Result := json_text_cache
 		end
@@ -252,7 +252,7 @@ feature {NONE} -- Implementation
 	ejson_text: STRING
 		do
 			if ejson_text_cache.is_empty then
-				ejson_text_cache.append (safe_source.serialise_object_ejson (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_json))
+				ejson_text_cache.append (safe_source.serialised_object_ejson (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_json))
 			end
 			Result := ejson_text_cache
 		end
@@ -268,7 +268,7 @@ feature {NONE} -- Implementation
 	yaml_text: STRING
 		do
 			if yaml_text_cache.is_empty then
-				yaml_text_cache.append (safe_source.serialise_object (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_yaml))
+				yaml_text_cache.append (safe_source.serialised_object (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_yaml))
 			end
 			Result := yaml_text_cache
 		end
@@ -284,7 +284,7 @@ feature {NONE} -- Implementation
 	xml_text: STRING
 		do
 			if xml_text_cache.is_empty then
-				xml_text_cache.append (safe_source.serialise_object (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_xml))
+				xml_text_cache.append (safe_source.serialised_object (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_xml))
 			end
 			Result := xml_text_cache
 		end
@@ -300,7 +300,7 @@ feature {NONE} -- Implementation
 	odin_text: STRING
 		do
 			if odin_text_cache.is_empty then
-				odin_text_cache.append (safe_source.serialise_object (not differential_view, type_marking_on, {ARCHETYPE_DEFINITIONS}.Syntax_type_adl))
+				odin_text_cache.append (safe_source.serialised_object (not differential_view, type_marking_on, {ARCHETYPE_DEFINITIONS}.Syntax_type_adl))
 			end
 			Result := odin_text_cache
 		end

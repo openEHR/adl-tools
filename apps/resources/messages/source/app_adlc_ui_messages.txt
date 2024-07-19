@@ -25,6 +25,7 @@ templates = <
 		["adlc_quiet_switch_desc"] = <"suppress verbose feedback, including configuration information on startup">
 		["flat_switch_desc"] = <"use flat form of archetype[s] for export">
 		["rm_multiplicities_switch_desc"] = <"include RM multiplicities when flattening">
+		["templates_only_switch_desc"] = <"export templates only">
 		["show_config_switch_desc"] = <"show current configuration and defaults">
 		["list_archetypes_switch_desc"] = <"generate list of archetypes in current library (use for further processing)">
 		["display_archetypes_switch_desc"] = <"generate list of archetypes in current library in user-friendly format">

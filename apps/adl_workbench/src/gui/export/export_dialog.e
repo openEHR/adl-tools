@@ -360,7 +360,7 @@ feature {NONE} -- Implementation
 					else
 						execution_state := es_ready_to_generate
 					end
-					archetype_exporter.setup_build ([output_directory, evx_format_cob.data_control_text, export_flat, evx_flatten_with_rm_cb.is_selected])
+					archetype_exporter.setup_build ([output_directory, evx_format_cob.data_control_text, export_flat, evx_flatten_with_rm_cb.is_selected, False])
 
 				-- start compilation
 				elseif execution_state = es_ready_to_compile then
