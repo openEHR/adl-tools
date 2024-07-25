@@ -134,10 +134,11 @@ feature -- Definitions: Tool tabs
 	Tool_tab_clients_suppliers: INTEGER = 6
 	Tool_tab_source: INTEGER = 7
 	Tool_tab_serialised: INTEGER = 8
-	Tool_tab_instance: INTEGER = 9
-	Tool_tab_validity: INTEGER = 10
-	Tool_tab_stats: INTEGER = 11
-	Tool_tab_max: INTEGER = 12
+	Tool_tab_opt: INTEGER = 9
+	Tool_tab_instance: INTEGER = 10
+	Tool_tab_validity: INTEGER = 11
+	Tool_tab_stats: INTEGER = 12
+	Tool_tab_max: INTEGER = 13
 
 	Tool_tab_index: HASH_TABLE [STRING, INTEGER]
 			-- names of tool tabs keyed by tab constants
@@ -152,6 +153,7 @@ feature -- Definitions: Tool tabs
 			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_clients_suppliers_tab_text), Tool_tab_clients_suppliers)
 			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_source_tab_text), Tool_tab_source)
 			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_serialised_tab_text), Tool_tab_serialised)
+			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_opt_tab_text), Tool_tab_opt)
 			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_instance_tab_text), Tool_tab_instance)
 			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_validity_tab_text), Tool_tab_validity)
 			Result.put (get_text ({ADL_MESSAGES_IDS}.ec_stat_info_tab_text), Tool_tab_stats)

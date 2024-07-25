@@ -54,7 +54,7 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_SWITCH}.make (quiet_switch, get_text (ec_adlc_quiet_switch_desc), True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (flat_switch, get_text (ec_flat_switch_desc), True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (rm_multiplicities_switch, get_text (ec_rm_multiplicities_switch_desc), True, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (templates_only_switch, get_text (ec_templates_only_switch_desc), True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (opts_only_switch, get_text (ec_templates_only_switch_desc), True, False))
 
 			Result.extend (create {ARGUMENT_SWITCH}.make (show_config_switch, get_text (ec_show_config_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (list_archetypes_switch, get_text (ec_list_archetypes_switch_desc), False, False))
@@ -140,14 +140,14 @@ feature -- Definitions
 															switch_of_name (clean_term_bindings_switch)>>, False))
 
 			-- EXPORT
-			-- adlc [--quiet] [--cfg <file path>] --library <library name> --export [--format <format>]  [--flat] [--templates] [--rm_multiplicities] [--output <output_dir>] [<id_pattern>]
+			-- adlc [--quiet] [--cfg <file path>] --library <library name> --export [--format <format>]  [--flat] [--opts] [--rm_multiplicities] [--output <output_dir>] [<id_pattern>]
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
 															switch_of_name (cfg_switch),
 															switch_of_name (library_switch),
 															switch_of_name (export_switch),
 															switch_of_name (flat_switch),
 															switch_of_name (rm_multiplicities_switch),
-															switch_of_name (templates_only_switch),
+															switch_of_name (opts_only_switch),
 															switch_of_name (format_switch),
 															switch_of_name (output_dir_switch)>>, True))
 
@@ -170,7 +170,7 @@ feature -- Definitions
 	quiet_switch: STRING = "q|quiet"
 	flat_switch: STRING = "flat"
 	rm_multiplicities_switch: STRING = "rm_multiplicities"
-	templates_only_switch: STRING = "templates"
+	opts_only_switch: STRING = "opts"
 	show_config_switch: STRING = "s|show_config"
 
 	list_rms_switch: STRING = "L|list_rms"
@@ -244,7 +244,7 @@ feature {NONE} -- Initialization
 				is_verbose := not has_option (quiet_switch)
 				use_flat := has_option (flat_switch)
 				include_rm_multiplicities := has_option (rm_multiplicities_switch)
-				templates_only := has_option (templates_only_switch)
+				templates_only := has_option (opts_only_switch)
 
 				show_config := has_option (show_config_switch)
 				list_archetypes := has_option (list_archetypes_switch)

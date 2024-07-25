@@ -239,8 +239,8 @@ feature -- Modification
 					ui_graph_state.undo_redo_chain.add_link_simple (evx_grid.ev_grid,
 						-- undo
 						agent do_refine_existing_constraint (a_n.rm_type_name, a_n.occurrences.as_string,
-							ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id).text,
-							ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id).description),
+							ui_graph_state.flattened_terminology.term_definition (display_settings.language, a_n.node_id).text,
+							ui_graph_state.flattened_terminology.term_definition (display_settings.language, a_n.node_id).description),
 						-- redo
 						agent do_refine_existing_constraint (co_create_params.rm_type, co_create_params.occurrences,
 							co_create_params.node_id_text, co_create_params.node_id_description)
@@ -272,11 +272,11 @@ feature -- Modification
 				end
 
 				-- node id
-				if not new_node_text.same_string (ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id).text) then
-					ui_graph_state.flat_terminology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.text_key, new_node_text)
+				if not new_node_text.same_string (ui_graph_state.flattened_terminology.term_definition (display_settings.language, a_n.node_id).text) then
+					ui_graph_state.flattened_terminology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.text_key, new_node_text)
 				end
-				if not new_node_description.same_string (ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id).description) then
-					ui_graph_state.flat_terminology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.description_key, new_node_description)
+				if not new_node_description.same_string (ui_graph_state.flattened_terminology.term_definition (display_settings.language, a_n.node_id).description) then
+					ui_graph_state.flattened_terminology.replace_term_definition_item (display_settings.language, a_n.node_id, {ARCHETYPE_TERM}.description_key, new_node_description)
 				end
 			end
 		end
@@ -297,8 +297,8 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 			if attached arch_node as a_n then
 				if not a_n.node_id.is_equal (Primitive_node_id) then
-					if ui_graph_state.flat_terminology.has_id_code (a_n.node_id) then
-						Result := ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id).text.twin
+					if ui_graph_state.flattened_terminology.has_id_code (a_n.node_id) then
+						Result := ui_graph_state.flattened_terminology.term_definition (display_settings.language, a_n.node_id).text.twin
 						if display_settings.show_codes then
 							Result := annotated_code (a_n.node_id, Result, " ")
 						end
@@ -384,15 +384,15 @@ feature {NONE} -- Implementation
 		do
 			Create Result.make(0)
 			-- try to get a direct hit on the id-code of this node
-			if ui_graph_state.flat_terminology.has_term_binding (Loinc_terminology_id, arch_node.node_id) then
-				Result := ui_graph_state.flat_terminology.term_binding (Loinc_terminology_id, arch_node.node_id).as_string
+			if ui_graph_state.flattened_terminology.has_term_binding (Loinc_terminology_id, arch_node.node_id) then
+				Result := ui_graph_state.flattened_terminology.term_binding (Loinc_terminology_id, arch_node.node_id).as_string
 
 			-- otherwise try to match on a parent of the current node code
 			elseif is_redefined_code (arch_node.node_id) then
 				specialised_codes := specialised_code_parents (arch_node.node_id)
 				from specialised_codes.start until specialised_codes.off or not Result.is_empty loop
-					if ui_graph_state.flat_terminology.has_term_binding (Loinc_terminology_id, specialised_codes.item) then
-						Result := ui_graph_state.flat_terminology.term_binding (Loinc_terminology_id, specialised_codes.item).as_string
+					if ui_graph_state.flattened_terminology.has_term_binding (Loinc_terminology_id, specialised_codes.item) then
+						Result := ui_graph_state.flattened_terminology.term_binding (Loinc_terminology_id, specialised_codes.item).as_string
 					end
 					specialised_codes.forth
 				end
@@ -521,7 +521,7 @@ feature {NONE} -- Context menu
 					def_occ, ui_graph_state.archetype, anc_arch_node, display_settings)
 
 				if attached arch_node as a_n and then is_valid_code (a_n.node_id) then
-					a_term := ui_graph_state.flat_terminology.term_definition (display_settings.language, a_n.node_id)
+					a_term := ui_graph_state.flattened_terminology.term_definition (display_settings.language, a_n.node_id)
 					dialog.set_term (a_term.text, a_term.description)
 				end
 

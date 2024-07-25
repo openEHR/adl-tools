@@ -11,7 +11,7 @@ note
 					   adlc [-q] -b <library> --build
 					   adlc [-q] -b <library> -l [<id_pattern>]
 					   adlc [-q] -b <library> -d [<id_pattern>]
-					   adlc [-q] -b <library> --export [--format <format>] [--flat] [--templates] [--rm_multiplicities] [--output <output_dir>]
+					   adlc [-q] -b <library> --export [--format <format>] [--flat] [--opts] [--rm_multiplicities] [--output <output_dir>]
 					   adlc [-q] -b <library> [-f <format>] --report [-o <output_dir>]
 					   adlc [-q] -b <library> --inject_term_bindings <terminology_namespace> -i <terms_file>
 					   adlc [-q] -b <library> --export_term_bindings
@@ -33,7 +33,7 @@ note
 					                          	  <library name>: library name
 					   -f --format            	: output format for generated files (Optional)
 					                          	  <format>: file formats: json|adl|odin|yaml|xml|csv (default = adl or csv)
-					      --templates           : process only templates in operations like export
+					      --opts                : generate only operational templates in operations like export
 					      --rm_multiplicities   : include RM cardinality and existences to AOM structures in output
 					      --cfg               	: output default configuration file location (Optional)
 					                          	  <file path>: .cfg file path
@@ -518,13 +518,6 @@ feature {NONE} -- Implementation
 			create Result.make (500)
 		end
 
-	opts: OPTIONS_PROCESSOR
-		once
-			create Result.make
-			Result.set_is_usage_verbose (True)
-			Result.set_is_usage_displayed_on_error (True)
-		end
-
 	compiler_archetype_gui_update (ara: ARCH_LIB_ARCHETYPE)
 			-- Update UI with progress on build.
 		do
@@ -640,5 +633,13 @@ feature {NONE} -- Implementation
 		end
 
 	error_reported: BOOLEAN
+
+
+	opts: OPTIONS_PROCESSOR
+		once
+			create Result.make
+			Result.set_is_usage_verbose (True)
+			Result.set_is_usage_displayed_on_error (True)
+		end
 
 end

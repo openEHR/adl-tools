@@ -1045,6 +1045,14 @@ feature -- Visualisation
 			end
 		end
 
+	select_flattened_archetype: AUTHORED_ARCHETYPE
+			-- return fully flattened version of archetype
+		require
+			is_valid
+		do
+			Result := flat_archetype
+		end
+
 feature -- File Access
 
 	file_mgr: ARCH_PERSISTENCE_MGR
@@ -1141,7 +1149,7 @@ feature -- Serialisation
 	compact_aom (flat_flag: BOOLEAN): like persistent_compact_type
 		do
 			if flat_flag then
-				create Result.make (flat_archetype_processed (rm_flattening_on))
+				create Result.make (flat_archetype)
 			else
 				create Result.make (safe_differential_archetype)
 			end

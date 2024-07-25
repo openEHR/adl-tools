@@ -99,7 +99,7 @@ feature {NONE} -- Implementation
 			-- otherwise we look for the LOINC code for the defining concept & root node of the referenced archetype
 			-- In this case, the id-code is the id1, id1.1 etc code from the included archetype
 			else
-				Result := ui_graph_state.flat_terminology.term_binding_for_concept_code (Loinc_terminology_id)
+				Result := ui_graph_state.flattened_terminology.term_binding_for_concept_code (Loinc_terminology_id)
 			end
 		end
 
@@ -168,10 +168,10 @@ feature {NONE} -- Implementation
 		do
 			if attached {OPERATIONAL_TEMPLATE} ui_graph_state.archetype then
 				check attached parent as ca_ui and then attached ca_ui.parent as parent_co_ui then
-					Result := parent_co_ui.ui_graph_state.flat_terminology
+					Result := parent_co_ui.ui_graph_state.flattened_terminology
 				end
 			else
-				Result := ui_graph_state.flat_terminology
+				Result := ui_graph_state.flattened_terminology
 			end
 		end
 

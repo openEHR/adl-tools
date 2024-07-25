@@ -12,7 +12,8 @@ class GUI_ARCHETYPE_VIEWER
 inherit
 	GUI_ARCHETYPE_TOOL
 		redefine
-			make, do_clear, do_populate, set_differential_tab_texts, set_flat_tab_texts, link_sub_tools
+			make, do_clear, do_populate, set_differential_tab_texts, set_flat_tab_texts,
+			set_opt_tab_texts, clear_opt_tab_texts, link_sub_tools
 		end
 
 	EV_SHARED_APPLICATION
@@ -62,11 +63,18 @@ feature {NONE}-- Initialization
 			tabs_index.put (source_control.ev_root_container, Tool_tab_source)
 
 			-- serialisation control
-			create serialisation_control.make (agent update_serialisation_tab_label)
+			create serialisation_control.make
 			ev_notebook.extend (serialisation_control.ev_root_container)
 			ev_notebook.set_item_text (serialisation_control.ev_root_container, Tool_tab_name (Tool_tab_serialised))
 			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
 			tabs_index.put (serialisation_control.ev_root_container, Tool_tab_serialised)
+
+			-- OPT control
+			create opt_control.make
+			ev_notebook.extend (opt_control.ev_root_container)
+			ev_notebook.set_item_text (opt_control.ev_root_container, Tool_tab_name (Tool_tab_opt))
+			ev_notebook.item_tab (opt_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/OPT"))
+			tabs_index.put (opt_control.ev_root_container, Tool_tab_opt)
 
 			-- instance control
 			create instance_control.make
@@ -101,13 +109,6 @@ feature -- UI Feedback
 			-- On the Slots tab, indicate the numbers of slots and used-by's.
 		do
 			ev_notebook.set_item_text (slot_map_control.ev_root_container, Tool_tab_name (Tool_tab_slots) + " (" + slots_count.out + "/" + used_by_count.out + ")")
-		end
-
-	update_serialisation_tab_label (an_artefact: ARCH_LIB_ARCHETYPE)
-		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container,
-				if an_artefact.artefact_type.is_equal (aft_template) then "OPT"
-					else Tool_tab_name (tool_tab_serialised) end)
 		end
 
 	update_clients_suppliers_tab_label (suppliers_count, clients_count: INTEGER)
@@ -162,6 +163,7 @@ feature {NONE} -- Implementation
 			add_sub_tool (clients_suppliers_control)
 			add_sub_tool (source_control)
 			add_sub_tool (serialisation_control)
+			add_sub_tool (opt_control)
 			add_sub_tool (instance_control)
 			add_sub_tool (validity_report_control)
 			add_sub_tool (statistical_information_control)
@@ -177,6 +179,7 @@ feature {NONE} -- Implementation
 			statistical_information_control.clear
 			source_control.clear
 			serialisation_control.clear
+			opt_control.clear
 			instance_control.clear
 		end
 
@@ -216,6 +219,8 @@ feature {NONE} -- Implementation
 
 	serialisation_control: GUI_SERIALISATION_CONTROL
 
+	opt_control: GUI_OPT_CONTROL
+
 	instance_control: GUI_INSTANCE_CONTROL
 
 	set_differential_tab_texts
@@ -228,6 +233,18 @@ feature {NONE} -- Implementation
 			-- set text on tabs for flat form of archetype
 		do
 			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_serialised_flat_tab_text))
+		end
+
+	set_opt_tab_texts
+			-- set text on tabs for differential form of archetype
+		do
+			ev_notebook.set_item_text (definition_control.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_definition_opt_tab_text))
+		end
+
+	clear_opt_tab_texts
+			-- set text on tabs for flat form of archetype
+		do
+			ev_notebook.set_item_text (definition_control.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_definition_tab_text))
 		end
 
 	set_tab_appearance

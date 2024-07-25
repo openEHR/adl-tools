@@ -38,7 +38,7 @@ feature -- Display
 				if display_settings.show_technical_view then
 					p := a_n.target_path.twin
 				else
-					p := ui_graph_state.flat_archetype.annotated_path (a_n.target_path, display_settings.language, True)
+					p := ui_graph_state.flattened_archetype.annotated_path (a_n.target_path, display_settings.language, True)
 				end
 				p.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 				p.remove_head (1)

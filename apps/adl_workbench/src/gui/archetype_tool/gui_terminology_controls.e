@@ -283,7 +283,7 @@ feature {NONE} -- Implementation
 				end
 
 			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car and attached {OPERATIONAL_TEMPLATE} source_archetype as opt then
-				populate_c_archetype_root_row_data (car.archetype_ref)
+				populate_c_archetype_root_row_data (car.archetype_ref, car.node_id)
 				terminology_stack.extend (opt.component_terminology (car.archetype_ref))
 
 				check attached evx_id_terms_grid.last_row as lr then
@@ -361,10 +361,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_c_archetype_root_row_data (an_archetype_id: STRING)
+	populate_c_archetype_root_row_data (an_archetype_id, a_parent_node_id: STRING)
 			-- populate a row that corresponds to a C_ARCHETYPE_ROOT node in flat form, whose id is an archetypoe_id
 		local
 			ev_row: EV_GRID_ROW
+			binding_str: STRING
 		do
 			check attached selected_language end
 
@@ -378,6 +379,16 @@ feature {NONE} -- Implementation
 			end
 
 			evx_id_terms_grid.set_last_row_label_col (Id_terms_grid_col_code, an_archetype_id, Void, Void, Id_code_color, get_icon_pixmap ("archetype/term_rel_part_of"))
+
+			-- populate bindings
+			across terminologies as terminologies_csr loop
+				if terminology.has_term_binding (terminologies_csr.item, a_parent_node_id) then
+					binding_str := terminology.term_binding (terminologies_csr.item, a_parent_node_id).as_string
+				else
+					create binding_str.make_empty
+				end
+				evx_id_terms_grid.set_last_row_label_col (terminology_bindings_col (terminologies_csr.item), binding_str, Void, Void, Binding_color, Void)
+			end
 		end
 
 	ev_parent_rows: ARRAYED_STACK [EV_GRID_ROW]

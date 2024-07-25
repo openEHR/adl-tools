@@ -90,7 +90,7 @@ feature {NONE} -- Implementation
 					p := c_attrs_csr.item.path
 
 					-- append the path, optionally with inheritance status
-					Result.append (ui_graph_state.flat_archetype.annotated_path (p, display_settings.language, True))
+					Result.append (ui_graph_state.flattened_archetype.annotated_path (p, display_settings.language, True))
 					Result.append ("%N")
 					if display_settings.show_rm_inheritance then
 						Result.append (get_text ({ADL_MESSAGES_IDS}.ec_inheritance_status_text) + specialisation_status_name (specialisation_status) + "%N")

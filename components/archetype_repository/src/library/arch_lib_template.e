@@ -12,10 +12,10 @@ class ARCH_LIB_TEMPLATE
 inherit
 	ARCH_LIB_AUTHORED_ARCHETYPE
 		redefine
-			validator_reset, select_archetype, file_mgr, flat_archetype, differential_archetype,
+			validator_reset, select_archetype, select_flattened_archetype,
+			file_mgr, flat_archetype, differential_archetype,
 			differential_serialised_native, persistent_compact_type,
-			compact_aom, flat_serialised_native, signal_from_scratch,
-			clear_cache, validate_closure
+			signal_from_scratch, clear_cache, validate_closure
 		end
 
 create {ARCHETYPE_LIBRARY, ARCHETYPE_LIBRARY_SOURCE}
@@ -74,88 +74,49 @@ feature -- Artefacts
 			end
 		end
 
-	operational_template: OPERATIONAL_TEMPLATE
+	opt: OPERATIONAL_TEMPLATE
 			-- inheritance-flattened form of archetype
 		require
 			compilation_state = Cs_validated
 		do
 			if operational_template_cache = Void then
-				operational_template_cache := template_expanded (False)
+				operational_template_cache := template_compiled (False)
 			end
 			check attached operational_template_cache as fac then
 				Result := fac
 			end
 		end
 
-	operational_template_with_rm: OPERATIONAL_TEMPLATE
+	opt_with_rm: OPERATIONAL_TEMPLATE
 			-- inheritance-flattened form of archetype with RM multiplicities
 		require
 			compilation_state = Cs_validated
 		do
-			Result := template_expanded (True)
-		end
-
-	operational_template_serialised (include_rm: BOOLEAN): STRING
-			-- The serialised text of the flat form of the archetype
-		require
-			compilation_state = Cs_validated
-		do
-			if include_rm then
-				Result := adl_2_engine.serialise_native (operational_template_with_rm, Syntax_type_adl, current_archetype_language)
-			else
-				Result := adl_2_engine.serialise_native (operational_template, Syntax_type_adl, current_archetype_language)
-			end
+			Result := template_compiled (True)
 		end
 
 feature -- Visualisation
 
 	select_archetype (differential_view, editing_enabled: BOOLEAN): ARCHETYPE
-			-- return appropriate differential or flat version of archetype, depending on setting of `differential_view' and `editing_enabled'
+			-- return appropriate differential or flat version of archetype, depending on setting of
+			-- `differential_view' and `editing_enabled'
 		do
 			if not editing_enabled then
 				if differential_view then
 					Result := safe_differential_archetype
 				else
-					Result := operational_template
+					Result := opt
 				end
 			else
 				Result := flat_archetype_editable
 			end
 		end
 
-feature -- Serialisation
 
-	flat_serialised_native (include_rm: BOOLEAN): STRING
-			-- The serialised text of the flat form of the archetype
+	select_flattened_archetype: AUTHORED_ARCHETYPE
+			-- return fully flattened version of archetype
 		do
-			Result := operational_template_serialised (include_rm)
-		end
-
-	differential_serialised_native: STRING
-			-- serialise differential archetype to its file in its source form, even if not compiling
-			-- this might fail because the serialiser might try to do something that an invalid archetype
-			-- can't support
-		local
-			exception_occurred: BOOLEAN
-		do
-			create Result.make_empty
-			if not exception_occurred then
-				if attached differential_archetype as da then
-					Result := adl_2_engine.serialise_native (da, Syntax_type_adl, current_archetype_language)
-
-					-- append overlay texts
-					across overlays as overlays_csr loop
-						Result.append (Source_template_overlay_divider)
-						if attached overlays_csr.item.differential_serialised_native as ovl_str then
-							Result.append (ovl_str)
-						else
-							Result.append (Overlay_differential_not_available + overlays_csr.item.id.physical_id)
-						end
-					end
-				end
-			end
-		rescue
-			exception_occurred := True
+			Result := opt
 		end
 
 feature {ARCH_LIB_ARCHETYPE} -- Compilation
@@ -184,9 +145,102 @@ feature -- File Access
 			file_mgr.add_overlay (an_ovl_adl_text, an_archetype_id)
 		end
 
+	save_opt_as (a_full_path, a_format: STRING; include_rm: BOOLEAN)
+			-- Save current flat archetype to `a_full_path' in `a_format'.
+		require
+			Archetype_valid: is_valid
+			path_valid: not a_full_path.is_empty
+			Serialise_format_valid: has_serialiser_format (a_format)
+		do
+			if a_format.same_string (Syntax_type_adl) then
+				file_mgr.save_as (a_full_path, opt_serialised_native (include_rm))
+
+			elseif has_archetype_native_serialiser_format (a_format) then
+				file_mgr.save_as (a_full_path, adl_2_engine.serialise_native (opt, a_format, current_archetype_language))
+
+			else -- must be a DT serialisation format
+				file_mgr.save_as (a_full_path, opt_serialised_object (type_marking_on, a_format))
+			end
+			status := get_msg_line ({GENERAL_MESSAGES_IDS}.ec_file_saved_as_in_format, <<a_full_path, a_format>>)
+		end
+
+feature -- Serialisation
+
+	differential_serialised_native: STRING
+			-- serialise differential archetype to its file in its source form, even if not compiling
+			-- this might fail because the serialiser might try to do something that an invalid archetype
+			-- can't support
+		local
+			exception_occurred: BOOLEAN
+		do
+			create Result.make_empty
+			if not exception_occurred then
+				if attached differential_archetype as da then
+					Result := adl_2_engine.serialise_native (da, Syntax_type_adl, current_archetype_language)
+
+					-- append overlay texts
+					across overlays as overlays_csr loop
+						Result.append (Source_template_overlay_divider)
+						if attached overlays_csr.item.differential_serialised_native as ovl_str then
+							Result.append (ovl_str)
+						else
+							Result.append (Overlay_differential_not_available + overlays_csr.item.id.physical_id)
+						end
+					end
+				end
+			end
+		rescue
+			exception_occurred := True
+		end
+
+	opt_serialised_native (include_rm: BOOLEAN): STRING
+			-- The serialised text of the flat form of the archetype
+		require
+			compilation_state = Cs_validated
+		do
+			if include_rm then
+				Result := adl_2_engine.serialise_native (opt_with_rm, Syntax_type_adl, current_archetype_language)
+			else
+				Result := adl_2_engine.serialise_native (opt, Syntax_type_adl, current_archetype_language)
+			end
+		end
+
+	opt_serialised_object (type_marking_flag: BOOLEAN; a_format: STRING): STRING
+			-- serialise in-memory objects, using a format like ODIN, XML, JSON etc
+		local
+			dt_arch: DT_CONVERTIBLE
+		do
+			create {P_OPERATIONAL_TEMPLATE} dt_arch.make (opt)
+
+			dt_object_converter.set_false_booleans_off_option
+			archetype_serialise_engine.set_tree (dt_arch.dt_representation)
+			archetype_serialise_engine.serialise (a_format, type_marking_flag, True)
+			Result := archetype_serialise_engine.serialised
+		end
+
+	opt_serialised_object_ejson (type_marking_flag: BOOLEAN; a_format: STRING): STRING
+			-- serialise internal structure in a brute-force object way, using
+			-- format like ODIN, XML, JSON etc
+		local
+			dt_arch: DT_CONVERTIBLE
+			fac: JSON_SERIALIZATION_FACTORY
+			conv: JSON_SERIALIZATION
+		do
+			create {P_OPERATIONAL_TEMPLATE} dt_arch.make (opt)
+
+			conv := fac.smart_serialization
+			conv.set_pretty_printing
+
+			if attached conv.to_json_string (dt_arch) as s then
+				Result := s
+			else
+				Result := "Conversion failed"
+			end
+		end
+
 feature {NONE} -- Flattening
 
-	template_expanded (include_rm: BOOLEAN): OPERATIONAL_TEMPLATE
+	template_compiled (include_rm: BOOLEAN): OPERATIONAL_TEMPLATE
 			-- expand by substitution of all references with their structures
 		local
 			opt_generator: TEMPLATE_FLATTENER
@@ -207,15 +261,6 @@ feature {NONE} -- Editing
 		end
 
 feature {NONE} -- Output
-
-	compact_aom (flat_flag: BOOLEAN): P_AUTHORED_ARCHETYPE
-		do
-			if flat_flag then
-				create {P_OPERATIONAL_TEMPLATE} Result.make (operational_template)
-			else
-				create {P_TEMPLATE} Result.make (safe_differential_archetype)
-			end
-		end
 
 	persistent_compact_type: P_TEMPLATE
 		do

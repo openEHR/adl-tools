@@ -135,7 +135,7 @@ feature {NONE} -- Implementation
 		do
 			Result := an_inv.as_string
 			if not display_settings.show_codes then
-				Result := ui_graph_state.flat_terminology.substitute_id_codes (Result, display_settings.language)
+				Result := ui_graph_state.flattened_terminology.substitute_id_codes (Result, display_settings.language)
 			end
 			Result.replace_substring_all (" ", "%N")
 			Result.replace_substring_all ("|", "|%N")

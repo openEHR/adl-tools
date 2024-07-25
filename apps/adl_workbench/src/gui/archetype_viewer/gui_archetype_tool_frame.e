@@ -347,13 +347,19 @@ feature {NONE} -- Implementation
 		end
 
 	set_view_tab_texts
-			-- set text on tabs depending on flat / differential view
+			-- set text on tabs depending on various settings
 		do
 			-- serialised rich text tab
 			if differential_view then
 				set_differential_tab_texts
 			else
 				set_flat_tab_texts
+			end
+
+			if is_populated and then attached {ARCH_LIB_TEMPLATE} safe_source then
+				set_opt_tab_texts
+			else
+				clear_opt_tab_texts
 			end
 		end
 
@@ -363,6 +369,16 @@ feature {NONE} -- Implementation
 		end
 
 	set_flat_tab_texts
+			-- set text on tabs for flat form of archetype
+		do
+		end
+
+	set_opt_tab_texts
+			-- set text on tabs for differential form of archetype
+		do
+		end
+
+	clear_opt_tab_texts
 			-- set text on tabs for flat form of archetype
 		do
 		end

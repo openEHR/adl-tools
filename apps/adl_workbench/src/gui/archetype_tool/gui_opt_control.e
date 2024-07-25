@@ -1,19 +1,19 @@
 note
 	component:   "openEHR ADL Tools"
-	description: "Show serialisated form of differential or flat archetypes"
+	description: "Archetype serialisation control"
 	keywords:    "GUI, ADL"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <thomas.beale@GraphiteHealth.io>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011 Graphite Health <http://www.graphitehealth.io>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
 class
-	GUI_SERIALISATION_CONTROL
+	GUI_OPT_CONTROL
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			enable_edit, disable_edit, can_populate, can_repopulate
+			can_populate, can_repopulate
 		end
 
 	STRING_UTILITIES
@@ -47,6 +47,13 @@ feature {NONE}-- Initialization
 			-- symbolic syntax
 --			evx_adl_text_editor.set_text_filter (get_text ({ADL_MESSAGES_IDS}.ec_symbolic_text), get_text ({ADL_MESSAGES_IDS}.ec_symbolic_text_tooltip), agent symbolic_text)
 
+			-- include RM check button
+			evx_adl_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip, Void),
+				agent rm_flattening_on,
+				agent (cb_selected: BOOLEAN) do set_rm_flattening_on (cb_selected); try_repopulate end)
+
 			-- save button
 			evx_adl_text_editor.add_button (Void, Void, get_text ({EVX_MESSAGES_IDS}.ec_save_button_text),
 				get_text ({EVX_MESSAGES_IDS}.ec_save_button_tooltip), agent save_adl_text_as, Void)
@@ -57,6 +64,13 @@ feature {NONE}-- Initialization
 			create evx_json_text_editor.make (agent json_text)
 			ev_root_container.extend (evx_json_text_editor.ev_root_container)
 			ev_root_container.set_item_text (evx_json_text_editor.ev_root_container, {ODIN_DEFINITIONS}.syntax_type_json.as_upper)
+
+			-- include RM check button
+			evx_json_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip, Void),
+				agent rm_flattening_on,
+				agent (cb_selected: BOOLEAN) do set_rm_flattening_on (cb_selected); try_repopulate end)
 
 			-- include type marking on check button
 			evx_json_text_editor.add_check_box (
@@ -76,6 +90,13 @@ feature {NONE}-- Initialization
 			ev_root_container.extend (evx_ejson_text_editor.ev_root_container)
 			ev_root_container.set_item_text (evx_ejson_text_editor.ev_root_container, "eJSON")
 
+			-- include RM check button
+			evx_ejson_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip, Void),
+				agent rm_flattening_on,
+				agent (cb_selected: BOOLEAN) do set_rm_flattening_on (cb_selected); try_repopulate end)
+
 			-- include type marking on check button
 			evx_ejson_text_editor.add_check_box (
 				get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_text, Void),
@@ -94,6 +115,13 @@ feature {NONE}-- Initialization
 			ev_root_container.extend (evx_yaml_text_editor.ev_root_container)
 			ev_root_container.set_item_text (evx_yaml_text_editor.ev_root_container, {ODIN_DEFINITIONS}.syntax_type_yaml.as_upper)
 
+			-- include RM check button
+			evx_yaml_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip, Void),
+				agent rm_flattening_on,
+				agent (cb_selected: BOOLEAN) do set_rm_flattening_on (cb_selected); try_repopulate end)
+
 			-- include type marking on check button
 			evx_yaml_text_editor.add_check_box (
 				get_msg ({ADL_MESSAGES_IDS}.ec_type_marking_cb_text, Void),
@@ -111,6 +139,13 @@ feature {NONE}-- Initialization
 			create evx_xml_text_editor.make (agent xml_text)
 			ev_root_container.extend (evx_xml_text_editor.ev_root_container)
 			ev_root_container.set_item_text (evx_xml_text_editor.ev_root_container, {ODIN_DEFINITIONS}.syntax_type_xml.as_upper)
+
+			-- include RM check button
+			evx_xml_text_editor.add_check_box (
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_text, Void),
+				get_msg ({ADL_MESSAGES_IDS}.ec_flatten_with_rm_cb_tooltip, Void),
+				agent rm_flattening_on,
+				agent (cb_selected: BOOLEAN) do set_rm_flattening_on (cb_selected); try_repopulate end)
 
 			-- include type marking on check button
 			evx_xml_text_editor.add_check_box (
@@ -133,7 +168,7 @@ feature {NONE}-- Initialization
 			gui_controls.extend (evx_odin_text_editor)
 
 			-- set initial visual characteristics
-			differential_view := True
+			differential_view := False
 
 			ev_root_container.set_data (Current)
 		end
@@ -146,28 +181,12 @@ feature -- Status Report
 
 	can_populate (a_source: attached like source; a_params: TUPLE [diff_view: BOOLEAN; a_lang: STRING]): BOOLEAN
 		do
-			Result := True
+			Result := attached {ARCH_LIB_TEMPLATE} a_source
 		end
 
 	can_repopulate: BOOLEAN
 		do
 			Result := is_populated
-		end
-
-feature -- Commands
-
-	enable_edit
-			-- enable editing
-		do
-			precursor
-			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.enable_editable end)
-		end
-
-	disable_edit
-			-- disable editing
-		do
-			precursor
-			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.disable_editable end)
 		end
 
 feature {NONE} -- Implementation
@@ -179,7 +198,9 @@ feature {NONE} -- Implementation
 	adl_text: STRING
 		do
 			if adl_text_cache.is_empty then
-				adl_text_cache.append (safe_source.serialised_native (differential_view, False))
+				if attached {ARCH_LIB_TEMPLATE} safe_source as alt then
+					adl_text_cache.append (alt.opt_serialised_native (rm_flattening_on))
+				end
 			end
 			Result := adl_text_cache
 		end
@@ -194,7 +215,9 @@ feature {NONE} -- Implementation
 	json_text: STRING
 		do
 			if json_text_cache.is_empty then
-				json_text_cache.append (safe_source.serialised_object (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_json))
+				if attached {ARCH_LIB_TEMPLATE} safe_source as alt then
+					json_text_cache.append (alt.opt_serialised_object (type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_json))
+				end
 			end
 			Result := json_text_cache
 		end
@@ -210,7 +233,9 @@ feature {NONE} -- Implementation
 	ejson_text: STRING
 		do
 			if ejson_text_cache.is_empty then
-				ejson_text_cache.append (safe_source.serialised_object_ejson (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_json))
+				if attached {ARCH_LIB_TEMPLATE} safe_source as alt then
+					ejson_text_cache.append (alt.opt_serialised_object_ejson (type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_json))
+				end
 			end
 			Result := ejson_text_cache
 		end
@@ -226,7 +251,9 @@ feature {NONE} -- Implementation
 	yaml_text: STRING
 		do
 			if yaml_text_cache.is_empty then
-				yaml_text_cache.append (safe_source.serialised_object (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_yaml))
+				if attached {ARCH_LIB_TEMPLATE} safe_source as alt then
+					yaml_text_cache.append (alt.opt_serialised_object (type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_yaml))
+				end
 			end
 			Result := yaml_text_cache
 		end
@@ -242,7 +269,9 @@ feature {NONE} -- Implementation
 	xml_text: STRING
 		do
 			if xml_text_cache.is_empty then
-				xml_text_cache.append (safe_source.serialised_object (not differential_view, type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_xml))
+				if attached {ARCH_LIB_TEMPLATE} safe_source as alt then
+					xml_text_cache.append (alt.opt_serialised_object (type_marking_on, {ODIN_DEFINITIONS}.Syntax_type_xml))
+				end
 			end
 			Result := xml_text_cache
 		end
@@ -258,7 +287,9 @@ feature {NONE} -- Implementation
 	odin_text: STRING
 		do
 			if odin_text_cache.is_empty then
-				odin_text_cache.append (safe_source.serialised_object (not differential_view, type_marking_on, {ARCHETYPE_DEFINITIONS}.Syntax_type_adl))
+				if attached {ARCH_LIB_TEMPLATE} safe_source as alt then
+					odin_text_cache.append (alt.opt_serialised_object (type_marking_on, {ARCHETYPE_DEFINITIONS}.Syntax_type_adl))
+				end
 			end
 			Result := odin_text_cache
 		end

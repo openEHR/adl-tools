@@ -644,12 +644,14 @@ templates = <
 		-- GUI_ARCHETYPE_TOOL
 		["description_tab_text"] = <"Description">
 		["definition_tab_text"] = <"Definition">
+		["definition_opt_tab_text"] = <"Definition (OPT)">
 		["terminology_tab_text"] = <"Terminology">
 		["slots_tab_text"] = <"Slots">
 		["clients_suppliers_tab_text"] = <"Clients/Suppliers">
 		["interface_tab_text"] = <"Interface">
 		["annotations_tab_text"] = <"Annotations">
 		["serialised_tab_text"] = <"Serialised">
+		["opt_tab_text"] = <"OPT">
 		["serialised_diff_tab_text"] = <"Serialised (diff)">
 		["serialised_flat_tab_text"] = <"Serialised (flat)">
 
@@ -767,6 +769,7 @@ templates = <
 		["adl_source_tab_text"] = <"ADL source">
 		["adl_converted_tab_text"] = <"ADL $1 converted">
 		["adl_serialised_tab_text"] = <"ADL $1 serialised">
+		["adl_opt_tab_text"] = <"ADL $1 OPT">
 		["save_adl_converted_button_text"] = <"Save source">
 		["save_adl_converted_button_tooltip"] = <"Save ADL $1 converted output into .adls source file (overwrites current file)">
 		["save_adl_serialised_button_text"] = <"Save source">

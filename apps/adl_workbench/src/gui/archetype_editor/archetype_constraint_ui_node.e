@@ -155,15 +155,15 @@ feature {NONE} -- Implementation
 			if attached arch_node as a_n then
 				-- display path
 				p := a_n.path
-				Result := ui_graph_state.flat_archetype.annotated_path (p, display_settings.language, True)
+				Result := ui_graph_state.flattened_archetype.annotated_path (p, display_settings.language, True)
 				if display_settings.show_rm_inheritance then
 					Result.append ("%N%N" + get_text ({ADL_MESSAGES_IDS}.ec_inheritance_status_text) +  specialisation_status_name (specialisation_status))
 				end
 
 				-- node-based bindings
-				if attached {C_OBJECT} arch_node as co and then ui_graph_state.flat_terminology.has_any_term_binding (co.node_id) then
+				if attached {C_OBJECT} arch_node as co and then ui_graph_state.flattened_terminology.has_any_term_binding (co.node_id) then
 					Result.append ("%N%N" + get_text ({ADL_MESSAGES_IDS}.ec_node_term_bindings_tooltip_text) + "%N")
-					bindings := ui_graph_state.flat_terminology.term_bindings_for_key (co.node_id)
+					bindings := ui_graph_state.flattened_terminology.term_bindings_for_key (co.node_id)
 					across bindings as bindings_csr loop
 						Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
 					end
@@ -176,9 +176,9 @@ feature {NONE} -- Implementation
 				end
 
 				-- path-based bindings
-				if ui_graph_state.flat_terminology.has_any_term_binding (p) then
+				if ui_graph_state.flattened_terminology.has_any_term_binding (p) then
 					Result.append ("%N%N" + get_text ({ADL_MESSAGES_IDS}.ec_path_term_bindings_tooltip_text) + "%N")
-					bindings := ui_graph_state.flat_terminology.term_bindings_for_key (p)
+					bindings := ui_graph_state.flattened_terminology.term_bindings_for_key (p)
 					across bindings as bindings_csr loop
 						Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
 					end

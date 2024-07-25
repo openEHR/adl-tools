@@ -50,7 +50,7 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 			if attached {EXPR_LEAF} arch_node as a_n then
 				if attached {EXPR_ARCHETYPE_REF} a_n as aref and then aref.is_archetype_definition_ref then
-					if attached ui_graph_state.flat_terminology.deepest_definition_for_path (aref.path, display_settings.language) as att_term_def then
+					if attached ui_graph_state.flattened_terminology.deepest_definition_for_path (aref.path, display_settings.language) as att_term_def then
 						Result.append (att_term_def.text)
 					else
 						Result.append (aref.path)

@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (973)
+			create message_table.make (976)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -855,12 +855,14 @@ feature -- Initialisation
 			message_table.put ("Select display language", ec_language_combo_tooltip)
 			message_table.put ("Description", ec_description_tab_text)
 			message_table.put ("Definition", ec_definition_tab_text)
+			message_table.put ("Definition (OPT)", ec_definition_opt_tab_text)
 			message_table.put ("Terminology", ec_terminology_tab_text)
 			message_table.put ("Slots", ec_slots_tab_text)
 			message_table.put ("Clients/Suppliers", ec_clients_suppliers_tab_text)
 			message_table.put ("Interface", ec_interface_tab_text)
 			message_table.put ("Annotations", ec_annotations_tab_text)
 			message_table.put ("Serialised", ec_serialised_tab_text)
+			message_table.put ("OPT", ec_opt_tab_text)
 			message_table.put ("Serialised (diff)", ec_serialised_diff_tab_text)
 			message_table.put ("Serialised (flat)", ec_serialised_flat_tab_text)
 			message_table.put ("ADL", ec_source_tab_text)
@@ -949,6 +951,7 @@ feature -- Initialisation
 			message_table.put ("ADL source", ec_adl_source_tab_text)
 			message_table.put ("ADL $1 converted", ec_adl_converted_tab_text)
 			message_table.put ("ADL $1 serialised", ec_adl_serialised_tab_text)
+			message_table.put ("ADL $1 OPT", ec_adl_opt_tab_text)
 			message_table.put ("Save source", ec_save_adl_converted_button_text)
 			message_table.put ("Save ADL $1 converted output into .adls source file (overwrites current file)", ec_save_adl_converted_button_tooltip)
 			message_table.put ("Save source", ec_save_adl_serialised_button_text)

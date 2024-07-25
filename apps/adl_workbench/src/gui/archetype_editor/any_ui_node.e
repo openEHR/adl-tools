@@ -220,7 +220,7 @@ feature {NONE} -- Implementation
 			-- or else "rubric"
 		do
 			create Result.make_empty
-			if attached {ARCHETYPE_TERM} ui_graph_state.flat_terminology.definition_for_code (display_settings.language, a_code) as arch_term then
+			if attached {ARCHETYPE_TERM} ui_graph_state.flattened_terminology.definition_for_code (display_settings.language, a_code) as arch_term then
 				if display_settings.show_codes then
 					Result.append (annotated_code (a_code, arch_term.text, " "))
 				else

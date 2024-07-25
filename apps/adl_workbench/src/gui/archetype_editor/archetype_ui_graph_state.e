@@ -29,8 +29,8 @@ feature -- Initialisation
 			in_differential_view := differential_view_flag
 			ref_model := an_rm
 			archetype := aca.select_archetype (differential_view_flag, False)
-			flat_archetype := source.flat_archetype
-			flat_terminology := flat_archetype.terminology
+			flattened_archetype := source.select_flattened_archetype
+			flattened_terminology := flattened_archetype.terminology
 			if aom_profiles_access.has_profile_for_rm_schema (an_rm.model_id) and then attached aom_profiles_access.profile_for_rm_schema (an_rm.model_id) as att_ap then
 				aom_profile := att_ap
 				archetype_parent_class := att_ap.archetype_parent_class
@@ -47,8 +47,8 @@ feature -- Initialisation
 			in_differential_view := False
 			ref_model := an_rm
 			archetype := source.flat_archetype_editable
-			flat_archetype := source.flat_archetype
-			flat_terminology := archetype.terminology
+			flattened_archetype := source.select_flattened_archetype
+			flattened_terminology := archetype.terminology
 			undo_redo_chain := an_undo_redo_chain
 			if aom_profiles_access.has_profile_for_rm_schema (an_rm.model_id) and then attached aom_profiles_access.profile_for_rm_schema (an_rm.model_id) as att_ap then
 				aom_profile := att_ap
@@ -60,7 +60,7 @@ feature -- Initialisation
 				parent_archetype := par_aca.flat_archetype
 			end
 		ensure
-			flat_archetype = source.flat_archetype
+			flattened_archetype = source.flat_archetype
 		end
 
 feature -- Access
@@ -69,13 +69,13 @@ feature -- Access
 
 	archetype: ARCHETYPE
 
-	flat_archetype: AUTHORED_ARCHETYPE
+	flattened_archetype: AUTHORED_ARCHETYPE
 
 	parent_archetype: detachable ARCHETYPE
 
 	in_differential_view: BOOLEAN
 
-	flat_terminology: ARCHETYPE_TERMINOLOGY
+	flattened_terminology: ARCHETYPE_TERMINOLOGY
 
 	undo_redo_chain: detachable UNDO_REDO_CHAIN
 
@@ -102,7 +102,7 @@ feature -- Modification
 		require
 			Terminology_is_flat: a_flat_terminology.is_flat
 		do
-			flat_terminology := a_flat_terminology
+			flattened_terminology := a_flat_terminology
 		end
 
 end
