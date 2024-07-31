@@ -21,8 +21,8 @@ rm_schema_pattern = <"s2_.*">
 -- id of terminologies and code sets to use
 --
 terminology_profile = <
-	terminology_issuer = <"openehr">
-	code_sets_issuer = <"openehr">
+	terminology_issuer = <"s2">
+	code_sets_issuer = <"s2">
 >
 
 ----------------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ terminology_profile = <
 --
 archetype_parent_class = <"Locatable">
 archetype_data_value_parent_class = <"Data_value">
-archetype_visualise_descendants_of = <"Item">
+archetype_visualise_descendants_of = <"Node">
 
 ----------------------------------------------------------------------------------------
 -- mappings from AOM built-in types used for RM types
@@ -60,6 +60,7 @@ aom_rm_type_mappings = <
 rm_primitive_type_equivalences = <
 	["Byte"] = <"Integer">
 	["Double"] = <"Real">
+	["Decimal"] = <"Real">
 	["Uri"] = <"String">
 	["Integer64"] = <"Integer">
 >
@@ -78,8 +79,8 @@ aom_rm_type_substitutions = <
 	["DURATION"] = <"String">
 	["TERMINOLOGY_CODE"] = <"Terminology_term">
 	["INTEGER"] = <"Real">
-	["REAL"] = <"Double">
-	["Real"] = <"Double">
+	["REAL"] = <"Decimal">
+	["Real"] = <"Decimal">
 >
 
 ----------------------------------------------------------------------------------------
