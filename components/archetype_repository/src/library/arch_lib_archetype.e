@@ -708,7 +708,7 @@ feature -- Compilation
 			-- All suppliers valid: --> Cs_validated_closure
 			-- Any supplier failed: --> Cs_suppliers_invalid
 		require
-			compilation_state = Cs_validated_self
+			compilation_state >= Cs_validated_self
 		do
 			from suppliers_index.start until suppliers_index.off or suppliers_index.item_for_iteration.compilation_state < Cs_validated_self loop
 				suppliers_index.forth
