@@ -134,11 +134,13 @@ feature {NONE} -- Implementation
 		do
 			if not exception_encountered then
 				if not is_interrupted then
-					if opts_only and attached {ARCH_LIB_TEMPLATE} ara as ara_tpl and then ara_tpl.is_valid then
-						check attached archetype_file_extension (True, syntax) as ext then
-							filename := file_system.pathname (output_dir, ara.id.as_filename) + ext
+					if opts_only then
+						if attached {ARCH_LIB_TEMPLATE} ara as ara_tpl and then ara_tpl.is_valid then
+							check attached archetype_file_extension (True, syntax) as ext then
+								filename := file_system.pathname (output_dir, ara.id.as_filename) + ext
+							end
+							ara_tpl.save_opt_as (filename, syntax, export_with_rm)
 						end
-						ara_tpl.save_opt_as (filename, syntax, export_with_rm)
 
 					elseif attached {ARCH_LIB_AUTHORED_ARCHETYPE} ara as auth_ara and then auth_ara.is_valid then
 						check attached archetype_file_extension (export_flat, syntax) as ext then

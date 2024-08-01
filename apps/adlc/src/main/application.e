@@ -283,7 +283,7 @@ feature -- Commands
 			-- PROCESS LIBRARY
 			if not error_reported then
 				report_std_out ("--------- Exporting to " + full_output_dir + "---------")
-				archetype_exporter.setup_build ([full_output_dir, output_format, opts.use_flat, opts.include_rm_multiplicities, opts.templates_only])
+				archetype_exporter.setup_build ([full_output_dir, output_format, opts.use_flat, opts.include_rm_multiplicities, opts.opts_only])
 				archetype_exporter.build_all
 			end
 		end

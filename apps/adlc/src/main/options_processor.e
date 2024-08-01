@@ -244,7 +244,7 @@ feature {NONE} -- Initialization
 				is_verbose := not has_option (quiet_switch)
 				use_flat := has_option (flat_switch)
 				include_rm_multiplicities := has_option (rm_multiplicities_switch)
-				templates_only := has_option (opts_only_switch)
+				opts_only := has_option (opts_only_switch)
 
 				show_config := has_option (show_config_switch)
 				list_archetypes := has_option (list_archetypes_switch)
@@ -360,7 +360,7 @@ feature -- Status Report
 
 	include_rm_multiplicities: BOOLEAN
 
-	templates_only: BOOLEAN
+	opts_only: BOOLEAN
 
 	show_config: BOOLEAN
 
