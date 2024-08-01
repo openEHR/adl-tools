@@ -146,7 +146,7 @@ feature -- Initialization
 					report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_config_file_location, <<app_cfg.file_path>>))
 					across bmm_models_access.all_schemas as schemas_csr loop
 						if schemas_csr.item.has_errors then
-							report_std_err ("========== Schema validation errors for " + schemas_csr.key.as_string_8 + " ===========")
+							report_std_err ("******** Schema validation errors for " + schemas_csr.key.as_string_8 + " ********")
 							report_std_err (schemas_csr.item.errors.as_string)
 						end
 					end

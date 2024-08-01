@@ -455,9 +455,9 @@ templates = <
 		["no_diff_dirs"] = <"No diff directories available; tests must be run on library first">
 		["populating_directory_start"] = <"Populating from directories in $1 library configuration...">
 		["populating_directory_complete"] = <"...complete; compile with F7 or other options under Library menu">
-		["compiler_no_flat_text"] = <"==== No flat (.adlf) text available ">
-		["compiler_no_source_text"] = <"==== No source (.adls) text available ">
-		["compiler_no_dadl_text"] = <"==== No ODIN (.odin) text available ">
+		["compiler_no_flat_text"] = <" **** No flat (.adlf) text available ">
+		["compiler_no_source_text"] = <" **** No source (.adls) text available ">
+		["compiler_no_dadl_text"] = <" **** No ODIN (.odin) text available ">
 		["read_docking_file_failed"] = <"Read from docking config file $1 failed">
 		["write_docking_file_failed"] = <"Write to docking config file $1 failed">
 		["copy_docking_file"] = <"Copying user docking config file $1 to default location $2">
