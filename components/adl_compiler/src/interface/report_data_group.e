@@ -30,6 +30,13 @@ feature -- Access
 
 	items: HASH_TABLE [REPORT_DATA, STRING]
 
+feature -- Status Report
+
+	is_empty: BOOLEAN
+		do
+			Result := attributes.is_empty and items.is_empty
+		end
+
 feature-- Modification
 
 	add_item (an_item: REPORT_DATA)

@@ -60,8 +60,8 @@ feature {NONE} -- Initialisation
 
 			create archetype_explorer.make
 			create template_explorer.make
-			create metrics_viewer.make
-			create stats_viewer.make
+			create compilation_stats_viewer.make
+			create archetypes_stats_viewer.make
 
 			-- create widgets
 			create ev_root_container
@@ -80,12 +80,12 @@ feature {NONE} -- Initialisation
 			ev_notebook.set_item_text (template_explorer.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_library_template_tab_text))
 
 			-- metrics viewer tab
-			ev_notebook.extend (metrics_viewer.ev_root_container)
-			ev_notebook.set_item_text (metrics_viewer.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_library_metrics_tab_text))
+			ev_notebook.extend (compilation_stats_viewer.ev_root_container)
+			ev_notebook.set_item_text (compilation_stats_viewer.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_library_metrics_tab_text))
 
 			-- statistics viewer tab
-			ev_notebook.extend (stats_viewer.ev_root_container)
-			ev_notebook.set_item_text (stats_viewer.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_library_stats_tab_text))
+			ev_notebook.extend (archetypes_stats_viewer.ev_root_container)
+			ev_notebook.set_item_text (archetypes_stats_viewer.ev_root_container, get_text ({ADL_MESSAGES_IDS}.ec_library_stats_tab_text))
 
 			set_tabs_appearance
 
@@ -137,8 +137,8 @@ feature {NONE} -- Initialisation
 			-- set up tool / sub-tool structures
 			add_sub_tool (archetype_explorer)
 			add_sub_tool (template_explorer)
-			add_sub_tool (metrics_viewer)
-			add_sub_tool (stats_viewer)
+			add_sub_tool (compilation_stats_viewer)
+			add_sub_tool (archetypes_stats_viewer)
 			enable_selection_history
 
 			ev_root_container.set_data (Current)
@@ -321,13 +321,13 @@ feature -- Events
 	on_select_notebook
 		do
 			if attached source as src and attached ev_notebook.selected_item as sel_item and then attached sel_item.data as att_data then
-				if att_data = metrics_viewer then
+				if att_data = compilation_stats_viewer then
 					if src.can_build_statistics then
-						metrics_viewer.populate (src)
+						compilation_stats_viewer.populate (src)
 					end
-				elseif att_data = stats_viewer then
+				elseif att_data = archetypes_stats_viewer then
 					if src.can_build_statistics then
-						stats_viewer.populate (src.statistics, True)
+						archetypes_stats_viewer.populate (src.archetype_statistics, True)
 					end
 				end
 			end
@@ -382,8 +382,8 @@ feature {NONE} -- Implementation
 
 	do_clear
 		do
-			metrics_viewer.clear
-			stats_viewer.clear
+			compilation_stats_viewer.clear
+			archetypes_stats_viewer.clear
 			archetype_explorer.clear
 			ev_notebook.select_item (archetype_explorer.ev_root_container)
 		end
@@ -448,19 +448,19 @@ feature {NONE} -- Implementation
 
 	template_explorer: GUI_TEMPLATE_EXPLORER
 
-	metrics_viewer: GUI_STATISTICS_TOOL
+	compilation_stats_viewer: GUI_COMPILATION_STATS_TOOL
 
-	stats_viewer: GUI_ARCHETYPE_STATISTICAL_REPORT
+	archetypes_stats_viewer: GUI_ARCHETYPE_STATISTICAL_REPORT
 
 	set_tabs_appearance
 			-- set visual appearance of stats & metric tab according to whether there are errors or not
 		do
 			if attached source as src and then src.can_build_statistics then
-				ev_notebook.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics"))
-				ev_notebook.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
+				ev_notebook.item_tab (compilation_stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics"))
+				ev_notebook.item_tab (archetypes_stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
 			else
-				ev_notebook.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics_grey"))
-				ev_notebook.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics_grey"))
+				ev_notebook.item_tab (compilation_stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics_grey"))
+				ev_notebook.item_tab (archetypes_stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics_grey"))
 			end
 			if attached source as src and then src.template_count > 0 then
 				ev_notebook.item_tab (template_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/template_catalog"))

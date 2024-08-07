@@ -97,19 +97,26 @@ feature {ARCHETYPE_REPORTER} -- Processing
 
 				create arch_report.make (auth_ara.id.as_string)
 
-				across terminology.value_sets as vset_csr loop
-					create vset_obj.make (vset_csr.key)
-					add_term_def (vset_obj, vset_csr.key)
+				-- add each ac-code
+				across terminology.value_set_codes as vset_codes_csr loop
+					create vset_obj.make (vset_codes_csr.item)
+					add_term_def (vset_obj, vset_codes_csr.item)
+
+					add_bindings (vset_obj, terminology.term_bindings_for_key (vset_codes_csr.item))
+
 					arch_report.add_item (vset_obj)
 
-					across vset_csr.item.members as vset_term_code_csr loop
-						create vset_term_obj.make (vset_term_code_csr.item)
-						vset_obj.add_item (vset_term_obj)
-						add_term_def (vset_term_obj, vset_term_code_csr.item)
+					-- add internal value-set def
+					if terminology.has_value_set (vset_codes_csr.item) and attached terminology.value_sets.item (vset_codes_csr.item) as vs then
+						across vs.members as vset_term_code_csr loop
+							create vset_term_obj.make (vset_term_code_csr.item)
+							vset_obj.add_item (vset_term_obj)
+							add_term_def (vset_term_obj, vset_term_code_csr.item)
+						end
 					end
 				end
 
-				if not arch_report.items.is_empty then
+				if not arch_report.is_empty then
 					output_tree.add_item (arch_report)
 				end
 			end
@@ -117,8 +124,15 @@ feature {ARCHETYPE_REPORTER} -- Processing
 
 	add_term_def (vset_term_obj: REPORT_DATA_NODE; a_term_code: STRING)
 		do
-			vset_term_obj.add_attribute (terminology.term_definition (default_language, a_term_code).text, "text")
-			vset_term_obj.add_attribute (terminology.term_definition (default_language, a_term_code).description, "description")
+			vset_term_obj.add_named_attribute (terminology.term_definition (default_language, a_term_code).text, "text", "definition")
+			vset_term_obj.add_named_attribute (terminology.term_definition (default_language, a_term_code).description, "description", "definition")
+		end
+
+	add_bindings (vset_term_obj: REPORT_DATA_NODE; a_bindings: HASH_TABLE [URI, STRING])
+		do
+			across a_bindings as binding_csr loop
+				vset_term_obj.add_named_attribute (binding_csr.item.as_string, binding_csr.key, "term_bindings")
+			end
 		end
 
 	terminology: ARCHETYPE_TERMINOLOGY

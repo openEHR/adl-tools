@@ -91,14 +91,15 @@ templates = <
 		["parse_archetype_e10"] = <"Archetype at $1 invalid parent identifier $2">
 
 		-- ARCHETYPE_STATISTICAL_DEFINITIONS
-		["arch_stats_object_nodes_text"] = <"Object nodes">
+		["arch_stats_object_nodes_text"] = <"Total nodes">
 		["arch_stats_archetypable_nodes_text"] = <"Archetypable nodes">
 		["arch_stats_data_value_nodes_text"] = <"Data value nodes">
-		["arch_stats_id_codes_text"] = <"Id-codes">
-		["arch_stats_at_codes_text"] = <"At-codes">
-		["arch_stats_ac_codes_text"] = <"Ac-codes">
-		["arch_stats_at_code_bindings_text"] = <"At-code bindings">
+		["arch_stats_id_codes_text"] = <"Id-codes (semantic)">
+		["arch_stats_at_codes_text"] = <"At-codes (coded values)">
+		["arch_stats_ac_codes_text"] = <"Ac-codes (value-sets)">
+		["arch_stats_id_code_bindings_text"] = <"Id-code bindings">
 		["arch_stats_ac_code_bindings_text"] = <"Ac-code bindings">
+		["arch_stats_at_code_bindings_text"] = <"At-code bindings">
 		["arch_stats_total_archetypes_text"] = <"Total archetypes">
 		["arch_stats_valid_archetypes_text"] = <"Valid archetypes">
 		["arch_stats_specialised_archetypes_text"] = <"Specialised archetypes">

@@ -77,6 +77,13 @@ feature -- Modification
 			maximum := maximum.max (other.maximum)
 		end
 
+feature -- Conversion
+
+	as_report_item: REPORTED_STATISTICAL_DATUM
+		do
+			create Result.make (name, total, minimum, maximum, average)
+		end
+
 end
 
 

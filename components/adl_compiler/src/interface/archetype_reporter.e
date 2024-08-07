@@ -259,6 +259,7 @@ feature {NONE} -- Implementation
 		do
 			conv := fac.smart_serialization
 			conv.set_pretty_printing
+			conv.context.serializer_context.set_is_type_name_included (False)
 
 			if attached conv.to_json_string (rpt.output_tree) as s then
 				fd.put_string (s)

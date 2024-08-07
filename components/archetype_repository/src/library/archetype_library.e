@@ -690,7 +690,7 @@ feature -- Statistical Report
 			Result := compile_attempt_count = archetype_count
 		end
 
-	statistics: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
+	archetype_statistics: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
 			-- table of aggregated stats, keyed by BMM_SCHEMA id to which the contributing archetypes relate
 			-- (a single archetype library can contain archetypes of multiple RMs)
 		require
@@ -699,10 +699,10 @@ feature -- Statistical Report
 			if compile_activity_timestamp > last_statistics_build_timestamp then
 				build_statistics
 			end
-			Result := statistics_cache
+			Result := archetype_statistics_cache
 		end
 
-	metrics: HASH_TABLE [INTEGER, STRING]
+	compilation_statistics: HASH_TABLE [INTEGER, STRING]
 			-- set of key/value pairs, with keys from `Library_metric_names'
 			-- populated by call to `build_statistics'
 		require
@@ -711,7 +711,7 @@ feature -- Statistical Report
 			if compile_activity_timestamp > last_statistics_build_timestamp then
 				build_statistics
 			end
-			Result := metrics_cache
+			Result := compilation_statistics_cache
 		end
 
 	terminology_bindings_statistics: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
@@ -728,13 +728,13 @@ feature -- Statistical Report
 
 feature {NONE} -- Statistical Report
 
-	statistics_cache: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
+	archetype_statistics_cache: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
 			-- statistics reports keyed by RM schema id
 		attribute
 			create Result.make (0)
 		end
 
-	metrics_cache: HASH_TABLE [INTEGER, STRING]
+	compilation_statistics_cache: HASH_TABLE [INTEGER, STRING]
 			-- overall metrics, keyed by metric category
 		attribute
 			create Result.make (0)
@@ -748,13 +748,13 @@ feature {NONE} -- Statistical Report
 		end
 
 	build_statistics
-			-- perform new build of `statistics' and `metrics'
+			-- perform new build of `archetype_statistics' and `compilation_statistics'
 		require
 			can_build_statistics
 		do
 			reset_statistics
 			do_all_archetypes (agent gather_statistics)
-			metrics_cache.put (archetype_count, Total_archetype_count)
+			compilation_statistics_cache.put (archetype_count, Total_archetype_count)
 			create last_statistics_build_timestamp.make_now
 		end
 
@@ -762,12 +762,12 @@ feature {NONE} -- Statistical Report
 			-- Reset counters to zero.
 		do
 			create terminology_bindings_statistics_cache.make (0)
-			create statistics_cache.make (0)
-			create metrics_cache.make (Library_metric_names.count)
+			create archetype_statistics_cache.make (0)
+			create compilation_statistics_cache.make (Library_metric_names.count)
 			Library_metric_names.do_all (
 				agent (metric_name: READABLE_STRING_8)
 					do
-						metrics_cache.put (0, metric_name)
+						compilation_statistics_cache.put (0, metric_name)
 					end
 			)
 			create last_statistics_build_timestamp.make_from_epoch (0)
@@ -779,18 +779,18 @@ feature {NONE} -- Statistical Report
 			stats: ARRAYED_LIST[STRING]
 		do
 			if aca.is_specialised then
-				metrics_cache.force (metrics_cache.item (specialised_archetype_count) + 1, specialised_archetype_count)
+				compilation_statistics_cache.force (compilation_statistics_cache.item (specialised_archetype_count) + 1, specialised_archetype_count)
 			end
 			if aca.differential_has_slots then
-				metrics_cache.force (metrics_cache.item (client_archetype_count) + 1, client_archetype_count)
+				compilation_statistics_cache.force (compilation_statistics_cache.item (client_archetype_count) + 1, client_archetype_count)
 			end
 			if aca.is_supplier then
-				metrics_cache.force (metrics_cache.item (supplier_archetype_count) + 1, supplier_archetype_count)
+				compilation_statistics_cache.force (compilation_statistics_cache.item (supplier_archetype_count) + 1, supplier_archetype_count)
 			end
 
 			-- RM stats
 			if aca.is_valid then
-				metrics_cache.force (metrics_cache.item (valid_archetype_count) + 1, valid_archetype_count)
+				compilation_statistics_cache.force (compilation_statistics_cache.item (valid_archetype_count) + 1, valid_archetype_count)
 				across aca.safe_differential_archetype.terminology.terminologies_available as terminologies_csr loop
 					if attached terminology_bindings_statistics_cache.item (terminologies_csr.item) as att_stats then
 						stats := att_stats
@@ -803,10 +803,10 @@ feature {NONE} -- Statistical Report
 
 				aca.generate_statistics (True)
 				if attached aca.statistical_analyser as att_sa then
-					if attached statistics_cache.item (aca.ref_model.model_id) as att_item then
+					if attached archetype_statistics_cache.item (aca.ref_model.model_id) as att_item then
 						att_item.merge (att_sa.stats)
 					else
-						statistics_cache.put (att_sa.stats.duplicate, aca.ref_model.model_id)
+						archetype_statistics_cache.put (att_sa.stats.duplicate, aca.ref_model.model_id)
 					end
 				end
 			end

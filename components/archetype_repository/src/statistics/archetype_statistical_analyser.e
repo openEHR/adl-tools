@@ -73,7 +73,9 @@ feature -- Commands
 			if not target.terminology.term_bindings.is_empty then
 				across target.terminology.term_bindings as bindings_for_terminology_csr loop
 					across bindings_for_terminology_csr.item as bindings_list loop
-						if is_value_set_code (bindings_list.key) then
+						if is_id_code (bindings_list.key) then
+							stats.increment_archetype_metric (1, Id_code_bindings_count)
+						elseif is_value_set_code (bindings_list.key) then
 							stats.increment_archetype_metric (1, Ac_code_bindings_count)
 						else
 							stats.increment_archetype_metric (1, At_code_bindings_count)
@@ -90,9 +92,9 @@ feature -- Commands
 			create def_it.make (target.definition)
 			def_it.do_all (agent node_enter, agent node_exit)
 
-			stats.archetype_metrics_item (Object_node_count).update (total_node_count)
 			stats.archetype_metrics_item (Archetypable_node_count).update (locatable_node_count)
 			stats.archetype_metrics_item (Archetype_data_value_node_count).update (data_value_node_count)
+			stats.archetype_metrics_item (Object_node_count).update (total_node_count)
 		end
 
 feature {NONE} -- Implementation
@@ -107,7 +109,7 @@ feature {NONE} -- Implementation
 	node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		local
 			stat_accums: ARRAYED_LIST [RM_CLASS_STATISTICS]
-			a_class_stat_accum, an_attr_stat_accum: RM_CLASS_STATISTICS
+			class_stat_accum, attr_stat_accum: RM_CLASS_STATISTICS
 			apa: ARCHETYPE_PATH_ANALYSER
 			ca, ca_parent_flat: C_ATTRIBUTE
 			path_in_flat: STRING
@@ -132,13 +134,13 @@ feature {NONE} -- Implementation
 
 				-- capture node specific info
 				create stat_accums.make (0)
-				create a_class_stat_accum.make (co.rm_type_name, co.is_root)
-				stat_accums.extend (a_class_stat_accum)
+				create class_stat_accum.make (co.rm_type_name, co.is_root)
+				stat_accums.extend (class_stat_accum)
 				if attached {C_COMPLEX_OBJECT} co as cco then
 					across cco.attributes as attrs_csr loop
 						ca := attrs_csr.item
 						if not ca.has_differential_path then
-							a_class_stat_accum.add_rm_attribute_occurrence (ca.rm_attribute_name)
+							class_stat_accum.add_rm_attribute_occurrence (ca.rm_attribute_name)
 						elseif attached flat_parent as att_flat_parent then
 							-- this is the case of constraint at a path, as found in specialised archetypes -
 							-- it is an attribute for a different RM object type
@@ -156,13 +158,13 @@ feature {NONE} -- Implementation
 								co_type_name := bmm_class_def.name
 								is_root_flag := False
 							end
-							create an_attr_stat_accum.make (co_type_name, is_root_flag)
-							an_attr_stat_accum.add_rm_attribute_occurrence (ca.rm_attribute_name)
-							stat_accums.extend (an_attr_stat_accum)
+							create attr_stat_accum.make (co_type_name, is_root_flag)
+							attr_stat_accum.add_rm_attribute_occurrence (ca.rm_attribute_name)
+							stat_accums.extend (attr_stat_accum)
 						end
 					end
 				elseif attached {C_DOMAIN_TYPE} co as cdt then
-					a_class_stat_accum.add_rm_attribute_occurrences (cdt.constrained_rm_attributes)
+					class_stat_accum.add_rm_attribute_occurrences (cdt.constrained_rm_attributes)
 				end
 				stat_accums.do_all (agent (a_stat_accum: RM_CLASS_STATISTICS) do stats.add_rm_class_stats (a_stat_accum) end)
 			end

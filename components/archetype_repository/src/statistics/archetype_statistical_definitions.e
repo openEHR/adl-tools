@@ -53,9 +53,9 @@ feature -- Definitions
 			Result := get_text (ec_arch_stats_ac_codes_text)
 		end
 
-	At_code_bindings_count: READABLE_STRING_8
+	Id_code_bindings_count: READABLE_STRING_8
 		once
-			Result := get_text (ec_arch_stats_at_code_bindings_text)
+			Result := get_text (ec_arch_stats_id_code_bindings_text)
 		end
 
 	Ac_code_bindings_count: READABLE_STRING_8
@@ -63,18 +63,24 @@ feature -- Definitions
 			Result := get_text (ec_arch_stats_ac_code_bindings_text)
 		end
 
+	At_code_bindings_count: READABLE_STRING_8
+		once
+			Result := get_text (ec_arch_stats_at_code_bindings_text)
+		end
+
 	Archetype_metric_names: ARRAYED_LIST [READABLE_STRING_8]
 		once
 			create Result.make (0)
 			Result.compare_objects
-			Result.extend (Object_node_count)
 			Result.extend (Archetypable_node_count)
 			Result.extend (Archetype_data_value_node_count)
 			Result.extend (Id_code_count)
-			Result.extend (At_code_count)
 			Result.extend (Ac_code_count)
-			Result.extend (At_code_bindings_count)
+			Result.extend (At_code_count)
+			Result.extend (Id_code_bindings_count)
 			Result.extend (Ac_code_bindings_count)
+			Result.extend (At_code_bindings_count)
+			Result.extend (Object_node_count)
 		end
 
 	Total_archetype_count: READABLE_STRING_8

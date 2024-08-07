@@ -340,6 +340,7 @@ feature -- Commands
 	generate_library_reports
 		local
 			lib_name, full_output_dir, full_path, schema_file_path, export_dir: STRING
+			arch_lib_stats_rpt_builder: ARCHETYPE_LIBRARY_STATS_REPORT_BUILDER
 		do
 			-- OPTION: output format
 			if attached opts.output_format as of then
@@ -372,6 +373,10 @@ feature -- Commands
 				report_std_out ("--------- Generating reports in " + full_output_dir + " ---------")
 				archetype_reporter.build_all
 			end
+
+			-- PROCESS special reports
+			create arch_lib_stats_rpt_builder.make (full_output_dir, agent report_std_out, agent report_std_err, agent :BOOLEAN do Result := error_reported end)
+			arch_lib_stats_rpt_builder.execute
 		end
 
 feature {NONE} -- Commands

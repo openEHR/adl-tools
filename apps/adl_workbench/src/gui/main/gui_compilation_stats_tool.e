@@ -7,7 +7,7 @@ note
 	copyright:   "Copyright (c) 2011 openEHR Foundation <https://www.openEHR.org>"
 	license:     "Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0.html>"
 
-class GUI_STATISTICS_TOOL
+class GUI_COMPILATION_STATS_TOOL
 
 inherit
 	GUI_LIBRARY_TARGETTED_TOOL
@@ -65,7 +65,7 @@ feature {NONE} -- Implementation
 				<<get_msg ({ADL_MESSAGES_IDS}.ec_summary_list_metric_col_title, Void),
 				get_msg ({ADL_MESSAGES_IDS}.ec_summary_list_total_col_title, Void)>>
 			)
-			populate_ev_multi_list_from_hash (ev_stats_mlist, safe_source.metrics)
+			populate_ev_multi_list_from_hash (ev_stats_mlist, safe_source.compilation_statistics)
 			ev_stats_info_frame.set_minimum_height ((ev_stats_mlist.count + 3) * ev_stats_mlist.row_height)
 
 			-- do terminology bindings statistics

@@ -18,6 +18,10 @@ inherit
 create
 	default_create, make
 
+feature -- Definitions
+
+	default_attr_name: STRING = "other"
+
 feature -- Initialisation
 
 	default_create
@@ -28,13 +32,26 @@ feature -- Initialisation
 
 feature -- Access
 
-	attributes: HASH_TABLE [STRING, STRING]
+	attributes: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 
 feature-- Modification
 
 	add_attribute (an_item, a_key: STRING)
 		do
-			attributes.put (an_item, a_key)
+			add_named_attribute (an_item, a_key, default_attr_name)
+		end
+
+	add_named_attribute (an_item, a_key, attr_name: STRING)
+		local
+			attrs_for_name: HASH_TABLE [STRING, STRING]
+		do
+			if attributes.has (attr_name) and then attached attributes.item (attr_name) as ht then
+				attrs_for_name := ht
+			else
+				create attrs_for_name.make (0)
+				attributes.put (attrs_for_name, attr_name)
+			end
+			attrs_for_name.put (an_item, a_key)
 		end
 
 end
