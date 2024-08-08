@@ -23,7 +23,7 @@ inherit
 			default_create
 		end
 
-	TABLE_ITERABLE [STRING, STRING]
+	TABLE_ITERABLE [STRING, READABLE_STRING_GENERAL]
 		undefine
 			default_create
 		end
@@ -50,7 +50,7 @@ feature -- Initialisation
 			default_create
 		end
 
-	make (a_namespace_table: HASH_TABLE [STRING, STRING])
+	make (a_namespace_table: STRING_TABLE [STRING])
 			-- Make from a given hash table of namespaces
 			-- item = namespace ref, e.g. 'oe'; key = namespace e.g. 'org.openehr'
 		do
@@ -76,7 +76,7 @@ feature -- Access
 			Result := namespaces.count
 		end
 
-	namespaces: HASH_TABLE [STRING, STRING]
+	namespaces: STRING_TABLE [STRING]
 			-- Hash table of namespace references, keyed by their namespace.
 
 feature -- Status Report
@@ -94,7 +94,7 @@ feature -- Status Report
 
 feature -- Iteration
 
-	new_cursor: TABLE_ITERATION_CURSOR [STRING, STRING]
+	new_cursor: TABLE_ITERATION_CURSOR [STRING, READABLE_STRING_GENERAL]
 			-- Fresh cursor associated with current structure
 		do
 			Result := namespaces.new_cursor

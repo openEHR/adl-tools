@@ -50,14 +50,14 @@ feature -- Initialisation
 				rm_grouped_class_table.put (default_rm_class_table, "Any")
 			end
 			if not archetype_data_value_parent_class.is_empty then
-				rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), archetype_data_value_parent_class)
+				rm_grouped_class_table.put (create {STRING_TABLE [RM_CLASS_STATISTICS]}.make(0), archetype_data_value_parent_class)
 			end
-			rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), Rm_primitive_group_key)
+			rm_grouped_class_table.put (create {STRING_TABLE [RM_CLASS_STATISTICS]}.make(0), Rm_primitive_group_key)
 		end
 
 feature -- Access
 
-	archetype_metrics: HASH_TABLE [STATISTICAL_DATUM, STRING]
+	archetype_metrics: STRING_TABLE [STATISTICAL_DATUM]
 			-- other archetype metrics (not relating to RM), keyed by metric name
 		attribute
 			create Result.make (0)
@@ -72,7 +72,7 @@ feature -- Access
 			end
 		end
 
-	archetype_metrics_list: HASH_TABLE [LIST [STRING], STRING]
+	archetype_metrics_list: STRING_TABLE [LIST [STRING]]
 		do
 			create Result.make (0)
 			across archetype_metrics as stat_items_csr loop
@@ -80,7 +80,7 @@ feature -- Access
 			end
 		end
 
-	rm_grouped_class_table: HASH_TABLE [HASH_TABLE [RM_CLASS_STATISTICS, STRING], STRING]
+	rm_grouped_class_table: STRING_TABLE [STRING_TABLE [RM_CLASS_STATISTICS]]
 			-- table of grouped stats of all RM classes, keyed by class name, with
 			-- each group keyed by a base class name, e.g. 'LOCATABLE', 'DATA_VALUE', 'Any' etc
 		attribute
@@ -103,7 +103,7 @@ feature -- Modification
 
 	add_rm_class_stats (a_stat_accum: RM_CLASS_STATISTICS)
 		local
-			rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
+			rm_class_table: STRING_TABLE [RM_CLASS_STATISTICS]
 		do
 			if ref_model.is_primitive_type (a_stat_accum.rm_class_name) and then attached rm_grouped_class_table.item (Rm_primitive_group_key) as rgct_prim then
 				rm_class_table := rgct_prim
@@ -178,7 +178,7 @@ feature -- Copying
 
 feature {NONE} -- Implementation
 
-	default_rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
+	default_rm_class_table: STRING_TABLE [RM_CLASS_STATISTICS]
 		attribute
 			create Result.make (0)
 		end

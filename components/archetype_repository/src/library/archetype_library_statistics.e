@@ -14,7 +14,7 @@ create
 
 feature -- Initialisation
 
-	make (a_library_name, a_component_name: STRING)
+	make (a_library_name, a_component_name: READABLE_STRING_GENERAL)
 		do
 			library_name := a_library_name
 			component_name := a_component_name
@@ -23,15 +23,15 @@ feature -- Initialisation
 
 feature -- Access
 
-	library_name: STRING
+	library_name: READABLE_STRING_GENERAL
 
-	component_name: STRING
+	component_name: READABLE_STRING_GENERAL
 
-	model_statistics: HASH_TABLE [REPORTED_STATISTICAL_DATUM, STRING]
+	model_statistics: STRING_TABLE [REPORTED_STATISTICAL_DATUM]
 
 feature -- Modification
 
-	add_model_statistics (a_stats: HASH_TABLE [STATISTICAL_DATUM, STRING])
+	add_model_statistics (a_stats: STRING_TABLE [STATISTICAL_DATUM])
 		do
 			across a_stats as stats_csr loop
 				model_statistics.put (stats_csr.item.as_report_item, stats_csr.key)

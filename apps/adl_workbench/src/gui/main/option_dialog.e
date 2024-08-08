@@ -246,7 +246,7 @@ feature {NONE} -- Initialization
 			ev_notebook.set_item_text (ev_notebook_namespaces_vb, get_text ({ADL_MESSAGES_IDS}.ec_options_namespaces_tab_text))
 
 			create evx_namespaces.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_options_namespaces_tab_text),
-				agent :HASH_TABLE [STRING, STRING] do Result := namespace_table.namespaces end,
+				agent :STRING_TABLE [STRING] do Result := namespace_table.namespaces end,
 				agent (a_key, a_val: STRING) do namespace_table.put_namespace (a_key, a_val) end,
 				agent (a_key: STRING) do namespace_table.remove_namespace (a_key) end,
 				Void,
@@ -263,7 +263,7 @@ feature {NONE} -- Initialization
 			ev_notebook.set_item_text (ev_notebook_terminology_settings_vb, get_text ({ADL_MESSAGES_IDS}.ec_options_terminology_uris_tab_text))
 
 			create evx_terminology_settings.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_options_terminology_uris_tab_text),
-				agent :HASH_TABLE [STRING, STRING] do Result := terminology_settings.uri_templates end,
+				agent :STRING_TABLE [STRING] do Result := terminology_settings.uri_templates end,
 				agent (a_key, a_val: STRING) do terminology_settings.put_uri (a_key, a_val) end,
 				agent (a_key: STRING) do terminology_settings.remove_uri (a_key) end,
 				Void,

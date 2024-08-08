@@ -53,7 +53,7 @@ feature -- Access
 
 	ev_root_container: EV_NOTEBOOK
 
-	source: detachable HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
+	source: detachable STRING_TABLE [ARCHETYPE_STATISTICAL_REPORT]
 			-- stats being visualised
 
 	tool_artefact_id: STRING
@@ -70,7 +70,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	populate (a_stat_reports: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]; diff_flag: BOOLEAN)
+	populate (a_stat_reports: STRING_TABLE [ARCHETYPE_STATISTICAL_REPORT]; diff_flag: BOOLEAN)
 		do
 			differential_view := diff_flag
 			populate_gui_tool (a_stat_reports)

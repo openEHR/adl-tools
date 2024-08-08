@@ -59,7 +59,7 @@ feature {NONE} -- Implementation
 
 	do_populate
 		local
-			stats_reports: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
+			stats_reports: STRING_TABLE [ARCHETYPE_STATISTICAL_REPORT]
 		do
 			create stats_reports.make (0)
 			safe_source.generate_statistics (differential_view)

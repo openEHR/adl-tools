@@ -690,7 +690,7 @@ feature -- Statistical Report
 			Result := compile_attempt_count = archetype_count
 		end
 
-	archetype_statistics: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
+	archetype_statistics: STRING_TABLE [ARCHETYPE_STATISTICAL_REPORT]
 			-- table of aggregated stats, keyed by BMM_SCHEMA id to which the contributing archetypes relate
 			-- (a single archetype library can contain archetypes of multiple RMs)
 		require
@@ -702,7 +702,7 @@ feature -- Statistical Report
 			Result := archetype_statistics_cache
 		end
 
-	compilation_statistics: HASH_TABLE [INTEGER, STRING]
+	compilation_statistics: STRING_TABLE [INTEGER]
 			-- set of key/value pairs, with keys from `Library_metric_names'
 			-- populated by call to `build_statistics'
 		require
@@ -714,7 +714,7 @@ feature -- Statistical Report
 			Result := compilation_statistics_cache
 		end
 
-	terminology_bindings_statistics: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+	terminology_bindings_statistics: STRING_TABLE [ARRAYED_LIST [STRING]]
 			-- table of archetypes containing terminology bindings, keyed by terminology;
 			-- some archetypes have more than one binding, so could appear in more than one list
 		require
@@ -728,19 +728,19 @@ feature -- Statistical Report
 
 feature {NONE} -- Statistical Report
 
-	archetype_statistics_cache: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
+	archetype_statistics_cache: STRING_TABLE [ARCHETYPE_STATISTICAL_REPORT]
 			-- statistics reports keyed by RM schema id
 		attribute
 			create Result.make (0)
 		end
 
-	compilation_statistics_cache: HASH_TABLE [INTEGER, STRING]
+	compilation_statistics_cache: STRING_TABLE [INTEGER]
 			-- overall metrics, keyed by metric category
 		attribute
 			create Result.make (0)
 		end
 
-	terminology_bindings_statistics_cache: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+	terminology_bindings_statistics_cache: STRING_TABLE [ARRAYED_LIST [STRING]]
 			-- table of terminology stats of archetypes in this library, keyed by
 			-- terminology id
 		attribute

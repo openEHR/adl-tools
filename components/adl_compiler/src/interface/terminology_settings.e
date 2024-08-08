@@ -23,7 +23,7 @@ inherit
 			default_create
 		end
 
-	TABLE_ITERABLE [STRING, STRING]
+	TABLE_ITERABLE [STRING, READABLE_STRING_GENERAL]
 		undefine
 			default_create
 		end
@@ -50,7 +50,7 @@ feature -- Initialisation
 			default_create
 		end
 
-	make (a_uri_table: HASH_TABLE [STRING, STRING])
+	make (a_uri_table: STRING_TABLE [STRING])
 			-- Make from a given hash table of uris
 			-- item = uri ref, e.g. 'oe'; key = uri e.g. 'org.openehr'
 		do
@@ -76,7 +76,7 @@ feature -- Access
 			Result := uri_templates.count
 		end
 
-	uri_templates: HASH_TABLE [STRING, STRING]
+	uri_templates: STRING_TABLE [STRING]
 			-- Hash table of terminology uri templates, keyed by their terminology.
 
 feature -- Status Report
@@ -94,7 +94,7 @@ feature -- Status Report
 
 feature -- Iteration
 
-	new_cursor: TABLE_ITERATION_CURSOR [STRING, STRING]
+	new_cursor: HASH_TABLE_ITERATION_CURSOR [STRING, READABLE_STRING_GENERAL]
 			-- Fresh cursor associated with current structure
 		do
 			Result := uri_templates.new_cursor

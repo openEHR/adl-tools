@@ -86,11 +86,11 @@ feature -- Access
 			-- Description of any misuses of the archetype,
 			-- i.e. contexts in which it should not be used.
 
-	original_resource_uri: detachable HASH_TABLE [STRING, STRING]
+	original_resource_uri: detachable STRING_TABLE [STRING]
 			-- URIs of precursor resource of archetype, e.g. natural language
 			-- document, semi-formal description
 
-	other_details:  detachable HASH_TABLE [STRING, STRING]
+	other_details:  detachable STRING_TABLE [STRING]
 			-- Additional language-senstive archetype meta-data, as a list of name/value pairs.
 
 feature -- Status Report
@@ -230,7 +230,7 @@ feature -- Modification
 			attached old other_details as att_old_od and then att_old_od.count = 1 implies other_details = Void
 		end
 
-	put_original_resource_uri_item (a_key, a_value: STRING)
+	put_original_resource_uri_item (a_key: READABLE_STRING_GENERAL; a_value: STRING)
 			-- add the key, value pair to original_resource_uri
 		require
 			Key_valid: not a_key.is_empty
@@ -290,12 +290,12 @@ feature -- Copying
 			end
 			if attached original_resource_uri as att_uri then
 				across att_uri as uri_csr loop
-					Result.put_original_resource_uri_item (prefix_str + uri_csr.key + suffix_str, uri_csr.item)
+					Result.put_original_resource_uri_item (prefix_str + uri_csr.key.as_string_8 + suffix_str, uri_csr.item)
 				end
 			end
 			if attached other_details as att_other_details then
 				across att_other_details as other_details_csr loop
-					Result.put_other_details_item (prefix_str + other_details_csr.key + suffix_str,
+					Result.put_other_details_item (prefix_str + other_details_csr.key.as_string_8 + suffix_str,
 						prefix_str + other_details_csr.item + suffix_str)
 				end
 			end

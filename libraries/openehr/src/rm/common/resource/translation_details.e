@@ -48,7 +48,7 @@ feature -- Access
 			Result := default_language_code.deep_twin
 		end
 
-	author: HASH_TABLE [STRING, STRING]
+	author: STRING_TABLE [STRING]
 			-- Translator name and other demographic details
 		attribute
 			create Result.make (0)
@@ -58,7 +58,7 @@ feature -- Access
 	accreditation: detachable STRING
 			-- Accreditation of translator, usually a national translator's association id
 
-	other_details: detachable HASH_TABLE [STRING, STRING]
+	other_details: detachable STRING_TABLE [STRING]
 			-- Any other meta-data
 
 feature -- Status Report
@@ -76,7 +76,7 @@ feature -- Modification
 			language := a_lang
 		end
 
-	set_author (auth_details: HASH_TABLE [STRING, STRING])
+	set_author (auth_details: STRING_TABLE [STRING])
 			-- set author from a complete hash table
 		require
 			not auth_details.is_empty

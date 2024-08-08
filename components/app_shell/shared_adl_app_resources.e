@@ -269,7 +269,7 @@ feature -- Application Switches
 			app_cfg.put_string_value ("/repositories/current_library_name", a_path)
 		end
 
-	default_namespaces: HASH_TABLE [STRING, STRING]
+	default_namespaces: STRING_TABLE [STRING]
 		once ("PROCESS")
 			create Result.make(0)
 			Result.put ("org.openehr", "oe")
@@ -311,7 +311,7 @@ feature -- Application Switches
 			app_cfg.put_object (namespace_table_path, a_namespace_table)
 		end
 
-	default_terminology_uri_templates: HASH_TABLE [STRING, STRING]
+	default_terminology_uri_templates: STRING_TABLE [STRING]
 		once ("PROCESS")
 			create Result.make(0)
 			Result.put ("http://snomed.info/id/$code_string", "snomedct")

@@ -17,13 +17,13 @@ create
 
 feature -- Access
 
-	compilation_statistics: HASH_TABLE [INTEGER, STRING]
+	compilation_statistics: STRING_TABLE [INTEGER]
 			-- Archetype library compilation stats
 		attribute
 			create Result.make(0)
 		end
 
-	models_reports: HASH_TABLE [ARCHETYPE_LIBRARY_STATISTICS, STRING]
+	models_reports: STRING_TABLE [ARCHETYPE_LIBRARY_STATISTICS]
 			-- Archetype library model stats, grouped by Model name, e.g. 'EHR', 'ENTITY' etc
 		attribute
 			create Result.make(0)
@@ -31,7 +31,7 @@ feature -- Access
 
 feature-- Modification
 
-	add_models_report (a_report: ARCHETYPE_LIBRARY_STATISTICS; a_key: STRING)
+	add_models_report (a_report: ARCHETYPE_LIBRARY_STATISTICS; a_key: READABLE_STRING_GENERAL)
 		do
 			models_reports.put (a_report, a_key)
 		end

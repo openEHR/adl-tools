@@ -138,7 +138,7 @@ feature {NONE} -- Initialisation
 
 			-- ip_acknowledgements control - Hash
 			create evx_ip_acknowledgements.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_ip_acknowledgements_label_text),
-				agent : HASH_TABLE [STRING, STRING] do Result := source_archetype.description.ip_acknowledgements end,
+				agent : STRING_TABLE [STRING] do Result := source_archetype.description.ip_acknowledgements end,
 				agent (a_key, a_val: STRING) do source_archetype.description.put_ip_acknowledgements_item (a_key, a_val) end,
 				agent (a_key: STRING) do source_archetype.description.remove_ip_acknowledgements_item (a_key) end,
 				undo_redo_chain,
@@ -159,7 +159,7 @@ feature {NONE} -- Initialisation
 
 			-- conversion_details control - Hash
 			create evx_conversion_details.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_conversion_details_label_text),
-				agent : HASH_TABLE [STRING, STRING] do Result := source_archetype.description.conversion_details end,
+				agent : STRING_TABLE [STRING] do Result := source_archetype.description.conversion_details end,
 				agent (a_key, a_val: STRING) do source_archetype.description.put_conversion_details_item (a_key, a_val) end,
 				agent (a_key: STRING) do source_archetype.description.remove_conversion_details_item (a_key) end,
 				undo_redo_chain,
@@ -178,7 +178,7 @@ feature {NONE} -- Initialisation
 
 			-- original_author control - Hash
 			create evx_original_author.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_auth_orig_auth_label_text),
-				agent : HASH_TABLE [STRING, STRING] do Result := source_archetype.description.original_author end,
+				agent : STRING_TABLE [STRING] do Result := source_archetype.description.original_author end,
 				agent (a_key, a_val: STRING) do source_archetype.description.put_original_author_item (a_key, a_val) end,
 				agent (a_key: STRING) do source_archetype.description.remove_original_author_item (a_key) end,
 				undo_redo_chain, 0, min_entry_control_width_in_chars, False, Void)
@@ -221,7 +221,7 @@ feature {NONE} -- Initialisation
 			create ev_trans_author_accreditation_vbox
 			ev_lang_translations_hbox.extend (ev_trans_author_accreditation_vbox)
 			create evx_trans_author.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_translator_label_text),
-				agent : detachable HASH_TABLE [STRING, STRING]
+				agent : detachable STRING_TABLE [STRING]
 					do
 						if attached translation_details as att_td then
 							Result := att_td.author
@@ -246,7 +246,7 @@ feature {NONE} -- Initialisation
 
 			-- translator other_details - Hash
 			create evx_trans_other_details.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_translator_other_details_label_text),
-				agent : detachable HASH_TABLE [STRING, STRING] do if attached translation_details as att_td then Result := att_td.other_details end end,
+				agent : detachable STRING_TABLE [STRING] do if attached translation_details as att_td then Result := att_td.other_details end end,
 				agent (a_key, a_val: STRING) do if attached translation_details as att_td then att_td.put_other_details_item (a_key, a_val) end end,
 				agent (a_key: STRING) do if attached translation_details as att_td then att_td.remove_other_details_item (a_key) end end,
 				undo_redo_chain, 0, min_entry_control_width_in_chars, False, Void)
@@ -307,7 +307,7 @@ feature {NONE} -- Initialisation
 
 			-- original resource URIs - Hash <String, String>
 			create evx_original_resources.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_resource_orig_res_label_text),
-				agent :detachable HASH_TABLE [STRING, STRING]
+				agent :detachable STRING_TABLE [STRING]
 					do
 						if attached description_details as dd and then attached dd.original_resource_uri as ori then
 							Result := ori
@@ -321,7 +321,7 @@ feature {NONE} -- Initialisation
 
 			-- other details - Hash <String, String>
 			create evx_description_other_details.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_other_details_label_text),
-				agent :detachable HASH_TABLE [STRING, STRING]
+				agent :detachable STRING_TABLE [STRING]
 					do
 						if attached description_details as dd and then attached dd.other_details as od then
 							Result := od
@@ -342,7 +342,7 @@ feature {NONE} -- Initialisation
 
 			-- other details - Hash <String, String>
 			create evx_references.make_linked ("",
-				agent :detachable HASH_TABLE [STRING, STRING]
+				agent :detachable STRING_TABLE [STRING]
 					do
 						if attached source_archetype.description.references as od then
 							Result := od
@@ -362,7 +362,7 @@ feature {NONE} -- Initialisation
 
 			-- other details - Hash <String, String>
 			create evx_other_details.make_linked ("",
-				agent :detachable HASH_TABLE [STRING, STRING]
+				agent :detachable STRING_TABLE [STRING]
 					do
 						if attached source_archetype.description.other_details as od then
 							Result := od

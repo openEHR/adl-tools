@@ -81,8 +81,8 @@ feature {NONE} -- Implementation
 					ev_term_bindings_info_list.item.extend (utf8_to_utf32 (stats_csr.item.count.out))
 				else
 					create list_row
-					list_row.extend (utf8_to_utf32 (stats_csr.key))
-					list_row.extend (utf8_to_utf32 (stats_csr.item.count.out))
+					list_row.extend (stats_csr.key.as_string_32)
+					list_row.extend (stats_csr.item.count.out.as_string_32)
 					ev_term_bindings_info_list.extend (list_row)
 				end
 			end

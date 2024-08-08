@@ -57,7 +57,7 @@ feature -- Commands
 				arch_stats_report.add_models_report (arch_lib_stats, reports_csr.key)
 			end
 
-			out_file := file_system.new_output_file (file_system.pathname (output_dir, arch_stats_report.id + ".json"))
+			out_file := file_system.new_output_file (file_system.pathname (output_dir, arch_stats_report.id + {ODIN_DEFINITIONS}.file_ext_json_default))
 			out_file.open_write
 			output_to_json (arch_stats_report, out_file)
 			out_file.close

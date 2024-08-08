@@ -75,7 +75,7 @@ feature -- Access
             create Result.make (default_language_code_set, default_language)
         end
 
-	original_author: HASH_TABLE [STRING, STRING]
+	original_author: STRING_TABLE [STRING]
 			-- Original author of this archetype, with all relevant details,
 			-- including organisation.
         attribute
@@ -120,13 +120,13 @@ feature -- Access
 			create Result.make_empty
 		end
 
-	ip_acknowledgements: HASH_TABLE [STRING, STRING]
+	ip_acknowledgements: STRING_TABLE [STRING]
 			-- list of IP acknowledgments, keyed by tag name of IP being mentioned
 		attribute
 			create Result.make (0)
 		end
 
-	conversion_details: HASH_TABLE [STRING, STRING]
+	conversion_details: STRING_TABLE [STRING]
 			-- tagged list of conversion information, where applicable
 		attribute
 			create Result.make (0)
@@ -145,12 +145,12 @@ feature -- Access
 			Result.compare_objects
 		end
 
-	references: HASH_TABLE [STRING, STRING]
+	references: STRING_TABLE [STRING]
 		attribute
 			create Result.make (0)
 		end
 
-	other_details: HASH_TABLE [STRING, STRING]
+	other_details: STRING_TABLE [STRING]
 		attribute
 			create Result.make (0)
 		end
