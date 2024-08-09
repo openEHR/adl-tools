@@ -31,11 +31,16 @@ feature -- Initialisation
 
 	make_lang (a_lang, a_purpose: STRING)
 		require
-			Lang_valid: a_lang /= Void and then not a_lang.is_empty
-			Purpose_valid: a_purpose /= Void and then not a_purpose.is_empty
+			Lang_valid: not a_lang.is_empty
+			Purpose_valid: not a_purpose.is_empty
 		do
 			language := a_lang
 			purpose := a_purpose
+			create use.make_empty
+			create keywords.make (0)
+			create misuse.make_empty
+			create copyright.make_empty
+			create other_details.make (0)
 		ensure
 			Language_set: language = a_lang
 			Purpose_set: purpose = a_purpose
@@ -65,7 +70,7 @@ feature -- Access
 			-- Rights over the archetype as a knowledge resource;
 			-- usually copyright and/or license to use.
 
-	original_resource_uri: HASH_TABLE [URI, STRING]
+	original_resource_uri: detachable HASH_TABLE [URI, STRING]
 			-- URI of precursor resource of archetype, e.g. natural language
 			-- document, semi-formal description
 

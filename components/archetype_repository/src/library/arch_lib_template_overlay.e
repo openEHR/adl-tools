@@ -93,6 +93,9 @@ feature -- Artefacts
 
 	differential_archetype: detachable TEMPLATE_OVERLAY
 
+	template: ARCH_LIB_TEMPLATE
+			-- owning template
+
 feature {ARCH_LIB_ARCHETYPE} -- Compilation
 
 	compile_actions: HASH_TABLE [PROCEDURE [ARCH_LIB_ARCHETYPE, TUPLE], INTEGER]
@@ -130,11 +133,6 @@ feature -- Editing
 
 			-- set revision appropriately
 		end
-
-feature {NONE} -- Implementation
-
-	template: ARCH_LIB_TEMPLATE
-			-- owning template
 
 invariant
 	Is_specialised: is_specialised

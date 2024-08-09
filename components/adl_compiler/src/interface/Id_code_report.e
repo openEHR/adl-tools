@@ -42,7 +42,7 @@ feature -- Access
 			Result := "All id-coded nodes in archetype library"
 		end
 
-	output_table: ARRAYED_LIST[TUPLE [arch_id, id_code, path, use_ref, description, loinc_code: STRING]]
+	output_table: ARRAYED_LIST[TUPLE [arch_id, id_code, path, use_ref, description, loinc_code: READABLE_STRING_8]]
 		once
 			create Result.make(0)
 		end

@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (977)
+			create message_table.make (978)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -547,7 +547,8 @@ feature -- Initialisation
 			message_table.put ("Create in directory: ", ec_archetype_dir_label_text)
 			message_table.put ("Archetype id: ", ec_archetype_id_label_text)
 			message_table.put ("Parent id: ", ec_parent_archetype_id_label_text)
-			message_table.put ("Id $1 already exists in library", ec_duplicate_archetype_id_err_msg)
+			message_table.put ("Archetype with id $1 already exists in library", ec_duplicate_archetype_id_err_msg)
+			message_table.put ("Template overlay id $1 in template $2 already exists in template $3", ec_duplicate_template_overlay_id_err_msg)
 			message_table.put ("Concept $1 contains invalid characters", ec_invalid_archetype_id_concept_err)
 			message_table.put ("Configure object constraint", ec_initial_c_object_config_dialog_title)
 			message_table.put ("Constraint type: ", ec_initial_c_object_config_constraint_type_text)

@@ -42,7 +42,7 @@ feature -- Access
 			Result := "Archetype ID to Template ID map"
 		end
 
-	output_table: ARRAYED_LIST[TUPLE [arch_id, tpl_id: STRING]]
+	output_table: ARRAYED_LIST[TUPLE [arch_id, tpl_id: READABLE_STRING_8]]
 		once
 			create Result.make(0)
 		end

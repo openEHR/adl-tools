@@ -42,7 +42,7 @@ feature -- Access
 			Result := "LOINC to Archetype id map"
 		end
 
-	output_table: ARRAYED_LIST [TUPLE [loinc_code, arch_id, id_code, path, use_ref, description: STRING]]
+	output_table: ARRAYED_LIST [TUPLE [loinc_code, arch_id, id_code, path, use_ref, description: READABLE_STRING_8]]
 		once
 			create Result.make(0)
 		end

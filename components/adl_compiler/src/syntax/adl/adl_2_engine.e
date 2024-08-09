@@ -233,13 +233,22 @@ feature -- Parsing
 									amp.parse_from_text (overlay_texts_csr.item, tpl_aca.id.physical_id + " @overlay " + overlay_texts_csr.target_index.out)
 									if not amp.has_errors and then attached amp.last_archetype as arch_thumbnail then
 										-- now create a descriptor for this overlay
-										check not current_library.has_archetype_with_id (arch_thumbnail.archetype_id.physical_id) end
-										if attached arch_thumbnail.parent_archetype_id as att_parent_id and then current_library.has_archetype_matching_ref (att_parent_id) then
-											create arch_lib_tpl_ovl.make (arch_thumbnail.archetype_id, att_parent_id, tpl_aca)
-											current_library.put_new_archetype (arch_lib_tpl_ovl)
-											tpl_aca.add_overlay (arch_lib_tpl_ovl, overlay_texts_csr.item, arch_thumbnail.archetype_id.physical_id)
+										if not current_library.has_archetype_with_id (arch_thumbnail.archetype_id.physical_id) then
+											if attached arch_thumbnail.parent_archetype_id as att_parent_id and then current_library.has_archetype_matching_ref (att_parent_id) then
+												create arch_lib_tpl_ovl.make (arch_thumbnail.archetype_id, att_parent_id, tpl_aca)
+												current_library.put_new_archetype (arch_lib_tpl_ovl)
+												tpl_aca.add_overlay (arch_lib_tpl_ovl, overlay_texts_csr.item, arch_thumbnail.archetype_id.physical_id)
+											else
+												errors.add_error ({ADL_MESSAGES_IDS}.ec_VTPIOV, <<tpl_aca.id.physical_id, arch_thumbnail.archetype_id.physical_id>>, generator + ".parse")
+											end
 										else
-											errors.add_error ({ADL_MESSAGES_IDS}.ec_VTPIOV, <<tpl_aca.id.physical_id, arch_thumbnail.archetype_id.physical_id>>, generator + ".parse")
+											if attached {ARCH_LIB_TEMPLATE_OVERLAY} current_library.archetype_with_id (arch_thumbnail.archetype_id.physical_id) as aca_ovl then
+												errors.add_error ({ADL_MESSAGES_IDS}.ec_duplicate_template_overlay_id_err_msg,
+													<<arch_thumbnail.archetype_id.physical_id, tpl_aca.id.physical_id, aca_ovl.template.id.as_string >>, generator + ".parse")
+											else
+												errors.add_error ({ADL_MESSAGES_IDS}.ec_duplicate_template_overlay_id_err_msg,
+													<<arch_thumbnail.archetype_id.physical_id, tpl_aca.id.physical_id, "Unknown owning template" >>, generator + ".parse")
+											end
 										end
 									else
 										errors.add_error ({ADL_MESSAGES_IDS}.ec_STOV, Void, generator + ".parse")

@@ -72,7 +72,7 @@ feature {ARCHETYPE_REPORTER} -- Processing
 
 feature {NONE}
 
-	text_quote_agent: FUNCTION [ANY, TUPLE[STRING], STRING]
+	text_quote_agent: FUNCTION [ANY, TUPLE[READABLE_STRING_8], READABLE_STRING_8]
 			-- function to use to quote output format
 		attribute
 			Result := default_text_quoting_agent

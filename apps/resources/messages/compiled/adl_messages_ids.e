@@ -533,6 +533,7 @@ feature -- Definitions
 		ec_archetype_id_label_text: STRING = "archetype_id_label_text"
 		ec_parent_archetype_id_label_text: STRING = "parent_archetype_id_label_text"
 		ec_duplicate_archetype_id_err_msg: STRING = "duplicate_archetype_id_err_msg"
+		ec_duplicate_template_overlay_id_err_msg: STRING = "duplicate_template_overlay_id_err_msg"
 		ec_invalid_archetype_id_concept_err: STRING = "invalid_archetype_id_concept_err"
 		ec_initial_c_object_config_dialog_title: STRING = "initial_c_object_config_dialog_title"
 		ec_initial_c_object_config_constraint_type_text: STRING = "initial_c_object_config_constraint_type_text"

@@ -35,7 +35,6 @@ feature -- Initialisation
 			create original_author.make(0)
 		ensure then
 			lifecycle_state_set: lifecycle_state.is_equal(Default_lifecycle_state)
-			details_exists: details /= Void
 		end
 
 	make
@@ -68,7 +67,7 @@ feature -- Access
 			-- Original author of this archetype, with all relevant details,
 			-- including organisation.
 
-	archetype_package_uri: URI
+	archetype_package_uri: detachable URI
 			-- URI of archetype package
 
 	details: HASH_TABLE [ARCHETYPE_DESCRIPTION_ITEM, STRING]
@@ -79,15 +78,15 @@ feature -- Access
 			-- submitted, experimental, awaiting_approval, approved,
 			-- superseded, obsolete. State machine defined by archetype system
 
-	other_contributors: ARRAYED_LIST [STRING]
+	other_contributors: detachable ARRAYED_LIST [STRING]
 
-	other_details: HASH_TABLE [STRING, STRING]
+	other_details: detachable HASH_TABLE [STRING, STRING]
 
-	details_for_lang(a_lang: STRING): ARCHETYPE_DESCRIPTION_ITEM
+	details_for_lang(a_lang: STRING): detachable ARCHETYPE_DESCRIPTION_ITEM
 			-- get details for given language
 			-- Void if nothing for that language
 		require
-			Lang_valid: a_lang /= Void and then not a_lang.is_empty
+			Lang_valid: not a_lang.is_empty
 		do
 			if details.has(a_lang) then
 				Result := details.item(a_lang)

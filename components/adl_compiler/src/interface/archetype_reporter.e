@@ -60,6 +60,7 @@ feature -- Access
 			report3: ARCH_ID_TO_TPL_ID_MAP
 			report4: VALUE_SETS_REPORT
 			report5: SPECIALIZATION_GRAPH
+			report6: KEYWORDS_FREQUENCY_REPORT
 		once
 			create Result.make(0)
 
@@ -80,6 +81,9 @@ feature -- Access
 
 			create report5.make
 			Result.put (report5, report5.title)
+
+			create report6.make
+			Result.put (report6, report6.title)
 		end
 
 feature -- Commands
@@ -160,6 +164,9 @@ feature {NONE} -- Commands
 			-- Generate `syntax' serialisation of archetypes under `an_export_dir' from all archetypes that have already been built.
 		do
 			current_library.do_all_archetypes (agent process_archetype)
+			across reports as rpts_csr loop
+				rpts_csr.item.finalise
+			end
 		end
 
 	valid_setup_args (args: like build_args_type): BOOLEAN
@@ -228,7 +235,7 @@ feature {NONE} -- Implementation
 			create Result
 		end
 
-	text_quote_agent: FUNCTION [ANY, TUPLE[STRING], STRING]
+	text_quote_agent: FUNCTION [ANY, TUPLE[READABLE_STRING_8], READABLE_STRING_8]
 			-- function to use to quote output format
 		attribute
 			Result := default_text_quoting_agent

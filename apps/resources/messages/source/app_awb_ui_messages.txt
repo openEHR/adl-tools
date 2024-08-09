@@ -258,7 +258,8 @@ templates = <
 		["archetype_dir_label_text"] = <"Create in directory: ">
 		["archetype_id_label_text"] = <"Archetype id: ">
 		["parent_archetype_id_label_text"] = <"Parent id: ">
-		["duplicate_archetype_id_err_msg"] = <"Id $1 already exists in library">
+		["duplicate_archetype_id_err_msg"] = <"Archetype with id $1 already exists in library">
+		["duplicate_template_overlay_id_err_msg"] = <"Template overlay id $1 in template $2 already exists in template $3">
 		["invalid_archetype_id_concept_err"] = <"Concept $1 contains invalid characters">
 
 		-- INITIAL_C_OBJECT_DIALOG

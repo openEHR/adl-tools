@@ -42,7 +42,7 @@ feature -- Access
 			Result := "Specialization graph of archetype library"
 		end
 
-	output_table: ARRAYED_LIST[TUPLE [arch_id, spec_lineage: STRING]]
+	output_table: ARRAYED_LIST[TUPLE [arch_id, spec_lineage: READABLE_STRING_8]]
 		once
 			create Result.make(0)
 		end

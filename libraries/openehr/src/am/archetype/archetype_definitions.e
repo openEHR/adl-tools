@@ -132,7 +132,7 @@ feature -- Export Types
 			not_empty: not Result.is_empty
 		end
 
-	text_quoting_agents: HASH_TABLE [FUNCTION [ANY, TUPLE[STRING], STRING], STRING]
+	text_quoting_agents: HASH_TABLE [FUNCTION [ANY, TUPLE[READABLE_STRING_8], READABLE_STRING_8], READABLE_STRING_8]
 		once
 			create Result.make(0)
 			Result.put (agent json_quote_text, {ODIN_DEFINITIONS}.syntax_type_json)
@@ -145,12 +145,13 @@ feature -- Export Types
 			Result := s
 		end
 
-	csv_quote_text (s: STRING): STRING
+	csv_quote_text (s: READABLE_STRING_8): READABLE_STRING_8
 		do
-			Result := Csv_default_quote + s + Csv_default_quote
+		--	create {STRING} Result.make_from_string (Csv_default_quote + s + Csv_default_quote)
+		Result := Csv_default_quote + s + Csv_default_quote
 		end
 
-	default_text_quoting_agent: FUNCTION [ANY, TUPLE[STRING], STRING]
+	default_text_quoting_agent: FUNCTION [ANY, TUPLE[READABLE_STRING_8], READABLE_STRING_8]
 		once
 			Result := agent csv_quote_text
 		end
