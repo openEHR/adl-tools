@@ -441,6 +441,14 @@ feature -- Comparison
 			end
 		end
 
+	is_redefined_child_code (a_code, other_code: STRING): BOOLEAN
+			-- a code is a redefined child of other_code
+		require
+			Code_valid: is_valid_code (a_code)
+		do
+			Result := is_redefined_code (a_code) and a_code.starts_with (other_code)
+		end
+
 	is_qualified_codestring (a_code: STRING): BOOLEAN
 			-- True if `a_code' is of form terminology_id::code
 		do

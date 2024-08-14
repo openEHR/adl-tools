@@ -432,6 +432,20 @@ feature -- Status Report
 			Result := term_bindings.has (a_terminology) and then term_bindings_for_terminology (a_terminology).has (a_key)
 		end
 
+	immediate_redefined_child_codes (a_code: STRING): LIST[STRING]
+			-- return immediate (i.e. one degree of specialisation greater) redefined child codes of `a_code'
+		local
+			code_spec_level: INTEGER
+		do
+			create {ARRAYED_LIST[STRING]} Result.make (0)
+			code_spec_level := specialisation_depth_from_code (a_code)
+			across term_codes as codes_csr loop
+				if is_redefined_child_code (codes_csr.item, a_code) and specialisation_depth_from_code (codes_csr.item) - code_spec_level = 1 then
+					Result.extend (codes_csr.item)
+				end
+			end
+		end
+
 	has_terminology_extract (a_terminology: STRING): BOOLEAN
 			-- true if there is an extract from terminology `a_terminology'
 		require
@@ -1088,9 +1102,44 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 				merge_specialised_value_set (value_sets_csr.item.deep_twin)
 			end
 
+			replicate_bindings
+
 			sync_stored_properties
 		ensure
 			Specialisation_depth_set: specialisation_depth = other.specialisation_depth
+		end
+
+	replicate_bindings
+			-- replicate bindings from higher level codes to descendants, for use in OPTs
+		local
+			pending_bindings: HASH_TABLE[URI, STRING]
+			binding_added: BOOLEAN
+			sanity_count: INTEGER
+		do
+			-- do this a few times to force all bindings to be evaluated
+			binding_added := True
+			from until not binding_added or sanity_count > 10 loop
+				binding_added := False
+				across term_bindings as bindings_for_terminology_csr loop
+					create pending_bindings.make (0)
+					across bindings_for_terminology_csr.item as bindings_csr loop
+						-- get the immediate defined codes of this one, one level down; for each one that
+						-- has no binding, create one from the parent
+						across immediate_redefined_child_codes (bindings_csr.key) as redef_codes_csr loop
+							if not has_term_binding (bindings_for_terminology_csr.key, redef_codes_csr.item) then
+								pending_bindings.put (bindings_csr.item, redef_codes_csr.item)
+							end
+						end
+					end
+					
+					-- now insert the new bindings
+					across pending_bindings as new_bindings_csr loop
+						put_term_binding (new_bindings_csr.item, bindings_for_terminology_csr.key, new_bindings_csr.key)
+						binding_added := True
+					end
+				end
+				sanity_count := sanity_count + 1
+			end
 		end
 
 feature {ARCHETYPE} -- Flattening
