@@ -551,6 +551,20 @@ feature -- Traversal
 			end
 		end
 
+	do_if_template (aci: ARCH_LIB_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_TEMPLATE]])
+			-- If `aci' is a template, perform `action' on it.
+		do
+			if attached {ARCH_LIB_TEMPLATE} aci as aca then
+				action.call ([aca])
+			end
+		end
+
+	do_for_all_templates (action: PROCEDURE [ANY, TUPLE [ARCH_LIB_TEMPLATE]])
+			-- On all templates, process all mentioned archetype with `action'
+		do
+			do_subtree (item_tree, agent do_if_template (?, action), Void)
+		end
+
 	do_archetype_lineage (aca: ARCH_LIB_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [ARCH_LIB_ARCHETYPE]])
 			-- On all archetype nodes from top to `aca', execute `action'
 		local

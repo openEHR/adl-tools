@@ -1125,13 +1125,15 @@ feature {ARCHETYPE_FLATTENER} -- Flattening
 					across bindings_for_terminology_csr.item as bindings_csr loop
 						-- get the immediate defined codes of this one, one level down; for each one that
 						-- has no binding, create one from the parent
-						across immediate_redefined_child_codes (bindings_csr.key) as redef_codes_csr loop
-							if not has_term_binding (bindings_for_terminology_csr.key, redef_codes_csr.item) then
-								pending_bindings.put (bindings_csr.item, redef_codes_csr.item)
+						if is_valid_code (bindings_csr.key) then
+							across immediate_redefined_child_codes (bindings_csr.key) as redef_codes_csr loop
+								if not has_term_binding (bindings_for_terminology_csr.key, redef_codes_csr.item) then
+									pending_bindings.put (bindings_csr.item, redef_codes_csr.item)
+								end
 							end
 						end
 					end
-					
+
 					-- now insert the new bindings
 					across pending_bindings as new_bindings_csr loop
 						put_term_binding (new_bindings_csr.item, bindings_for_terminology_csr.key, new_bindings_csr.key)

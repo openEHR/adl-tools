@@ -225,7 +225,8 @@ feature -- Commands
 
 							elseif opts.report then
 								generate_library_reports
-
+								extract_templates_missing_coding
+								
 							elseif opts.inject_term_bindings then
 								inject_term_bindings
 
@@ -323,6 +324,21 @@ feature -- Commands
 				end
 			else
 				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_input_file_required_err, <<>>))
+			end
+		end
+
+	extract_templates_missing_coding
+			-- export all term bindings into one files per terminology namespace
+			-- Each file is a CSV file of the form
+			--     archetype_id, archetype_node_id, binding_value
+		local
+			action: TEMPLATES_MISSING_CODING
+		do
+			if opts.write_to_file_system and then attached opts.output_dir as att_op_dir then
+				create action.make (att_op_dir, agent report_std_out, agent report_std_err, agent :BOOLEAN do Result := error_reported end)
+				action.execute
+			else
+				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_output_directory_required_err, <<>>))
 			end
 		end
 

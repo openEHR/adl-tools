@@ -170,6 +170,7 @@ feature -- Commands
 		end
 
 	build_artefact (ara: ARCH_LIB_ARCHETYPE)
+			-- just build a single artefact, don't do anything else
 		deferred
 		end
 

@@ -131,6 +131,12 @@ feature -- Status Report
 			Result := is_value_code (constraint)
 		end
 
+	is_constraint_value_set: BOOLEAN
+			-- True if this constraint is a value set
+		do
+			Result := is_value_set_code (constraint)
+		end
+
 	valid_value (a_value: TERMINOLOGY_CODE): BOOLEAN
 			-- see if `a_value', which must be an at-code, is one of the allowed codes in the
 			-- value set(s) of this constraint

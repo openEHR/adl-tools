@@ -219,6 +219,23 @@ feature -- Access
 
 	terminology: ARCHETYPE_TERMINOLOGY
 
+	identified_parent_node (a_node: C_OBJECT): detachable C_COMPLEX_OBJECT
+			-- return the proximal node above `a_node` that is identified in the terminology
+		local
+			csr: C_OBJECT
+			sanity_count: INTEGER
+		do
+			from csr := a_node until terminology.has_code (csr.node_id) or sanity_count = 20 loop
+				if attached a_node.parent as c_attr and then attached c_attr.parent as parent_cco then
+					csr := parent_cco
+				end
+				sanity_count := sanity_count + 1
+			end
+			if terminology.has_code (csr.node_id) and attached {C_COMPLEX_OBJECT} csr as cco then
+				Result := cco
+			end
+		end
+
 feature -- Path Maps
 
 	path_map: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
@@ -620,6 +637,19 @@ feature -- Status Report
 						Result := attached {C_OBJECT} ac as co and then co.rm_type_name.is_equal (an_rm_type)
 					end (?, rm_type)
 			).is_empty
+		end
+
+	has_object (a_node: C_OBJECT): BOOLEAN
+			-- check that a_node is in this archetype
+		local
+			csr: C_OBJECT
+		do
+			from csr := a_node until csr = definition or csr.parent = Void loop
+				if attached csr.parent as c_attr and then attached c_attr.parent as parent_cco then
+					csr := parent_cco
+				end
+			end
+			Result := csr = definition
 		end
 
 feature -- Status Setting
