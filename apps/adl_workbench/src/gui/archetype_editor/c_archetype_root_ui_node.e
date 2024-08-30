@@ -64,11 +64,11 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 			if attached arch_node then
-
-				Result := owning_archetype_flat_terminology.term_definition (display_settings.language, arch_node.node_id).text.twin
-
-				if display_settings.show_codes then
-					Result := annotated_code (arch_node.node_id, Result, " ")
+				if owning_archetype_flat_terminology.has_code (arch_node.node_id) then
+					Result := owning_archetype_flat_terminology.term_definition (display_settings.language, arch_node.node_id).text.twin
+					if display_settings.show_codes then
+						Result := annotated_code (arch_node.node_id, Result, " ")
+					end
 				end
 
 				if display_settings.show_technical_view then
