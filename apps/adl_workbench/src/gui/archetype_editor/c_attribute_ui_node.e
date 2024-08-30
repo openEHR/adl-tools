@@ -538,7 +538,7 @@ feature {ANY_UI_NODE} -- Implementation
 		local
 			rm_type_name, aom_type: STRING
 		do
-			rm_type_name := a_bmm_type.type_base_name
+			rm_type_name := a_bmm_type.unitary_type.type_name
 			if a_bmm_type.is_primitive then
 
 				-- if there is an AOM_PROFILE, use the RM prim type => AOM type mapping found there
