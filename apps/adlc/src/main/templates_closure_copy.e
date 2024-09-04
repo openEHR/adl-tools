@@ -74,10 +74,10 @@ feature -- Commands
 				str.append ("if [ ! -f " + tgt_path + " ]; then%N")
 
 				--output a mkdir -p command to make sure target directory exists
-				str.append ("    mkdir -p " + tgt_dirname + " && ")
+				str.append ("    mkdir -p " + tgt_dirname + " && \%N")
 
 				-- output a copy command of form 'cp source target'
-				str.append ("    cp " + paths_csr.key.to_string_8 + " " + tgt_path + "%N")
+				str.append ("    cp " + paths_csr.key.to_string_8 + " " + tgt_dirname + "%N")
 				str.append ("fi%N")
 			end
 
