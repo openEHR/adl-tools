@@ -35,6 +35,7 @@ templates = <
 		["report_switch_desc"] = <"generate reports">
 		["export_term_bindings_desc"] = <"export archetype term bindings">
 		["clean_term_bindings_desc"] = <"remove mis-matched archetype term bindings">
+		["gen_opts_copy_script_desc"] = <"generate OPTs copy script">
 
 		-- command line options with arguments
 		["display_rm_switch_desc"] = <"display reference model in user-friendly format">
@@ -60,6 +61,9 @@ templates = <
 
 		["library_switch_desc"] = <"library to use">
 		["library_switch_arg_desc"] = <"library name">
+
+		["opts_copy_target_repo_switch_desc"] = <"target repo to write to">
+		["opts_copy_target_repo_switch_arg_desc"] = <"repo name">
 
 		-- non-switched command-line options
 		["id_pattern_arg_name"] = <"id_pattern">
@@ -97,6 +101,9 @@ templates = <
 
 		["repository_tool_unavailable"] = <"External tool $1 not found on local system; repository operations limited to local access.%N(Recommendation on Windows: install Git for any platform from https://git-scm.com/)">
 		["external_tools_help_text"] = <"For missing external tools, see Help menu > External tools">
+
+
+		["source_path_not_in_source_repo"] = <"Source path $1 is not in source repo $2">
 	>
 >
 

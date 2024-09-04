@@ -55,7 +55,6 @@ feature -- Commands
 			out_file := file_system.new_output_file (output_filename)
 
 			out_file.open_write
-			-- out_file.put_string (row_str)
 
 			conv := fac.smart_serialization
 			conv.set_pretty_printing

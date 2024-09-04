@@ -65,6 +65,7 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_SWITCH}.make (export_switch, get_text (ec_export_switch_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (export_term_bindings_switch, get_text (ec_export_term_bindings_desc), False, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (clean_term_bindings_switch, get_text (ec_clean_term_bindings_desc), False, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (gen_opts_copy_script_switch, get_text (ec_gen_opts_copy_script_desc), True, False))
 
 			-- switches with arguments
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (cfg_switch, get_text (ec_cfg_switch_desc), True, False, cfg_switch_arg_name, get_text (ec_cfg_switch_arg_desc), False))
@@ -76,6 +77,8 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (output_dir_switch, get_text (ec_output_dir_switch_desc), False, False, output_dir_switch_arg_name, get_text (ec_output_dir_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (input_file_switch, get_text (ec_input_file_switch_desc), False, False, input_file_switch_arg_name, get_text (ec_input_file_switch_arg_desc), False))
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (inject_term_bindings_switch, get_text (ec_term_bindings_switch_desc), False, False, inject_term_bindings_switch_arg, get_text (ec_term_bindings_switch_arg_desc), False))
+
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (opts_copy_target_repo_switch, get_text (ec_opts_copy_target_repo_switch_desc), True, False, opts_copy_target_repo_switch_arg, get_text (ec_opts_copy_target_repo_switch_arg_desc), False))
 
 			-- valid command line configurations
 
@@ -157,7 +160,8 @@ feature -- Definitions
 															switch_of_name (cfg_switch),
 															switch_of_name (library_switch),
 															switch_of_name (format_switch),
-															switch_of_name (report_switch), switch_of_name (output_dir_switch)>>, False))
+															switch_of_name (report_switch),
+															switch_of_name (output_dir_switch)>>, False))
 
 			-- INJECT Terminology bindings
 			-- adlc [--quiet] [--cfg <file path>] --library <library name> --inject_term_bindings --input_file <terms_file>
@@ -165,6 +169,16 @@ feature -- Definitions
 															switch_of_name (cfg_switch),
 															switch_of_name (library_switch),
 															switch_of_name (inject_term_bindings_switch), switch_of_name (input_file_switch)>>, False))
+
+			-- GENERATE OPTS COPY SCRIPT
+			-- adlc [--quiet] [--cfg <file path>] --library <library name> --gen_opts_copy_script --target_repo <tgt_repo_name> [--output <output_dir>]
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch),
+															switch_of_name (cfg_switch),
+															switch_of_name (library_switch),
+															switch_of_name (gen_opts_copy_script_switch),
+															switch_of_name (opts_copy_target_repo_switch),
+															switch_of_name (output_dir_switch)>>, False))
+
 		end
 
 	quiet_switch: STRING = "q|quiet"
@@ -186,6 +200,10 @@ feature -- Definitions
 	build_switch: STRING = "build"
 	report_switch: STRING = "r|report"
 	export_switch: STRING = "x|export"
+
+	gen_opts_copy_script_switch: STRING = "gen_opts_copy_script"
+	opts_copy_target_repo_switch: STRING = "target_repo"
+	opts_copy_target_repo_switch_arg: STRING = "repo name"
 
 	export_term_bindings_switch: STRING = "export_term_bindings"
 	clean_term_bindings_switch: STRING = "clean_term_bindings"
@@ -258,6 +276,8 @@ feature {NONE} -- Initialization
 				export_term_bindings := has_option (export_term_bindings_switch)
 				clean_term_bindings := has_option (clean_term_bindings_switch)
 				inject_term_bindings := has_option (inject_term_bindings_switch)
+
+				gen_opts_copy_script := has_option (gen_opts_copy_script_switch)
 			end
 		end
 
@@ -352,6 +372,16 @@ feature -- Access
 			end
 		end
 
+	copy_opts_target_repo: detachable STRING
+			-- target repo for gen copy OPTs script operation
+		require
+			is_successful: is_successful
+		once
+			if has_option (gen_opts_copy_script_switch) and then attached option_of_name (opts_copy_target_repo_switch) as opt and then opt.has_value then
+				Result := opt.value
+			end
+		end
+
 feature -- Status Report
 
 	is_verbose: BOOLEAN
@@ -385,6 +415,8 @@ feature -- Status Report
 	export_term_bindings: BOOLEAN
 
 	clean_term_bindings: BOOLEAN
+
+	gen_opts_copy_script: BOOLEAN
 
 feature {NONE} -- Usage
 

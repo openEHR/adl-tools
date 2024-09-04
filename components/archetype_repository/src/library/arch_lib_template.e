@@ -95,6 +95,11 @@ feature -- Artefacts
 			Result := template_compiled (True)
 		end
 
+	overlays: ARRAYED_LIST [ARCH_LIB_TEMPLATE_OVERLAY]
+		attribute
+			create Result.make (0)
+		end
+
 feature -- Visualisation
 
 	select_archetype (differential_view, editing_enabled: BOOLEAN): ARCHETYPE
@@ -265,13 +270,6 @@ feature {NONE} -- Output
 	persistent_compact_type: P_TEMPLATE
 		do
 			create Result.make_dt (Void)
-		end
-
-feature {NONE} -- Implementation
-
-	overlays: ARRAYED_LIST [ARCH_LIB_TEMPLATE_OVERLAY]
-		attribute
-			create Result.make (0)
 		end
 
 end

@@ -357,6 +357,32 @@ feature -- Relationships
 				att_ala.has_ancestor (an_arch_id))
 		end
 
+	ancestor_ids: LIST[STRING]
+			-- List of specialisation parents; empty if none
+		local
+			csr: ARCH_LIB_ARCHETYPE
+		do
+			create {ARRAYED_LIST[STRING]} Result.make(0)
+
+			from csr := specialisation_parent until csr = Void loop
+				Result.extend (csr.id.as_string)
+				csr := csr.specialisation_parent
+			end
+		end
+
+	ancestors: LIST[ARCH_LIB_ARCHETYPE]
+			-- List of specialisation parents; empty if none
+		local
+			csr: ARCH_LIB_ARCHETYPE
+		do
+			create {ARRAYED_LIST[ARCH_LIB_ARCHETYPE]} Result.make(0)
+
+			from csr := specialisation_parent until csr = Void loop
+				Result.extend (csr)
+				csr := csr.specialisation_parent
+			end
+		end
+
 	is_specialised: BOOLEAN
 			-- True if this archetype is a specialisation of another archetype
 		do

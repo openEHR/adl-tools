@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (978)
+			create message_table.make (982)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -303,6 +303,7 @@ feature -- Initialisation
 			message_table.put ("generate reports", ec_report_switch_desc)
 			message_table.put ("export archetype term bindings", ec_export_term_bindings_desc)
 			message_table.put ("remove mis-matched archetype term bindings", ec_clean_term_bindings_desc)
+			message_table.put ("generate OPTs copy script", ec_gen_opts_copy_script_desc)
 			message_table.put ("display reference model in user-friendly format", ec_display_rm_switch_desc)
 			message_table.put ("reference model name", ec_display_rm_switch_arg_desc)
 			message_table.put ("export reference models in all available formats", ec_export_rms_switch_desc)
@@ -319,6 +320,8 @@ feature -- Initialisation
 			message_table.put (".cfg file path", ec_cfg_switch_arg_desc)
 			message_table.put ("library to use", ec_library_switch_desc)
 			message_table.put ("library name", ec_library_switch_arg_desc)
+			message_table.put ("target repo to write to", ec_opts_copy_target_repo_switch_desc)
+			message_table.put ("repo name", ec_opts_copy_target_repo_switch_arg_desc)
 			message_table.put ("id_pattern", ec_id_pattern_arg_name)
 			message_table.put ("archetype id regex", ec_id_pattern_arg_description)
 			message_table.put ("regex string", ec_id_pattern_arg_type)
@@ -347,6 +350,7 @@ feature -- Initialisation
 			message_table.put ("-----------------------------------------------------%N", ec_archs_list_text_end)
 			message_table.put ("External tool $1 not found on local system; repository operations limited to local access.%N(Recommendation on Windows: install Git for any platform from https://git-scm.com/)", ec_repository_tool_unavailable)
 			message_table.put ("For missing external tools, see Help menu > External tools", ec_external_tools_help_text)
+			message_table.put ("Source path $1 is not in source repo $2", ec_source_path_not_in_source_repo)
 			message_table.put ("Not implemented in this release", ec_to_be_implemented)
 			message_table.put ("Copying file $1 to $2, backing up original to $3", ec_copy_file_with_backup)
 			message_table.put ("Display", ec_display_in_active_tab)

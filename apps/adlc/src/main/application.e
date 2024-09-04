@@ -15,6 +15,7 @@ note
 					   adlc [-q] -b <library> [-f <format>] --report [-o <output_dir>]
 					   adlc [-q] -b <library> --inject_term_bindings <terminology_namespace> -i <terms_file>
 					   adlc [-q] -b <library> --export_term_bindings
+					   adlc [-q] -b <library> --gen_opts_copy_script --target_repo <tgt_repo_name> --output <output_dir>
 
 					OPTIONS:
 					   Options should be prefixed with: '-' or '/'
@@ -226,7 +227,10 @@ feature -- Commands
 							elseif opts.report then
 								generate_library_reports
 								extract_templates_missing_coding
-								
+
+							elseif opts.gen_opts_copy_script then
+								generate_opts_copy_script
+
 							elseif opts.inject_term_bindings then
 								inject_term_bindings
 
@@ -336,6 +340,20 @@ feature -- Commands
 		do
 			if opts.write_to_file_system and then attached opts.output_dir as att_op_dir then
 				create action.make (att_op_dir, agent report_std_out, agent report_std_err, agent :BOOLEAN do Result := error_reported end)
+				action.execute
+			else
+				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_output_directory_required_err, <<>>))
+			end
+		end
+
+	generate_opts_copy_script
+			-- generate a script to copy valid OPTs and the archetype reachable by direct reference from
+			-- their use_reference statements
+		local
+			action: TEMPLATES_CLOSURE_COPY
+		do
+			if opts.write_to_file_system and then attached opts.copy_opts_target_repo as repo and then attached opts.output_dir as att_op_dir then
+				create action.make (att_op_dir, current_library_name, repo, agent report_std_out, agent report_std_err, agent :BOOLEAN do Result := error_reported end)
 				action.execute
 			else
 				report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_output_directory_required_err, <<>>))
