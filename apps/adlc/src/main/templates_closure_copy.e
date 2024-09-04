@@ -53,7 +53,7 @@ feature -- Commands
 
 			current_library.do_for_all_templates (agent tpl_get_archetype_closure)
 
-			output_filename := file_system.pathname (output_dir, "template_copy_script.sh")
+			output_filename := file_system.pathname (output_dir, "opts_copy_script.sh")
 			out_file := file_system.new_output_file (output_filename)
 
 			out_file.open_write
