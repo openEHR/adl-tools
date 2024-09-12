@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (982)
+			create message_table.make (984)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -509,6 +509,8 @@ feature -- Initialisation
 			message_table.put ("Indicate original format  - ADL 1.4 legacy flat, ADL 1.5, etc", ec_show_source_format_tooltip)
 			message_table.put ("Show all classes in explorer", ec_show_all_classes_text)
 			message_table.put ("Show all archetypable classes in RM even if there are no archetypes based on them in the current library.", ec_show_all_classes_tooltip)
+			message_table.put ("Show abstract classes in explorer", ec_show_abstract_classes_text)
+			message_table.put ("Show abstract RM classes even if there are no archetypes based on them in the current library.", ec_show_abstract_classes_tooltip)
 			message_table.put ("Use RM icons", ec_use_rm_icons_text)
 			message_table.put ("Use RM-specific icons in visualisation of archetype definition?", ec_use_rm_icons_tooltip)
 			message_table.put ("Default Tool Tab: ", ec_options_tool_tab_text)

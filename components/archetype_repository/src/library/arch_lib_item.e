@@ -156,6 +156,18 @@ feature -- Access
 			end
 		end
 
+	local_archetype_count: INTEGER
+			-- count of archetype child objects
+		do
+			if attached children as att_children then
+				across att_children as child_csr loop
+					if attached {ARCH_LIB_ARCHETYPE} child_csr.item as ara then
+						Result := Result + 1
+					end
+				end
+			end
+		end
+
 feature -- Status Report
 
 	has_artefacts: BOOLEAN

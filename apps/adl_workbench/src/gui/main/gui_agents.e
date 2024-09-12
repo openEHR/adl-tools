@@ -55,6 +55,9 @@ feature {NONE} -- Access
 	on_toggle_view_all_classes_agent: detachable PROCEDURE [ANY, TUPLE[BOOLEAN]]
 			-- agent to call when 'show all classes' UI option is toggled
 
+	on_toggle_view_abstract_classes_agent: detachable PROCEDURE [ANY, TUPLE[BOOLEAN]]
+			-- agent to call when 'show abstract classes' UI option is toggled
+
 	save_resources_agent: detachable PROCEDURE [ANY, TUPLE]
 			-- save resources file
 
@@ -197,6 +200,13 @@ feature -- Command
 			end
 		end
 
+	call_on_toggle_view_abstract_classes_agent (a_flag: BOOLEAN)
+		do
+			if attached on_toggle_view_abstract_classes_agent as att_agt then
+				att_agt.call ([a_flag])
+			end
+		end
+
 	call_save_resources_agent
 		do
 			if attached save_resources_agent as att_agt then
@@ -299,6 +309,11 @@ feature -- Modification
 	set_on_toggle_view_all_classes_agent (an_agent: like on_toggle_view_all_classes_agent)
 		do
 			on_toggle_view_all_classes_agent := an_agent
+		end
+
+	set_on_toggle_view_abstract_classes_agent (an_agent: like on_toggle_view_abstract_classes_agent)
+		do
+			on_toggle_view_abstract_classes_agent := an_agent
 		end
 
 	set_save_resources_agent (an_agent: like save_resources_agent)

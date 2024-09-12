@@ -494,6 +494,8 @@ feature -- Definitions
 		ec_show_source_format_tooltip: STRING = "show_source_format_tooltip"
 		ec_show_all_classes_text: STRING = "show_all_classes_text"
 		ec_show_all_classes_tooltip: STRING = "show_all_classes_tooltip"
+		ec_show_abstract_classes_text: STRING = "show_abstract_classes_text"
+		ec_show_abstract_classes_tooltip: STRING = "show_abstract_classes_tooltip"
 		ec_use_rm_icons_text: STRING = "use_rm_icons_text"
 		ec_use_rm_icons_tooltip: STRING = "use_rm_icons_tooltip"
 		ec_options_tool_tab_text: STRING = "options_tool_tab_text"

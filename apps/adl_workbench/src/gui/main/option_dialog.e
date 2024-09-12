@@ -156,6 +156,11 @@ feature {NONE} -- Initialization
 			ev_notebook_ui_settings_1_vb.extend (evx_show_all_classes_cb.ev_data_control)
 			gui_controls.extend (evx_show_all_classes_cb)
 
+			-- show abstract classes in archetype explorer
+			create evx_show_abstract_classes_cb.make (get_text ({ADL_MESSAGES_IDS}.ec_show_abstract_classes_text), get_text ({ADL_MESSAGES_IDS}.ec_show_abstract_classes_tooltip), agent show_abstract_classes)
+			ev_notebook_ui_settings_1_vb.extend (evx_show_abstract_classes_cb.ev_data_control)
+			gui_controls.extend (evx_show_abstract_classes_cb)
+
 			-- show 'lf' marker in archetype tree to indicate original source form (legacy or authored)
 			create evx_display_source_cb.make (get_text ({ADL_MESSAGES_IDS}.ec_show_source_format_text), get_text ({ADL_MESSAGES_IDS}.ec_show_source_format_tooltip), agent display_archetype_source)
 			ev_notebook_ui_settings_1_vb.extend (evx_display_source_cb.ev_data_control)
@@ -335,6 +340,7 @@ feature -- Events
 				set_display_archetype_source (evx_display_source_cb.is_selected)
 
 				gui_agents.call_on_toggle_view_all_classes_agent (evx_show_all_classes_cb.is_selected)
+				gui_agents.call_on_toggle_view_abstract_classes_agent (evx_show_abstract_classes_cb.is_selected)
 
 				set_default_tool_tab (Tool_tab_reverse_index.item (evx_tool_tab_cob.data_control_text))
 
@@ -406,7 +412,7 @@ feature {NONE} -- Implementation
 
 	evx_quiet_mode_cb, evx_validation_strict_cb, evx_rm_flattening_cb, evx_expand_definition_tree_cb, evx_show_line_numbers_cb: EVX_CHECK_BOX_CONTROL
 
-	evx_display_source_cb, evx_show_all_classes_cb, evx_show_flat_form: EVX_CHECK_BOX_CONTROL
+	evx_display_source_cb, evx_show_all_classes_cb, evx_show_abstract_classes_cb, evx_show_flat_form: EVX_CHECK_BOX_CONTROL
 
 	evx_auth_name_text, evx_auth_org_text, evx_auth_copyright_text, evx_auth_language_text: EVX_SINGLE_LINE_TEXT_CONTROL
 

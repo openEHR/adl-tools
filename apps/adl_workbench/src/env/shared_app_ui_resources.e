@@ -779,6 +779,18 @@ feature -- Application Switches
 			app_cfg.put_boolean_value("/gui/show_entire_ontology", flag)
 		end
 
+	show_abstract_classes: BOOLEAN
+			-- Display abstract classes in the ontology class tree
+		do
+			Result := app_cfg.boolean_value ("/gui/show_abstract_classes")
+		end
+
+	set_show_abstract_classes (flag: BOOLEAN)
+			-- Set flag for show_abstract_classes.
+		do
+			app_cfg.put_boolean_value("/gui/show_abstract_classes", flag)
+		end
+
 	display_archetype_source: BOOLEAN
 			-- Display "(f)" marker on archetypes created in flat form
 		do

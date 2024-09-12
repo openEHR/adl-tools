@@ -202,6 +202,10 @@ templates = <
 
 		["show_all_classes_text"] = <"Show all classes in explorer">
 		["show_all_classes_tooltip"] = <"Show all archetypable classes in RM even if there are no archetypes based on them in the current library.">
+
+		["show_abstract_classes_text"] = <"Show abstract classes in explorer">
+		["show_abstract_classes_tooltip"] = <"Show abstract RM classes even if there are no archetypes based on them in the current library.">
+
 		["use_rm_icons_text"] = <"Use RM icons">
 		["use_rm_icons_tooltip"] = <"Use RM-specific icons in visualisation of archetype definition?">
 

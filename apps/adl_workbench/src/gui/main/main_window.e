@@ -278,6 +278,7 @@ feature {NONE} -- Initialization
 			gui_agents.set_close_test_tool_agent (agent close_test_tool)
 
 			gui_agents.set_on_toggle_view_all_classes_agent (agent on_toggle_view_all_classes)
+			gui_agents.set_on_toggle_view_abstract_classes_agent (agent on_toggle_view_abstract_classes)
 
 			gui_agents.set_save_resources_agent (agent save_resources)
 		end
@@ -688,7 +689,7 @@ feature {NONE} -- Library events
 feature {NONE} -- XML Menu events
 
 	set_xml_rules
-			-- Called by `select_actions' of `xml_menu_conv_rules'.
+			-- Called by `select_actions' of `xml_menu_conv_rules'.*dialog
 		do
 			execution_environment.launch (text_editor_command + " %"" + xml_rules_file_path + "%"")
 			mark_xml_rules_put_of_date -- assume that the user makes a change; not very scientific, but good enough for now
@@ -710,6 +711,20 @@ feature {NONE} -- Tools menu events
 			-- archetype explorer, or only those for which there are archetypes
 		do
 			set_show_entire_ontology (a_flag)
+			save_resources
+			if has_current_library then
+				library_tool.populate (current_library)
+				if test_tool.ev_root_container.is_displayed then
+					test_tool.populate
+				end
+			end
+		end
+
+	on_toggle_view_abstract_classes (a_flag: BOOLEAN)
+			-- the 'view all classes' setting says whether to display all RM classes in the
+			-- archetype explorer, or only those for which there are archetypes
+		do
+			set_show_abstract_classes (a_flag)
 			save_resources
 			if has_current_library then
 				library_tool.populate (current_library)

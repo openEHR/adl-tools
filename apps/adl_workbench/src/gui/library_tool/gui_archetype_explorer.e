@@ -216,7 +216,7 @@ feature {NONE} -- Implementation
    	ev_semantic_grid_populate_enter (aci: ARCH_LIB_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		do
-			if not aci.is_root and (aci.subtree_artefact_total > 0 or else show_entire_ontology or else attached {ARCH_LIB_ARCHETYPE} aci) then
+			if show_node (aci) then
 				-- add row to grid
 				if ev_tree_item_stack.is_empty then
 					gui_semantic_grid.add_row (aci)
@@ -235,7 +235,7 @@ feature {NONE} -- Implementation
 
    	ev_semantic_grid_populate_exit (aci: ARCH_LIB_ITEM)
    		do
-			if not aci.is_root and (aci.subtree_artefact_total > 0 or else show_entire_ontology or else attached {ARCH_LIB_ARCHETYPE} aci) then
+			if show_node (aci) then
 				ev_tree_item_stack.remove
 			end
 		end
@@ -587,6 +587,16 @@ feature {NONE} -- Implementation
 				an_mi.set_pixmap (get_icon_pixmap ("tool/new_archetype"))
 				a_menu.extend (an_mi)
 			end
+		end
+
+	show_node (aci: ARCH_LIB_ITEM): BOOLEAN
+		do
+			Result := not aci.is_root
+				and	(aci.subtree_artefact_total > 0 or show_entire_ontology or attached {ARCH_LIB_ARCHETYPE} aci)
+				and (show_abstract_classes
+					or aci.local_archetype_count > 0
+					or attached {ARCH_LIB_ARCHETYPE} aci
+					or aci.subtree_artefact_total > 0 and attached {ARCH_LIB_MODEL} aci)
 		end
 
 end
