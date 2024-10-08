@@ -840,13 +840,14 @@ feature -- Validation
 
 	suppliers_index: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING]
 			-- table of {list<C_ARCHETYPE_ROOT>, archetype_ref}
-			-- i.e. table of <list of use_archetype nodes>, each keyed by archetype ref
+			-- i.e. table of <list of use_archetype nodes>, keyed by archetype ref
 		local
 			def_it: C_ITERATOR
 		do
 			create Result.make (0)
 			create def_it.make (definition)
-			def_it.do_all_on_entry (
+--			do_all_on_entry (
+			def_it.do_at_surface (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING])
 					local
 						al_car: ARRAYED_LIST [C_ARCHETYPE_ROOT]
@@ -860,7 +861,13 @@ feature -- Validation
 							end
 							al_car.extend (car)
 						end
-					end (?, ?, Result))
+					end (?, ?, Result),
+
+				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
+					do
+						Result := attached {C_ARCHETYPE_ROOT} a_c_node
+					end
+			)
 		end
 
 	rules_index: HASH_TABLE [ARRAYED_LIST [EXPR_ARCHETYPE_REF], STRING]

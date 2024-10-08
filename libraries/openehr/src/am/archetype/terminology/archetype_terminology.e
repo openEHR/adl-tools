@@ -641,22 +641,22 @@ feature -- Modification
 			last_new_definition_code := new_term.code
 		end
 
-	put_term_binding (a_binding: URI; a_terminology_id, a_key: STRING)
+	put_term_binding (a_binding: URI; a_terminology_id, a_binding_key: STRING)
 			-- add a new term binding to local code a_code, in the terminology
 			-- group corresponding to the a_term_code.terminology
 		require
-			Key_valid: is_valid_code (a_key) implies has_code (a_key)
-			Not_already_added: not has_term_binding (a_terminology_id, a_key)
+			Key_valid: is_valid_code (a_binding_key) implies has_code (a_binding_key)
+			Not_already_added: not has_term_binding (a_terminology_id, a_binding_key)
 		do
 			if not has_term_bindings (a_terminology_id) then
 				term_bindings.put (create {HASH_TABLE [URI, STRING]}.make(0), a_terminology_id)
 			end
 			if attached term_bindings.item (a_terminology_id) as bindings then
-				bindings.put (a_binding, a_key)
+				bindings.put (a_binding, a_binding_key)
 			end
 			term_binding_map_cache := Void
 		ensure
-			Binding_added: has_term_binding (a_terminology_id, a_key)
+			Binding_added: has_term_binding (a_terminology_id, a_binding_key)
 		end
 
 	replace_term_definition_item (a_language: STRING; a_code, a_key, a_value: STRING)
@@ -672,16 +672,16 @@ feature -- Modification
 			end
 		end
 
-	replace_term_binding (a_binding: URI; a_terminology_id, a_key: STRING)
+	replace_term_binding (a_binding: URI; a_terminology_id, a_binding_key: STRING)
 			-- replaces existing a term binding to local code a_code, in group a_terminology
 		require
-			Key_valid: is_valid_code (a_key) implies has_code (a_key)
-			Already_added: has_term_binding (a_terminology_id, a_key)
+			Key_valid: is_valid_code (a_binding_key) implies has_code (a_binding_key)
+			Already_added: has_term_binding (a_terminology_id, a_binding_key)
 		do
-			term_bindings_for_terminology (a_terminology_id).replace (a_binding, a_key)
+			term_bindings_for_terminology (a_terminology_id).replace (a_binding, a_binding_key)
 			term_binding_map_cache := Void
 		ensure
-			Binding_added: has_term_binding (a_terminology_id, a_key)
+			Binding_added: has_term_binding (a_terminology_id, a_binding_key)
 		end
 
 	replicate_term_definition (an_old_code, a_new_code: STRING)

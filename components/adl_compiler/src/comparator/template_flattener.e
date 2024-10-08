@@ -44,10 +44,10 @@ feature {NONE} -- Implementation
 		require
 			a_flat_arch.is_flat
 		local
-			supp_flat_arch, matched_arch: ARCHETYPE
-			supp_arch_root_cco: C_COMPLEX_OBJECT
-			supp_arch_id: STRING
-			bindings: HASH_TABLE [URI, STRING]
+			supp_expanded_arch, matched_arch: ARCHETYPE
+			supp_expanded_arch_root_cco: C_COMPLEX_OBJECT
+			supp_expanded_arch_id: STRING
+			bindings_for_terminology: HASH_TABLE [URI, STRING]
 			found: BOOLEAN
 		do
 debug ("overlay")
@@ -55,66 +55,71 @@ debug ("overlay")
 end
 			fillers_on_current_path.extend (a_flat_arch.archetype_id.physical_id)
 
+			-- iterate across a HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING] structure
+			-- where the keys are archetype refs (usually archetype id to major version)
 			across a_flat_arch.suppliers_index as xrefs_csr loop
 				-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
 				check attached current_library.archetype_matching_ref (xrefs_csr.key) as att_ala then
 					matched_arch := att_ala.flat_archetype_processed (include_rm)
 				end
 
-				-- make a copy of the supplier archetype (or template)
-				create supp_flat_arch.make_from_other (matched_arch)
-				supp_arch_id := supp_flat_arch.archetype_id.physical_id
-				supp_arch_root_cco := supp_flat_arch.definition
+				-- make a copy of the supplier archetype (or template), to be fully expanded
+				create supp_expanded_arch.make_from_other (matched_arch)
+				supp_expanded_arch_id := supp_expanded_arch.archetype_id.physical_id
+				supp_expanded_arch_root_cco := supp_expanded_arch.definition
 
 				-- add the terminology of this archetype to the OPT component_terminologies
-				if not opt.has_component_terminology (supp_arch_id) then
-					opt.add_component_terminology (supp_flat_arch.terminology, supp_arch_id)
+				if not opt.has_component_terminology (supp_expanded_arch_id) then
+					opt.add_component_terminology (supp_expanded_arch.terminology, supp_expanded_arch_id)
 				end
 
 				-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier
-				-- archetype id xrefs_csr.key into each one of these C_ARCHETYPE_ROOT nodes, clone the
-				-- flat definition structure from the supplier archetype
+				-- archetype id xrefs_csr.key;
+				-- into each one of these C_ARCHETYPE_ROOT nodes, clone the flat definition structure from the supplier
+				-- archetype (iterating on ARRAYED_LIST [C_ARCHETYPE_ROOT] all for same archetype)
 				across xrefs_csr.item as c_arch_roots_csr loop
 
-					-- first, copy any bindings to the root point of the used archetype/overlay into the bindings of the owning template, under the
-					-- id-code of the use_archetype reference
-					across supp_flat_arch.terminology.term_bindings as bindings_for_terminology_csr loop
-						bindings := bindings_for_terminology_csr.item
+					-- first, copy any bindings to the root id node of the used archetype/overlay into the bindings of the owning template,
+					-- under the id-code of the use_archetype reference
+					across supp_expanded_arch.terminology.term_bindings as bindings_for_terminology_csr loop
+						bindings_for_terminology := bindings_for_terminology_csr.item
 
 						-- see if there is a binding for the supplier archetype concept id (some id1....1 code) or any parent of that
 						found := False
-						from bindings.start until bindings.off or found loop
-							if supp_flat_arch.concept_id.starts_with (bindings.key_for_iteration) then
+						from bindings_for_terminology.start until bindings_for_terminology.off or found loop
+							if is_valid_root_id_code(bindings_for_terminology.key_for_iteration) and
+								supp_expanded_arch.specialisation_depth >= specialisation_depth_from_code(bindings_for_terminology.key_for_iteration)
+							then
 								found := True
-								if attached bindings.item_for_iteration as uri and
+								if attached bindings_for_terminology.item_for_iteration as uri and
 									not a_flat_arch.terminology.has_term_binding (bindings_for_terminology_csr.key, c_arch_roots_csr.item.node_id)
 								then
 									a_flat_arch.terminology.put_term_binding (uri, bindings_for_terminology_csr.key, c_arch_roots_csr.item.node_id)
 								end
 							end
-							bindings.forth
+							bindings_for_terminology.forth
 						end
 					end
 
 					-- always convert, to ensure archetype id replaces archetype ref in C_ARCHETYPE_ROOT
 					-- even if no overlaying takes place
-					c_arch_roots_csr.item.convert_to_flat (supp_flat_arch.archetype_id)
+					c_arch_roots_csr.item.convert_to_flat (supp_expanded_arch.archetype_id)
 
 					-- Now we decide if we are going to overlay the referenced supplier archetype...
 					-- limit depth in case of recursive inclusion and don't repeat descent into same archetype
 					-- on any given descent path (we could be more sophisticated and allow N uses of same
 					-- archetype on same path, if it were needed)
-					if depth <= Max_template_overlay_depth and not fillers_on_current_path.has (supp_arch_id) then
+					if depth <= Max_template_overlay_depth and not fillers_on_current_path.has (supp_expanded_arch_id) then
 
 						-- it is empty and needs to be replaced with the supplier structure
 						if not c_arch_roots_csr.item.has_attributes and not c_arch_roots_csr.item.is_prohibited then
 							-- perform overlays on supplier archetype first
-							overlay_filler_definitions (supp_flat_arch, include_rm, depth + 1)
+							overlay_filler_definitions (supp_expanded_arch, include_rm, depth + 1)
 debug ("overlay")
 	io.put_string ("%T node at " + c_arch_roots_csr.item.path +
 	" with " + xrefs_csr.key + "%N")
 end
-							across supp_arch_root_cco.attributes as attrs_csr loop
+							across supp_expanded_arch_root_cco.attributes as attrs_csr loop
 								c_arch_roots_csr.item.put_attribute (attrs_csr.item)
 debug ("overlay")
 	io.put_string ("%T%T cloning attribute " +
