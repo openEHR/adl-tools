@@ -136,10 +136,8 @@ feature -- Initialization
 			end
 
 			app_root.initialise_cfg
-
 			if app_root.ready_to_initialise_app then
 				app_root.initialise_app
-
 				if not app_root.has_errors then
 					process_jobs
 				else
@@ -152,6 +150,8 @@ feature -- Initialization
 						end
 					end
 				end
+			else
+				report_std_err (app_root.error_strings)
 			end
 		end
 
