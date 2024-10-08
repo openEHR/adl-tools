@@ -49,7 +49,7 @@ feature -- Commands
 
 			create in_file.make(input_file_path)
 
-			create last_arch_id.make_empty
+			create last_arch_ref.make_empty
 			if in_file.exists then
 				check attached code_systems.item(term_binding_ns) as uri_root then
 					term_binding_uri_root := uri_root
@@ -64,21 +64,21 @@ feature -- Commands
 						a_line.right_adjust
 						strs := a_line.split (',')
 
-						arch_id := strs.i_th (1)
-						if not arch_id.is_equal (last_arch_id) then
+						arch_ref := strs.i_th (1)
+						if not arch_ref.is_equal (last_arch_ref) then
 							-- save last archetype changes
 							save_changes (ara)
 
-							if current_library.has_archetype_with_id (arch_id) and then attached {ARCH_LIB_AUTHORED_ARCHETYPE} current_library.archetype_with_id (arch_id) as arch_desc then
+							if attached {ARCH_LIB_AUTHORED_ARCHETYPE} current_library.archetype_matching_ref (arch_ref) as arch_desc then
 								ara := arch_desc
 
 								if attached {AUTHORED_ARCHETYPE} ara.differential_archetype as da then
 									diff_arch := da
 								else
-									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_in_memory_not_found, <<arch_id, current_library_name>>))
+									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_in_memory_not_found, <<arch_ref, current_library_name>>))
 								end
 							else
-								report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_not_found, <<arch_id, current_library_name>>))
+								report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_not_found, <<arch_ref, current_library_name>>))
 							end
 						end
 
@@ -98,7 +98,7 @@ feature -- Commands
 								if not old_term_binding_uri.is_equal(binding_uri) then
 									diff_arch.terminology.replace_term_binding (binding_uri, term_binding_ns, arch_code)
 									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_replace_term_binding, <<term_binding_ns,
-										old_term_binding_uri.as_string, arch_code, binding_uri.as_string, arch_id>>))
+										old_term_binding_uri.as_string, arch_code, binding_uri.as_string, arch_ref>>))
 									inject_replace_count := inject_replace_count + 1
 									save_required := True
 								else
@@ -109,7 +109,7 @@ feature -- Commands
 								inject_new_count := inject_new_count + 1
 								save_required := True
 							else
-								report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_node_not_found, <<arch_id, arch_code, current_library_name>>))
+								report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_node_not_found, <<arch_ref, arch_code, current_library_name>>))
 							end
 						end
 					end
@@ -130,19 +130,19 @@ feature {NONE} -- Implementation
 			if save_required and attached ara and then attached ara.differential_archetype then
 				ara.save_differential_text
 				arch_count := arch_count + 1
-				last_arch_id := arch_id
+				last_arch_ref := arch_ref
 				save_required := False
 			end
 		end
 
 	arch_count, inject_new_count, inject_replace_count, inject_ignore_count: INTEGER
 
-	last_arch_id: STRING
+	last_arch_ref: STRING
 		attribute
 			create Result.make(0)
 		end
 
-	arch_id: STRING
+	arch_ref: STRING
 		attribute
 			create Result.make(0)
 		end
