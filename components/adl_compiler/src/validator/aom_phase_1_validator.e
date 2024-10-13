@@ -283,7 +283,6 @@ feature {NONE} -- Implementation
 
 	validate_definition_codes
 			-- Check if all id-, at- and ac-codes found in the definition node tree are in the terminology (including inherited items).
-			-- Note that id-codes are optional in the terminology for objects under single-valued C_ATTRIBUTEs.
 			-- Leave `passed' True if all found node_ids are defined in term_definitions, and term_definitions contains no extras.
 			-- For specialised archetypes, requires flat ancestor to be available
 		local
@@ -300,11 +299,18 @@ feature {NONE} -- Implementation
 				across codes_csr.item as ac_csr loop
 					if code_spec_depth > arch_depth then
 						add_error ({ADL_MESSAGES_IDS}.ec_VTSD, <<codes_csr.key>>)
-					elseif attached {C_OBJECT} ac_csr.item as co and then (co.is_root or else attached co.parent as parent_ca and then parent_ca.is_multiple) then
-						if code_spec_depth < arch_depth and not arch_flat_parent.terminology.has_id_code (codes_csr.key) or else
-							code_spec_depth = arch_depth and not terminology.has_id_code (codes_csr.key)
-						then
-							add_error ({ADL_MESSAGES_IDS}.ec_VATID, <<codes_csr.key, co.path>>)
+					elseif attached {C_OBJECT} ac_csr.item as co then
+						-- for root node, and all multiple attribute children, id-code has to be in terminology
+						if co.is_root or else attached co.parent as parent_ca and then parent_ca.is_multiple then
+							if code_spec_depth < arch_depth and not arch_flat_parent.terminology.has_id_code (codes_csr.key) or else
+								code_spec_depth = arch_depth and not terminology.has_id_code (codes_csr.key)
+							then
+								add_error ({ADL_MESSAGES_IDS}.ec_VATID, <<codes_csr.key, co.path>>)
+							end
+						elseif attached co.parent as parent_ca and then not parent_ca.is_multiple then
+							if code_spec_depth < arch_depth and not arch_flat_parent.id_codes_index.has (codes_csr.key) then
+								add_error ({ADL_MESSAGES_IDS}.ec_VTSD, <<codes_csr.key>>)
+							end
 						end
 					end
 				end
