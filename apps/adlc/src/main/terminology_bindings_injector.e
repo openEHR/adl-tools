@@ -69,9 +69,9 @@ feature -- Commands
 							-- save last archetype changes
 							save_changes (ara)
 
+							diff_arch := Void
 							if attached {ARCH_LIB_AUTHORED_ARCHETYPE} current_library.archetype_matching_ref (arch_ref) as arch_desc then
 								ara := arch_desc
-
 								if attached {AUTHORED_ARCHETYPE} ara.differential_archetype as da then
 									diff_arch := da
 								else
