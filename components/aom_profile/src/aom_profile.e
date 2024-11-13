@@ -91,6 +91,14 @@ feature -- Access (attributes from file)
 			create Result.make_empty
 		end
 
+	term_representation_classes: detachable ARRAYED_LIST[STRING]
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH profile file
+			-- list of class names that represent coded terms in the reference model and can have
+			-- terminology value-set constraints added
+		attribute
+			create Result.make(0)
+		end
+
 	aom_rm_type_mappings: HASH_TABLE [AOM_TYPE_MAPPING, STRING]
 			-- mappings from AOM built-in types to actual types in RM: whenever
 			-- the type name is encountered in an archetype, it is mapped to a specific RM type
