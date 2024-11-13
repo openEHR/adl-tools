@@ -98,9 +98,8 @@ end
 								if is_valid_root_id_code(supp_arch_binding_id_code) and
 									supp_expanded_arch.specialisation_depth >= specialisation_depth_from_code(supp_arch_binding_id_code)
 								then
-									if -- attached bindings_for_terminology.item_for_iteration as uri and
-										-- no binding found so far
-										cand_supp_id_code_binding_key.is_empty or else
+									-- no binding found so far
+									if	cand_supp_id_code_binding_key.is_empty or else
 
 										-- new supplier binding more specific than the one already found
 										specialisation_depth_from_code (supp_arch_binding_id_code) > specialisation_depth_from_code (cand_supp_id_code_binding_key)
