@@ -81,38 +81,40 @@ end
 				across xrefs_csr.item as c_arch_roots_csr loop
 					parent_template_node_id := c_arch_roots_csr.item.node_id
 
-					-- first, copy any bindings to the root id node of the used archetype/overlay into the bindings of the owning template,
-					-- under the id-code of the use_archetype reference
-					across supp_expanded_arch.terminology.term_bindings as bindings_for_terminology_csr loop
-						bindings_for_terminology := bindings_for_terminology_csr.item
+					-- first, if the term is defined in the terminology, copy any bindings to the root id node of the used
+					-- archetype/overlay into the bindings of the owning template, under the id-code of the use_archetype reference
+					if a_flat_arch.terminology.has_code (parent_template_node_id) then
+						across supp_expanded_arch.terminology.term_bindings as bindings_for_terminology_csr loop
+							bindings_for_terminology := bindings_for_terminology_csr.item
 
-						-- if there is no local binding, see if there is a binding for the supplier archetype concept id (some id1....1 code)
-						-- or any parent of that
-						if not a_flat_arch.terminology.has_term_binding (bindings_for_terminology_csr.key, parent_template_node_id) then
-							create cand_supp_id_code_binding
-							create cand_supp_id_code_binding_key.make_empty
+							-- if there is no local binding, see if there is a binding for the supplier archetype concept id (some id1....1 code)
+							-- or any parent of that
+							if not a_flat_arch.terminology.has_term_binding (bindings_for_terminology_csr.key, parent_template_node_id) then
+								create cand_supp_id_code_binding
+								create cand_supp_id_code_binding_key.make_empty
 
-							from bindings_for_terminology.start until bindings_for_terminology.off loop
-								supp_arch_binding_id_code := bindings_for_terminology.key_for_iteration
+								from bindings_for_terminology.start until bindings_for_terminology.off loop
+									supp_arch_binding_id_code := bindings_for_terminology.key_for_iteration
 
-								if is_valid_root_id_code(supp_arch_binding_id_code) and
-									supp_expanded_arch.specialisation_depth >= specialisation_depth_from_code(supp_arch_binding_id_code)
-								then
-									-- no binding found so far
-									if	cand_supp_id_code_binding_key.is_empty or else
-
-										-- new supplier binding more specific than the one already found
-										specialisation_depth_from_code (supp_arch_binding_id_code) > specialisation_depth_from_code (cand_supp_id_code_binding_key)
+									if is_valid_root_id_code(supp_arch_binding_id_code) and
+										supp_expanded_arch.specialisation_depth >= specialisation_depth_from_code(supp_arch_binding_id_code)
 									then
-										cand_supp_id_code_binding_key := supp_arch_binding_id_code
-										cand_supp_id_code_binding := bindings_for_terminology.item_for_iteration
-									end
-								end
-								bindings_for_terminology.forth
-							end
+										-- no binding found so far
+										if	cand_supp_id_code_binding_key.is_empty or else
 
-							if not cand_supp_id_code_binding.is_empty then
-								a_flat_arch.terminology.put_term_binding (cand_supp_id_code_binding, bindings_for_terminology_csr.key, parent_template_node_id)
+											-- new supplier binding more specific than the one already found
+											specialisation_depth_from_code (supp_arch_binding_id_code) > specialisation_depth_from_code (cand_supp_id_code_binding_key)
+										then
+											cand_supp_id_code_binding_key := supp_arch_binding_id_code
+											cand_supp_id_code_binding := bindings_for_terminology.item_for_iteration
+										end
+									end
+									bindings_for_terminology.forth
+								end
+
+								if not cand_supp_id_code_binding.is_empty then
+									a_flat_arch.terminology.put_term_binding (cand_supp_id_code_binding, bindings_for_terminology_csr.key, parent_template_node_id)
+								end
 							end
 						end
 					end
