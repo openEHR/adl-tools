@@ -83,7 +83,6 @@ feature -- Commands
 			arch_flat_out.overlay_differential (arch_diff_child)
 
 			-- core definitional parts
-			expand_c_proxy_objects
 			flatten_definition
 			flatten_rules
 			arch_flat_out.terminology.merge (arch_diff_child.terminology)
@@ -106,87 +105,6 @@ feature {NONE} -- Implementation
 			-- utility reference to RM schema used for validation & flattening
 		attribute
 			create Result
-		end
-
-	expand_c_proxy_objects
-			-- if there are overrides in the specialised child that are located at use_node positions, we
-			-- have to expand out a copy of the structures pointed to by the use_nodes in the parent, so that
-			-- the override can be correctly applied.
-		local
-			c_obj: C_OBJECT
-			child_paths_at_parent_level: ARRAYED_SET [STRING]
-			apa: ARCHETYPE_PATH_ANALYSER
-			override_path_in_flat: STRING
-			clone_performed: BOOLEAN
-			flat_use_node_paths: HASH_TABLE [ARRAYED_LIST [C_COMPLEX_OBJECT_PROXY], STRING]
-			cco_proxy_in_flat: C_COMPLEX_OBJECT_PROXY
-		do
-			flat_use_node_paths := arch_flat_out.use_node_index
-			if not flat_use_node_paths.is_empty then
-debug ("flatten")
-	io.put_string ("--> expand_c_proxy_objects%N")
-end
-				-- make a list of paths in the flat that have corresponding paths in the child diff,
-				-- i.e. the set of 'overlay paths'.
-				create child_paths_at_parent_level.make (0)
-				child_paths_at_parent_level.compare_objects
-				across arch_diff_child.all_paths as child_paths_csr loop
-					-- Ignore any paths in the diff that have C_COMPLEX_OBJECT_PROXY
-					-- objects, since we don't do anything special about a proxy overriding a proxy
-					if arch_diff_child.has_object_path (child_paths_csr.item) and then
-						not attached {C_COMPLEX_OBJECT_PROXY} arch_diff_child.object_at_path (child_paths_csr.item)
-					then
-						create apa.make_from_string (child_paths_csr.item)
-						if not apa.is_phantom_path_at_level (arch_flat_parent.specialisation_depth) then
-							override_path_in_flat := apa.path_at_level (arch_flat_parent.specialisation_depth)
-							child_paths_at_parent_level.extend (override_path_in_flat)
-						end
-					end
-				end
-
-				-- iterate through use nodes in parent and find any source paths that are matched by any paths
-				-- within the child archetype (i.e. that the child archetype wants to override); clone the
-				-- structure at the target location and replace the use_node in the flattened structure with it,
-				-- so that the override will work properly.
-				across flat_use_node_paths as flat_use_node_path_csr loop
-					across flat_use_node_path_csr.item as flat_use_nodes_for_path_csr loop
-						cco_proxy_in_flat := flat_use_nodes_for_path_csr.item
-debug ("flatten")
-	io.put_string ("%T...checking flat parent use_node path " +
-	flat_use_nodes_for_path_csr.item.path + " against child path map%N")
-end
-						clone_performed := False
-						from child_paths_at_parent_level.start until child_paths_at_parent_level.off or clone_performed loop
-							if child_paths_at_parent_level.item.starts_with (cco_proxy_in_flat.path) then
-debug ("flatten")
-	io.put_string ("%T...cloning node at " +
-	flat_use_node_path_csr.key + " and replacing at " +
-	flat_use_nodes_for_path_csr.item.path + "%N")
-end
-								c_obj := arch_flat_out.object_at_path (flat_use_node_path_csr.key).safe_deep_twin
-
-								-- override target object's node_id in copy with the node id of the proxy source node,
-								-- if the reference points to a sibling of the proxy object
-								if cco_proxy_in_flat.has_sibling_target then
-									c_obj.set_root_node_id (cco_proxy_in_flat.node_id)
-								end
-
-								-- override occurrences of the ref target object with object proxy occs, if set
-								if attached cco_proxy_in_flat.occurrences as att_occ then
-									c_obj.set_occurrences (att_occ.deep_twin)
-								end
-								cco_proxy_in_flat.parent.replace_child_by_id (c_obj, cco_proxy_in_flat.node_id)
-								clone_performed := True
-							end
-							child_paths_at_parent_level.forth
-						end
-					end
-				end
-				arch_flat_out.rebuild
-debug ("flatten")
-	io.put_string ("<-- expand_c_proxy_objects%N")
-end
-			end
 		end
 
 	flatten_definition
