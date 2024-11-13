@@ -69,14 +69,24 @@ feature {NONE} -- Implementation
 
 	populate_grid
 		local
+			ref_model: BMM_MODEL
+			aom_profile: AOM_PROFILE
 			gli: EV_GRID_LABEL_ITEM
 			str: STRING
-			ref_model: BMM_MODEL
 			source_schema: BMM_SCHEMA
 			bmm_class: BMM_CLASS
 		do
 			check attached source as s then
 				ref_model := s
+
+				-- see if there are any native terminology rep classes set in
+				-- AOM_PROFILE.term_representation_classes
+				if aom_profiles_access.has_profile_for_rm_schema (ref_model.model_id) then
+					aom_profile := aom_profiles_access.profile_for_rm_schema (ref_model.model_id)
+					if attached aom_profile.term_representation_classes as tlist then
+						term_representation_classes.append (tlist)
+					end
+				end
 			end
 
 			ev_grid.wipe_out
@@ -98,25 +108,29 @@ feature {NONE} -- Implementation
 			across ref_model.class_definitions as classes_csr loop
 				bmm_class := classes_csr.item
 				across bmm_class.properties as props_csr loop
-					if attached {BMM_MODEL_TYPE} props_csr.item.bmm_type.unitary_type as model_type and then
-						attached model_type.value_constraint as vc
-					then
-						-- class name
-						create gli.make_with_text (bmm_class.name)
-						ev_grid.set_item (Grid_class_col, ev_grid.row_count + 1, gli)
+					if attached {BMM_MODEL_TYPE} props_csr.item.bmm_type.unitary_type as model_type then
 
-						-- property name
-						create gli.make_with_text (props_csr.item.name)
-						ev_grid.set_item (Grid_property_col, ev_grid.row_count, gli)
+						-- if there is a value_constraint attached, we report that
+						if attached model_type.value_constraint or else term_representation_classes.has (model_type.type_name) then
 
-						-- property type
-						create gli.make_with_text (model_type.type_name)
-						ev_grid.set_item (Grid_property_type_col, ev_grid.row_count, gli)
+							-- class name
+							create gli.make_with_text (bmm_class.name)
+							ev_grid.set_item (Grid_class_col, ev_grid.row_count + 1, gli)
 
-						-- value constraint
-						create gli.make_with_text (vc.value_set_id)
-						ev_grid.set_item (Grid_value_set_col, ev_grid.row_count, gli)
+							-- property name
+							create gli.make_with_text (props_csr.item.name)
+							ev_grid.set_item (Grid_property_col, ev_grid.row_count, gli)
 
+							-- property type
+							create gli.make_with_text (model_type.type_name)
+							ev_grid.set_item (Grid_property_type_col, ev_grid.row_count, gli)
+
+							-- value constraint
+							if attached model_type.value_constraint as vc then
+								create gli.make_with_text (vc.value_set_id)
+								ev_grid.set_item (Grid_value_set_col, ev_grid.row_count, gli)
+							end
+						end
 					end
 				end
 			end
@@ -130,6 +144,12 @@ feature {NONE} -- Implementation
 					end
 			)
 
+		end
+
+	term_representation_classes: LIST[STRING]
+		attribute
+			create {ARRAYED_LIST[STRING]} Result.make(0)
+			Result.compare_objects
 		end
 
 end
