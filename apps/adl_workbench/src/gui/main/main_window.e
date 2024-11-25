@@ -1270,6 +1270,7 @@ feature {NONE} -- Build commands
 			-- Update GUI with progress on build.
 		do
 			library_tool.update_tree_node (aca)
+			error_tool.extend_and_select (aca)
 			ev_application.process_events
 		end
 

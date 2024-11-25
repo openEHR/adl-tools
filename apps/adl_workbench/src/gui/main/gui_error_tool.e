@@ -349,22 +349,20 @@ feature {NONE} -- Implementation
 				row := ev_grid.row (row_idx)
 				row_idx := row_idx - 1
 
-				if attached {ARCH_LIB_ARCHETYPE} row.data as other then
-					if ara.id.is_equal (other.id) then
-						row_idx := 0
-						cat_row := row.parent_row
+				if attached {ARCH_LIB_ARCHETYPE} row.data as other and then ara.id.is_equal (other.id) then
+					row_idx := 0
+					cat_row := row.parent_row
 
-						if attached cat_row as att_cat_row and then att_cat_row /= categories [ara.compiler_error_type] then
-							if att_cat_row.subrow_count > 1 then
-								ev_grid.remove_row (row.index)
-							else
-								ev_grid.remove_row (att_cat_row.index)
+					if attached cat_row as att_cat_row and then att_cat_row /= categories [ara.compiler_error_type] then
+	--					if att_cat_row.subrow_count > 1 then
+							ev_grid.remove_row (row.index)
+--						else
+--							ev_grid.remove_row (att_cat_row.index)
 
-								if attached {INTEGER_REF} att_cat_row.data as i then
-									categories [i.item] := Void
-								end
-							end
-						end
+--							if attached {INTEGER_REF} att_cat_row.data as i then
+--								categories [i.item] := Void
+--							end
+--						end
 					end
 				end
 			end
