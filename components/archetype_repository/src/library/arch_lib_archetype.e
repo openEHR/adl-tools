@@ -1309,6 +1309,8 @@ feature {NONE} -- Flattening
 
 			expand_c_proxy_objects (flattened_arch)
 
+			expand_terminology_constraint_value_sets (flattened_arch)
+
 			flat_archetype_cache := flattened_arch
 		ensure
 			Flat_archetype_cache_attached: attached flat_archetype_cache
@@ -1347,6 +1349,15 @@ feature {NONE} -- Flattening
 			flat_arch.rebuild
 		ensure
 			No_remaining_proxy_objects: flat_arch.use_node_index.is_empty
+		end
+
+	expand_terminology_constraint_value_sets (flat_arch: like flat_archetype)
+		do
+			across flat_arch.term_constraints_index as tc_csr loop
+				if tc_csr.item.is_constraint_value_set and attached flat_arch.terminology.value_sets.item (tc_csr.item.constraint) as att_vs then
+					tc_csr.item.set_value_set_terms (att_vs.members)
+				end
+			end
 		end
 
 feature {NONE} -- Implementation

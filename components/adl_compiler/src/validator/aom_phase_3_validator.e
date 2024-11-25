@@ -38,22 +38,10 @@ feature -- Validation
 	validate
 		do
 			reset
-			validate_c_object_proxy_references
 			validate_occurrences
 		end
 
 feature {NONE} -- Implementation
-
-	validate_c_object_proxy_references
-			-- Validate items in `found_internal_references'.
-			-- For specialised archetypes, requires flat ancestor to be available
-		do
-			across target_flat.use_node_index as use_refs_csr loop
-				if not target_flat.definition.has_path (use_refs_csr.key) then
-					add_error ({ADL_MESSAGES_IDS}.ec_VUNP, <<use_refs_csr.key>>)
-				end
-			end
-		end
 
 	validate_occurrences
 			-- validate occurrences under container attributes, in flat definition

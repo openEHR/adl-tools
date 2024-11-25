@@ -267,16 +267,22 @@ feature {NONE} -- Implementation
 			--	term3
 		local
 			vset_exp: ARRAYED_LIST [STRING]
+			bindings: ARRAYED_LIST [URI]
 		do
 			create Result.make_empty
 
-			-- show any value set binding references
-			if not a_ccp.value_set_binding.is_empty then
-				Result.append ("EXTERNAL:%N")
-				across a_ccp.value_set_binding as bnd_csr loop
-					Result.append ("    " + bnd_csr.item.as_string)
-					if not bnd_csr.is_last then
-						Result.append_string ("%N")
+			-- obtain value set binding(s) for the node
+			if not a_ccp.any_allowed then
+				bindings := ui_graph_state.flattened_terminology.term_bindings_for_key (a_ccp.constraint).linear_representation
+
+				-- show any value set binding references
+				if not bindings.is_empty then
+					Result.append ("EXTERNAL:%N")
+					across bindings as bnd_csr loop
+						Result.append ("    " + bnd_csr.item.as_string)
+						if not bnd_csr.is_last then
+							Result.append_string ("%N")
+						end
 					end
 				end
 			end

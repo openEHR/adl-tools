@@ -1276,27 +1276,9 @@ feature {NONE} -- Implementation
 			-- use_nodes in definition structure; paths to C_OBJECTs have the C_OBJECT reference
 
 	set_terminology_agents
-		do
 			-- set agent to create new id-codes into terminology
-			terminology.set_new_id_code_agt (agent create_new_id_code)
-			set_c_terminology_code_agents
-		end
-
-	set_c_terminology_code_agents
-			-- set a terminology extractor agent into every C_TERMINOLOGY_CODE object so
-			-- it can evaluate value sets
-		local
-			def_it: C_ITERATOR
 		do
-			create def_it.make (definition)
-			def_it.do_all_on_entry (
-				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-					do
-						if attached {C_TERMINOLOGY_CODE} a_c_node as ctc then
-							ctc.set_value_set_extractor (agent get_value_set)
-							ctc.set_value_set_binding_extractor (agent get_value_set_binding)
-						end
-					end)
+			terminology.set_new_id_code_agt (agent create_new_id_code)
 		end
 
 	get_value_set (ac_code: STRING): ARRAYED_LIST [STRING]
@@ -1305,17 +1287,6 @@ feature {NONE} -- Implementation
 		do
 			if attached terminology.value_sets.item (ac_code) as att_vs then
 				Result := att_vs.members
-			else
-				create Result.make (0)
-				Result.compare_objects
-			end
-		end
-
-	get_value_set_binding (a_code: STRING): ARRAYED_LIST [URI]
-			-- get value set or value bindings from archetype terminology if they exist
-		do
-			if terminology.has_any_term_binding (a_code) then
-				Result := terminology.term_bindings_for_key (a_code).linear_representation
 			else
 				create Result.make (0)
 				Result.compare_objects

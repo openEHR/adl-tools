@@ -58,6 +58,10 @@ feature -- Validation
 				validate_reference_model
 			end
 
+			if passed then
+				validate_c_object_proxy_references
+			end
+
 			-- validation requiring valid specialisation ancestor
 			if passed then
 				if arch_diff_child.is_specialised then
@@ -74,6 +78,19 @@ feature {NONE} -- Implementation
 	flat_parent_slot_fillers_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
 		attribute
 			create Result.make (0)
+		end
+
+	validate_c_object_proxy_references
+			-- Validate items in `found_internal_references'.
+			-- For specialised archetypes, requires flat ancestor to be available
+		do
+			across arch_diff_child.use_node_index as use_refs_csr loop
+				if not (arch_diff_child.definition.has_path (use_refs_csr.key) or else
+					arch_diff_child.is_specialised and arch_flat_parent.definition.has_path (use_refs_csr.key))
+				then
+					add_error ({ADL_MESSAGES_IDS}.ec_VUNP, <<use_refs_csr.key>>)
+				end
+			end
 		end
 
 	validate_rules

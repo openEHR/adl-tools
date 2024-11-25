@@ -65,29 +65,17 @@ feature -- Access
 		end
 
 	value_set_expanded: ARRAYED_LIST [STRING]
-			-- effective value or value set of single constraint in `constraint', mediated by terminology
-			-- to expand an ac-code
+			-- effective value or value set of constraint in `constraint', either the expansion of an ac-code
+			-- or else a direct at-code
 		do
-			if is_valid_value_set_code (constraint) and attached value_set_extractor as att_agt then
-				Result := att_agt.item ([constraint])
+			if is_constraint_value_set then
+				Result := value_set_terms
 			else
 				create Result.make (0)
 				Result.compare_objects
 				if not any_allowed then
 					Result.extend (constraint)
 				end
-			end
-		ensure
-			Result.object_comparison
-		end
-
-	value_set_binding: ARRAYED_LIST [URI]
-			-- bindings if any
-		do
-			if (is_valid_value_set_code (constraint) or is_valid_value_code (constraint)) and attached value_set_binding_extractor as att_agt then
-				Result := att_agt.item ([constraint])
-			else
-				create Result.make (0)
 			end
 		end
 
@@ -182,7 +170,8 @@ feature -- Comparison
         	-- if both constraints are ac-codes, compare the value-set expansions if the
         	-- terminology constraint strengths are both `required`
     		elseif is_valid_value_set_code (constraint) and is_valid_value_set_code (other.constraint) and
-    				codes_conformant (constraint, other.constraint) then
+    				codes_conformant (constraint, other.constraint)
+    		then
 				-- check if the other value-set is empty, which means there is no value-set, i.e. no constraint
 				-- which means that this object's value set automatically conforms.
 				other_vset := other.value_set_expanded
@@ -224,16 +213,11 @@ feature -- Comparison
 			end
 		end
 
-feature {C_TERMINOLOGY_CODE, ARCHETYPE} -- Modification
+feature {C_TERMINOLOGY_CODE, ARCH_LIB_ARCHETYPE} -- Modification
 
-	set_value_set_extractor (an_agent: attached like value_set_extractor)
+	set_value_set_terms (a_terms: like value_set_terms)
 		do
-			value_set_extractor := an_agent
-		end
-
-	set_value_set_binding_extractor (an_agent: attached like value_set_binding_extractor)
-		do
-			value_set_binding_extractor := an_agent
+			value_set_terms := a_terms
 		end
 
 	set_constraint_status (v: INTEGER)
@@ -349,16 +333,11 @@ feature {NONE} -- Implementation
 			Result := constraint
 		end
 
-	value_set_extractor: detachable FUNCTION [ANY, TUPLE [ac_code: STRING], ARRAYED_LIST [STRING]]
-		note
-			option: stable
+	value_set_terms: ARRAYED_LIST [STRING]
+			-- expansion of `constraint` if carrying an ac-code
 		attribute
-		end
-
-	value_set_binding_extractor: detachable FUNCTION [ANY, TUPLE [ac_code: STRING], ARRAYED_LIST [URI]]
-		note
-			option: stable
-		attribute
+			create Result.make (0)
+			Result.compare_objects
 		end
 
 feature -- Visitor
