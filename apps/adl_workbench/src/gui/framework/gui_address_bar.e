@@ -27,12 +27,12 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_windows_hide_combo_dropdown_agent, a_windows_show_combo_dropdown_agent: like windows_hide_combo_dropdown_agent)
+	make
 		do
 			create client_controls.make (0)
 
-			windows_hide_combo_dropdown_agent := a_windows_hide_combo_dropdown_agent
-			windows_show_combo_dropdown_agent := a_windows_show_combo_dropdown_agent
+			windows_hide_combo_dropdown_agent := agent nop
+			windows_show_combo_dropdown_agent  := agent nop
 
 			-- create controls
 			create ev_root_container
@@ -70,21 +70,34 @@ feature -- Access
 
 feature -- Status Report
 
-	has_client_control (a_searchable_tool: attached GUI_SEARCHABLE_TOOL): BOOLEAN
+	has_client_control (a_searchable_tool: GUI_SEARCHABLE_TOOL): BOOLEAN
 		do
 			Result := client_controls.has (a_searchable_tool.tool_unique_id)
 		end
 
 feature -- Modification
 
-	add_client_control (a_searchable_tool: attached GUI_SEARCHABLE_TOOL)
+	set_agents (a_windows_hide_combo_dropdown_agent, a_windows_show_combo_dropdown_agent: like windows_hide_combo_dropdown_agent)
+		do
+			windows_hide_combo_dropdown_agent := a_windows_hide_combo_dropdown_agent
+			windows_show_combo_dropdown_agent := a_windows_show_combo_dropdown_agent
+		end
+
+	add_client_control (a_searchable_tool: GUI_SEARCHABLE_TOOL)
 			-- add `a_searchable_tool' to list of tools that this tools can search
 		do
 			client_controls.force (a_searchable_tool, a_searchable_tool.tool_unique_id)
 			current_client := a_searchable_tool.tool_unique_id
 		end
 
-	set_current_client (a_searchable_tool: attached GUI_SEARCHABLE_TOOL)
+	remove_client_control (a_searchable_tool: GUI_SEARCHABLE_TOOL)
+			-- remove `a_searchable_tool' to list of tools that this tools can search
+		do
+			client_controls.remove (a_searchable_tool.tool_unique_id)
+			current_client := 0
+		end
+
+	set_current_client (a_searchable_tool: GUI_SEARCHABLE_TOOL)
 		require
 			has_client_control (a_searchable_tool)
 		do
@@ -93,11 +106,17 @@ feature -- Modification
 
 feature -- Commands
 
+	set_focus
+			-- grab keyboard focus
+		do
+			ev_search_combo.set_focus
+		end
+
 	find_item_by_key
 			-- Called by `return_actions' of `ev_search_combo'.
 		local
 			key: STRING
-			matching_ids: attached ARRAYED_SET[STRING]
+			matching_ids: ARRAYED_SET[STRING]
 		do
 			if is_windows and ev_search_combo.is_list_shown then
 				client_controls.item (current_client).select_item_by_id (ev_search_combo.selected_text)
@@ -112,20 +131,22 @@ feature -- Commands
 					if client_controls.item (current_client).valid_item_id (key) then
 						client_controls.item (current_client).select_item_by_id (key)
 
+					-- if it is a partial id, get a list of candidates
 					elseif key.count >= 3 then
-						 -- it is a partial id, get a list of candidates
 						matching_ids := client_controls.item (current_client).matching_ids (string_to_regex (key))
 
 						if matching_ids.count = 0 then
 							ev_search_combo.set_text (get_msg ({GENERAL_MESSAGES_IDS}.ec_no_match_found, Void))
 							ev_search_combo.set_focus
 							ev_search_combo.select_all
-						elseif matching_ids.count = 1 then
-							ev_search_combo.set_strings (matching_ids)
-							client_controls.item (current_client).select_item_by_id (ev_search_combo.text)
+
 						else
 							ev_search_combo.set_strings (matching_ids)
-							windows_show_combo_dropdown_agent.call ([ev_search_combo])
+							if matching_ids.count = 1 then
+								client_controls.item (current_client).select_item_by_id (ev_search_combo.text)
+							else
+								windows_show_combo_dropdown_agent.call ([ev_search_combo])
+							end
 						end
 
 					else -- key too short
@@ -157,6 +178,16 @@ feature -- Commands
 			ev_search_combo.select_all
 		end
 
+	find_next
+		do
+			client_controls.item (current_client).select_next
+		end
+
+	find_previous
+		do
+			client_controls.item (current_client).select_previous
+		end
+
 	clear
 			-- Wipe out content from visual controls.
 		do
@@ -173,12 +204,20 @@ feature {NONE} -- Implementation
 		end
 
 	ev_search_combo: EV_COMBO_BOX
+
 	ev_tool_bar: EV_TOOL_BAR
+
 	ev_search_button: EV_TOOL_BAR_BUTTON
 
 	client_controls: HASH_TABLE [GUI_SEARCHABLE_TOOL, INTEGER]
 
-	windows_hide_combo_dropdown_agent, windows_show_combo_dropdown_agent: PROCEDURE [ANY, TUPLE [EV_COMBO_BOX]]
+	windows_hide_combo_dropdown_agent: PROCEDURE [ANY, TUPLE [EV_COMBO_BOX]]
+
+	windows_show_combo_dropdown_agent: PROCEDURE [ANY, TUPLE [EV_COMBO_BOX]]
+
+	nop (avcb: EV_COMBO_BOX)
+		do
+		end
 
 end
 

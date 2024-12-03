@@ -16,6 +16,8 @@ deferred class GUI_DOCKING_EDITOR_CONTROLLER
 inherit
 	SHARED_GUI_HISTORY_TOOLBAR
 
+	SHARED_GUI_ADDRESS_BAR
+
 feature -- Definitions
 
 	Editor_group_name: STRING
@@ -204,6 +206,13 @@ feature {NONE} -- Implementation
 			end
 			docking_pane.focus_in_actions.extend (agent select_tool (active_tool_id))
 			docking_tools.put ([a_gui_tool, docking_pane], active_tool_id)
+
+			if attached {GUI_ARCHETYPE_VIEWER} a_gui_tool as gav then
+				address_bar.add_client_control (gav.source_control)
+				address_bar.add_client_control (gav.serialisation_control)
+				address_bar.add_client_control (gav.opt_control)
+				address_bar.add_client_control (gav.instance_control)
+			end
 		ensure
 			Tool_added_to_index: docking_tools.has (active_tool_id) and then attached docking_tools.item (active_tool_id) as att_tool and then att_tool.tool = a_gui_tool
 		end
@@ -233,6 +242,13 @@ feature {NONE} -- Implementation
 
 			-- destroy the docking pane and archetype tool controls
 			if attached docking_tools.item (a_tool_id) as att_tool then
+				if attached {GUI_ARCHETYPE_VIEWER} att_tool.tool as gav then
+					address_bar.remove_client_control (gav.source_control)
+					address_bar.remove_client_control (gav.serialisation_control)
+					address_bar.remove_client_control (gav.opt_control)
+					address_bar.remove_client_control (gav.instance_control)
+				end
+
 				docking_pane := att_tool.docking_pane
 				docking_pane.close
 				docking_pane.destroy

@@ -9,7 +9,7 @@ note
 
 deferred class GUI_SEARCHABLE_TOOL
 
-feature -- Access
+feature -- Search
 
 	matching_ids (a_regex: STRING): ARRAYED_SET [STRING]
 			-- obtain a list of ids matching `a_regex'
@@ -23,8 +23,6 @@ feature -- Access
 		deferred
 		end
 
-feature -- Status Report
-
 	item_selectable: BOOLEAN
 		deferred
 		end
@@ -34,10 +32,22 @@ feature -- Status Report
 		deferred
 		end
 
-feature -- Commands
-
 	select_item_by_id (id: STRING)
 			-- Select `id' in the tool and go to corresponding widget in GUI visualisation
+		require
+			item_selectable
+		deferred
+		end
+
+	select_next
+			-- Go to the next match for previous search, if available
+		require
+			item_selectable
+		deferred
+		end
+
+	select_previous
+			-- Go to the previous match for previous search, if available
 		require
 			item_selectable
 		deferred

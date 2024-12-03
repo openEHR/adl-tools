@@ -148,33 +148,11 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
 
-	matching_ids (a_regex: STRING): ARRAYED_SET [STRING]
-		do
-			if attached source as src then
-				Result := src.matching_ids (a_regex, Void, Void)
-			else
-				create Result.make(0)
-			end
-		end
-
 	mini_tool_bar: EV_TOOL_BAR
 		do
 			check attached gui_mini_tool_bar.last_tool_bar as ltb then
 				Result := ltb
 			end
-		end
-
-feature -- Status Report
-
-	item_selectable: BOOLEAN
-		do
-			Result := is_populated
-		end
-
-	valid_item_id (a_key: STRING): BOOLEAN
-			-- key is a valid identifier of an item managed in this tool
-		do
-			Result := (create {ARCHETYPE_HRID}.default_create).valid_id (a_key)
 		end
 
 feature -- Commands
@@ -192,16 +170,6 @@ feature -- Commands
 			if selection_history.has_selected_item and then source.has_item_with_id (selection_history.selected_item.global_artefact_identifier) then
 				archetype_explorer.select_item_in_tree (selection_history.selected_item.global_artefact_identifier)
 				docking_pane.set_focus
-			end
-		end
-
-	select_item_by_id (a_globally_qualified_id: STRING)
-			-- Select `a_globally_qualified_id' in the GUI library tree, unless it is the same as the current selection
-		do
-			if not selection_history.has_selected_archetype or else not a_globally_qualified_id.is_equal (selection_history.selected_archetype.qualified_name) then
-				if source.has_item_with_id (a_globally_qualified_id) then
-					archetype_explorer.select_item_in_tree (a_globally_qualified_id)
-				end
 			end
 		end
 
@@ -306,6 +274,48 @@ feature -- Commands
 			else
 				create error_dialog.make_with_text (get_text ({ADL_MESSAGES_IDS}.ec_no_archetype_selected))
 				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+			end
+		end
+
+feature -- Search
+
+	item_selectable: BOOLEAN
+		do
+			Result := is_populated
+		end
+
+	valid_item_id (a_key: STRING): BOOLEAN
+			-- key is a valid identifier of an item managed in this tool
+		do
+			Result := (create {ARCHETYPE_HRID}.default_create).valid_id (a_key)
+		end
+
+	matching_ids (a_regex: STRING): ARRAYED_SET [STRING]
+		do
+			if attached source as src then
+				Result := src.matching_ids (a_regex, Void, Void)
+			else
+				create Result.make(0)
+			end
+		end
+
+	select_next
+			-- Go to the next match for previous search, if available
+		do
+		end
+
+	select_previous
+			-- Go to the previous match for previous search, if available
+		do
+		end
+
+	select_item_by_id (a_globally_qualified_id: STRING)
+			-- Select `a_globally_qualified_id' in the GUI library tree, unless it is the same as the current selection
+		do
+			if not selection_history.has_selected_archetype or else not a_globally_qualified_id.is_equal (selection_history.selected_archetype.qualified_name) then
+				if source.has_item_with_id (a_globally_qualified_id) then
+					archetype_explorer.select_item_in_tree (a_globally_qualified_id)
+				end
 			end
 		end
 

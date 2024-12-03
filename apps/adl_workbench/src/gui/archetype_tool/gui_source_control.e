@@ -16,6 +16,16 @@ inherit
 			enable_edit, disable_edit, can_populate, can_repopulate
 		end
 
+	GUI_SEARCHABLE_TOOL
+		export
+			{NONE} all
+		end
+
+	SHARED_GUI_ADDRESS_BAR
+		export
+			{NONE} all
+		end
+
 	OPERATOR_TYPES
 		export
 			{NONE} all
@@ -75,6 +85,12 @@ feature {NONE}-- Initialization
 
 			gui_controls.extend (evx_adl_serialised_editor)
 
+			-- make focus actions for rich text controls set this overall tool as current search client
+			across gui_controls as gui_ctl_csr loop
+				if attached {EVX_TEXT_EDITOR_CONTROL} gui_ctl_csr.item as evx_txt_edit then
+					evx_txt_edit.set_text_focus_in_action (agent address_bar.set_current_client (Current))
+				end
+			end
 
 			differential_view := True
 			ev_root_container.set_data (Current)
@@ -83,6 +99,54 @@ feature {NONE}-- Initialization
 feature -- Access
 
 	ev_root_container: EV_NOTEBOOK
+
+feature -- Search
+
+	matching_ids (a_regex: STRING): ARRAYED_SET[STRING]
+			-- generate list of schema elemtn ids (packages and classes)
+		do
+			create Result.make (0)
+			Result.compare_objects
+			if attached ev_root_container.selected_item as sel_item and then
+				attached {EVX_TEXT_EDITOR_CONTROL} sel_item.data as evx_txt_edit and then evx_txt_edit.has_text (a_regex)
+			then
+				Result.extend (a_regex)
+			else
+				Result.extend (get_msg_line ("regex_e1", <<a_regex>>))
+			end
+		end
+
+	item_selectable: BOOLEAN
+		do
+			Result := True
+		end
+
+	valid_item_id (a_key: STRING): BOOLEAN
+		do
+			Result := not a_key.is_empty -- and is printable
+		end
+
+	select_item_by_id (id: STRING)
+		do
+			if attached ev_root_container.selected_item as sel_item and then attached {EVX_TEXT_EDITOR_CONTROL} sel_item.data as evx_txt_edit then
+				evx_txt_edit.search_and_display (id)
+			end
+		end
+
+	select_next
+		do
+			if attached ev_root_container.selected_item as sel_item and then attached {EVX_TEXT_EDITOR_CONTROL} sel_item.data as evx_txt_edit then
+				evx_txt_edit.search_next
+			end
+		end
+
+	select_previous
+			-- Go to the previous match for previous search, if available
+		do
+			if attached ev_root_container.selected_item as sel_item and then attached {EVX_TEXT_EDITOR_CONTROL} sel_item.data as evx_txt_edit then
+				evx_txt_edit.search_previous
+			end
+		end
 
 feature -- Status Report
 
@@ -187,7 +251,7 @@ feature {NONE} -- Implementation
 
 	do_populate
 		local
-			sel_tab: detachable EV_NOTEBOOK_TAB
+			sel_tab: EV_NOTEBOOK_TAB
 		do
 			gui_controls.do_all (agent (an_item: EVX_CONTROL_SHELL) do an_item.populate end)
 

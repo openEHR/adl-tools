@@ -45,6 +45,11 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_GUI_ADDRESS_BAR
+		undefine
+			copy, default_create
+		end
+
 	SHARED_XML_RULES
 		undefine
 			copy, default_create
@@ -111,6 +116,9 @@ feature {NONE} -- Initialization
 			arch_compile_tool_bar.extend (tool_bar_sep_1)
 
 			-- address bar
+			address_bar.set_agents (agent windows_hide_combo_dropdown, agent windows_show_combo_dropdown)
+			address_bar.add_client_control (library_tool)
+			address_bar.add_client_control (ref_model_explorer)
 			action_bar.extend (address_bar.ev_root_container)
 			arch_compile_tool_bar.disable_vertical_button_style
 
@@ -312,6 +320,9 @@ feature {NONE} -- Initialization
 			evx_accelerators.add_shortcut (agent text_widget_handler.step_focused_notebook_tab (1), key_tab, True, False, False)
 			evx_accelerators.add_shortcut (agent text_widget_handler.step_focused_notebook_tab (-1), key_tab, True, False, True)
 			evx_accelerators.add_shortcut (agent set_show_line_numbers (not show_line_numbers), key_l, True, False, False)
+			evx_accelerators.add_shortcut (agent address_bar.set_focus, key_f, True, False, False)
+			evx_accelerators.add_shortcut (agent address_bar.find_next, key_n, True, False, False)
+			evx_accelerators.add_shortcut (agent address_bar.find_previous, key_n, True, False, True)
 		end
 
 	initialise_ui_basic
@@ -864,15 +875,6 @@ feature {NONE} -- Help events
 			dialog.set_background_color (Off_white_background_color)
 --			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
 			dialog.show_modal_to_window (Current)
-		end
-
-feature -- Address Bar control
-
-	address_bar: GUI_ADDRESS_BAR
-		once ("PROCESS")
-			create Result.make (agent windows_hide_combo_dropdown, agent windows_show_combo_dropdown)
-			Result.add_client_control (library_tool)
-			Result.add_client_control (ref_model_explorer)
 		end
 
 feature -- Docking controls

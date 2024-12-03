@@ -135,6 +135,16 @@ feature -- UI Feedback
 			ev_application.clipboard.set_text (a_path)
 		end
 
+feature -- Access
+
+	source_control: GUI_SOURCE_CONTROL
+
+	serialisation_control: GUI_SERIALISATION_CONTROL
+
+	opt_control: GUI_OPT_CONTROL
+
+	instance_control: GUI_INSTANCE_CONTROL
+
 feature {NONE} -- Events
 
 	on_path_map_key_press (key: EV_KEY)
@@ -211,17 +221,9 @@ feature {NONE} -- Implementation
 
 	clients_suppliers_control: GUI_CLIENTS_SUPPLIERS_CONTROL
 
-	source_control: GUI_SOURCE_CONTROL
-
 	validity_report_control: GUI_VALIDITY_REPORT_CONTROL
 
 	statistical_information_control: GUI_ARCHETYPE_INFORMATION_TOOL
-
-	serialisation_control: GUI_SERIALISATION_CONTROL
-
-	opt_control: GUI_OPT_CONTROL
-
-	instance_control: GUI_INSTANCE_CONTROL
 
 	set_differential_tab_texts
 			-- set text on tabs for differential form of archetype

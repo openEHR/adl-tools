@@ -76,6 +76,8 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
 
+feature -- Search
+
 	matching_ids (a_regex: STRING): ARRAYED_SET[STRING]
 			-- generate list of schema elemtn ids (packages and classes)
 		local
@@ -95,6 +97,16 @@ feature -- Access
 			else
 				Result.extend (get_msg_line ("regex_e1", <<a_regex>>))
 			end
+		end
+
+	select_next
+			-- Go to the next match for previous search, if available
+		do
+		end
+
+	select_previous
+			-- Go to the previous match for previous search, if available
+		do
 		end
 
 feature -- Status Report
