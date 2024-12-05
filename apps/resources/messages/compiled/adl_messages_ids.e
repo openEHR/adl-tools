@@ -275,6 +275,7 @@ feature -- Definitions
 		ec_archetype_in_memory_not_found: STRING = "archetype_in_memory_not_found"
 		ec_archetype_node_not_found: STRING = "archetype_node_not_found"
 		ec_app_exit_with_errors: STRING = "app_exit_with_errors"
+		ec_archetype_id_invalid: STRING = "archetype_id_invalid"
 		ec_adlc_quiet_switch_desc: STRING = "adlc_quiet_switch_desc"
 		ec_flat_switch_desc: STRING = "flat_switch_desc"
 		ec_rm_multiplicities_switch_desc: STRING = "rm_multiplicities_switch_desc"

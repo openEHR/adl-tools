@@ -44,6 +44,7 @@ feature -- Commands
 			old_term_binding_uri, binding_uri: URI
 			diff_arch: AUTHORED_ARCHETYPE
 			ara: ARCH_LIB_AUTHORED_ARCHETYPE
+			arch_hrid: ARCHETYPE_HRID
 		do
 			report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_term_bindings_start, <<term_binding_ns, input_file_path>>))
 
@@ -64,53 +65,61 @@ feature -- Commands
 						a_line.right_adjust
 						strs := a_line.split (',')
 
-						arch_ref := strs.i_th (1)
-						if not arch_ref.is_equal (last_arch_ref) then
-							-- save last archetype changes
-							save_changes (ara)
+						create arch_hrid.default_create
+						if arch_hrid.valid_id (strs.i_th (1)) then
 
-							diff_arch := Void
-							if attached {ARCH_LIB_AUTHORED_ARCHETYPE} current_library.archetype_matching_ref (arch_ref) as arch_desc then
-								ara := arch_desc
-								if attached {AUTHORED_ARCHETYPE} ara.differential_archetype as da then
-									diff_arch := da
+							-- read the first column as an archetype id, and convert it to semantic id (major version only)
+							create arch_hrid.make_from_string (strs.i_th (1))
+							arch_ref := arch_hrid.semantic_id
+							if not arch_ref.is_equal (last_arch_ref) then
+								-- save last archetype changes
+								save_changes (ara)
+
+								diff_arch := Void
+								if attached {ARCH_LIB_AUTHORED_ARCHETYPE} current_library.archetype_matching_ref (arch_ref) as arch_desc then
+									ara := arch_desc
+									if attached {AUTHORED_ARCHETYPE} ara.differential_archetype as da then
+										diff_arch := da
+									else
+										report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_in_memory_not_found, <<arch_ref, current_library_name>>))
+									end
 								else
-									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_in_memory_not_found, <<arch_ref, current_library_name>>))
+									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_not_found, <<arch_ref, current_library_name>>))
 								end
-							else
-								report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_not_found, <<arch_ref, current_library_name>>))
-							end
-						end
-
-						if attached diff_arch then
-							arch_code := strs.i_th (2)
-							binding_value := strs.i_th (3)
-
-							-- now process all the codes for this archetype
-							if not binding_value.starts_with (Uri_leader) then
-								create binding_uri.make_from_string (term_binding_uri_root + binding_value)
-							else
-								create binding_uri.make_from_string (binding_value)
 							end
 
-							if diff_arch.terminology.has_term_binding (term_binding_ns, arch_code) then
-								old_term_binding_uri := diff_arch.terminology.term_binding (term_binding_ns, arch_code)
-								if not old_term_binding_uri.is_equal(binding_uri) then
-									diff_arch.terminology.replace_term_binding (binding_uri, term_binding_ns, arch_code)
-									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_replace_term_binding, <<term_binding_ns,
-										old_term_binding_uri.as_string, arch_code, binding_uri.as_string, arch_ref>>))
-									inject_replace_count := inject_replace_count + 1
+							if attached diff_arch then
+								arch_code := strs.i_th (2)
+								binding_value := strs.i_th (3)
+
+								-- now process all the codes for this archetype
+								if not binding_value.starts_with (Uri_leader) then
+									create binding_uri.make_from_string (term_binding_uri_root + binding_value)
+								else
+									create binding_uri.make_from_string (binding_value)
+								end
+
+								if diff_arch.terminology.has_term_binding (term_binding_ns, arch_code) then
+									old_term_binding_uri := diff_arch.terminology.term_binding (term_binding_ns, arch_code)
+									if not old_term_binding_uri.is_equal(binding_uri) then
+										diff_arch.terminology.replace_term_binding (binding_uri, term_binding_ns, arch_code)
+										report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_replace_term_binding, <<term_binding_ns,
+											old_term_binding_uri.as_string, arch_code, binding_uri.as_string, arch_ref>>))
+										inject_replace_count := inject_replace_count + 1
+										save_required := True
+									else
+										inject_ignore_count := inject_ignore_count + 1
+									end
+								elseif diff_arch.terminology.has_code (arch_code) then
+									diff_arch.terminology.put_term_binding (binding_uri, term_binding_ns, arch_code)
+									inject_new_count := inject_new_count + 1
 									save_required := True
 								else
-									inject_ignore_count := inject_ignore_count + 1
+									report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_node_not_found, <<arch_ref, arch_code, current_library_name>>))
 								end
-							elseif diff_arch.terminology.has_code (arch_code) then
-								diff_arch.terminology.put_term_binding (binding_uri, term_binding_ns, arch_code)
-								inject_new_count := inject_new_count + 1
-								save_required := True
-							else
-								report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_node_not_found, <<arch_ref, arch_code, current_library_name>>))
 							end
+						else
+							report_std_err (get_msg ({ADL_MESSAGES_IDS}.ec_archetype_id_invalid, <<strs.i_th (1)>>))
 						end
 					end
 				end

@@ -20,6 +20,7 @@ templates = <
 		["archetype_in_memory_not_found"] = <"Archetype $1 differential desc in-memory form not found in repository $2">
 		["archetype_node_not_found"] = <"Archetype $1 node $2 not found in repository $3">
 		["app_exit_with_errors"] = <"Exiting....APP_ROOT initialisation completed with errors">
+		["archetype_id_invalid"] = <"Archetype identifier $1 is not valid">
 
 		-- simple command line options
 		["adlc_quiet_switch_desc"] = <"suppress verbose feedback, including configuration information on startup">

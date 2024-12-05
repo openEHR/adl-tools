@@ -24,7 +24,7 @@ feature -- Initialisation
 
 	make
 		do
-			create message_table.make (984)
+			create message_table.make (985)
 			message_table.put ("Terminology initialisation failed; reason: $1", ec_terminology_init_failed)
 			message_table.put ("Using ADL version $1 for output serialisation", ec_adl_version_warning)
 			message_table.put ("Validation level STRICT", ec_validation_strict)
@@ -290,6 +290,7 @@ feature -- Initialisation
 			message_table.put ("Archetype $1 differential desc in-memory form not found in repository $2", ec_archetype_in_memory_not_found)
 			message_table.put ("Archetype $1 node $2 not found in repository $3", ec_archetype_node_not_found)
 			message_table.put ("Exiting....APP_ROOT initialisation completed with errors", ec_app_exit_with_errors)
+			message_table.put ("Archetype identifier $1 is not valid", ec_archetype_id_invalid)
 			message_table.put ("suppress verbose feedback, including configuration information on startup", ec_adlc_quiet_switch_desc)
 			message_table.put ("use flat form of archetype[s] for export", ec_flat_switch_desc)
 			message_table.put ("include RM multiplicities when flattening", ec_rm_multiplicities_switch_desc)
