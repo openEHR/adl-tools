@@ -16,7 +16,7 @@ inherit
 		end
 
 create
-	make
+	make, make_all
 
 feature -- Initialisation
 
@@ -26,6 +26,13 @@ feature -- Initialisation
 			if not a_cpo.any_allowed then
 				constraint := a_cpo.constraint
 			end
+		end
+
+	make_all (a_cpo: C_STRING)
+			-- make, including constraint even if it is open
+		do
+			make (a_cpo)
+			constraint := a_cpo.constraint
 		end
 
 feature -- Access

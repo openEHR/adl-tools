@@ -25,19 +25,27 @@ feature -- Initialisation
 		do
 			precursor (an_as)
 			if not an_as.includes.is_empty then
-				includes := an_as.includes
+				create includes.make (0)
+				across an_as.includes as includes_csr loop
+					includes.extend (create {P_ASSERTION}.make (includes_csr.item))
+				end
 			end
+
 			if not an_as.excludes.is_empty then
-				excludes := an_as.excludes
+				create excludes.make (0)
+				across an_as.excludes as excludes_csr loop
+					excludes.extend (create {P_ASSERTION}.make (excludes_csr.item))
+				end
 			end
+
 			is_closed := an_as.is_closed
 		end
 
 feature -- Access
 
-	includes: detachable ARRAYED_LIST [ASSERTION]
+	includes: detachable ARRAYED_LIST [P_ASSERTION]
 
-	excludes: detachable ARRAYED_LIST [ASSERTION]
+	excludes: detachable ARRAYED_LIST [P_ASSERTION]
 
 	is_closed: BOOLEAN
 
@@ -48,10 +56,14 @@ feature -- Factory
 			create Result.make (rm_type_name, node_id)
 			populate_c_instance (Result)
 			if attached includes as incls then
-				Result.set_includes (incls)
+				across incls as p_includes_csr loop
+					Result.add_include (p_includes_csr.item.create_assertion)
+				end
 			end
 			if attached excludes as excls then
-				Result.set_excludes (excls)
+				across excls as p_excludes_csr loop
+					Result.add_exclude (p_excludes_csr.item.create_assertion)
+				end
 			end
 			if is_closed then
 				Result.set_closed

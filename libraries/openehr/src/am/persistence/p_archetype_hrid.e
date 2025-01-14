@@ -19,7 +19,6 @@ feature -- Initialisation
 
 	make (an_id: ARCHETYPE_HRID)
 		do
-			physical_id := an_id.physical_id
 			if attached an_id.namespace as att_ns then
 				namespace := att_ns.value
 			end
@@ -32,15 +31,14 @@ feature -- Initialisation
 
 			release_version := an_id.release_version
 
-			version_status := an_id.version_status
+			if not an_id.version_status.is_empty then
+				version_status := an_id.version_status
+			end
 
 			build_count := an_id.build_count
 		end
 
 feature -- Access
-
-	physical_id: STRING
-			-- full stringified form of id
 
 	namespace: detachable STRING
 			-- Reverse domain name namespace identifier.
@@ -62,12 +60,19 @@ feature -- Access
 			-- The full numeric version of this archetype consisting of 3 parts, e.g. 1.8.2. The archetype_hrid
 			-- feature includes only the major version.
 
-	version_status: STRING
+	version_status: detachable STRING
 			-- status of version: release candidate, released, build, unstable
 
 	build_count: STRING
 			-- Build count of this archetype. This is a number that advances from 1 and is reset for
 			-- each new value of release_version.
+
+feature -- Factory
+
+	create_archetype_hrid: ARCHETYPE_HRID
+		do
+			create Result.make (rm_publisher, rm_package, rm_class, concept_id, release_version, if attached version_status as v then v else "" end, build_count)
+		end
 
 end
 

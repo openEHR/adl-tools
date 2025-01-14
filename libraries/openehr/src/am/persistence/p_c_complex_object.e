@@ -12,42 +12,45 @@ class P_C_COMPLEX_OBJECT
 inherit
 	P_C_DEFINED_OBJECT
 		redefine
-			make, populate_c_instance
+			populate_c_instance
 		end
 
 create
 	make
-
-feature -- Initialisation
-
-	make (a_cco: C_COMPLEX_OBJECT)
-		local
-			p_c_attr_tuples: ARRAYED_LIST [P_C_ATTRIBUTE_TUPLE]
-			p_c_attr_list: ARRAYED_LIST [P_C_ATTRIBUTE]
-		do
-			precursor (a_cco)
-			if a_cco.has_attributes then
-				create p_c_attr_list.make (0)
-				attributes := p_c_attr_list
-				across a_cco.attributes as ca_csr loop
-					p_c_attr_list.extend (create {P_C_ATTRIBUTE}.make (ca_csr.item))
-				end
-
-				if attached a_cco.attribute_tuples as atpl then
-					create p_c_attr_tuples.make (0)
-					across atpl as ca_tuple_csr loop
-						p_c_attr_tuples.extend (create {P_C_ATTRIBUTE_TUPLE}.make (ca_tuple_csr.item))
-					end
-					attribute_tuples := p_c_attr_tuples
-				end
-			end
-		end
 
 feature -- Access
 
 	attributes: detachable ARRAYED_LIST [P_C_ATTRIBUTE]
 
 	attribute_tuples: detachable ARRAYED_LIST [P_C_ATTRIBUTE_TUPLE]
+
+feature -- Modification
+
+	add_attribute_tuple (a_p_c_attr_tuple: P_C_ATTRIBUTE_TUPLE)
+		local
+			attr_tuples: ARRAYED_LIST [P_C_ATTRIBUTE_TUPLE]
+		do
+			if attached attribute_tuples as atpl then
+				attr_tuples := atpl
+			else
+				create attr_tuples.make (0)
+				attribute_tuples := attr_tuples
+			end
+			attr_tuples.extend (a_p_c_attr_tuple)
+		end
+
+	add_attribute (a_p_c_attr: P_C_ATTRIBUTE)
+		local
+			pcattrs: ARRAYED_LIST [P_C_ATTRIBUTE]
+		do
+			if attached attributes as attrs then
+				pcattrs := attrs
+			else
+				create pcattrs.make (0)
+				attributes := pcattrs
+			end
+			pcattrs.extend (a_p_c_attr)
+		end
 
 feature -- Factory
 

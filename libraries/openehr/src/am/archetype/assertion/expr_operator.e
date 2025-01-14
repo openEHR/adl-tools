@@ -23,10 +23,10 @@ feature -- Initialisation
    		do
 			operator := an_op
 
-			-- this should be replaced by code that infers typs properly from operands
-			if boolean_operator (an_op.value) or relational_operator (an_op.value) or set_operator (an_op.value) then
+			-- this should be replaced by code that infers types properly from operands
+			if is_boolean_operator (an_op.value) or is_relational_operator (an_op.value) or is_set_operator (an_op.value) then
 				type := op_type_boolean
-			elseif arithmetic_operator (an_op.value) then
+			elseif is_arithmetic_operator (an_op.value) then
 				type := op_type_arithmetic
 			end
 		end
@@ -52,6 +52,11 @@ feature -- Modification
 			precedence_overridden := True
 		ensure
 			precedence_overridden
+		end
+
+	set_operator (an_op: OPERATOR_KIND)
+   		do
+			operator := an_op
 		end
 
 end

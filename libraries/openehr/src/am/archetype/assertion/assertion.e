@@ -12,11 +12,6 @@ class ASSERTION
 inherit
 	BASIC_DEFINITIONS
 
-	OPERATOR_TYPES
-		export
-			{NONE} all
-		end
-
 	RULE_STATEMENT
 
 create
@@ -29,7 +24,7 @@ feature -- Initialisation
    		do
 			expression := an_expr
 			an_expr.set_parent (Current)
-			type := op_type_boolean
+			type := {OPERATOR_TYPES}.op_type_boolean
 		end
 
 	make_with_tag (an_expr: EXPRESSION; a_tag: STRING)
@@ -40,7 +35,7 @@ feature -- Initialisation
 			tag := a_tag
 			expression := an_expr
 			an_expr.set_parent (Current)
-			type := op_type_boolean
+			type := {OPERATOR_TYPES}.op_type_boolean
 		end
 
 feature -- Access

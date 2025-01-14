@@ -74,21 +74,29 @@ feature -- Factory
 
 	create_archetype: detachable like artefact_class_type
 		local
-			o_archetype_id: detachable ARCHETYPE_HRID
+			o_archetype_id: ARCHETYPE_HRID
 			arch_terminology: ARCHETYPE_TERMINOLOGY
 			o_uid, o_build_uid: detachable HIER_OBJECT_ID
+			o_rules: ARRAYED_LIST [ASSERTION]
 		do
 			if attached archetype_id as att_aid
 				and attached description as o_description
 				and attached definition as o_definition
 				and attached terminology as p_terminology
 			then
-				create o_archetype_id.make_from_string (att_aid.physical_id)
+				o_archetype_id := att_aid.create_archetype_hrid
 				if attached uid as att_uid then
 					create o_uid.make_from_string (att_uid)
 				end
 				if not build_uid.is_empty then
 					create o_build_uid.make_from_string (build_uid)
+				end
+
+				if attached rules as att_rules then
+					create o_rules.make (0)
+					across att_rules as p_rules_csr loop
+						o_rules.extend (p_rules_csr.item.create_assertion)
+					end
 				end
 
 				create arch_terminology.make_differential (original_language.code_string, o_definition.node_id)
@@ -112,7 +120,7 @@ feature -- Factory
 					translations,
 					o_description,
 					o_definition.create_c_complex_object,
-					rules,
+					o_rules,
 					arch_terminology,
 					annotations
 				)

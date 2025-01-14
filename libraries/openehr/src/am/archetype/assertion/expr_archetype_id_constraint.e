@@ -23,8 +23,7 @@ feature -- Initialisation
 	make (an_item: C_STRING)
 			-- node is a constraint on a primitive type; can only be used with "matches" function
    		do
-			item := an_item
-			type := an_item.generator
+			precursor (an_item)
 		end
 
 end

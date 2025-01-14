@@ -92,15 +92,15 @@ feature -- Status Report
 			Result := operator_values.has (an_op_name)
 		end
 
-	boolean_operator (an_op: INTEGER): BOOLEAN
+	is_boolean_operator (an_op: INTEGER): BOOLEAN
 			-- True if an_op can operate on boolean operands
 		require
 			valid_operator (an_op)
 		do
-			Result := unary_boolean_operator(an_op) or binary_boolean_operator (an_op)
+			Result := is_unary_boolean_operator(an_op) or is_binary_boolean_operator (an_op)
 		end
 
-	unary_boolean_operator (an_op: INTEGER): BOOLEAN
+	is_unary_boolean_operator (an_op: INTEGER): BOOLEAN
 			-- True if an_op is a unary boolean operator
 		require
 			valid_operator (an_op)
@@ -108,7 +108,7 @@ feature -- Status Report
 			Result := an_op = op_not
 		end
 
-	binary_boolean_operator (an_op: INTEGER): BOOLEAN
+	is_binary_boolean_operator (an_op: INTEGER): BOOLEAN
 			-- True if an_op is a binary boolean operator
 		require
 			valid_operator(an_op)
@@ -116,7 +116,7 @@ feature -- Status Report
 			Result := an_op >= op_and and an_op <= op_implies
 		end
 
-	relational_operator (an_op: INTEGER): BOOLEAN
+	is_relational_operator (an_op: INTEGER): BOOLEAN
 			-- True if an_op is a binary operator with COMPARABLE arguments returning a boolean
 		require
 			valid_operator(an_op)
@@ -124,7 +124,7 @@ feature -- Status Report
 			Result := an_op >= op_eq and an_op <= op_gt
 		end
 
-	unary_arithmetic_operator (an_op: INTEGER): BOOLEAN
+	is_unary_arithmetic_operator (an_op: INTEGER): BOOLEAN
 			-- True if an_op is a unary arithmetic operator
 		require
 			valid_operator (an_op)
@@ -132,15 +132,15 @@ feature -- Status Report
 			Result := an_op = op_minus
 		end
 
-	arithmetic_operator (an_op: INTEGER): BOOLEAN
+	is_arithmetic_operator (an_op: INTEGER): BOOLEAN
 			-- True if an_op is a binary operator with numeric arguments returning a numeric
 		require
 			valid_operator (an_op)
 		do
-			Result := binary_arithmetic_operator(an_op)
+			Result := is_binary_arithmetic_operator(an_op)
 		end
 
-	binary_arithmetic_operator (an_op: INTEGER): BOOLEAN
+	is_binary_arithmetic_operator (an_op: INTEGER): BOOLEAN
 			-- True if an_op is a binary operator with numeric arguments returning a numeric
 		require
 			valid_operator(an_op)
@@ -148,7 +148,7 @@ feature -- Status Report
 			Result := an_op >= op_plus and an_op <= op_exp
 		end
 
-	set_operator (an_op: INTEGER): BOOLEAN
+	is_set_operator (an_op: INTEGER): BOOLEAN
 			-- True if an_op is a unary set operator
 		require
 			valid_operator(an_op)
