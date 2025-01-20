@@ -28,7 +28,6 @@ feature -- Initialisation
 			a_c_iterator: OG_CONTENT_ITERATOR
 			c_p_factory: C_P_FACTORY
 		do
-			artefact_type := an_archetype.artefact_type
 			create archetype_id.make (an_archetype.archetype_id)
 			parent_archetype_id := an_archetype.parent_archetype_id
 
@@ -50,12 +49,6 @@ feature -- Initialisation
 		end
 
 feature -- Access
-
-	artefact_type: STRING
-			-- records artefact type of the original artefact
-		attribute
-			create Result.make_empty
-		end
 
 	archetype_id: detachable P_ARCHETYPE_HRID
 
