@@ -795,6 +795,9 @@ templates = <
 		["type_marking_cb_text"] = <"Type marking">
 		["type_marking_cb_tooltip"] = <"Add type marking to object formats, i.e. JSON, YAML, ODIN">
 
+		["tpls_as_opts_cb_text"] = <"Export OPTs only">
+		["tpls_as_opts_cb_tooltip"] = <"Export only OPTs">
+
 		-- GUI_INSTANCE_CONTROL
 		["save_instance_dialog_title"] = <"Save instance to file">
 		["save_instance_to_file_title"] = <"Save $1 file">

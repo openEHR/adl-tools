@@ -110,6 +110,11 @@ feature {NONE} -- Initialization
 			evx_input_frame.extend (evx_type_marking_cb.ev_data_control, True)
 			gui_controls.extend (evx_type_marking_cb)
 
+			-- output templates as OPTs (not just flat templates): check box
+			create evx_tpls_as_opts_cb.make_linked (get_text ({ADL_MESSAGES_IDS}.ec_tpls_as_opts_cb_text), get_text ({ADL_MESSAGES_IDS}.ec_tpls_as_opts_cb_tooltip),
+				agent :BOOLEAN do Result := export_tpls_as_opts end, agent set_export_tpls_as_opts)
+			evx_input_frame.extend (evx_tpls_as_opts_cb.ev_data_control, True)
+			gui_controls.extend (evx_tpls_as_opts_cb)
 
 			-- compile all first: check box
 			evx_input_frame.add_row (False)
@@ -360,7 +365,10 @@ feature {NONE} -- Implementation
 					else
 						execution_state := es_ready_to_generate
 					end
+
+					-- output all archetypes and flattened source templates
 					archetype_exporter.setup_build ([output_directory, evx_format_cob.data_control_text, export_flat, evx_flatten_with_rm_cb.is_selected, False])
+					archetype_exporter.setup_build ([output_directory, evx_format_cob.data_control_text, export_flat, evx_flatten_with_rm_cb.is_selected, export_tpls_as_opts])
 
 				-- start compilation
 				elseif execution_state = es_ready_to_compile then
@@ -442,7 +450,7 @@ feature {NONE} -- Implementation
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	evx_compile_first_cb, evx_flatten_with_rm_cb, evx_type_marking_cb: EVX_CHECK_BOX_CONTROL
+	evx_compile_first_cb, evx_flatten_with_rm_cb, evx_type_marking_cb, evx_tpls_as_opts_cb: EVX_CHECK_BOX_CONTROL
 
 	evx_dir_setter: EVX_DIRECTORY_SETTER
 

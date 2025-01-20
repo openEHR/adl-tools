@@ -152,6 +152,11 @@ feature -- Definitions
 			create Result.make_from_string ("/compiler/type_marking")
 		end
 
+	Compiler_export_tpls_as_opts_resource_path: IMMUTABLE_STRING_8
+		once
+			create Result.make_from_string ("/compiler/export_tpls_as_opts")
+		end
+
 	File_system_aom_profile_user_directory_resource_path: IMMUTABLE_STRING_8
 		once
 			create Result.make_from_string ("/file_system/aom_profile_user_directory")
@@ -450,6 +455,18 @@ feature -- Application Switches
 			-- Set flag for type marking in serialised formats
 		do
 			app_cfg.put_boolean_value (Compiler_type_marking_resource_path, flag)
+		end
+
+	export_tpls_as_opts: BOOLEAN
+			-- output templates as OPTs?
+		do
+			Result := app_cfg.boolean_value (Compiler_export_tpls_as_opts_resource_path)
+		end
+
+	set_export_tpls_as_opts (flag: BOOLEAN)
+			-- Set flag to output templates as OPTs rather than flattened source templates
+		do
+			app_cfg.put_boolean_value (Compiler_export_tpls_as_opts_resource_path, flag)
 		end
 
 	aom_profile_directory: STRING

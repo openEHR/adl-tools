@@ -960,6 +960,8 @@ feature -- Definitions
 		ec_flatten_with_rm_cb_tooltip: STRING = "flatten_with_rm_cb_tooltip"
 		ec_type_marking_cb_text: STRING = "type_marking_cb_text"
 		ec_type_marking_cb_tooltip: STRING = "type_marking_cb_tooltip"
+		ec_tpls_as_opts_cb_text: STRING = "tpls_as_opts_cb_text"
+		ec_tpls_as_opts_cb_tooltip: STRING = "tpls_as_opts_cb_tooltip"
 		ec_save_instance_dialog_title: STRING = "save_instance_dialog_title"
 		ec_save_instance_to_file_title: STRING = "save_instance_to_file_title"
 		ec_translation_original_label_text: STRING = "translation_original_label_text"
